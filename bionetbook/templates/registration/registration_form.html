@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Register for PROJECT_NAME{% endblock  %}
-
+{% block title %}Register for BioNetBook{% endblock  %}
+{% block page_title %}Registration for BioNetBook{% endblock %}
 
 {% block content %}
 
 <div class="row">
-    <div class="span6 offset2">
-      
-        <h1>Register for PROJECT_NAME</h1>
+    <div class="span6">
         <form class='form-stacked well' action="" method="post">
           {% csrf_token %}
           {{ form|crispy }}
@@ -20,3 +18,11 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_username").focus();
+    });
+</script>
+{% endblock extrajs %}

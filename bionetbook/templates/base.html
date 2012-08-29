@@ -14,7 +14,7 @@
     <div class="container">
         <ul class="nav">
           <li class="active">
-            <a href="{% url dashboard %}"><i class="icon-home icon-white"></i> Home</a>
+            <a href="TODO"><i class="icon-home icon-white"></i> Home</a>
           </li>
         </ul>
         {% if request.user.is_authenticated %}
@@ -22,6 +22,11 @@
               <li class="active"><a>{{ request.user }}</a></li>
             <li><a href="{% url logout %}">logout</a></li>  
           </ul>
+        {% else %}
+            <ul class="nav pull-right">
+                <li><a href="{% url registration_register %}">Register</a></li>
+              <li><a href="{% url login %}">Login</a></li>  
+            </ul>        
         {% endif %}
 
     </div>
@@ -37,16 +42,21 @@
             </div>
         {% endfor %}
     {% endif %}
-
+    <div class="row">
+      <div class="span12">
+      <div class="page-header">
+        <h1>{% block page_title %}{% endblock %}</h1>
+      </div>
+    </div>
+  </div>
 {% block content %}{% endblock %}      
 </div>
 
-
-{% block extrajs %}
-{% endblock %}
 <script src="{{ STATIC_URL }}js/jquery-1.8.0.min.js"></script>    
 <script src="{{ STATIC_URL }}js/bootstrap.min.js" type="text/javascript"></script>
 
+{% block extrajs %}
+{% endblock %}
 
 
 </body>
