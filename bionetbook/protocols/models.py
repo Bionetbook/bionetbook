@@ -18,10 +18,10 @@ class Protocol(TimeStampedModel):
     raw = models.TextField()
 
     # reference fields
-    url = models.URLField(_("Name"), max_length=255, null=True, blank=True)
+    url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
     PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
-    DOI = models.CharField(_("Name"), max_length=255, null=True, blank=True)
-    document_id = models.CharField(_("Name"), max_length=255, null=True, blank=True)
+    DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
+    document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
