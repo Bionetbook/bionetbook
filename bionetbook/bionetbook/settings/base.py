@@ -92,7 +92,6 @@ BASE_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-
     'gunicorn',
     'django_extensions',
     'south',
@@ -103,7 +102,11 @@ BASE_APPS = (
     'profiletools',
 )
 
-PROJECT_APPS = ('protocols',)
+PROJECT_APPS = (
+        'core',
+        'protocols',
+        'verbs',
+    )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
 
@@ -154,3 +157,5 @@ THUMBNAIL_DEBUG = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/login/"
+
+AUTH_PROFILE_MODULE = "profiles.Profile"
