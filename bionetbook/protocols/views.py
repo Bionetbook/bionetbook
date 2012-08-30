@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView
 
+from protocols.forms import ProtocolForm
 from protocols.models import Protocol
 
 
@@ -16,3 +17,4 @@ class ProtocolListView(ListView):
 class ProtocolCreateView(CreateView):
 
     model = Protocol
+    form_class = ProtocolForm

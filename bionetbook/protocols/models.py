@@ -5,8 +5,14 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel, AutoSlugField
 
 
+class ProtocolMaster(TimeStampedModel):
+
+    pass
+
+
 class Protocol(TimeStampedModel):
 
+    parent = models.ForeignKey("self", blank=True, null=True)
     name = models.CharField(_("Name"), max_length=255)
     slug = AutoSlugField(_("Slug"), populate_from="name")
     duration_in_seconds = models.IntegerField(_("Duration in seconds"))
@@ -25,3 +31,8 @@ class Protocol(TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+
+
+class ProtocolVersion(TimeStampedModel):
+
+    protocol = None
