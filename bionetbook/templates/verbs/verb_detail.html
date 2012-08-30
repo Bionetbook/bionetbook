@@ -3,7 +3,7 @@
 
 {% block title %}Verb: {{ verb.name }}{% endblock %}
 
-{% block page_title %}Verb: {{ verb.name }}{% endblock %}
+{% block page_title %}<a href="{% url verb_list %}">Verb</a>: {{ verb.name }}{% endblock %}
 
 {% block content %}
 <div class="row">

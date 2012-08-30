@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Verb List{% endblock %}
+
+{% block page_title %}Verb List{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <ul>
+            {% for verb in verb_list %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+  </div>
+{% endblock %}
+
