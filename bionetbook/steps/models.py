@@ -12,7 +12,7 @@ class Step(TimeStampedModel):
     protocol = models.ForeignKey(Protocol)
     name = models.CharField(_("Name"), max_length=255)
     slug = AutoSlugField(_("Slug"), populate_from="name")
-    duration = models.TODO
+    duration_in_seconds = models.IntegerField(_("Duration in seconds"))
     raw = models.TextField()
 
     def __unicode__(self):
