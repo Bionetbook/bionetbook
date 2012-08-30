@@ -11,6 +11,7 @@ urlpatterns = patterns('',
         view=TemplateView.as_view(template_name="home.html"),
         name="home"
         ),
+    url(r'^dashboard/', include('core.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^verbs/', include('verbs.urls')),
