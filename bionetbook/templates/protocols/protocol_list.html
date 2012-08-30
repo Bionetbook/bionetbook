@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Protocol List{% endblock %}
+
+{% block page_title %}Protocol List 
+    <small>( <a href="{% url protocol_create %}">new</a> )</small>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <ul>
+            {% for object in object_list %}
+                <li><a href="">{{ object }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+  </div>
+{% endblock %}
+

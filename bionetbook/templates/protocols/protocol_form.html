@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Protocol{% endblock %}
+
+{% block page_title %}Protocol{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span6">
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+      {{ form|crispy }}
+        <div class="actions">
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+    });
+</script>
+{% endblock extrajs %}
