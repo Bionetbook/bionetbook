@@ -61,6 +61,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'profiletools.middleware.LazyProfileMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -71,6 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.static",
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
+    'profiletools.context_processors.fetch_profile',
 ]
 
 ROOT_URLCONF = 'bionetbook.urls'
@@ -98,9 +100,10 @@ BASE_APPS = (
     'floppyforms',
     'braces',
     'registration',
+    'profiletools',
 )
 
-PROJECT_APPS = ()
+PROJECT_APPS = ('protocols',)
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
 
