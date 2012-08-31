@@ -1,12 +1,10 @@
-from verbs.baseforms import forms
+import floppyforms as forms
 
 
-class CookForm(forms.VerbForm):
+class VerbForm(forms.Form):
 
-    name = "cook"
-    slug = "cook"
-
-    duration_in_seconds = forms.IntegerField()
+    name = NotImplemented
+    slug = NotImplemented
 
     @classmethod
     def display_fields(cls):
@@ -18,3 +16,5 @@ class CookForm(forms.VerbForm):
             )
             fields.append(d)
         return fields
+
+forms.VerbForm = VerbForm
