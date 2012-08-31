@@ -1,9 +1,9 @@
 from verbs.baseforms import forms
 
 
-class CookForm(forms.VerbForm):
+class HarvestForm(forms.VerbForm):
 
-    name = "cook"
-    slug = "cook"
+    name = "harvest"
+    slug = "harvest"
 
     duration_in_seconds = forms.IntegerField()

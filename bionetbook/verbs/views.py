@@ -1,8 +1,8 @@
-from django.forms import Form
 from django.http import Http404
 from django.views.generic import TemplateView
 
 from verbs import forms as verb_forms
+from verbs.baseforms import forms
 
 
 class VerbDetailView(TemplateView):
@@ -35,7 +35,7 @@ class VerbListView(TemplateView):
         for attr_name in dir(verb_forms):
             form_candidate = getattr(verb_forms, attr_name, None)
             try:
-                if issubclass(form_candidate, Form):
+                if issubclass(form_candidate, forms.Form):
                     verb_list.append(form_candidate)
             except TypeError:
                 continue
