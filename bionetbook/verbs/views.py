@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from verbs import forms as verb_forms
 from verbs.baseforms import forms
-
+from verbs.utils import VERB_LIST
 
 class VerbDetailView(TemplateView):
 
@@ -31,14 +31,5 @@ class VerbListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(VerbListView, self).get_context_data(**kwargs)
-        verb_list = []
-        for attr_name in dir(verb_forms):
-            form_candidate = getattr(verb_forms, attr_name, None)
-            try:
-                if issubclass(form_candidate, forms.Form):
-                    verb_list.append(form_candidate)
-            except TypeError:
-                continue
-
-        context['verb_list'] = verb_list
+        context['verb_list'] = VERB_LIST
         return context

@@ -12,14 +12,14 @@ class Protocol(TimeStampedModel):
 
     parent = models.ForeignKey("self", blank=True, null=True, unique=True)
     name = models.CharField(_("Name"), max_length=255, unique=True)
-    slug = models.SlugField(_("Slug"), blank=True, null=True)
-    duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
+    owner = models.ForeignKey(User)
     published = models.BooleanField(_("Published"))
     public = models.BooleanField(_("Public"))
-    owner = models.ForeignKey(User)
+    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+    duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     company = models.CharField(_("Company"), max_length=100, blank=True, null=True)
     version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
-    raw = models.TextField()
+    raw = models.TextField(blank=True, null=True)
 
     # reference fields
     url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
@@ -36,10 +36,10 @@ class Protocol(TimeStampedModel):
             slug = slugify(self.name)
             try:
                 Protocol.objects.get(slug=slug)
-                self.slug = "{0}-v{1}".format(slug, self.pk)                
+                self.slug = "{0}-{1}".format(slug, self.pk)
             except ObjectDoesNotExist:
                 self.slug = slug
             self.save()
-            
+
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'slug': self.slug})
