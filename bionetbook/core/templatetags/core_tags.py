@@ -11,3 +11,16 @@ def bootstrapcheck(value):
     else:
         text = '<span class="badge badge-important"><i class="icon-ok icon-white"></i></span>'
     return mark_safe(text)
+
+
+@register.inclusion_tag('core/model_instance_data_table.html')
+def object_data_table(model_instance):
+    
+    fields = []
+    for field_name in model_instance._meta.get_all_field_names():
+        field = dict(
+            key=field_name,
+            value=getattr(model_instance, field_name, None)
+        )
+        fields.append(field)
+    return {'fields': fields}

@@ -1,5 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
+from braces.views import LoginRequiredMixin
+
 from protocols.forms import ProtocolForm
 from protocols.models import Protocol
 
@@ -7,6 +9,12 @@ from protocols.models import Protocol
 class ProtocolDetailView(DetailView):
 
     model = Protocol
+    
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolDetailView, self).get_context_data(**kwargs)
+
+        return context
+
 
 
 class ProtocolListView(ListView):
@@ -14,7 +22,7 @@ class ProtocolListView(ListView):
     model = Protocol
 
 
-class ProtocolCreateView(CreateView):
+class ProtocolCreateView(LoginRequiredMixin, CreateView):
 
     model = Protocol
     form_class = ProtocolForm
@@ -27,7 +35,7 @@ class ProtocolCreateView(CreateView):
         
         return self.object.get_absolute_url()
         
-class ProtocolUpdateView(UpdateView):
+class ProtocolUpdateView(LoginRequiredMixin, UpdateView):
     
     model = Protocol
     form_class = ProtocolForm
