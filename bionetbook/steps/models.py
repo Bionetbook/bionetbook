@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
@@ -29,3 +30,7 @@ class Step(TimeStampedModel):
             except ObjectDoesNotExist:
                 self.slug = slug
             self.save()
+
+    def get_absolute_url(self):
+        return reverse('step_detail',
+            kwargs={'protocol_slug': self.protocol.slug, 'slug': self.slug})

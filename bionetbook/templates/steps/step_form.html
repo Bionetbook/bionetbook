@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
+{% block title %}Step Form{% endblock %}
 
-{% block page_title %}Protocol{% if object %}: <a href="{{ object.get_absolute_url }}">{{ object }}</a>{% endif %}{% endblock %}
+{% block page_title %}
+{% if object %}
+  Editing Step: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+{% else %}
+  Adding Step to Protocol: <a href="{{ protocol.get_absolute_url }}">{{ protocol }}
+{% endif %}
+
+{% endblock %}
 
 {% block content %}
+
 <div class="row">
 
     <!-- main form div -->
@@ -22,10 +30,10 @@
     <!-- secondary form div -->
     {% if object %}
     <div class="span6">
-      <h2>Steps</h2>
-      <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>
+      <h2>Actions</h2>
+      <p><a class="btn btn-success" href=""><i class="icon-plus icon-white"></i></a> <a href="">Add Action</a></p>
 
-      {% if steps|length %}
+      {% if actions|length %}
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
