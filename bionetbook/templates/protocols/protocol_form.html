@@ -9,7 +9,7 @@
 <div class="row">
 
     <!-- main form div -->
-    <div class="span6">
+    <div class="span5">
       {% if object %}<h2>Detail</h2>{% endif %}
       <form action="." method="post" class="form-stacked well">{% csrf_token %}
       {{ form|crispy }}
@@ -21,7 +21,7 @@
 
     <!-- secondary form div -->
     {% if object %}
-    <div class="span6">
+    <div class="span7">
       <h2>Steps</h2>
       <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>
 
@@ -29,23 +29,23 @@
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
-                  <th></th>
+                  <th nowrap></th>
                   <th>Step</th>
-                  <th>Actions</th>
+                  <th>A</th>
                   <th>Last Modified</th>
               </tr>
             </thead>
             <tbody>
-                {% for item in object_list %}
+                {% for item in steps %}
                 <tr>
-                    <td>
+                    <td nowrap>
                         <div class="btn-group" id="item-{{ item.pk }}">
                             <button class="btn btn-warning {% if forloop.first %}disabled{% else %}up{% endif %}"><i class="icon-arrow-up icon-white"></i></button>
                             <button class="btn btn-warning {% if forloop.last %}disabled{% else %}down{% endif %}"><i class="icon-arrow-down icon-white"></i></button>
                             <button class="btn btn-danger delete"><i class="icon-minus icon-white"></i></button>                            
                         </div>
                     </td>
-                    <td>{{ item.name }}</td>
+                    <td><a href="{% url step_detail object.slug item.slug %}">{{ item.name|truncatewords:"3" }}</a></td>
                     <td>{{ item.action_set.all|length }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>

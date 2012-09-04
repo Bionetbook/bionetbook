@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Step List for Protocol {{ protocol.name }}{% endblock %}
+
+{% block page_title %}Step List for Protocol <a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a>{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Actions</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>    
+                    <td>
+                        <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
+                    </td>
+                    <td>
+                        <a href="{% url protocol_detail object.slug %}">{{ object }}</a>
+                    </td>
+                    <td>{{ object.actions_set.count }}</td>
+                    <td>{{ object.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+  </div>
+{% endblock %}
+
