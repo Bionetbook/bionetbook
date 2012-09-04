@@ -14,15 +14,22 @@
                 <tr>
                     <th>Action</th>
                     <th>Title</th>
+                    <th>Steps</th>
+                    <th>Actions</th>
                     <th>Last Modified</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 <tr>    
-                    <td><a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a></td>
-                    <td><a href="{% url protocol_detail object.slug %}">{{ object }}</a>
-                        </td>
+                    <td>
+                        <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
+                    </td>
+                    <td>
+                        <a href="{% url protocol_detail object.slug %}">{{ object }}</a>
+                    </td>
+                    <td>{{ object.step_set.count }}</td>
+                    <td>{{ object.actions.count }}</td>
                     <td>{{ object.modified }}</td>
                 </tr>
                 {% endfor %}

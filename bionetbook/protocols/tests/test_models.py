@@ -5,6 +5,7 @@ from actions.models import Action
 from protocols.models import Protocol
 from steps.models import Step
 
+
 class ProtocolModelTests(TestCase):
 
     def setUp(self):
@@ -30,5 +31,12 @@ class ProtocolModelTests(TestCase):
             owner=self.user,
             raw="what?"
             )
-        #step = Step.action.create
-        
+        step1 = Step.objects.create(protocol=protocol)
+        Action.objects.create(step=step1)
+        Action.objects.create(step=step1)
+        Action.objects.create(step=step1)
+        step2 = Step.objects.create(protocol=protocol)
+        Action.objects.create(step=step2)
+        Action.objects.create(step=step2)
+        Action.objects.create(step=step2)
+        self.assertEquals(protocol.actions.count(), 6)

@@ -43,3 +43,8 @@ class Protocol(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'slug': self.slug})
+
+    @property
+    def actions(self):
+        from actions.models import Action
+        return Action.objects.filter(step__protocol=self)

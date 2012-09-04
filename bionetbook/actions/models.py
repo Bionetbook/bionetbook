@@ -15,7 +15,7 @@ class Action(TimeStampedModel):
 
     step = models.ForeignKey(Step)
     name = models.CharField(_("Name"), max_length=255)
-    slug = models.SlugFight(_("Slug"), blank=True, null=True, max_length=255)
+    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
     verb = models.CharField(max_length=50, choices=VERB_CHOICES)
