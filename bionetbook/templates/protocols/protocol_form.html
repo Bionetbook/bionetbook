@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Protocol{% endblock %}
+{% block title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
 
-{% block page_title %}Protocol{% endblock %}
+{% block page_title %}Protocol{% if object %}: <a href="{{ object.get_absolute_url }}">{{ object }}</a>{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row">

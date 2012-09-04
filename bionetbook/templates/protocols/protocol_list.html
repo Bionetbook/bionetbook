@@ -9,11 +9,25 @@
 {% block content %}
 <div class="row">
     <div class="span12">
-        <ul>
-            {% for object in object_list %}
-                <li><a href="">{{ object }}</a></li>
-            {% endfor %}
-        </ul>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>    
+                    <td><a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a></td>
+                    <td><a href="{% url protocol_detail object.slug %}">{{ object }}</a>
+                        </td>
+                    <td>{{ object.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
     </div>
   </div>

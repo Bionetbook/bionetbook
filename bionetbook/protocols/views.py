@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from protocols.forms import ProtocolForm
 from protocols.models import Protocol
@@ -26,3 +26,8 @@ class ProtocolCreateView(CreateView):
     def get_success_url(self):
         
         return self.object.get_absolute_url()
+        
+class ProtocolUpdateView(UpdateView):
+    
+    model = Protocol
+    form_class = ProtocolForm
