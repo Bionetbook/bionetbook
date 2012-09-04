@@ -22,4 +22,3 @@ class ProtocolModelTests(TestCase):
             raw="what?"
             )
         self.assertEquals(protocol.raw, "what?")
-        print protocol.slug

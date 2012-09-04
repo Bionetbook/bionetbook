@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -8,8 +10,8 @@ from django_extensions.db.models import TimeStampedModel
 
 class Protocol(TimeStampedModel):
 
-    parent = models.ForeignKey("self", blank=True, null=True)
-    name = models.CharField(_("Name"), max_length=255)
+    parent = models.ForeignKey("self", blank=True, null=True, unique=True)
+    name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     published = models.BooleanField(_("Published"))
@@ -32,12 +34,12 @@ class Protocol(TimeStampedModel):
         super(Protocol, self).save(*args, **kwargs)
         if not self.slug:
             slug = slugify(self.name)
-            pv = self.protocolversion_set.create()
-            self.slug = "{0}-v{1}".format(slug, pv.pk)
+            try:
+                Protocol.objects.get(slug=slug)
+                self.slug = "{0}-v{1}".format(slug, self.pk)                
+            except ObjectDoesNotExist:
+                self.slug = slug
             self.save()
-
-
-class ProtocolVersion(TimeStampedModel):
-
-    protocol = models.ForeignKey(Protocol)
-    version_id = models.IntegerField(null=True, blank=True)
+            
+    def get_absolute_url(self):
+        return reverse("protocol_detail", kwargs={'slug': self.slug})

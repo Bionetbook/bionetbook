@@ -7,4 +7,4 @@ class ProtocolForm(forms.ModelForm):
 
     class Meta:
         model = Protocol
-        exclude = ('parent', 'owner', )
+        exclude = ('parent', 'owner', 'slug')
