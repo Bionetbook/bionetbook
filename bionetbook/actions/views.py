@@ -79,7 +79,6 @@ class ActionUpdateView(LoginRequiredMixin, ActionBaseView, VerbBaseView, UpdateV
     def form_valid(self, form):
         verb_form_base = self.get_verb_form(self.request.POST.get("verb_slug", None))
         verb_form = verb_form_base(self.request.POST)
-        print verb_form.is_valid()
         if verb_form.is_valid():
             form.instance.verb_attributes = verb_form.cleaned_data
         return super(ActionUpdateView, self).form_valid(form)

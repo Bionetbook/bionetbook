@@ -19,6 +19,7 @@
 <!-- secondary form div -->
     <div class="span6">
       <h2><a href="{% url step_list object.slug %}">Steps</a></h2>
+      <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>      
 
       {% if steps|length %}
         <table class="table table-striped table-condensed">
