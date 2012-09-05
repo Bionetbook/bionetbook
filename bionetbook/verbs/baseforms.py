@@ -11,7 +11,8 @@ class VerbForm(forms.Form):
         fields = []
         for k, v in cls.base_fields.items():
             d = dict(
-                field_name=k.replace("_", " ").capitalize(),
+                field_name=k.replace("_", " "),
+                field_slug=k,
                 data=v
             )
             fields.append(d)

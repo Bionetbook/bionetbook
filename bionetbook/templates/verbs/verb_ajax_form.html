@@ -1,0 +1,4 @@
+{% load crispy_forms_tags %}
+<h3>{{ form.name }}</h3>
+<input type="hidden" name="verb_slug" value="{{ form.slug }}" />
+{{ form|crispy }}

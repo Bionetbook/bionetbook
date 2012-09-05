@@ -5,6 +5,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from django_extensions.db.models import TimeStampedModel
+from jsonfield import JSONField
 
 from protocols.models import Protocol
 from steps.models import Step
@@ -19,9 +20,9 @@ class Action(TimeStampedModel):
     name = models.CharField(_("Name"), max_length=255)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
-    raw = models.TextField(blank=True, null=True)
     verb = models.CharField(max_length=50, choices=VERB_CHOICES)
-    verb_attributes = models.TextField(blank=True, null=True)
+    verb_attributes = JSONField(blank=True, null=True)
+    raw = models.TextField(blank=True, null=True)
 
     @property
     def protocol(self):

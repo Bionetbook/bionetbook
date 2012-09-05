@@ -1,17 +1,18 @@
 from django.http import Http404
 from django.views.generic import TemplateView
 
+from braces.views import LoginRequiredMixin
+
 from verbs import forms as verb_forms
-from verbs.baseforms import forms
 from verbs.utils import VERB_LIST
 
-class VerbDetailView(TemplateView):
 
-    template_name = "verbs/verb_detail.html"
+class VerbBaseView(object):
 
-    def get_context_data(self, **kwargs):
-        context = super(VerbDetailView, self).get_context_data(**kwargs)
-        slug = self.kwargs.get('slug')
+    def get_verb_form(self, slug=None):
+
+        if slug is None:
+            slug = self.kwargs.get('slug')
 
         # convert the slug into a form name
         form_name = "".join([x.title() for x in slug.split('-')]) + "Form"
@@ -21,7 +22,17 @@ class VerbDetailView(TemplateView):
         if form is None:
             raise  Http404
 
-        context["verb"] = form
+        return form
+
+
+class VerbDetailView(VerbBaseView, TemplateView):
+
+    template_name = "verbs/verb_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(VerbDetailView, self).get_context_data(**kwargs)
+
+        context["verb"] = self.get_verb_form()
         return context
 
 
@@ -33,3 +44,16 @@ class VerbListView(TemplateView):
         context = super(VerbListView, self).get_context_data(**kwargs)
         context['verb_list'] = VERB_LIST
         return context
+
+
+class VerbAjaxFormView(LoginRequiredMixin, VerbBaseView, TemplateView):
+
+    template_name = "verbs/verb_ajax_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(VerbAjaxFormView, self).get_context_data(**kwargs)
+
+        context["form"] = self.get_verb_form()()
+        return context
+
+

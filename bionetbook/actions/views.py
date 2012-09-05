@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
 
 from braces.views import LoginRequiredMixin
 
@@ -8,6 +8,7 @@ from actions.forms import ActionForm
 from actions.models import Action
 from protocols.models import Protocol
 from steps.models import Step
+from verbs.views import VerbBaseView
 
 
 class ActionBaseView(object):
@@ -67,16 +68,27 @@ class ActionCreateView(LoginRequiredMixin, ActionBaseView, CreateView):
         return super(ActionCreateView, self).form_valid(form)
 
     def get_success_url(self):
-
         return self.object.get_absolute_url()
 
 
-class ActionUpdateView(LoginRequiredMixin, ActionBaseView, UpdateView):
+class ActionUpdateView(LoginRequiredMixin, ActionBaseView, VerbBaseView, UpdateView):
 
     model = Action
     form_class = ActionForm
 
+    def form_valid(self, form):
+        verb_form_base = self.get_verb_form(self.request.POST.get("verb_slug", None))
+        verb_form = verb_form_base(self.request.POST)
+        if verb_form.is_valid():
+            form.instance.verb_attributes = verb_form.cleaned_data
+        return super(ActionUpdateView, self).form_valid(form)
+
+
+class ActionVerbAjaxView(LoginRequiredMixin, VerbBaseView, View):
+
     def get_context_data(self, **kwargs):
-        context = super(ActionUpdateView, self).get_context_data(**kwargs)
+        context = super(ActionVerbAjaxView, self).get_context_data(**kwargs)
+        action = get_object_or_404(Action, pk=self.kwargs.get("pk", None))
+        verb = self.get_verb_form()()
 
         return context
