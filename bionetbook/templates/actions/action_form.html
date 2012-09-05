@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Step Form{% endblock %}
+{% block title %}Action Form{% endblock %}
 
 {% block page_title %}
 {% if object %}
-  Editing Step: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+  Editing Action: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
 {% else %}
-  Adding Step to Protocol: <a href="{{ protocol.get_absolute_url }}">{{ protocol }}
+  Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}
 {% endif %}
 
 {% endblock %}

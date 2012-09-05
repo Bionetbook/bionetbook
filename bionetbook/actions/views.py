@@ -1,1 +1,82 @@
-# Create your views here.
+from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+
+from braces.views import LoginRequiredMixin
+
+from actions.forms import ActionForm
+from actions.models import Action
+from protocols.models import Protocol
+from steps.models import Step
+
+
+class ActionBaseView(object):
+
+    def get_protocol(self):
+        return get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+
+    def get_step(self):
+        return get_object_or_404(Step, slug=self.kwargs.get('step_slug', None))
+
+    def get_breadcrumbs(self):
+        protocol = getattr(self, "protocol", self.get_protocol())
+        step = getattr(self, "step", self.get_step())
+        return [
+                                (reverse("protocol_list"), "protocols"),
+                                (protocol.get_absolute_url(), protocol),
+                                (reverse("step_list", kwargs={'protocol_slug': protocol.slug}), "steps"),
+                                (reverse("step_detail", kwargs=dict(protocol_slug=protocol.slug, slug=step.slug)), step.name),
+                                (reverse("action_list", kwargs=dict(protocol_slug=protocol.slug, step_slug=step.slug)), "actions"),
+                                ]
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionBaseView, self).get_context_data(**kwargs)
+        self.protocol = self.get_protocol()
+        self.step = self.get_step()
+
+        context['protocol'] = self.protocol
+        context['step'] = self.step
+        context['breadcrumbs'] = self.get_breadcrumbs()
+
+        return context
+
+
+class ActionDetailView(ActionBaseView, DetailView):
+
+    model = Action
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionDetailView, self).get_context_data(**kwargs)
+        context['breadcrumbs'].append((self.object.get_absolute_url(), self.object.name), )
+
+        return context
+
+
+class ActionListView(ActionBaseView, ListView):
+
+    model = Action
+
+
+class ActionCreateView(LoginRequiredMixin, ActionBaseView, CreateView):
+
+    model = Action
+    form_class = ActionForm
+
+    def form_valid(self, form):
+        form.instance.step = self.get_step()
+        return super(ActionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+
+        return self.object.get_absolute_url()
+
+
+class ActionUpdateView(LoginRequiredMixin, ActionBaseView, UpdateView):
+
+    model = Action
+    form_class = ActionForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionUpdateView, self).get_context_data(**kwargs)
+
+        return context

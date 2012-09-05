@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Action: {{ object.name }}{% endblock %}
+
+{% block page_title %}
+<a href="{% url step_list protocol.slug %}">Action</a>: {{ object.name }}
+<small><a href="{% url action_update protocol.slug step.slug object.slug  %}"><i class="icon-edit"></i></a></small>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">
+        {% object_data_table object %}
+    </div>
+  </div>
+{% endblock %}
+

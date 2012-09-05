@@ -12,7 +12,7 @@
                 <tr>
                     <th></th>
                     <th>Title</th>
-                    <th>Actions</th>
+                    <th>Verb</th>
                     <th>Last Modified</th>
                 </tr>
             </thead>
@@ -20,12 +20,12 @@
                 {% for object in object_list %}
                 <tr>    
                     <td>
-                        <a href="{% url step_update protocol.slug object.slug %}"><i class="icon-edit"></i></a>
+                        <a href="{% url action_update protocol.slug step.slug object.slug %}"><i class="icon-edit"></i></a>
                     </td>
                     <td>
-                        <a href="{% url step_detail protocol.slug object.slug %}">{{ object }}</a>
+                        <a href="{% url action_detail protocol.slug step.slug object.slug %}">{{ object }}</a>
                     </td>
-                    <td><a href="{% url action_list protocol.slug object.slug %}">{{ object.action_set.count }}</a></td>
+                    <td>{{ object.verb }}</td>
                     <td>{{ object.modified }}</td>
                 </tr>
                 {% endfor %}

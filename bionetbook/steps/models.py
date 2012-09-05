@@ -23,6 +23,7 @@ class Step(TimeStampedModel):
     def save(self, *args, **kwargs):
         super(Step, self).save(*args, **kwargs)
         if not self.slug:
+            # TODO - make unique within this Protocol
             slug = slugify(self.name)
             try:
                 Step.objects.get(slug=slug)
