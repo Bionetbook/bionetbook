@@ -3,7 +3,7 @@
 
 {% block title %}Profile: {{ object }}{% endblock %}
 
-{% block page_title %}<a href="">Profile</a>: {{ object }}
+{% block page_title %}<a href="{% url profile_list %}">Profile</a>: {{ object }}
 <small><a href="{% url profile_update %}"><i class="icon-edit"></i></a></small>
 {% endblock %}
 
