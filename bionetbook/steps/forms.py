@@ -7,4 +7,4 @@ class StepForm(forms.ModelForm):
 
     class Meta:
         model = Step
-        exclude = ('protocol', 'slug',)
+        exclude = ('protocol', 'slug', 'duration_in_seconds', )

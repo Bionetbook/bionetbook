@@ -32,6 +32,29 @@ class Action(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        # update duration in seconds on the parent protocol
+        if self.verb_attributes:
+            new_duration_in_seconds = self.verb_attributes.get('duration_in_seconds', 0)
+            if self.duration_in_seconds != new_duration_in_seconds:
+                protocol = self.protocol
+                duration_in_seconds = 0
+                # handle protocol
+                for action in protocol.actions:
+                    if action == self:
+                        duration_in_seconds += new_duration_in_seconds
+                    else:
+                        duration_in_seconds += getattr(action, "duration_in_seconds", 0)
+                        self.duration_in_seconds = new_duration_in_seconds
+                # handle parent protocol
+                protocol.duration_in_seconds = duration_in_seconds
+                protocol.save()
+
+            # handle parent step duration in seconds
+            self.step.duration_in_seconds = 0
+            for action in self.step.action_set.all():
+                self.step.duration_in_seconds += getattr(action, "duration_in_seconds", 0)
+            self.step.save()
+
         super(Action, self).save(*args, **kwargs)
         if not self.slug:
             # TODO - make unique within this Step
