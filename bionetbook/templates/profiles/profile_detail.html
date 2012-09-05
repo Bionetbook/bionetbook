@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Profile: {{ object }}{% endblock %}
+
+{% block page_title %}<a href="">Profile</a>: {{ object }}
+<small><a href="{% url profile_update %}"><i class="icon-edit"></i></a></small>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">
+        <h2>Detail</h2>
+        {% object_data_table object %}
+    </div>
+  
+  </div>
+{% endblock %}
+

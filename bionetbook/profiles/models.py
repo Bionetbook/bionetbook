@@ -20,8 +20,11 @@ class Profile(TimeStampedModel):
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
 
     def __unicode__(self):
+        if self.first_name or self.last_name:
+            return "{0} {1}".format(self.first_name, self.last_name)
         user = self.user
-        return "{0} {1}".format(user.first_name, user.last_name)
+
+        return user.username
 
     def get_absolute_url(self):
 

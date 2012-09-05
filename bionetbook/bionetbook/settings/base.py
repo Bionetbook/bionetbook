@@ -62,6 +62,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'profiletools.middleware.LazyProfileMiddleware',
+    'profiles.middleware.ConfirmProfile',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -158,7 +159,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap"
 THUMBNAIL_DEBUG = True
 
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/dashboard/"
 LOGIN_URL = "/login/"
 
 AUTH_PROFILE_MODULE = "profiles.Profile"
