@@ -1,7 +1,6 @@
 from django.http import Http404
 from django.views.generic import TemplateView
 
-from braces.views import LoginRequiredMixin
 
 from verbs import forms as verb_forms
 from verbs.utils import VERB_LIST
