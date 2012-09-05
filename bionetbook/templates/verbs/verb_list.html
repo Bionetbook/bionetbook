@@ -7,14 +7,34 @@
 
 {% block content %}
 <div class="row">
-    <div class="span12">
+    <div class="span3">
         <ul>
-            {% for verb in verb_list %}
+            {% for verb in verb_list1 %}
                 <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
             {% endfor %}
         </ul>
-
     </div>
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list2 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>    
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list3 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>    
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list4 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>            
   </div>
 {% endblock %}
 

@@ -42,5 +42,9 @@ class VerbListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(VerbListView, self).get_context_data(**kwargs)
-        context['verb_list'] = VERB_LIST
+        quarter = len(VERB_LIST) / 4
+        context['verb_list1'] = VERB_LIST[:quarter]
+        context['verb_list2'] = VERB_LIST[quarter:quarter * 2]
+        context['verb_list3'] = VERB_LIST[quarter * 2:quarter * 3]
+        context['verb_list4'] = VERB_LIST[quarter * 3:]
         return context
