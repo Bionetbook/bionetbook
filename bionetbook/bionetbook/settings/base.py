@@ -107,7 +107,8 @@ PROJECT_APPS = (
         'protocols',
         'verbs',
         'steps',
-        'actions'
+        'actions',
+        'profiles',
     )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
