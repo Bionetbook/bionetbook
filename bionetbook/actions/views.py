@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
@@ -79,16 +79,23 @@ class ActionUpdateView(LoginRequiredMixin, ActionBaseView, VerbBaseView, UpdateV
     def form_valid(self, form):
         verb_form_base = self.get_verb_form(self.request.POST.get("verb_slug", None))
         verb_form = verb_form_base(self.request.POST)
+        print verb_form.is_valid()
         if verb_form.is_valid():
             form.instance.verb_attributes = verb_form.cleaned_data
         return super(ActionUpdateView, self).form_valid(form)
 
 
-class ActionVerbAjaxView(LoginRequiredMixin, VerbBaseView, View):
+class ActionVerbAjaxView(LoginRequiredMixin, VerbBaseView, TemplateView):
+
+    template_name = "actions/action_verb_ajax.html"
 
     def get_context_data(self, **kwargs):
         context = super(ActionVerbAjaxView, self).get_context_data(**kwargs)
-        action = get_object_or_404(Action, pk=self.kwargs.get("pk", None))
-        verb = self.get_verb_form()()
+        verb_form_base = self.get_verb_form(slug=self.kwargs.get("verb_slug", None))
+        try:
+            action = Action.objects.get(pk=self.kwargs.get("action_pk", None))
+            context['form'] = verb_form_base(initial=action.verb_attributes)
+        except Action.DoesNotExist:
+            context['form'] = verb_form_base()
 
         return context

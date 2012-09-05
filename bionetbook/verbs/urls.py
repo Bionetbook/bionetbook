@@ -10,7 +10,4 @@ urlpatterns = patterns("",
     url(regex=r'^$',
         view=views.VerbListView.as_view(),
         name='verb_list'),
-    url(regex=r'^ajax/(?P<slug>[-\w]+)/$',
-        view=views.VerbAjaxFormView.as_view(),
-        name='verb_ajax_form'),
 )

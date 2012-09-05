@@ -44,16 +44,3 @@ class VerbListView(TemplateView):
         context = super(VerbListView, self).get_context_data(**kwargs)
         context['verb_list'] = VERB_LIST
         return context
-
-
-class VerbAjaxFormView(LoginRequiredMixin, VerbBaseView, TemplateView):
-
-    template_name = "verbs/verb_ajax_form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(VerbAjaxFormView, self).get_context_data(**kwargs)
-
-        context["form"] = self.get_verb_form()()
-        return context
-
-

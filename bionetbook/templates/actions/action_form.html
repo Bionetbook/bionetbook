@@ -23,7 +23,7 @@
           <div class="well">{% csrf_token %}
           {{ form|crispy }}
             <div class="actions">
-              <input type="submit" class="btn btn-primary" value="Submit">
+              <input tabindex="50" type="submit" class="btn btn-primary" value="Submit">
             </div>
           </div>
       </div>
@@ -45,14 +45,18 @@
         $("#id_name").focus();
 
         {% if object %}
-            var url = '/verbs/ajax/{{ object.verb }}/';
+            var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/{{ object.verb }}/';
             $.get(url, function(data) {
                   $('.verb').html(data).show();
             });             
         {% endif %}
 
         $("#id_verb").change(function(){
-            var url = '/verbs/ajax/' + this.value + '/';
+            {% if object %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/' + this.value + '/';
+            {% else %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/0/' + this.value + '/';
+            {% endif %}
             $.get(url, function(data) {
                   $('.verb').html(data).show("slow");
             });             
