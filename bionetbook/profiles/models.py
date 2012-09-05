@@ -10,6 +10,8 @@ from django_extensions.db.models import TimeStampedModel
 class Profile(TimeStampedModel):
 
     user = models.OneToOneField(User)
+    first_name = models.CharField(_("First Name"), max_length="30", null=True, blank=True)
+    last_name = models.CharField(_("Last Name"), max_length="30", null=True, blank=True)
     mobile = models.CharField(_("Mobile"), max_length="15", null=True, blank=True)
     address_1 = models.CharField(_("Address 1"), max_length=100, null=True, blank=True)
     address_2 = models.CharField(_("Address 2"), max_length=100, null=True, blank=True)

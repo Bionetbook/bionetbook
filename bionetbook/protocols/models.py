@@ -10,6 +10,13 @@ from django_extensions.db.models import TimeStampedModel
 
 class Protocol(TimeStampedModel):
 
+    STATUS_DRAFT = "draft"
+    STATUS_PUBLISHED = "published"
+    STATUS = (
+        (STATUS_DRAFT, _(STATUS_DRAFT)),
+        (STATUS_PUBLISHED, _(STATUS_PUBLISHED)),
+    )
+
     parent = models.ForeignKey("self", blank=True, null=True, unique=True)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     owner = models.ForeignKey(User)
@@ -18,6 +25,7 @@ class Protocol(TimeStampedModel):
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     company = models.CharField(_("Company"), max_length=100, blank=True, null=True)
+    status = models.CharField(_("Status"), max_length=30, blank=True, null=True)
     version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
 
