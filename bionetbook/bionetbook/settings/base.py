@@ -101,6 +101,7 @@ BASE_APPS = (
     'braces',
     'registration',
     'profiletools',
+    'django_wysiwyg',
 )
 
 PROJECT_APPS = (
@@ -163,3 +164,6 @@ LOGIN_REDIRECT_URL = "/dashboard/"
 LOGIN_URL = "/login/"
 
 AUTH_PROFILE_MODULE = "profiles.Profile"
+
+DJANGO_WYSIWYG_FLAVOR = 'ckeditor'
+DJANGO_WYSIWYG_MEDIA_URL = "%sckeditor/" % STATIC_URL

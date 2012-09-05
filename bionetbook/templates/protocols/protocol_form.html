@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load wysiwyg %}
 
 {% block title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
 
@@ -9,7 +10,7 @@
 <div class="row">
 
     <!-- main form div -->
-    <div class="span5">
+    <div class="span6">
       {% if object %}<h2>Detail</h2>{% endif %}
       <form action="." method="post" class="form-stacked well">{% csrf_token %}
       {{ form|crispy }}
@@ -21,7 +22,7 @@
 
     <!-- secondary form div -->
     {% if object %}
-    <div class="span7">
+    <div class="span6">
       <h2>Steps</h2>
       <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>
 
@@ -65,4 +66,6 @@
         $("#id_name").focus();
     });
 </script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
 {% endblock extrajs %}
