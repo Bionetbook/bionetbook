@@ -1,0 +1,1 @@
+web: newrelic-admin run-program python lac/manage.py run_gunicorn --settings=lac.settings.heroku -b "0.0.0.0:$PORT" -w 3
