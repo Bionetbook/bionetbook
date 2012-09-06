@@ -1,16 +1,20 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from braces.views import LoginRequiredMixin
+from core.views import AuthorizedForProtocolMixin
 
 from protocols.forms import ProtocolForm
 from protocols.models import Protocol
 
 
-class ProtocolDetailView(DetailView):
+class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
     model = Protocol
 
+    slug_url_kwarg = "protocol_slug"
+
     def get_context_data(self, **kwargs):
+        self.get_protocol()
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
         context['steps'] = self.object.step_set.filter()
 
@@ -40,6 +44,7 @@ class ProtocolUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
+    slug_url_kwarg = "protocol_slug"
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)

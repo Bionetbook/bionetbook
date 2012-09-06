@@ -6,15 +6,12 @@ from braces.views import LoginRequiredMixin
 
 from actions.forms import ActionForm
 from actions.models import Action
-from protocols.models import Protocol
+from core.views import AuthorizedForProtocolMixin
 from steps.models import Step
 from verbs.views import VerbBaseView
 
 
-class ActionBaseView(object):
-
-    def get_protocol(self):
-        return get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+class ActionBaseView(AuthorizedForProtocolMixin):
 
     def get_step(self):
         return get_object_or_404(Step, slug=self.kwargs.get('step_slug', None))

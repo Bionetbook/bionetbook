@@ -20,12 +20,10 @@ class Protocol(TimeStampedModel):
     parent = models.ForeignKey("self", blank=True, null=True, unique=True)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     owner = models.ForeignKey(User)
-    published = models.BooleanField(_("Published"))
-    public = models.BooleanField(_("Public"))
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     company = models.CharField(_("Company"), max_length=100, blank=True, null=True)
-    status = models.CharField(_("Status"), max_length=30, blank=True, null=True)
+    status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
     version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
 
@@ -50,7 +48,7 @@ class Protocol(TimeStampedModel):
             self.save()
 
     def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'slug': self.slug})
+        return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
 
     @property
     def actions(self):

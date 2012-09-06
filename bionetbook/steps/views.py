@@ -1,18 +1,14 @@
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from braces.views import LoginRequiredMixin
 
-from protocols.models import Protocol
+from core.views import AuthorizedForProtocolMixin
 from steps.forms import StepForm
 from steps.models import Step
 
 
-class StepBaseView(object):
-
-    def get_protocol(self):
-        return get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+class StepBaseView(AuthorizedForProtocolMixin):
 
     def get_breadcrumbs(self):
         protocol = getattr(self, "protocol", self.get_protocol())
