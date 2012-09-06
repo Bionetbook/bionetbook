@@ -7,7 +7,9 @@
 {% block content %}
 <div class="row">
     <div class="span12">
-        <p><a class="btn btn-success" href="{% url action_create protocol.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_create protocol.slug step.slug %}">Add Action</a></p>        
+        {% if protocol_edit_authorization %}         
+            <p><a class="btn btn-success" href="{% url action_create protocol.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_create protocol.slug step.slug %}">Add Action</a></p>        
+        {% endif %}
         <table class="table">
             <thead>
                 <tr>
@@ -21,7 +23,9 @@
                 {% for object in object_list %}
                 <tr>    
                     <td>
-                        <a href="{% url action_update protocol.slug step.slug object.slug %}"><i class="icon-edit"></i></a>
+                        {% if protocol_edit_authorization %} 
+                            <a href="{% url action_update protocol.slug step.slug object.slug %}"><i class="icon-edit"></i></a>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url action_detail protocol.slug step.slug object.slug %}">{{ object }}</a>

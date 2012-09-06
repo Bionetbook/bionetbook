@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from braces.views import LoginRequiredMixin
 
-from core.views import AuthorizedForProtocolMixin
+from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 from steps.forms import StepForm
 from steps.models import Step
 
@@ -42,7 +42,7 @@ class StepListView(StepBaseView, ListView):
     model = Step
 
 
-class StepCreateView(LoginRequiredMixin, StepBaseView, CreateView):
+class StepCreateView(LoginRequiredMixin, StepBaseView, AuthorizedforProtocolEditMixin, CreateView):
 
     model = Step
     form_class = StepForm
@@ -56,7 +56,7 @@ class StepCreateView(LoginRequiredMixin, StepBaseView, CreateView):
         return self.object.get_absolute_url()
 
 
-class StepUpdateView(LoginRequiredMixin, StepBaseView, UpdateView):
+class StepUpdateView(LoginRequiredMixin, StepBaseView, AuthorizedforProtocolEditMixin, UpdateView):
 
     model = Step
     form_class = StepForm

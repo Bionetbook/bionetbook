@@ -6,7 +6,7 @@ from braces.views import LoginRequiredMixin
 
 from actions.forms import ActionForm
 from actions.models import Action
-from core.views import AuthorizedForProtocolMixin
+from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 from steps.models import Step
 from verbs.views import VerbBaseView
 
@@ -52,7 +52,7 @@ class ActionListView(ActionBaseView, ListView):
     model = Action
 
 
-class ActionCreateView(LoginRequiredMixin, ActionBaseView, CreateView):
+class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocolEditMixin, CreateView):
 
     model = Action
     form_class = ActionForm
@@ -65,7 +65,7 @@ class ActionCreateView(LoginRequiredMixin, ActionBaseView, CreateView):
         return self.object.get_absolute_url()
 
 
-class ActionUpdateView(LoginRequiredMixin, ActionBaseView, VerbBaseView, UpdateView):
+class ActionUpdateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocolEditMixin, VerbBaseView, UpdateView):
 
     model = Action
     form_class = ActionForm

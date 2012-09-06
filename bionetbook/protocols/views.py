@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin
+from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
 from protocols.forms import ProtocolForm
 from protocols.models import Protocol
@@ -39,7 +39,7 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         return self.object.get_absolute_url()
 
 
-class ProtocolUpdateView(LoginRequiredMixin, UpdateView):
+class ProtocolUpdateView(LoginRequiredMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm

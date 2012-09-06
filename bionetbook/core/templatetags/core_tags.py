@@ -15,7 +15,7 @@ def bootstrapcheck(value):
 
 @register.inclusion_tag('core/model_instance_data_table.html')
 def object_data_table(model_instance):
-    
+
     fields = []
     for field_name in model_instance._meta.get_all_field_names():
         field = dict(

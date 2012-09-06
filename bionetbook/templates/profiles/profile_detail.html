@@ -4,7 +4,9 @@
 {% block title %}Profile: {{ object }}{% endblock %}
 
 {% block page_title %}<a href="{% url profile_list %}">Profile</a>: {{ object }}
-<small><a href="{% url profile_update %}"><i class="icon-edit"></i></a></small>
+{% if protocol_edit_authorization %} 
+    <small><a href="{% url profile_update %}"><i class="icon-edit"></i></a></small>
+{% endif %}
 {% endblock %}
 
 {% block content %}
