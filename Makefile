@@ -5,12 +5,12 @@ all: deploy
 deploy:
 	heroku pgbackups:capture --expire
 	git push heroku master
-	heroku run python lac/manage.py syncdb --noinput  --settings=lac.settings.heroku
-	heroku run python lac/manage.py migrate --settings=lac.settings.heroku
+	heroku run python lac/manage.py syncdb --noinput  --settings=bionetbook.settings.heroku
+	heroku run python lac/manage.py migrate --settings=bionetbook.settings.heroku
 
 style:
 	git push heroku master
-	heroku run python lac/manage.py collectstatic --noinput --settings=lac.settings.heroku
+	heroku run python lac/manage.py collectstatic --noinput --settings=bionetbook.settings.heroku
 
 restoredata:
 	heroku pgbackups:capture --expire
