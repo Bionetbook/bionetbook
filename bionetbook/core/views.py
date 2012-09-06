@@ -22,7 +22,18 @@ class AuthorizedForProtocolMixin(object):
         slug = self.kwargs.get('protocol_slug', None)
         if slug is None:
             raise Http404()
-        protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+
+        # Is there an object attached to self?
+        if hasattr(self, "object"):
+            # If so, and it's a Protocol, then use that
+            if isinstance(self.object, Protocol):
+                protocol = self.object
+            else:
+                # Otherwise find the protocol normally
+                protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+        else:
+            # Find the protocol normall
+            protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
 
         # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
@@ -37,3 +48,10 @@ class AuthorizedForProtocolMixin(object):
 
         # unpublished and not authenticated or part of the org that owns it.
         raise Http404()
+
+    def get_context_data(self, **kwargs):
+        self.protocol = self.get_protocol()
+        context = super(AuthorizedForProtocolMixin, self).get_context_data(**kwargs)
+        context['protocol'] = self.protocol
+        return context
+

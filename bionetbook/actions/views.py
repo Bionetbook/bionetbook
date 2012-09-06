@@ -17,22 +17,19 @@ class ActionBaseView(AuthorizedForProtocolMixin):
         return get_object_or_404(Step, slug=self.kwargs.get('step_slug', None))
 
     def get_breadcrumbs(self):
-        protocol = getattr(self, "protocol", self.get_protocol())
         step = getattr(self, "step", self.get_step())
         return [
                                 (reverse("protocol_list"), "protocols"),
-                                (protocol.get_absolute_url(), protocol),
-                                (reverse("step_list", kwargs={'protocol_slug': protocol.slug}), "steps"),
-                                (reverse("step_detail", kwargs=dict(protocol_slug=protocol.slug, slug=step.slug)), step.name),
-                                (reverse("action_list", kwargs=dict(protocol_slug=protocol.slug, step_slug=step.slug)), "actions"),
+                                (self.protocol.get_absolute_url(), self.protocol),
+                                (reverse("step_list", kwargs={'protocol_slug': self.protocol.slug}), "steps"),
+                                (reverse("step_detail", kwargs=dict(protocol_slug=self.protocol.slug, slug=step.slug)), step.name),
+                                (reverse("action_list", kwargs=dict(protocol_slug=self.protocol.slug, step_slug=step.slug)), "actions"),
                                 ]
 
     def get_context_data(self, **kwargs):
         context = super(ActionBaseView, self).get_context_data(**kwargs)
-        self.protocol = self.get_protocol()
         self.step = self.get_step()
 
-        context['protocol'] = self.protocol
         context['step'] = self.step
         context['breadcrumbs'] = self.get_breadcrumbs()
 

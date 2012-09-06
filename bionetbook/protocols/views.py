@@ -14,7 +14,6 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
     slug_url_kwarg = "protocol_slug"
 
     def get_context_data(self, **kwargs):
-        self.get_protocol()
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
         context['steps'] = self.object.step_set.filter()
 

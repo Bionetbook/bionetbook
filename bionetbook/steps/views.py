@@ -11,17 +11,14 @@ from steps.models import Step
 class StepBaseView(AuthorizedForProtocolMixin):
 
     def get_breadcrumbs(self):
-        protocol = getattr(self, "protocol", self.get_protocol())
         return [
                                 (reverse("protocol_list"), "protocols"),
-                                (protocol.get_absolute_url(), protocol),
-                                (reverse("step_list", kwargs={'protocol_slug': protocol.slug}), "steps"),
+                                (self.protocol.get_absolute_url(), self.protocol),
+                                (reverse("step_list", kwargs={'protocol_slug': self.protocol.slug}), "steps"),
                                 ]
 
     def get_context_data(self, **kwargs):
         context = super(StepBaseView, self).get_context_data(**kwargs)
-        self.protocol = self.get_protocol()
-
         context['protocol'] = self.protocol
         context['breadcrumbs'] = self.get_breadcrumbs()
 
@@ -51,7 +48,7 @@ class StepCreateView(LoginRequiredMixin, StepBaseView, CreateView):
     form_class = StepForm
 
     def form_valid(self, form):
-        form.instance.protocol = self.get_protocol()
+        form.instance.protocol = self.protocol
         return super(StepCreateView, self).form_valid(form)
 
     def get_success_url(self):
