@@ -9,6 +9,9 @@ class ConfirmProfile(object):
 
         my_profile = getattr(request, "my_profile", None)
 
+        if request.user.is_anonymous():
+            return response
+
         if my_profile == None:
             current_path = request.get_full_path()
 
