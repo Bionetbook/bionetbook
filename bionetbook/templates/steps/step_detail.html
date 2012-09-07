@@ -28,7 +28,8 @@
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
-                  <th>Step</th>
+                  <th>Action</th>
+                  <th>Duration</th>
                   <th>Verb</th>
                   <th>Last Modified</th>
               </tr>
@@ -37,6 +38,7 @@
                 {% for item in actions %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                    <td>{{ item.duration_in_seconds|default:"0" }}</td>
                     <td><a href="{% url verb_detail item.verb %}">{{ item.verb }}</a></td>
                     <td>{{ item.modified }}</td>
                 </tr>

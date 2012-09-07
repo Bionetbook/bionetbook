@@ -9,6 +9,9 @@ class ConfirmProfile(object):
 
         my_profile = getattr(request, "my_profile", None)
 
+        if not hasattr(request, "user"):
+            return response
+
         if request.user.is_anonymous():
             return response
 

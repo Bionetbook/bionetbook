@@ -30,6 +30,7 @@
             <thead>
               <tr>
                   <th>Step</th>
+                  <th>Duration</th>
                   <th>Actions</th>
                   <th>Last Modified</th>
               </tr>
@@ -38,6 +39,7 @@
                 {% for item in steps %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                    <td>{{ item.duration_in_seconds|default:"0" }}</td>
                     <td>{{ item.action_set.all|length }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>

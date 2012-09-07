@@ -15,6 +15,7 @@
                 <tr>
                     <th></th>
                     <th>Title</th>
+                    <th>Duration</th>
                     <th>Actions</th>
                     <th>Last Modified</th>
                 </tr>
@@ -30,6 +31,7 @@
                     <td>
                         <a href="{% url step_detail protocol.slug object.slug %}">{{ object }}</a>
                     </td>
+                    <td>{{ object.duration_in_seconds|default:"0" }}</td>                    
                     <td><a href="{% url action_list protocol.slug object.slug %}">{{ object.action_set.count }}</a></td>
                     <td>{{ object.modified }}</td>
                 </tr>

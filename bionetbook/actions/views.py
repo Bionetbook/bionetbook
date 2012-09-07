@@ -52,7 +52,7 @@ class ActionListView(ActionBaseView, ListView):
     model = Action
 
 
-class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocolEditMixin, CreateView):
+class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocolEditMixin, VerbBaseView, CreateView):
 
     model = Action
     form_class = ActionForm
@@ -60,6 +60,10 @@ class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocol
     def form_valid(self, form):
         self.protocol = self.get_protocol()
         form.instance.step = self.get_step()
+        verb_form_base = self.get_verb_form(self.request.POST.get("verb_slug", None))
+        verb_form = verb_form_base(self.request.POST)
+        if verb_form.is_valid():
+            form.instance.verb_attributes = verb_form.cleaned_data
         return super(ActionCreateView, self).form_valid(form)
 
     def get_success_url(self):
