@@ -30,6 +30,10 @@ DATABASES = postgresify()
 ########## STORAGE CONFIGURATION
 INSTALLED_APPS += ('storages', 'raven.contrib.django', )
 
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
