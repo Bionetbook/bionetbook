@@ -15,6 +15,6 @@ style:
 restoredata:
 	heroku pgbackups:capture --expire
 	curl -o latest.dump `heroku pgbackups:url`
-	dropdb lac
-	createdb lac
+	dropdb bionetbook
+	createdb bionetbook
 	pg_restore --verbose --clean --no-acl --no-owner -d bionetbook latest.dump

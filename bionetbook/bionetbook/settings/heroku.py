@@ -12,7 +12,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL',
-        'LA Currents <info@bionetbook.com>')
+        'BioNetBook <info@bionetbook.com>')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
