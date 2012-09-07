@@ -1,10 +1,12 @@
+from django import forms
+from django.contrib import messages
 from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
-from protocols.forms import ProtocolForm
+from protocols.forms import ProtocolForm, PublishForm
 from protocols.models import Protocol
 
 
@@ -61,3 +63,23 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
         context['steps'] = self.object.step_set.select_related()
 
         return context
+
+
+class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
+
+    form_class = PublishForm
+    template_name = "myapp/email_form.html"
+    success_url = '/email-sent/'
+
+    def get_success_url(self):
+        protocol = self.get_protocol()
+        return protocol.get_absolute_url()
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        protocol.status = Protocol.STATUS_PUBLISHED
+        protocol.save()
+        messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
+        return super(ProtocolPublishView, self).form_valid(form)
+
+

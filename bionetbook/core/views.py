@@ -20,6 +20,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 class AuthorizedForProtocolMixin(object):
 
     def get_protocol(self):
+        if hasattr(self, "protocol"):
+            return self.protocol
         slug = self.kwargs.get('protocol_slug', None)
         if slug is None:
             raise Http404()

@@ -14,6 +14,10 @@
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
+        {% if object.owner == request.user and object.status == object.STATUS_DRAFT %}      
+            <p><a class="btn btn-success" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a> <a data-toggle="modal" href="#publish-confirmation"> Publish</a></p>
+        {% endif %}
+        
         {% object_data_table object %}
     </div>
 
@@ -51,5 +55,25 @@
     </div>    
   </div>    
   </div>
-{% endblock %}
 
+{% if object.owner == request.user %}
+    <div class="modal hide fade" id="publish-confirmation">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3>Are you sure you want to publish this protocol?</h3>
+    </div>
+    <div class="modal-body">
+      <p><span class="label label-important">There is no going back!</span></p>
+      <p>Once published, a protocol can't be modified. You'll need to clone it and create a new version.</p>
+    </div>
+    <div class="modal-footer">
+      
+      <form action="{% url protocol_publish object.slug %}" method="post">
+        {% csrf_token %}
+        <a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+        <button class="btn btn-danger" id="publish">Publish</button>
+      </form>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

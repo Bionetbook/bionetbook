@@ -17,4 +17,7 @@ urlpatterns = patterns("",
     url(regex=r'^$',
         view=views.ProtocolListView.as_view(),
         name='protocol_list'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/publish/$',
+        view=views.ProtocolPublishView.as_view(),
+        name='protocol_publish'),
 )
