@@ -3,13 +3,15 @@
 {% block title %}Protocol List{% endblock %}
 
 {% block page_title %}Protocol List 
-    <small>( <a href="{% url protocol_create %}">new</a> )</small>
+    {% if request.user.is_authenticated %}
+        <small>( <a href="{% url protocol_create %}">new</a> )</small>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="span12">
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     {% if request.user.is_authenticated %}
