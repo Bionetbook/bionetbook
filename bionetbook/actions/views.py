@@ -58,6 +58,7 @@ class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocol
     form_class = ActionForm
 
     def form_valid(self, form):
+        self.protocol = self.get_protocol()
         form.instance.step = self.get_step()
         return super(ActionCreateView, self).form_valid(form)
 

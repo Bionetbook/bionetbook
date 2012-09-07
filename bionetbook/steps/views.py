@@ -48,6 +48,7 @@ class StepCreateView(LoginRequiredMixin, StepBaseView, AuthorizedforProtocolEdit
     form_class = StepForm
 
     def form_valid(self, form):
+        self.protocol = self.get_protocol()
         form.instance.protocol = self.protocol
         return super(StepCreateView, self).form_valid(form)
 
