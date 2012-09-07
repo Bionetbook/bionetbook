@@ -6,7 +6,7 @@
 {% block page_title %}
 <a href="{% url step_list protocol.slug %}">Action</a>: {{ object.name }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url action_update protocol.slug step.slug object.slug  %}"><i class="icon-edit"></i></a> edit</small>
+    <small><a href="{% url action_update protocol.slug step.slug object.slug  %}"><i class="icon-edit"></i>edit </a></small>
 {% endif %}
 {% endblock %}
 
