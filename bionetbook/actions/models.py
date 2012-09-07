@@ -52,7 +52,8 @@ class Action(TimeStampedModel):
             # handle parent step duration in seconds
             self.step.duration_in_seconds = 0
             for action in self.step.action_set.all():
-                self.step.duration_in_seconds += getattr(action, "duration_in_seconds", 0)
+                self.step.duration_in_seconds = self.step.duration_in_seconds or 0
+                self.step.duration_in_seconds += getattr(action, "duration_in_seconds", 0) or 0
             self.step.save()
 
         super(Action, self).save(*args, **kwargs)
