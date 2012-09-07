@@ -26,6 +26,9 @@ from postgresify import postgresify
 
 DATABASES = postgresify()
 
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, 'templates'),
+)
 
 ########## STORAGE CONFIGURATION
 INSTALLED_APPS += ('storages', 'raven.contrib.django', )
