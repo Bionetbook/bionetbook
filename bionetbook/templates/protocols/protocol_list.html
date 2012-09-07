@@ -33,10 +33,13 @@
                 <tr>    
                     {% if request.user.is_authenticated %}
                         <td>
-                            {% if request.user == object.owner or request.user.is_superuser or request.user.is_staff %}
-                                <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
+                            {% if object.status == object.STATUS_DRAFT %}
+                                {% if request.user == object.owner or request.user.is_superuser or request.user.is_staff %}
+                                    <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
+                                {% endif %}
                             {% endif %}
                         </td>
+
                     {% endif %}
                     <td>
                         <a href="{% url protocol_detail object.slug %}">{{ object }}</a>
