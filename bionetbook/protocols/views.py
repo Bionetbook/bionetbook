@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from braces.views import LoginRequiredMixin
@@ -23,6 +24,16 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 class ProtocolListView(ListView):
 
     model = Protocol
+
+    def get_queryset(self):
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return Protocol.objects.filter()
+        if self.request.user.is_authenticated():
+            return Protocol.objects.filter(
+                    Q(status=Protocol.STATUS_PUBLISHED) |
+                    Q(owner=self.request.user)
+                    )
+        return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):

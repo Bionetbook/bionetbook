@@ -16,6 +16,9 @@
                     <th>Title</th>
                     <th>Steps</th>
                     <th>Actions</th>
+                    {% if request.user.is_authenticated %}
+                        <th>Status</th>
+                    {% endif %}
                     <th>Last Modified</th>
                 </tr>
             </thead>
@@ -30,6 +33,9 @@
                     </td>
                     <td>{{ object.step_set.count }}</td>
                     <td>{{ object.actions.count }}</td>
+                    {% if request.user.is_authenticated %}
+                        <td>{{ object.status }}</td>
+                    {% endif %}                    
                     <td>{{ object.modified }}</td>
                 </tr>
                 {% endfor %}
