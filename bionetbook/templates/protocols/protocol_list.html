@@ -12,8 +12,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th></th>
+                    {% if request.user.is_authenticated %}
+                        <th></th>
+                    {% endif %}
                     <th>Title</th>
+                    <th>Owner</th>
                     <th>Steps</th>
                     <th>Actions</th>
                     {% if request.user.is_authenticated %}
@@ -24,13 +27,19 @@
             </thead>
             <tbody>
                 {% for object in object_list %}
+                {% with profile=object.owner.get_profile %}
                 <tr>    
-                    <td>
-                        <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
-                    </td>
+                    {% if request.user.is_authenticated %}
+                        <td>
+                            {% if request.user == object.owner or request.user.is_superuser or request.user.is_staff %}
+                                <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                     <td>
                         <a href="{% url protocol_detail object.slug %}">{{ object }}</a>
                     </td>
+                    <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
                     <td>{{ object.step_set.count }}</td>
                     <td>{{ object.actions.count }}</td>
                     {% if request.user.is_authenticated %}
@@ -38,6 +47,7 @@
                     {% endif %}                    
                     <td>{{ object.modified }}</td>
                 </tr>
+                {% endwith %}
                 {% endfor %}
             </tbody>
         </table>

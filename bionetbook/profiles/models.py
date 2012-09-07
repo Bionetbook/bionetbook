@@ -19,9 +19,6 @@ class Profile(TimeStampedModel):
     state = USStateField(_("State"), null=True, blank=True)
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
 
-    is_staff = models.BooleanField(_("Is Staff"))
-    is_admin = models.BooleanField(_("Is Admin"))
-
     def __unicode__(self):
         if self.first_name or self.last_name:
             return "{0} {1}".format(self.first_name, self.last_name)
