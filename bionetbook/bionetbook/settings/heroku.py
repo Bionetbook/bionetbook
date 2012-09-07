@@ -68,4 +68,4 @@ STATIC_URL = 'https://s3.amazonaws.com/bionetbook/'
 MEDIA_URL = STATIC_URL
 ########## END STORAGE CONFIGURATION
 
-DJANGO_WYSIWYG_MEDIA_URL = "%sckeditor/" % STATIC_URL
+DJANGO_WYSIWYG_MEDIA_URL = os.path.join(STATIC_URL, 'ckeditor')
