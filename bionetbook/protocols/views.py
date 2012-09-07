@@ -39,7 +39,7 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         return self.object.get_absolute_url()
 
 
-class ProtocolUpdateView(LoginRequiredMixin, AuthorizedforProtocolEditMixin, UpdateView):
+class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm

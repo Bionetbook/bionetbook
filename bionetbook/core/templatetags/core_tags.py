@@ -17,10 +17,20 @@ def bootstrapcheck(value):
 def object_data_table(model_instance):
 
     fields = []
+    raw = None
     for field_name in model_instance._meta.get_all_field_names():
+        value = getattr(model_instance, field_name, None)
+        if field_name == "raw":
+            raw = dict(
+                key=field_name,
+                value=mark_safe(value)
+
+            )
+            continue
         field = dict(
             key=field_name,
-            value=getattr(model_instance, field_name, None)
+            value=value
         )
         fields.append(field)
+    fields.append(raw)
     return {'fields': fields}
