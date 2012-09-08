@@ -45,16 +45,16 @@
               </tr>
             </thead>
             <tbody>
-                {% for item in object_list %}
+                {% for item in actions %}
                 <tr>
-                    <td>
+                    <td nowrap width="30%">
                         <div class="btn-group" id="item-{{ item.pk }}">
                             <button class="btn btn-warning {% if forloop.first %}disabled{% else %}up{% endif %}"><i class="icon-arrow-up icon-white"></i></button>
                             <button class="btn btn-warning {% if forloop.last %}disabled{% else %}down{% endif %}"><i class="icon-arrow-down icon-white"></i></button>
                             <button class="btn btn-danger delete"><i class="icon-minus icon-white"></i></button>                            
                         </div>
                     </td>
-                    <td>{{ item.name }}</td>
+                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
                     <td>{{ item.action_set.all|length }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>

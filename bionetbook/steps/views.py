@@ -64,5 +64,5 @@ class StepUpdateView(LoginRequiredMixin, StepBaseView, AuthorizedforProtocolEdit
 
     def get_context_data(self, **kwargs):
         context = super(StepUpdateView, self).get_context_data(**kwargs)
-
+        context['actions'] = self.object.action_set.select_related()
         return context
