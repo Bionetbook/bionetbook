@@ -14,7 +14,8 @@ from verbs.views import VerbBaseView
 class ActionBaseView(AuthorizedForProtocolMixin):
 
     def get_step(self):
-        return get_object_or_404(Step, slug=self.kwargs.get('step_slug', None))
+        self.protocol = self.get_protocol()
+        return get_object_or_404(Step, slug=self.kwargs.get('step_slug', None), protocol=self.protocol)
 
     def get_breadcrumbs(self):
         step = getattr(self, "step", self.get_step())
@@ -50,6 +51,11 @@ class ActionDetailView(ActionBaseView, DetailView):
 class ActionListView(ActionBaseView, ListView):
 
     model = Action
+
+    def get_queryset(self):
+        self.protocol = self.get_protocol()
+        self.step = self.get_step()
+        return self.step.action_set.all()
 
 
 class ActionCreateView(LoginRequiredMixin, ActionBaseView, AuthorizedforProtocolEditMixin, VerbBaseView, CreateView):

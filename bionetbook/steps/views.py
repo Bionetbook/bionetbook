@@ -41,6 +41,10 @@ class StepListView(StepBaseView, ListView):
 
     model = Step
 
+    def get_queryset(self):
+        self.protocol = self.get_protocol()
+        return self.protocol.step_set.all()
+
 
 class StepCreateView(LoginRequiredMixin, StepBaseView, AuthorizedforProtocolEditMixin, CreateView):
 
