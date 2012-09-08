@@ -9,6 +9,7 @@ class ProtocolForm(forms.ModelForm):
         model = Protocol
         exclude = ('parent', 'owner', 'slug', 'duration_in_seconds', 'status', 'version',)
 
+
 class PublishForm(forms.Form):
 
     pass
