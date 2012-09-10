@@ -6,7 +6,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('YOUR NAME', 'yourname@example.com'),
+    ('Daniel Greenfeld', 'pydanny@cartwheelweb.com'),
 )
 
 MANAGERS = ADMINS
