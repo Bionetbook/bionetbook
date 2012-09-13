@@ -61,12 +61,13 @@ datatypes.close()
 
 for verb in verbs:
 	try:
-		current_verb = '/Users/Oren/Coding/bionetbook/bionetbook/verbs/forms/' + 'test' +'.py'
-					
+		current_verb = '/Users/Oren/Coding/bionetbook/bionetbook/verbs/forms/' + verb +'.py'
+		current_verb_file = open(current_verb,'wa')
+
 	except IOError
 		continue
 		
-	current_verb_file = open(current_verb,'wa')
+	
 
 	for atts in verbs[verb]:
 		if atts in attributes:
@@ -74,7 +75,7 @@ for verb in verbs:
 			for line in tmp:
 				current_verb_file.write('\n%s' % tmp[datatypes])
 
-
+	current_verb_file.close()			
 	
 
 

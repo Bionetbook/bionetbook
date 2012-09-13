@@ -1,0 +1,116 @@
+how - temperature	Min_Temp	forms.IntegerField()
+how - temperature	Max_Temp	forms.IntegerField()
+		
+		
+how - time	Min_Time	forms.IntegerField()
+how - time	Max_Time	forms.IntegerField()
+		
+		
+how - centrifuge speed	Min_Spin_Speed	forms.IntegerField()
+how - centrifuge speed	Max_Spin_Speed	forms.IntegerField()
+		
+		
+how - voltage	Min_Voltage	forms.IntegerField()
+how - voltage	Max_Voltage	forms.IntegerField()
+		
+		
+duration	Min_Time	forms.IntegerField()
+duration	Max_Time	forms.IntegerField()
+		
+		
+caution/warning	add_text	forms.CharField()
+		
+		
+conditional	add_text	forms.CharField()
+		
+		
+how	add_text	forms.CharField()
+		
+		
+how - machine settings	add_text	forms.CharField()
+		
+		
+how - method	add_text	forms.CharField()
+		
+		
+how - number of times	add_text	forms.CharField()
+		
+		
+how - using machine	add_text	forms.CharField()
+		
+		
+how - using tool	add_text	forms.CharField()
+		
+		
+how - with	add_text	forms.CharField()
+		
+		
+protocol - input	add_text	forms.CharField()
+		
+		
+protocol - kit name	add_text	forms.CharField()
+		
+		
+protocol - output	add_text	forms.CharField()
+		
+protocol - type	add_text	forms.CharField()
+		
+		
+remarks	add_text	forms.CharField()
+		
+		
+step - remark	add_text	forms.CharField()
+		
+		
+step - why	add_text	forms.CharField()
+		
+		
+what	add_text	forms.CharField()
+		
+		
+what - data	add_text	forms.CharField()
+		
+		
+what - label	add_text	forms.CharField()
+		
+		
+what - organism	add_text	forms.CharField()
+		
+		
+what - source gene	add_text	forms.CharField()
+		
+		
+what - source organism	add_text	forms.CharField()
+		
+		
+what - to	add_text	forms.CharField()
+		
+		
+when	add_text	forms.DateField()
+		
+		
+when - date	add_text	forms.DateField()
+		
+		
+where	add_text	forms.CharField()
+		
+		
+where - destination	add_text	forms.CharField()
+		
+		
+where - from	add_text	forms.CharField()
+		
+		
+where - inside	add_text	forms.CharField()
+		
+		
+where - into	add_text	forms.CharField()
+		
+		
+where - location	add_text	forms.CharField()
+		
+		
+where - vessel	add_text	forms.CharField()
+		
+		
+why	add_text	forms.CharField()
