@@ -33,6 +33,50 @@ for i in range(tot):
 			verbs[verb].append(tmp[1])
 
 
+newfile.close()
+
+# import the attribute-data type list
+
+datatypes = open('/Users/Oren/Coding/bionetbook/docs/attribute_datatype.txt','r')
+
+rows = []
+for line in datatypes:
+	rows.append(line)
+
+tot = len(rows)
+
+attributes={}
+for i in range(tot):
+	if rows[i][0]!='\t': 
+		tmp = rows[i].strip('\n').split('\t')
+		# check for new attribute
+		if tmp[0] not in attributes: 
+			attributes[tmp[0]]=[]
+
+		attributes[tmp[0]].append(tmp[1] + '=' + tmp[2])	
+			
+datatypes.close()
+
+# Add the lines to each verb file
+
+for verb in verbs:
+	try:
+		current_verb = '/Users/Oren/Coding/bionetbook/bionetbook/verbs/forms/' + 'test' +'.py'
+					
+	except IOError
+		continue
+		
+	current_verb_file = open(current_verb,'wa')
+
+	for atts in verbs[verb]:
+		if atts in attributes:
+			datatypes = attributes[atts]
+			for line in tmp:
+				current_verb_file.write('\n%s' % tmp[datatypes])
+
+
+	
+
 
 
 
