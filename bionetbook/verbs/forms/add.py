@@ -7,3 +7,4 @@ class AddForm(forms.VerbForm):
     slug = "add"
 
     duration_in_seconds = forms.IntegerField()
+    add_a_text_remark = forms.CharField()
