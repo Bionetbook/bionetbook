@@ -28,7 +28,7 @@ class ProtocolViewTests(TestCase):
             name = "Test Step",
             protocol=self.protocol
         )
-        self.step.save()        
+        self.step.save()
 
     def test_create_protocol(self):
 
