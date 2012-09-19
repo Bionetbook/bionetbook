@@ -7,3 +7,5 @@ class AddForm(forms.VerbForm):
     slug = "add"
 
     duration_in_seconds = forms.IntegerField()
+    amount = forms.IntegerField()
+    substance = forms.CharField()
