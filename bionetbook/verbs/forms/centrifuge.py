@@ -7,3 +7,5 @@ class CentrifugeForm(forms.VerbForm):
     slug = "centrifuge"
 
     duration_in_seconds = forms.IntegerField()
+    speed_in_rcf = forms.IntegerField()
+    temperature = forms.IntegerField()
