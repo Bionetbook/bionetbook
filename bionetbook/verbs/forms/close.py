@@ -6,4 +6,6 @@ class CloseForm(forms.VerbForm):
     name = "close"
     slug = "close"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()

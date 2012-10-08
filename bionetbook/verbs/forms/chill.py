@@ -6,4 +6,9 @@ class ChillForm(forms.VerbForm):
     name = "chill"
     slug = "chill"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Min_Temp=forms.IntegerField()
+    Max_Temp=forms.IntegerField()
+    Duration_Min_Time=forms.IntegerField()
+    Edit_remarks=forms.CharField()
+    Describe_where=forms.CharField()

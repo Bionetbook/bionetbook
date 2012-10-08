@@ -6,4 +6,12 @@ class SealForm(forms.VerbForm):
     name = "seal"
     slug = "seal"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()
+    Describe_where=forms.CharField()
+    Edit_why_step=forms.CharField()
+    Edit_remarks=forms.CharField()
+    Specify_machine=forms.CharField()
+    Min_Temp=forms.IntegerField()
+    Max_Temp=forms.IntegerField()

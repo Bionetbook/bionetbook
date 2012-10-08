@@ -1,10 +1,12 @@
+
 from verbs.baseforms import forms
 
 
 class AddForm(forms.VerbForm):
 
-    name = "add"
+    name = "add" # cannot silence the name without an error, the name here is redundant
     slug = "add"
 
-    duration_in_seconds = forms.IntegerField()
-    add_a_text_remark = forms.CharField()
+    Duration_Min_Time=forms.IntegerField()
+    Describe_where=forms.CharField()
+    Edit_remarks=forms.CharField()

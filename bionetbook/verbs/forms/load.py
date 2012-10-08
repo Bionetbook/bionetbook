@@ -6,4 +6,7 @@ class LoadForm(forms.VerbForm):
     name = "load"
     slug = "load"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Describe_where=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()
+    Edit_what_remark=forms.CharField()

@@ -1,14 +1,15 @@
 from verbs.baseforms import forms
 
 
-class CombineForm(forms.VerbForm):
+class SwitchoffForm(forms.VerbForm):
 
-    name = "combine"
-    slug = "combine"
+    name = "Switchoff"
+    slug = "Switchoff"
 
 
     Min_Temp=forms.IntegerField()
     Max_Temp=forms.IntegerField()
     Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
+    Edit_kit_name=forms.CharField()
+    Edit_protocol_output=forms.CharField()
     Edit_remarks=forms.CharField()

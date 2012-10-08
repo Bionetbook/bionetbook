@@ -3,7 +3,11 @@ from verbs.baseforms import forms
 
 class AdjustForm(forms.VerbForm):
 
-    name = "adjust"
-    slug = "adjust"
+    name = "Adjust"
+    slug = "Adjust"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Add_conditional_statement=forms.CharField()
+    Specify_machine=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()

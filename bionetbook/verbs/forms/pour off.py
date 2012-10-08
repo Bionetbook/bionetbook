@@ -1,12 +1,11 @@
 from verbs.baseforms import forms
 
 
-class ConnectForm(forms.VerbForm):
+class PouroffForm(forms.VerbForm):
 
-    name = "connect"
-    slug = "connect"
+    name = "Pouroff"
+    slug = "Pouroff"
 
 
     Edit_what_remark=forms.CharField()
-    Describe_where=forms.CharField()
     Duration_Min_Time=forms.IntegerField()

@@ -1,10 +1,10 @@
 from verbs.baseforms import forms
 
 
-class SwirlForm(forms.VerbForm):
+class FilterForm(forms.VerbForm):
 
-    name = "swirl"
-    slug = "swirl"
+    name = "filter"
+    slug = "filter"
 
 
     Comment_why=forms.CharField()

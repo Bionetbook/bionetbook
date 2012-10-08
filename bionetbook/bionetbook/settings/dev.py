@@ -1,7 +1,7 @@
 from base import *
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
 
 DATABASES = {
     'default': {

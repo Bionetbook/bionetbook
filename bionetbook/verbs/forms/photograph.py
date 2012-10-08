@@ -6,4 +6,8 @@ class PhotographForm(forms.VerbForm):
     name = "photograph"
     slug = "photograph"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Edit_remarks=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()
+    Specify_date=forms.DateField()

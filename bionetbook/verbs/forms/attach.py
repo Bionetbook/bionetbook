@@ -6,4 +6,7 @@ class AttachForm(forms.VerbForm):
     name = "attach"
     slug = "attach"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Describe_where=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()

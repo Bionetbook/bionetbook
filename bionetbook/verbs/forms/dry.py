@@ -6,4 +6,7 @@ class DryForm(forms.VerbForm):
     name = "dry"
     slug = "dry"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Duration_Min_Time=forms.IntegerField()
+    Edit_what_remark=forms.CharField()
+    Add_with_what=forms.CharField()

@@ -6,4 +6,6 @@ class DecantForm(forms.VerbForm):
     name = "decant"
     slug = "decant"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()

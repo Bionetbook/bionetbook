@@ -6,4 +6,8 @@ class PlaceForm(forms.VerbForm):
     name = "place"
     slug = "place"
 
-    duration_in_seconds = forms.IntegerField()
+
+    Edit_what_remark=forms.CharField()
+    Describe_where=forms.CharField()
+    Duration_Min_Time=forms.IntegerField()
+    Add_conditional_statement=forms.CharField()
