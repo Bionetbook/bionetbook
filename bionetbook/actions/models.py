@@ -39,8 +39,9 @@ class Action(TimeStampedModel):
             # TODO - make unique within this Step
             slug = slugify(self.name)
             try:
-                Action.objects.get(slug=slug)
-                self.slug = "{0}-{1}".format(slug, self.pk)
+                Action.objects.get(slug=slug, step=self.step)
+                count = self.step.action_set.filter(slug=slug).count()
+                self.slug = "{0}-{1}".format(slug, count)                
             except ObjectDoesNotExist:
                 self.slug = slug
             self.save()

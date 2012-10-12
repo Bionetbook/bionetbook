@@ -26,8 +26,9 @@ class Step(TimeStampedModel):
             # TODO - make unique within this Protocol
             slug = slugify(self.name)
             try:
-                Step.objects.get(slug=slug)
-                self.slug = "{0}-{1}".format(slug, self.pk)
+                Step.objects.get(slug=slug, protocol=self.protocol)
+                count = self.protocol.step_set.filter(slug=slug).count()
+                self.slug = "{0}-{1}".format(slug, count)
             except ObjectDoesNotExist:
                 self.slug = slug
             self.save()
