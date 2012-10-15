@@ -11,7 +11,7 @@ from django_extensions.db.models import TimeStampedModel
 
 class Schedule(TimeStampedModel):
     owner = models.ForeignKey(User)
-    start = models.TimeField()
+    start = models.DateTimeField()
     name = models.CharField(_("Name"), max_length=255)
     uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
 
@@ -19,11 +19,11 @@ class Schedule(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        super(Event, self).save(*args, **kwargs)
+        super(Schedule, self).save(*args, **kwargs)
         if not self.uid:
-            uid = slugify("bnb-" + self.id)
+            uid = slugify("bnb-%d" % self.id)
             try:
-                Event.objects.get(uid=uid)
+                Schedule.objects.get(uid=uid)
                 self.uid = "{0}-{1}".format(uid, self.pk)
             except ObjectDoesNotExist:
                 self.uid = uid
@@ -36,11 +36,11 @@ class Schedule(TimeStampedModel):
 class Event(TimeStampedModel):
     child = models.ForeignKey("self", blank=True, null=True, unique=True)
     schedule = models.ForeignKey(Schedule)
-    action = models.ForeignKey(Action)
+    action = models.ForeignKey(Action, blank=True, null=True)
     name = models.CharField(_("Summary"), max_length=255)
     description = models.TextField(blank=True, null=True)
-    start = models.TimeField()
-    end = models.TimeField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
     uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
 
     def __unicode__(self):
@@ -49,7 +49,7 @@ class Event(TimeStampedModel):
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
         if not self.uid:
-            uid = slugify(self.schedule.uid + "-" + self.id)
+            uid = slugify("%s-%s" % (self.schedule.uid, self.id))
             try:
                 Event.objects.get(uid=uid)
                 self.uid = "{0}-{1}".format(uid, self.pk)
