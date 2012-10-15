@@ -111,6 +111,7 @@ PROJECT_APPS = (
         'steps',
         'actions',
         'profiles',
+        'schedule',
     )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
