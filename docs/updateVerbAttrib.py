@@ -52,7 +52,7 @@ for i in range(tot):
 		if tmp[0] not in attributes: 
 			attributes[tmp[0]]=[]
 
-		attributes[tmp[0]].append(tmp[1] + '=' + tmp[2])	
+		attributes[tmp[0]].append(tmp[1] + ' = ' + tmp[2])	
 			
 datatypes.close()
 print len(attributes)
