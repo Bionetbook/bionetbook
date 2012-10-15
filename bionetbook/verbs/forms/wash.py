@@ -7,6 +7,6 @@ class WashForm(forms.VerbForm):
     slug = "wash"
 
 
-    Edit_what_remark=forms.CharField()
-    Add_with_what=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    add_with_what = forms.CharField()
+    duration_min_time = forms.IntegerField()

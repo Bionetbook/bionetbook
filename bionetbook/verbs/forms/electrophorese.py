@@ -7,8 +7,8 @@ class ElectrophoreseForm(forms.VerbForm):
     slug = "electrophorese"
 
 
-    Edit_remarks=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Specify_machine=forms.CharField()
-    Min_Voltage=forms.IntegerField()
-    Max_Voltage=forms.IntegerField()
+    edit_remarks = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    specify_machine = forms.CharField()
+    min_voltage = forms.IntegerField()
+    max_voltage = forms.IntegerField()

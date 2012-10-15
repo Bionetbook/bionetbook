@@ -7,6 +7,6 @@ class MixForm(forms.VerbForm):
     slug = "mix"
 
 
-    Duration_Min_Time=forms.IntegerField()
-    Comment_why=forms.CharField()
-    Edit_remarks=forms.CharField()
+    duration_min_time = forms.IntegerField()
+    comment_why = forms.CharField()
+    edit_remarks = forms.CharField()

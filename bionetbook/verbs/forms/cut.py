@@ -7,6 +7,6 @@ class CutForm(forms.VerbForm):
     slug = "cut"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Comment_why=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    comment_why = forms.CharField()

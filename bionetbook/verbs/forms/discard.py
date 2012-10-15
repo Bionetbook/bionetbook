@@ -7,8 +7,8 @@ class DiscardForm(forms.VerbForm):
     slug = "discard"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Edit_why_step=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_why_step = forms.CharField()

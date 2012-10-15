@@ -7,10 +7,10 @@ class PourForm(forms.VerbForm):
     slug = "pour"
 
 
-    Edit_what_remark=forms.CharField()
-    Describe_where=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Add_conditional_statement=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Comment_why=forms.CharField()
+    edit_what_remark = forms.CharField()
+    describe_where = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    add_conditional_statement = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    comment_why = forms.CharField()

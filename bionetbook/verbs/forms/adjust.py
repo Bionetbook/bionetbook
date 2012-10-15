@@ -7,7 +7,7 @@ class AdjustForm(forms.VerbForm):
     slug = "Adjust"
 
 
-    Edit_what_remark=forms.CharField()
-    Add_conditional_statement=forms.CharField()
-    Specify_machine=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    add_conditional_statement = forms.CharField()
+    specify_machine = forms.CharField()
+    duration_min_time = forms.IntegerField()

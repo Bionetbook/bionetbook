@@ -7,5 +7,5 @@ class GrindForm(forms.VerbForm):
     slug = "grind"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()

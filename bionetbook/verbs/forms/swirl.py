@@ -7,5 +7,5 @@ class SwirlForm(forms.VerbForm):
     slug = "swirl"
 
 
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()

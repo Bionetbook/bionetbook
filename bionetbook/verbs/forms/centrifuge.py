@@ -7,10 +7,10 @@ class CentrifugeForm(forms.VerbForm):
     slug = "Centrifuge"
 
 
-    Edit_what_remark=forms.CharField()
-    Min_Spin_Speed=forms.IntegerField()
-    Max_Spin_Speed=forms.IntegerField()
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    min_spin_speed = forms.IntegerField()
+    max_spin_speed = forms.IntegerField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()

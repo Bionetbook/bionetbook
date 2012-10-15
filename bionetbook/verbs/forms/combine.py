@@ -7,8 +7,8 @@ class CombineForm(forms.VerbForm):
     slug = "combine"
 
 
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_remarks=forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_remarks = forms.CharField()

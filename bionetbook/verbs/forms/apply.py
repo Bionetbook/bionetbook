@@ -7,9 +7,9 @@ class ApplyForm(forms.VerbForm):
     slug = "apply"
 
 
-    Edit_what_remark=forms.CharField()
-    Describe_where=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_remarks=forms.CharField()
-    Specify_tool=forms.CharField()
-    Comment_why=forms.CharField()
+    edit_what_remark = forms.CharField()
+    describe_where = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    edit_remarks = forms.CharField()
+    specify_tool = forms.CharField()
+    comment_why = forms.CharField()

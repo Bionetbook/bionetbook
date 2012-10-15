@@ -7,7 +7,7 @@ class PrecipitateForm(forms.VerbForm):
     slug = "precipitate"
 
 
-    Edit_what_remark=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    duration_min_time = forms.IntegerField()

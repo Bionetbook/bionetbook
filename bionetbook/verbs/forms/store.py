@@ -7,9 +7,9 @@ class StoreForm(forms.VerbForm):
     slug = "store"
 
 
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_what_remark=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Edit_vessel_type=forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    duration_min_time = forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_vessel_type = forms.CharField()

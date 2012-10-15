@@ -7,6 +7,6 @@ class MeltForm(forms.VerbForm):
     slug = "melt"
 
 
-    Edit_what_remark=forms.CharField()
-    Specify_machine=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    specify_machine = forms.CharField()
+    duration_min_time = forms.IntegerField()

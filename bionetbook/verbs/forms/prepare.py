@@ -7,11 +7,11 @@ class PrepareForm(forms.VerbForm):
     slug = "prepare"
 
 
-    Edit_what_remark=forms.CharField()
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_caution_or_warning=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Specify_tool=forms.CharField()
-    Specify_date=forms.DateField()
+    edit_what_remark = forms.CharField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_caution_or_warning = forms.CharField()
+    edit_remarks = forms.CharField()
+    specify_tool = forms.CharField()
+    specify_date = forms.DateField()

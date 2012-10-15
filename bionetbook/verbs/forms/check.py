@@ -7,9 +7,9 @@ class CheckForm(forms.VerbForm):
     slug = "check"
 
 
-    Edit_what_remark=forms.CharField()
-    Specify_machine=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_protocol_output=forms.CharField()
-    Specify_tool=forms.CharField()
+    edit_what_remark = forms.CharField()
+    specify_machine = forms.CharField()
+    edit_remarks = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    edit_protocol_output = forms.CharField()
+    specify_tool = forms.CharField()

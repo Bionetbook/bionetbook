@@ -7,7 +7,7 @@ class PhotographForm(forms.VerbForm):
     slug = "photograph"
 
 
-    Edit_what_remark=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Specify_date=forms.DateField()
+    edit_what_remark = forms.CharField()
+    edit_remarks = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    specify_date = forms.DateField()

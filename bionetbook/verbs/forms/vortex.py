@@ -7,9 +7,9 @@ class VortexForm(forms.VerbForm):
     slug = "vortex"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Comment_why=forms.CharField()
-    Describe_where=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    comment_why = forms.CharField()
+    describe_where = forms.CharField()

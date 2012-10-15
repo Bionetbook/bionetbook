@@ -7,8 +7,8 @@ class HeatForm(forms.VerbForm):
     slug = "heat"
 
 
-    Edit_what_remark=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_remarks=forms.CharField()
+    edit_what_remark = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    duration_min_time = forms.IntegerField()
+    edit_remarks = forms.CharField()

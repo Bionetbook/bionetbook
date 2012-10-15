@@ -7,7 +7,7 @@ class PassForm(forms.VerbForm):
     slug = "pass"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Add_with_what=forms.CharField()
-    Specify_number_of_times=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    add_with_what = forms.CharField()
+    specify_number_of_times = forms.IntegerField()

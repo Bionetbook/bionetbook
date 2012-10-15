@@ -7,6 +7,6 @@ class OpenForm(forms.VerbForm):
     slug = "open"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()

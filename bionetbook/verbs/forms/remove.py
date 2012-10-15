@@ -7,7 +7,7 @@ class RemoveForm(forms.VerbForm):
     slug = "remove"
 
 
-    Edit_what_remark=forms.CharField()
-    Specify_tool=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Specify_date=forms.DateField()
+    edit_what_remark = forms.CharField()
+    specify_tool = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    specify_date = forms.DateField()

@@ -7,9 +7,9 @@ class SplitForm(forms.VerbForm):
     slug = "split"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Edit_remarks=forms.CharField()
-    Add_with_what=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    edit_remarks = forms.CharField()
+    add_with_what = forms.CharField()

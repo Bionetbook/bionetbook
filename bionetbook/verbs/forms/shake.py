@@ -7,8 +7,8 @@ class ShakeForm(forms.VerbForm):
     slug = "shake"
 
 
-    Edit_remarks=forms.CharField()
-    Add_conditional_statement=forms.CharField()
-    Edit_what_remark=forms.CharField()
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_remarks = forms.CharField()
+    add_conditional_statement = forms.CharField()
+    edit_what_remark = forms.CharField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()

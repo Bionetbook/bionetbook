@@ -7,13 +7,13 @@ class IncubateForm(forms.VerbForm):
     slug = "incubate"
 
 
-    Edit_what_remark=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Duration_Min_Time=forms.IntegerField()
-    Comment_why=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Edit_input =forms.CharField()
-    Edit_protocol_output=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Edit_kit_name=forms.CharField()
+    edit_what_remark = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    duration_min_time = forms.IntegerField()
+    comment_why = forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_input  = forms.CharField()
+    edit_protocol_output = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    edit_kit_name = forms.CharField()

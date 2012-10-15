@@ -7,11 +7,11 @@ class SealForm(forms.VerbForm):
     slug = "seal"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_why_step=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Specify_machine=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_why_step = forms.CharField()
+    edit_remarks = forms.CharField()
+    specify_machine = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()

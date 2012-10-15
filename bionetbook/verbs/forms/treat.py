@@ -7,6 +7,6 @@ class TreatForm(forms.VerbForm):
     slug = "treat"
 
 
-    Edit_what_remark=forms.CharField()
-    Edit_machine_settings=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    edit_machine_settings = forms.CharField()
+    duration_min_time = forms.IntegerField()

@@ -7,12 +7,12 @@ class WeighForm(forms.VerbForm):
     slug = "weigh"
 
 
-    Edit_what_remark=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Specify_machine=forms.CharField()
-    Edit_why_step=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_remarks = forms.CharField()
+    specify_machine = forms.CharField()
+    edit_why_step = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()

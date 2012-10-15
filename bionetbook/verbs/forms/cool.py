@@ -7,12 +7,12 @@ class CoolForm(forms.VerbForm):
     slug = "cool"
 
 
-    Edit_remarks=forms.CharField()
-    Edit_what_remark=forms.CharField()
-    Specify_machine=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Specify_date=forms.DateField()
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Add_conditional_statement=forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_what_remark = forms.CharField()
+    specify_machine = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    specify_date = forms.DateField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    add_conditional_statement = forms.CharField()

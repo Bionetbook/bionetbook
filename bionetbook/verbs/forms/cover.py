@@ -7,7 +7,7 @@ class CoverForm(forms.VerbForm):
     slug = "cover"
 
 
-    Add_conditional_statement=forms.CharField()
-    Edit_what_remark=forms.CharField()
-    Comment_why=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    add_conditional_statement = forms.CharField()
+    edit_what_remark = forms.CharField()
+    comment_why = forms.CharField()
+    duration_min_time = forms.IntegerField()

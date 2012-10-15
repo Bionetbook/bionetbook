@@ -7,8 +7,8 @@ class ActionForm(forms.VerbForm):
     slug = "action"
 
 
-    Duration_Min_Time=forms.IntegerField()
-    Comment_why=forms.CharField()
-    Edit_What_to=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Specify_number_of_times=forms.IntegerField()
+    duration_min_time = forms.IntegerField()
+    comment_why = forms.CharField()
+    edit_what_to = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    specify_number_of_times = forms.IntegerField()

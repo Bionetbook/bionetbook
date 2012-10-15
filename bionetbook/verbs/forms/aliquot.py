@@ -7,6 +7,6 @@ class AliquotForm(forms.VerbForm):
     slug = "aliquot"
 
 
-    Edit_what_remark=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
+    edit_what_remark = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    duration_min_time = forms.IntegerField()

@@ -7,4 +7,4 @@ class SuspendForm(forms.VerbForm):
     slug = "Suspend"
 
 
-    Duration_Min_Time=forms.IntegerField()
+    duration_min_time = forms.IntegerField()

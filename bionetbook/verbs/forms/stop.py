@@ -7,11 +7,11 @@ class StopForm(forms.VerbForm):
     slug = "stop"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Specify_tool=forms.CharField()
-    Edit_kit_name=forms.CharField()
-    Edit_protocol_output=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Describe_where=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    specify_tool = forms.CharField()
+    edit_kit_name = forms.CharField()
+    edit_protocol_output = forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    describe_where = forms.CharField()

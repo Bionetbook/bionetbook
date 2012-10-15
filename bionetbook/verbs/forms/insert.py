@@ -7,11 +7,11 @@ class InsertForm(forms.VerbForm):
     slug = "insert"
 
 
-    Edit_what_remark=forms.CharField()
-    Describe_where=forms.CharField()
-    Specify_machine=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_remarks=forms.CharField()
-    Edit_why_step=forms.CharField()
-    Edit_from=forms.CharField()
-    Specify_tool=forms.CharField()
+    edit_what_remark = forms.CharField()
+    describe_where = forms.CharField()
+    specify_machine = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    edit_remarks = forms.CharField()
+    edit_why_step = forms.CharField()
+    edit_from = forms.CharField()
+    specify_tool = forms.CharField()

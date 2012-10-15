@@ -7,9 +7,9 @@ class SwitchoffForm(forms.VerbForm):
     slug = "Switchoff"
 
 
-    Edit_remarks=forms.CharField()
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_why_step=forms.CharField()
-    Describe_where=forms.CharField()
-    Specify_machine=forms.CharField()
+    edit_remarks = forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    edit_why_step = forms.CharField()
+    describe_where = forms.CharField()
+    specify_machine = forms.CharField()

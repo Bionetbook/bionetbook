@@ -7,10 +7,10 @@ class AgitateForm(forms.VerbForm):
     slug = "agitate"
 
 
-    Duration_Min_Time=forms.IntegerField()
-    Add_conditional_statement=forms.CharField()
-    Edit_what_remark=forms.CharField()
-    Comment_why=forms.CharField()
-    Describe_where=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Add_with_what=forms.CharField()
+    duration_min_time = forms.IntegerField()
+    add_conditional_statement = forms.CharField()
+    edit_what_remark = forms.CharField()
+    comment_why = forms.CharField()
+    describe_where = forms.CharField()
+    edit_remarks = forms.CharField()
+    add_with_what = forms.CharField()

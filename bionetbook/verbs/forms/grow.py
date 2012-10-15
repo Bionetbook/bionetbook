@@ -7,11 +7,11 @@ class GrowForm(forms.VerbForm):
     slug = "grow"
 
 
-    Edit_what_remark=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Edit_What_to=forms.CharField()
-    Edit_vessel_type=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Describe_where=forms.CharField()
-    Specify_date=forms.DateField()
-    Comment_why=forms.CharField()
+    edit_what_remark = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    edit_what_to = forms.CharField()
+    edit_vessel_type = forms.CharField()
+    edit_remarks = forms.CharField()
+    describe_where = forms.CharField()
+    specify_date = forms.DateField()
+    comment_why = forms.CharField()

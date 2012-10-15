@@ -7,12 +7,12 @@ class RepeatForm(forms.VerbForm):
     slug = "repeat"
 
 
-    Edit_what_remark=forms.CharField()
-    Add_with_what=forms.CharField()
-    Duration_Min_Time=forms.IntegerField()
-    Describe_where=forms.CharField()
-    Edit_remarks=forms.CharField()
-    Min_Temp=forms.IntegerField()
-    Max_Temp=forms.IntegerField()
-    Specify_machine=forms.CharField()
-    Edit_why_step=forms.CharField()
+    edit_what_remark = forms.CharField()
+    add_with_what = forms.CharField()
+    duration_min_time = forms.IntegerField()
+    describe_where = forms.CharField()
+    edit_remarks = forms.CharField()
+    min_temp = forms.IntegerField()
+    max_temp = forms.IntegerField()
+    specify_machine = forms.CharField()
+    edit_why_step = forms.CharField()
