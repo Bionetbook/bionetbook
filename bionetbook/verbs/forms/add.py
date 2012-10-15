@@ -10,3 +10,4 @@ class AddForm(forms.VerbForm):
     duration_min_time = forms.IntegerField()
     describe_where = forms.CharField()
     edit_remarks = forms.CharField()
+    add_what = forms.CharField()
