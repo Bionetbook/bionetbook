@@ -105,14 +105,14 @@ BASE_APPS = (
 )
 
 PROJECT_APPS = (
-        'core',
-        'protocols',
-        'verbs',
-        'steps',
-        'actions',
-        'profiles',
-        'schedule',
-    )
+    'core',
+    'protocols',
+    'verbs',
+    'steps',
+    'actions',
+    'profiles',
+    'schedule',
+)
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
 
