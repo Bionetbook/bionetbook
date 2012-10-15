@@ -28,7 +28,7 @@ from elute import EluteForm
 from equilibrate import EquilibrateForm
 from excise import ExciseForm
 from extract import ExtractForm
-from filter_ import FilterForm
+from filter import FilterForm
 from grind import GrindForm
 from grow import GrowForm
 from harvest import HarvestForm
