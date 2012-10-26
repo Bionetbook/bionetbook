@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class EluteForm(forms.VerbForm):
 
-    name = "elute"
+    name = "Elute"
     slug = "elute"
-
 
     edit_what_remark = forms.CharField()
     edit_into = forms.CharField()

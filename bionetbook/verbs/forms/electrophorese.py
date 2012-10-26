@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class ElectrophoreseForm(forms.VerbForm):
 
-    name = "electrophorese"
+    name = "Electrophorese"
     slug = "electrophorese"
 
 

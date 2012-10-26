@@ -6,7 +6,6 @@ class CheckForm(forms.VerbForm):
     name = "Check"
     slug = "check"
 
-
     edit_what_remark = forms.CharField()
     specify_machine = forms.CharField()
     edit_remarks = forms.CharField()

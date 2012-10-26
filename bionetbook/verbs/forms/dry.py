@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class DryForm(forms.VerbForm):
 
-    name = "dry"
+    name = "Dry"
     slug = "dry"
 
 

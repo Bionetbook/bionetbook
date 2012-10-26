@@ -6,7 +6,6 @@ class ApplyForm(forms.VerbForm):
     name = "Apply"
     slug = "apply"
 
-
     edit_what_remark = forms.CharField()
     describe_where = forms.CharField()
     duration_min_time = forms.IntegerField()

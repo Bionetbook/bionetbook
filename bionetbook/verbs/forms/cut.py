@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CutForm(forms.VerbForm):
 
-    name = "cut"
+    name = "Cut"
     slug = "cut"
 
 

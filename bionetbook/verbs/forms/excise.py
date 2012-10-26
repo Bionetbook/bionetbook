@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class ExciseForm(forms.VerbForm):
 
-    name = "excise"
+    name = "Excise"
     slug = "excise"
-
 
     edit_what_remark = forms.CharField()
     specify_tool = forms.CharField()

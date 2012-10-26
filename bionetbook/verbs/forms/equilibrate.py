@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class EquilibrateForm(forms.VerbForm):
 
-    name = "equilibrate"
+    name = "Equilibrate"
     slug = "equilibrate"
-
 
     edit_what_remark = forms.CharField()
     add_with_what = forms.CharField()
