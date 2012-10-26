@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class MeltForm(forms.VerbForm):
 
-    name = "melt"
+    name = "Melt"
     slug = "melt"
-
 
     edit_what_remark = forms.CharField()
     specify_machine = forms.CharField()

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class LetSitStandForm(forms.VerbForm):
 
-    name = "let sit/stand"
+    name = "Let Sit/Stand"
     slug = "let-sit-stand"
 
     duration_in_seconds = forms.IntegerField()

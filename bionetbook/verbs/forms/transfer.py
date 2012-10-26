@@ -6,7 +6,6 @@ class TransferForm(forms.VerbForm):
     name = "transfer"
     slug = "transfer"
 
-
     describe_where = forms.CharField()
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()

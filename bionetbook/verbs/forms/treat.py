@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class TreatForm(forms.VerbForm):
 
-    name = "treat"
+    name = "Treat"
     slug = "treat"
-
 
     edit_what_remark = forms.CharField()
     edit_machine_settings = forms.CharField()
