@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class SplitForm(forms.VerbForm):
 
-    name = "split"
+    name = "Split"
     slug = "split"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

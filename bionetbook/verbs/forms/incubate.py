@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class IncubateForm(forms.VerbForm):
 
-    name = "incubate"
+    name = "Incubate"
     slug = "incubate"
 
     edit_what_remark = forms.CharField()

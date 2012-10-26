@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class PrecipitateForm(forms.VerbForm):
 
-    name = "precipitate"
+    name = "Precipitate"
     slug = "precipitate"
 
     edit_what_remark = forms.CharField()

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class TransferForm(forms.VerbForm):
 
-    name = "transfer"
+    name = "Transfer"
     slug = "transfer"
 
     describe_where = forms.CharField()

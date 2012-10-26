@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class GrindForm(forms.VerbForm):
 
-    name = "grind"
+    name = "Grind"
     slug = "grind"
 
     edit_what_remark = forms.CharField()

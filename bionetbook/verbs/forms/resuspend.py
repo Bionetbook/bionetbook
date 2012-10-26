@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class ResuspendForm(forms.VerbForm):
 
-    name = "resuspend"
+    name = "Resuspend"
     slug = "resuspend"
-
 
     edit_what_remark = forms.CharField()
     add_with_what = forms.CharField()

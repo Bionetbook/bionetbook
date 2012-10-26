@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class VortexForm(forms.VerbForm):
 
-    name = "vortex"
+    name = "Vortex"
     slug = "vortex"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

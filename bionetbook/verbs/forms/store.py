@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class StoreForm(forms.VerbForm):
 
-    name = "store"
+    name = "Store"
     slug = "store"
-
 
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()
