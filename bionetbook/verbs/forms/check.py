@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CheckForm(forms.VerbForm):
 
-    name = "check"
+    name = "Check"
     slug = "check"
 
 

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class ApplyForm(forms.VerbForm):
 
-    name = "apply"
+    name = "Apply"
     slug = "apply"
 
 

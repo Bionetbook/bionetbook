@@ -4,7 +4,7 @@ from verbs.baseforms import forms
 class CentrifugeForm(forms.VerbForm):
 
     name = "Centrifuge"
-    slug = "Centrifuge"
+    slug = "centrifuge"
 
 
     edit_what_remark = forms.CharField()

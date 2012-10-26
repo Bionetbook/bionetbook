@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class ActionForm(forms.VerbForm):
 
-    name = "action" # cannot silence the name without an error, the name here is redundant
+    name = "Action" # cannot silence the name without an error, the name here is redundant
     slug = "action"
 
 

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class AliquotForm(forms.VerbForm):
 
-    name = "aliquot"
+    name = "Aliquot"
     slug = "aliquot"
 
 

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CloseForm(forms.VerbForm):
 
-    name = "close"
+    name = "Close"
     slug = "close"
 
 

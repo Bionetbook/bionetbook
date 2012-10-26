@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class AttachForm(forms.VerbForm):
 
-    name = "attach"
+    name = "Attach"
     slug = "attach"
 
 

@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class AgitateForm(forms.VerbForm):
 
-    name = "agitate"
+    name = "Agitate"
     slug = "agitate"
 
 
