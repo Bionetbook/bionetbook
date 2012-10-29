@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CombineForm(forms.VerbForm):
 
-    name = "combine"
+    name = "Combine"
     slug = "combine"
 
 

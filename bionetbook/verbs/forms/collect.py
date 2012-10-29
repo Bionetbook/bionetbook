@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CollectForm(forms.VerbForm):
 
-    name = "collect"
+    name = "Collect"
     slug = "collect"
 
     duration_in_seconds = forms.IntegerField()

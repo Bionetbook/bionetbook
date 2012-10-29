@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class PrepareForm(forms.VerbForm):
 
-    name = "prepare"
+    name = "Prepare"
     slug = "prepare"
-
 
     edit_what_remark = forms.CharField()
     comment_why = forms.CharField()

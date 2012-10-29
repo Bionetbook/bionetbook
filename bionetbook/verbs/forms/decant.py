@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class DecantForm(forms.VerbForm):
 
-    name = "decant"
+    name = "Decant"
     slug = "decant"
 
 

@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class CheckForm(forms.VerbForm):
 
-    name = "check"
+    name = "Check"
     slug = "check"
-
 
     edit_what_remark = forms.CharField()
     specify_machine = forms.CharField()

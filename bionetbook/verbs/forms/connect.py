@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class ConnectForm(forms.VerbForm):
 
-    name = "connect"
+    name = "Connect"
     slug = "connect"
 
 

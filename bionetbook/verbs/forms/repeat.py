@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class RepeatForm(forms.VerbForm):
 
-    name = "repeat"
+    name = "Repeat"
     slug = "repeat"
-
 
     edit_what_remark = forms.CharField()
     add_with_what = forms.CharField()

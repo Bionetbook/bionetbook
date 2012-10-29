@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CoolForm(forms.VerbForm):
 
-    name = "cool"
+    name = "Cool"
     slug = "cool"
 
 

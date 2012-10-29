@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class DiscardForm(forms.VerbForm):
 
-    name = "discard"
+    name = "Discard"
     slug = "discard"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

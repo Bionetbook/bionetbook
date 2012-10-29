@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class GrowForm(forms.VerbForm):
 
-    name = "grow"
+    name = "Grow"
     slug = "grow"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

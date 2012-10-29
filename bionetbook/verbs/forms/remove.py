@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class RemoveForm(forms.VerbForm):
 
-    name = "remove"
+    name = "Remove"
     slug = "remove"
-
 
     edit_what_remark = forms.CharField()
     specify_tool = forms.CharField()

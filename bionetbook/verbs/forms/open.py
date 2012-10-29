@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class OpenForm(forms.VerbForm):
 
-    name = "open"
+    name = "Open"
     slug = "open"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class WeighForm(forms.VerbForm):
 
-    name = "weigh"
+    name = "Weigh"
     slug = "weigh"
-
 
     edit_what_remark = forms.CharField()
     edit_vessel_type = forms.CharField()

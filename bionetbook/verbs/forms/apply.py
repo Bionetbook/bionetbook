@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class ApplyForm(forms.VerbForm):
 
-    name = "apply"
+    name = "Apply"
     slug = "apply"
-
 
     edit_what_remark = forms.CharField()
     describe_where = forms.CharField()

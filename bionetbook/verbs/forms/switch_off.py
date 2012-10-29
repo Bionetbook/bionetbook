@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class SwitchOffForm(forms.VerbForm):
 
-    name = "switch off"
+    name = "Switch Off"
     slug = "switch-off"
 
     duration_in_seconds = forms.IntegerField()

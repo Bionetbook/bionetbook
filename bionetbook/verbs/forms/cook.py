@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CookForm(forms.VerbForm):
 
-    name = "cook"
+    name = "Cook"
     slug = "cook"
 
     duration_in_seconds = forms.IntegerField()

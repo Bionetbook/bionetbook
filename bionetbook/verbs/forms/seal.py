@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class SealForm(forms.VerbForm):
 
-    name = "seal"
+    name = "Seal"
     slug = "seal"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

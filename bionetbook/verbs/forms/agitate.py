@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class AgitateForm(forms.VerbForm):
 
-    name = "agitate"
+    name = "Agitate"
     slug = "agitate"
-
 
     duration_min_time = forms.IntegerField()
     add_conditional_statement = forms.CharField()

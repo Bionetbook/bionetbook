@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class CoverForm(forms.VerbForm):
 
-    name = "cover"
+    name = "Cover"
     slug = "cover"
 
 

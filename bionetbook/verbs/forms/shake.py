@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class ShakeForm(forms.VerbForm):
 
-    name = "shake"
+    name = "Shake"
     slug = "shake"
-
 
     edit_remarks = forms.CharField()
     add_conditional_statement = forms.CharField()

@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class MixForm(forms.VerbForm):
 
-    name = "mix"
+    name = "Mix"
     slug = "mix"
-
 
     duration_min_time = forms.IntegerField()
     comment_why = forms.CharField()

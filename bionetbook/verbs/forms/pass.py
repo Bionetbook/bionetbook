@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class PassForm(forms.VerbForm):
 
-    name = "pass"
+    name = "Pass"
     slug = "pass"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

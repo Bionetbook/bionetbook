@@ -3,9 +3,8 @@ from verbs.baseforms import forms
 
 class StopForm(forms.VerbForm):
 
-    name = "stop"
+    name = "Stop"
     slug = "stop"
-
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

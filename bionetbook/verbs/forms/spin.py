@@ -3,7 +3,7 @@ from verbs.baseforms import forms
 
 class SpinForm(forms.VerbForm):
 
-    name = "spin"
+    name = "Spin"
     slug = "spin"
 
     duration_in_seconds = forms.IntegerField()
