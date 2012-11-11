@@ -1,0 +1,63 @@
+Category_tags: ''
+Input: DNA embedded in agarose gel
+Name: Gel extraction of DNA
+Output: DNA, purified
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: "Purification of cDNA fragments: The following protocol is used in the Basic\
+  \ Protocol at steps 27 and 31 \nto purify a cDNA library from an agarose gel in\
+  \ order to isolate and \npurify only the cDNA fragments of a length suitable for\
+  \ sequencing on an\n Illumina Genome Analyzer. An agarose slice is cut from the\
+  \ gel, melted,\n and purified using Qiagen's Gel Extraction kit following the \n\
+  manufacturer's recommended protocol."
+Specific_tags: ''
+components-location:
+- [14, 0, 0]
+- [21, 1, 0]
+steps:
+- Actions:
+  - component - list:
+    - {min_conc: '1.5', reagent_name: agarose in water}
+    - {conc_units: micrograms/milliLiter, max_conc: '0.3', min_conc: '0.3', reagent_name: ethidium
+        bromide}
+    - {max_vol: '100', min_vol: '100', reagent_name: Total Volume, vol_units: milliliter}
+    duration_comment: Unknown, Protocol
+    protocol_name: ' Gel preparation'
+    protocol_output: ' 1.5% to 2% standard agarose/ethidium bromide gel'
+    protocol_type: ' Gel preparation'
+    remark: prepare a 1.5% to 2% standard agarose/ethidium bromide gel using a  100-cm
+      gel rack (unit 2.5a). approximately 100 ml of agarose solution will be needed,
+      containing 3 _l of 10 mg/ml ethidium bromide.
+    verb: call_for_protocol
+  stepnum: 0
+- Actions:
+  - component - list:
+    - {max_vol: User input, min_vol: User input, reagent_name: 'Nucleic Acid, cDNA
+        library', vol_units: User input}
+    - {max_vol: User input, min_vol: User input, reagent_name: 'Buffer, DNA loading
+        1x', vol_units: User input}
+    - {max_vol: '15', min_vol: '15', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per sample
+    pipet: Min Time
+    time_units: minutes
+    verb: combine
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: load}
+  stepnum: 1
+- Actions:
+  - {duration_comment: Passive, electrophoresis_device: Min Voltage, max_time: '90',
+    max_voltage: '100', min_time: '60', min_voltage: '80', time_units: minutes, verb: electrophorese,
+    voltage_units: Volts}
+  stepnum: 2
+- Actions:
+  - {duration_comment: Active, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: stop, what: electrophoresis}
+  - {'clean,_disposable_scalpel': Min Time, duration_comment: Active, max_time: '10',
+    time_units: minutes, verb: excise, what: 150-350bp_target_band_from_gel}
+  stepnum: 3
+- Actions:
+  - {duration_comment: 'Unknown, Protocol', protocol_kit name: ' Qiagen''s Gel Extraction
+      Kit', protocol_output: ' Nucleic Acid, DNA', protocol_type: ' Gel Extraction',
+    remark: follow the manufacturer's recommended protocol., verb: call_for_protocol}
+  stepnum: 4

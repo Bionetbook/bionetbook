@@ -26,14 +26,12 @@ seal	step - why
 seal	remarks
 seal	how - using machine
 seal	how - temperature
-seal	Action
 resuspend	what
 resuspend	how - with
 resuspend	duration
 resuspend	protocol - name
 resuspend	protocol - output
 resuspend	remarks
-resuspend	Action
 agitate	how
 agitate	duration
 agitate	conditional
@@ -41,7 +39,6 @@ agitate	what
 agitate	why
 agitate	where
 agitate	remarks
-agitate	Action
 agitate	how - with
 let sit/stand	remarks
 let sit/stand	how
@@ -72,12 +69,10 @@ incubate	how - temperature
 incubate	duration
 incubate	why
 incubate	remarks
-incubate	action
 incubate	protocol - name
 incubate	protocol - input
 incubate	protocol - output
 incubate	protocol - output components list
-incubate	Action
 incubate	where - vessel
 incubate	how
 incubate	protocol - kit name
@@ -90,7 +85,6 @@ check	what
 check	how - using machine
 check	remarks
 check	duration
-check	Action
 check	protocol - name
 check	protocol - output
 check	protocol - output components list
@@ -102,7 +96,6 @@ thermal cycle	protocol - kit name
 thermal cycle	protocol - output
 thermal cycle	protocol - output components list
 thermal cycle	remarks
-thermal cycle	Action
 pour off	what
 pour off	duration
 centrifuge	what
@@ -143,7 +136,6 @@ decant	what
 decant	duration
 decant	how
 decant	what - component list
-decant	Action
 melt	what
 melt	how - using machine
 melt	duration
@@ -189,7 +181,6 @@ pass	how - with
 pass	how - number of times
 store	how - temperature
 store	duration
-store	Action
 store	what
 store	remarks
 store	where - vessel
@@ -218,7 +209,6 @@ aliquot	what
 aliquot	how
 aliquot	where - vessel
 aliquot	duration
-aliquot	Action
 aliquot	what - component list
 switch off	remarks
 switch off	what
@@ -226,7 +216,6 @@ switch off	duration
 switch off	step - why
 switch off	where
 switch off	how - using machine
-switch off	Action
 pipette out	what
 pipette out	remarks
 pipette out	duration
@@ -236,7 +225,6 @@ stop	how - using tool
 stop	protocol - kit name
 stop	protocol - output
 stop	remarks
-stop	Action
 stop	where - vessel
 stop	where
 call for protocol	protocol - type
@@ -250,7 +238,6 @@ heat	what
 heat	how - temperature
 heat	duration
 heat	remarks
-heat	Action
 heat	how
 weigh	what
 weigh	where - vessel

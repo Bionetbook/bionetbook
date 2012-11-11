@@ -1,7 +1,7 @@
 caution/warning	edit_caution_or_warning	forms.CharField()
 conditional	add_conditional_statement	forms.CharField()
 duration	duration_min_time	forms.IntegerField()
-How	edit_how	forms.CharField()
+how	edit_how	forms.CharField()
 how - centrifuge speed	min_spin_speed	forms.IntegerField()
 how - centrifuge speed	max_spin_speed	forms.IntegerField()
 how - machine settings	edit_machine_settings	forms.CharField()

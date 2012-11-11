@@ -1,0 +1,52 @@
+Category_tags: dsDNA modification
+Input: Blunt-end dsDNA
+Name: Add dA base to 3' ends of dsDNA
+Output: ds DNA with single 3' A overhang
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: 'An overhanging adenine (A) base is added to the 3'' end of the blunt DNA
+  fragments by
+
+  the use of Klenow fragment. This aids the ligation of the Illumina adapters, which
+  have
+
+  a single thymine (T) base overhang at their 3'' ends.'
+Specific_tags: ''
+components-location:
+- [12, 0, 0]
+- [34, 2, 0]
+steps:
+- Actions:
+  - component - list:
+    - {max_vol: '34', min_vol: '34', reagent_name: 'Nucleic Acid, cDNA, fragments,
+        end-repaired', vol_units: microliter}
+    - {note: NEB Buffer 2, reagent_name: 'Buffer, Klenow (NEB buffer 2; New England
+        Biolabs)', vol_units: microliter}
+    - {conc_units: milliMolar, max_vol: '10', min_vol: '10', note: See action remark,
+      reagent_name: 'Nucleic Acid, dATP (New England Biolabs)', vol_units: microliter}
+    - {reagent_name: 'Enzyme Mix, Klenow fragment (3'' to 5'' exo-) (New England Biolabs)',
+      vol_units: microliter}
+    - {max_vol: '50', min_vol: '50', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    time_units: minutes
+    verb: combine
+  - {duration_comment: Active; Per Sample, how: by pipetting (curator assumption),
+    max_time: '0.25', min_time: '0.25', time_units: minutes, verb: mix}
+  stepnum: 0
+- Actions:
+  - {duration_comment: Passive, how: in a water bath or heat block, max_temp: '37',
+    max_time: '30', min_temp: '37', min_time: '30', temp_comment: In a heat block,
+    temp_units: degrees Celsius, time_units: minutes, verb: incubate}
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {max_vol: '10', min_vol: '10', reagent_name: 'Nucleic Acid, DNA, double-stranded,
+        with single 3'' A overhang', vol_units: microliter}
+    - {max_vol: '10', min_vol: '10', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_kit name: ' Qiagen''s QIAquick MinElute PCR Purification kit'
+    protocol_output: ' Nucleic Acid, DNA, double-stranded, with single 3'' A overhang'
+    protocol_type: ' PCR Purification'
+    verb: call_for_protocol
+  stepnum: 2

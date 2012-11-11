@@ -1,0 +1,70 @@
+Category_tags: ''
+Input: Nucleic Acid, RNA, poly(A)+
+Name: cDNA Library Prep
+Output: Nucleic Acid, cDNA library
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: cDNA library preparation using hydrolyzed or fragmented RNA. Sequencing using
+  RNA fragmented by partial hydrolysis can also be done for comprehensive transcriptome
+  analysis. This protocol describes cDNA library preparation by partially hydrolyzing
+  the RNA before making cDNA. The cDNA is then made using random hexamers or oligo(dT)
+  primers and sequenced using an Illumina Genome Analyzer. As with the cDNA fragmentation
+  step in the Basic Protocol (step 16), care should be taken to avoid complete degradation
+  during RNA fragmentation.
+Specific_tags: ''
+components-location:
+- [11, 0, 0]
+- [26, 2, 0]
+- [46, 4, 0]
+steps:
+- Actions:
+  - component - list:
+    - {max_conc: '10', min_conc: '10', reagent_name: 'Buffer, RNA fragmentation',
+      vol_units: microliter}
+    - {conc_units: User input, mass_units: nanograms, max_conc: User input, max_mass: '1000',
+      max_vol: User input, min_conc: User input, min_mass: '100', min_vol: User input,
+      reagent_name: 'Nucleic Acid, RNA, poly(A)+', vol_units: User input}
+    - {max_vol: User input, min_vol: User input, reagent_name: 'Water, nuclease-free,
+        sterile', vol_units: microliter}
+    - {max_vol: '10', min_vol: '10', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '1.5'
+    min_time: '1.5'
+    nuclease-free_microcentrifuge_tube: Min Time
+    time_units: minutes
+    verb: combine
+  stepnum: 0
+- Actions:
+  - {duration_comment: Passive, max_temp: '65', min_temp: '65', temp_units: degrees
+      Celsius, time_units: minutes, verb: incubate}
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {conc_units: Molar, max_conc: '0.2', min_conc: '0.2', note: Reaction stop buffer,
+      reagent_name: 'Chelating agent, EDTA', vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '0.5'
+    min_time: '0.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Passive, how: on ice, min_temp: '-5', temp_comment: On ice,
+    temp_units: degrees Celsius, time_units: minutes, verb: chill}
+  stepnum: 2
+- Actions:
+  - {duration_comment: 'Unknown, Protocol', protocol_name: ' Ethanol precipitation',
+    protocol_output: ' Nucleic Acid, RNA', protocol_type: ' RNA precipitation', remark: see
+      support protocol 1, verb: call_for_protocol}
+  stepnum: 3
+- Actions:
+  - component - list:
+    - {max_vol: '34', min_vol: '34', reagent_name: 'Nucleic Acid, cDNA library', vol_units: microliter}
+    - {max_vol: '34', min_vol: '34', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_name: ' "Basic Protocol"'
+    protocol_output: ' Nucleic Acid, cDNA library'
+    protocol_type: ' cDNA library preparation'
+    remark: follow the basic protocol starting at step 2 with 100 ng to 1 _g fragmented
+      poly(a)+ rna, but use 34 _l of buffer eb in step 13, and skip steps 14 to 18.
+    verb: call_for_protocol
+  stepnum: 4

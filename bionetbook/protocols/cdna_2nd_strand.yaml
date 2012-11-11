@@ -1,0 +1,79 @@
+Category_tags: cDNA synthesis
+Input: ssRNA/ssDNA hyrbid
+Name: Second strand cDNA synthesis
+Output: dsDNA
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: In the following series of steps the RNA is removed from the DNA-RNA hybrid
+  and a replacement strand is synthesized, thereby generating double-stranded cDNA.
+Specific_tags: ''
+components-location:
+- [11, 0, 0]
+- [33, 2, 0]
+- [47, 3, 0]
+- [65, 4, 0]
+steps:
+- Actions:
+  - component - list:
+    - {max_vol: '91', min_vol: '91', reagent_name: 'Water, nuclease-free, sterile',
+      vol_units: microliter}
+    - {max_vol: '30', min_vol: '30', reagent_name: 'Buffer, Second strand cDNA synthesis
+        (Invitrogen)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '10', min_conc: '10', reagent_name: 'Nucleic
+        Acid, dNTPs (Invitrogen)', vol_units: microliter}
+    - {conc_units: Units/microliter, max_conc: '10', min_conc: '10', reagent_name: 'Enzyme,
+        E.coli DNA ligase', vol_units: microliter}
+    - {conc_units: Units/microliter, max_conc: '10', min_conc: '10', reagent_name: 'Enzyme,
+        E.coli DNA polymerase I', vol_units: microliter}
+    - {conc_units: Units/microliter, reagent_name: 'Enzyme, E.coli RNase H', vol_units: microliter}
+    - {max_vol: '150', min_vol: '150', reagent_name: 'Total Volume:', vol_units: microliter}
+    duration_comment: Active; Per sample
+    first-strand_cdna_synthesis_reaction_tube: Min Time
+    time_units: minutes
+    verb: add
+  stepnum: 0
+- Actions:
+  - {duration_comment: Active; Per sample, how: 'well, by pipetting up and down',
+    max_time: '0.25', min_time: '0.25', time_units: minutes, verb: mix}
+  - {duration_comment: Passive, max_temp: '16', min_temp: '16', temp_comment: using
+      a thermal cycler, temp_units: degrees Celsius, time_units: hours, verb: incubate}
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {conc_units: Units/microliter, reagent_name: 'Enzyme, T4 DNA polymerase', vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '0.5'
+    min_time: '0.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Active; Per sample, how: by pipetting up and down, max_time: '0.25',
+    min_time: '0.25', time_units: minutes, verb: mix}
+  - {duration_comment: Passive, max_temp: '16', min_temp: '16', temp_units: degrees
+      Celsius, time_units: minutes, verb: incubate}
+  stepnum: 2
+- Actions:
+  - component - list:
+    - {conc_units: Molar, max_conc: '0.5', max_vol: '10', min_conc: '0.5', min_vol: '10',
+      reagent_name: 'Chelating agent, EDTA', vol_units: microliter}
+    - {max_vol: '162', min_vol: '162', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '0.5'
+    min_time: '0.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Passive, speed_comment: Pulse, time_comment: Brief, time_units: minutes,
+    verb: centrifuge, what: tubes, why: to collect the contents of the tube}
+  - {verb: place, what: sample}
+  stepnum: 3
+- Actions:
+  - component - list:
+    - {max_vol: '25', min_vol: '25', reagent_name: 'Nucleic Acid, DNA, double-stranded,
+        dissolved in Buffer EB', vol_units: microliter}
+    - {max_vol: '25', min_vol: '25', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_kit name: ' Qiagen''s QIAquick PCR Purification Kit'
+    protocol_output: ' Nucleic Acid, DNA, double-stranded, dissolved in Buffer EB'
+    protocol_type: ' PCR Purification'
+    verb: call_for_protocol
+  stepnum: 4

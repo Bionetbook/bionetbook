@@ -1,0 +1,55 @@
+Category_tags: dsDNA modification
+Input: Fragmented dsDNA
+Name: End repair of fragmented dsDNA
+Output: Blunt-end dsDNA
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: 'This protocol converts any overhangs at the cDNA ends into blunt ends using
+  T4 DNA
+
+  polymerase. The 3'' to 5'' exonuclease activity of these enzymes removes 3'' overhangs,
+
+  and the polymerase activity fills in 5'' overhangs.'
+Specific_tags: ''
+components-location:
+- [11, 0, 0]
+- [33, 2, 0]
+steps:
+- Actions:
+  - component - list:
+    - {max_conc: '10', min_conc: '10', reagent_name: 'Buffer, End-repair (Epicentre
+        Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '2.5', min_conc: '2.5', reagent_name: 'Nucleic
+        Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '10', min_conc: '10', reagent_name: 'Nucleic
+        Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
+    - {reagent_name: 'Enzyme Mix, End-repair (Epicentre Biotechnologies, End-It DNA
+        End-Repair Kit)', vol_units: microliter}
+    - {max_vol: '34', min_vol: '34', reagent_name: 'Output from prior protocol (Illumina,
+        Fragment ds cDNA)', vol_units: microliter}
+    - {max_vol: '50', min_vol: '50', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    max_time: '2.5'
+    min_time: '2.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Active; Per Sample, how: by pipetting up and down, max_time: '0.25',
+    min_time: '0.25', time_units: minutes, verb: mix}
+  stepnum: 0
+- Actions:
+  - {duration_comment: Passive, max_temp: '25', max_time: '45', min_temp: '20', min_time: '45',
+    temp_comment: Room temperature, temp_units: degrees Celsius, time_units: minutes,
+    verb: incubate}
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {max_vol: '34', min_vol: '34', reagent_name: 'Nucleic Acid, end-repaired cDNA
+        fragments', vol_units: microliter}
+    - {max_vol: '34', min_vol: '34', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_name: ' QIAquick PCR Purification Kit'
+    protocol_output: ' Nucleic Acid, end-repaired cDNA fragments'
+    protocol_type: ' PCR Purification'
+    verb: call_for_protocol
+  stepnum: 2

@@ -1,0 +1,146 @@
+Category_tags: ''
+Input: Nucleic Acid, RNA, total
+Name: Isolation of Poly(A) + RNA
+Output: Nucleic Acid, RNA, poly(A)+
+Reference_DOI: ''
+Reference_PMID: 'The following solutions should be treated with DEPC to inhibit RNase
+  activity: water, 10M LiCl, 3 M sodium acetate. See UNIT 4.1, reagents and solutions,
+  for instructions. CAUTION: DEPC is a suspected carcinogen and should be handled
+  carefully.'
+Reference_URL: '18265239'
+Remarks: This protocol separates poly(A)+ RNA from the remainder of total RNA, which
+  is largely rRNA and tRNA. Total RNA is denatured to expose the poly(A) (polyadenylated)
+  tails. Poly(A)-containing RNA is then bound to oligo(dT) cellulose, with the remainder
+  of the RNA washing through. The poly(A)+ RNA is eluted by removing salt from the
+  solution, thus destabilizing the dT:rA hybrid. The column can then be repeated to
+  remove contaminating poly(A)_ RNA.
+Specific_tags: ''
+components-location:
+- [21, 1, 0]
+steps:
+- Actions:
+  - {conc_units: Molar, duration_comment: Active; Per sample, max_vol: '10', min_vol: '10',
+    reagent_name: 'Buffer, Sodium hydroxide (NaOH)', time_units: minutes, verb: wash,
+    vol_units: milliliter, what: a_silicanized_column}
+  - {duration_comment: Active; Per sample, remark: a silanized glass pasteur pipet
+      plugged with silanized glass wool or a small disposable column with a 2-ml capacity
+      can be used. it is important to silanize the column to prevent rna from sticking
+      to the glass or plastic., time_units: minutes, verb: rinse, 'water,_depc-treated': A
+      silanized glass Pasteur pipet plugged with silanized glass wool or a small disposable
+      column with a 2-ml capacity can be used. It is important to silanize the column
+      to prevent RNA from sticking to the glass or plastic., what: a_silicanized_column}
+  remark: A silanized glass Pasteur pipet plugged with silanized glass wool or a small
+    disposable column with a 2-ml capacity can be used. It is important to silanize
+    the column to prevent RNA from sticking to the glass or plastic.
+  stepnum: 0
+- Actions:
+  - component - list:
+    - {mass_units: grams, max_mass: '0.5', min_mass: '0.5', reagent_name: 'Oligo(dT)
+        cellulose, powder'}
+    - {conc_units: Molar, max_conc: '0.1', min_conc: '0.1', reagent_name: 'Buffer,
+        Sodium hydroxide (NaOH)', vol_units: milliliter}
+    duration_comment: Active; Per sample
+    time_units: minutes
+    verb: combine
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', the_column: Min
+      Time, time_units: minutes, verb: pour, what: the_slurry}
+  - {duration_comment: Active; Per sample, max_vol: '10', min_vol: '10', reagent_name: 'Water,
+      DEPC-treated', time_units: minutes, verb: rinse, vol_units: milliliter, what: the_column}
+  stepnum: 1
+- Actions:
+  - {duration_comment: Active; Per sample, max_vol: '20', min_vol: '10', reagent_name: 'Buffer,
+      Loading', remark: the ph of the output should be near 7.5 at the end of the
+      wash., time_units: minutes, verb: equilibrate, vol_units: milliliter, what: the_column}
+  remark: The pH of the output should be near 7.5 at the end of the wash.
+  stepnum: 2
+- Actions:
+  - {duration_comment: Passive, how: in water, max_temp: '70', max_time: '10', min_temp: '70',
+    min_time: '10', temp_units: degrees Celsius, time_units: minutes, verb: heat,
+    what: reagent_name}
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', remark: 'heating
+      the rna is necessary to disrupt any secondary structure that might form. it
+      is important not to have too large a column for the amount of rna selected.
+      this is because the final poly(a)+ rna will be so dilute that precipitation
+      and workup of the sample will be very inefficient. therefore, use a much smaller
+      column when poly(a)+-selecting 500 ug or less of rna, and scale down all of
+      the steps accordingly. generally, 1 ml of oligo(dt) cellulose is sufficient
+      for 5 to 10 mg input rna.', time_units: minutes, verb: add, what: rna_sample}
+  remark: Heating the RNA is necessary to disrupt any secondary structure that might
+    form. It is important not to have too large a column for the amount of RNA selected.
+    This is because the final poly(A)+ RNA will be so dilute that precipitation and
+    workup of the sample will be very inefficient. Therefore, use a much smaller column
+    when poly(A)+-selecting 500 ug or less of RNA, and scale down all of the steps
+    accordingly. Generally, 1 ml of oligo(dT) cellulose is sufficient for 5 to 10
+    mg input RNA.
+  stepnum: 3
+- Actions:
+  - {duration_comment: Active; Per sample, how: through the oligo(dt) column, time_units: minutes,
+    verb: pass, what: the_rna_solution}
+  - {duration_comment: Active; Per sample, reagent_name: 'Buffer, Poly(A) loading
+      buffer', remark: make certain to save the eluant from this loading step., time_units: minutes,
+    verb: wash, vol_units: milliliter, what: the_column}
+  remark: Make certain to save the eluant from this loading step.
+  stepnum: 4
+- Actions:
+  - {'2': Min Time, duration_comment: Active; Per sample, how: through the oligo(dt)
+      column, remark: the starting rna is passed through the column three times to
+      ensure that all of the poly(a)+ rna has stuck to the oligo(dt)., time_units: minutes,
+    verb: pass, what: the_eluant}
+  remark: The starting RNA is passed through the column three times to ensure that
+    all of the poly(A)+ RNA has stuck to the oligo(dT).
+  stepnum: 5
+- Actions:
+  - {duration_comment: Active; Per sample, reagent_name: 'Buffer, Middle wash buffer',
+    time_units: minutes, verb: rinse, vol_units: milliliter, what: the_column}
+  stepnum: 6
+- Actions:
+  - {a_fresh_tube: Reagent name, conc_units: milliMolar, duration_comment: Active;
+      Per sample, reagent_name: 'Chelating agent, EDTA', time_units: minutes, verb: elute,
+    what: the_rna}
+  stepnum: 7
+- Actions:
+  - {duration_comment: Active; Per sample, remark: as in step 3, time_units: minutes,
+    verb: equilibrate, what: the_oligo_(dt)_column}
+  - {duration_comment: Active, eluted_rna: Min Time, max_time: '22.5', min_time: '22.5',
+    remark: 'optional: this second oligo(dt) column removes small levels of contaminating
+      poly(a)_ rna. it can be omitted if such contaminants will not create a problem,
+      e.g., when rna is to be used for s1 analysis.', time_units: minutes, verb: repeat,
+    what: steps_4_-_8}
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', remark: precipitate
+      the eluted rna by adjusting the salt concentration to 0.3 m sodium acetate using
+      a 3 m sodium acetate stock solution., time_units: minutes, verb: add, what: reagent_name}
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: add, what: reagent_name}
+  - {duration_comment: Active; Per sample, time_units: minutes, verb: transfer, what: the_solution}
+  - {duration_comment: Passive; Overnight, max_temp: '-20', min_temp: '-20', temp_units: degrees
+      Celsius, time_comment: Overnight, verb: incubate, what: the_eluted_rna}
+  - {duration_comment: Passive, machine: beckman sw-55 rotor, max_speed: '304000',
+    max_time: '30', min_speed: '304000', min_time: '30', remark: this high speed centrifugation
+      is required to pellet the very dilute rna., speed_units: xg-force, temp_units: degrees
+      Celsius, time_units: minutes, verb: centrifuge, why: to collect the precipitated
+      rna}
+  - {duration_comment: Passive, max_time: '30', min_time: '30', temp_comment: On dry
+      ice & ethanol, time_units: minutes, verb: incubate, what: the_eluted_rna}
+  - {duration_comment: Passive, machine: beckman sw-55 rotor, max_speed: '304000',
+    max_time: '30', min_speed: '304000', min_time: '30', remark: this high speed centrifugation
+      is required to pellet the very dilute rna., speed_units: xg-force, temp_units: degrees
+      Celsius, time_units: minutes, verb: centrifuge, why: to collect the precipitated
+      rna}
+  - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
+    verb: pour_off, what: the_ethanol}
+  - {duration_comment: Passive, how: by air drying, time_units: minutes, verb: dry,
+    what: the_rna_pellets}
+  - {duration_comment: Active; Per sample, max_vol: '150', min_vol: '150', reagent_name: 'Buffer,
+      RNase-free TE buffer', time_units: minutes, verb: resuspend, vol_units: microliter,
+    what: the_rna}
+  - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: combine, what: the_samples}
+  - {duration_comment: Passive, max_temp: '70', min_temp: '70', remark: 'optional:
+      to check the quality of the rna', temp_units: degrees Celsius, time_units: minutes,
+    verb: heat, what: reagent_name}
+  - {duration_comment: 'Unknown, Protocol', protocol_input: ' Sample from prior heat
+      action', protocol_name: ' Agarose gel electrophoresis', protocol_output: ' Image',
+    protocol_type: ' Agarose gel electrophoresis', remark: 'optional: analyze sample
+      on a 1% agarose gel', verb: call_for_protocol}
+  remark: This high speed centrifugation is required to pellet the very dilute RNA.
+  stepnum: 8

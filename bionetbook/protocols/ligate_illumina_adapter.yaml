@@ -1,0 +1,50 @@
+Category_tags: Ligation of adapters to dsDNA
+Input: dsDNA with single 3' A overhang
+Name: Illumina, Ligate Illumina Adapters
+Output: dsDNA with Illumina adapters
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: This protocol ligates adapters (supplied by Illumina) to the ends of cDNA
+  fragments.
+Specific_tags: Illumina adapters
+components-location:
+- [12, 0, 0]
+- [34, 2, 0]
+steps:
+- Actions:
+  - component - list:
+    - {max_vol: '10', min_vol: '10', reagent_name: 'Output from prior protocol (Illumina,
+        Add dA base to 3'' ends)', vol_units: microliter}
+    - {max_vol: '15', min_vol: '15', reagent_name: 'Buffer, T4 DNA ligase buffer',
+      vol_units: microliter}
+    - {max_conc: '0.1', min_conc: '0.02', note: 'diluted 1:10 to 1:50 in nucelease-free,
+        sterile water', reagent_name: 'Nucleic Acid, Adapter, Illumina adapter mix',
+      vol_units: microliter}
+    - {reagent_name: 'Water, nuclease-free, sterile', vol_units: microliter}
+    - {conc_units: Units/microliter, reagent_name: 'Enzyme, T4 DNA ligase', vol_units: microliter}
+    - {max_vol: '30', min_vol: '30', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    max_time: '2.5'
+    min_time: '2.5'
+    time_units: minutes
+    verb: combine
+  - {duration_comment: Active; Per Sample, how: by pipetting (curator assumption),
+    max_time: '0.25', min_time: '0.25', time_units: minutes, verb: mix}
+  stepnum: 0
+- Actions:
+  - {duration_comment: Passive, max_temp: '25', max_time: '15', min_temp: '20', min_time: '15',
+    temp_comment: Room temperature, temp_units: degrees Celsius, time_units: minutes,
+    verb: incubate}
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {max_vol: '23', min_vol: '23', reagent_name: 'Nucleic Acid, DNA fragments (150bp
+        - 350 bp)', vol_units: microliter}
+    - {max_vol: '23', min_vol: '23', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_name: ' Support Protocol 2'
+    protocol_output: ' Nucleic Acid, DNA fragments (150bp - 350 bp)'
+    protocol_type: ' Gel Purification'
+    verb: call_for_protocol
+  stepnum: 2

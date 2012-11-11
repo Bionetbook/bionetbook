@@ -1,0 +1,79 @@
+Category_tags: dsDNA modification
+Input: dsDNA
+Name: Fragmenting dsDNA, DNase I
+Output: Fragmented dsDNA
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: 'Double-stranded cDNA obtained in step (Illumina Second Strand cDNA synthesis).5
+  is fragmented using DNase I to generate
+
+  small fragments of cDNA suitable for sequencing using an Illumina Genome Analyzer.'
+Specific_tags: DNase I
+components-location:
+- [11, 0, 0]
+- [19, 1, 0]
+- [25, 2, 0]
+- [53, 3, 0]
+steps:
+- Actions:
+  - component - list:
+    - {reagent_name: Water, vol_units: microliter}
+    - {reagent_name: 'Buffer, DNase I (New England Biolabs)', vol_units: microliter}
+    - {conc_units: Units/microliter, reagent_name: 'Enzyme, DNase I (New England Biolabs)',
+      vol_units: microliter}
+    - {max_vol: '10', min_vol: '10', reagent_name: Total volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    in_a_microcentrifuge_tube: Min Time
+    max_time: '1.5'
+    min_time: '1.5'
+    time_units: minutes
+    verb: combine
+  stepnum: 0
+- Actions:
+  - component - list:
+    - {max_vol: '25', min_vol: '25', reagent_name: Output from prior protocol (Illumina
+        Second Strand cDNA synthesis); ds DNA, vol_units: microliter}
+    - {reagent_name: 'Output from prior step (Illumina, Fragment ds cDNA).1', vol_units: microliter}
+    - {max_vol: '27', min_vol: '27', reagent_name: Total volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    time_units: minutes
+    verb: combine
+  stepnum: 1
+- Actions:
+  - component - list:
+    - {reagent_name: 'Water, nuclease-free, sterile', vol_units: microliter}
+    - {max_vol: '34', min_vol: '34', reagent_name: Total volume, vol_units: microliter}
+    duration_comment: Active; Per Sample
+    max_time: '0.5'
+    min_time: '0.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Passive, max_temp: '37', max_time: '10', min_temp: '37', min_time: '10',
+    temp_units: degrees Celsius, time_units: minutes, verb: incubate}
+  - {duration_comment: Active, how: immediately, max_temp: '100', max_time: '0.1',
+    min_temp: '100', min_time: '0.1', temp_units: degrees Celsius, time_units: minutes,
+    verb: transfer}
+  - {duration_comment: Passive, max_temp: '100', max_time: '10', min_temp: '100',
+    min_time: '10', temp_comment: in a heat block, temp_units: degrees Celsius, time_units: minutes,
+    verb: incubate, why: to terminate the dnase i reaction}
+  remark: Failure to do this in a timely fashion can result in completely digested
+    cDNA. This incubation time is optimized for yeast and may need to be optimized
+    for other organisms, particularly if the average transcript length differs significantly
+    from yeast. See Critical Parameters and Troubleshooting for further details.
+  stepnum: 2
+- Actions:
+  - component - list:
+    - {max_vol: '34', min_vol: '34', reagent_name: 'Nucleic Acid, cDNA, fragmented,
+        in Buffer EB', vol_units: microliter}
+    duration_comment: Unknown, Protocol
+    protocol_kit name: ' QIAquick PCR Purification kit'
+    protocol_output: ' Nucleic Acid, cDNA, purified'
+    protocol_type: ' PCR Purification'
+    verb: call_for_protocol
+  stepnum: 3
+- Actions:
+  - {duration_comment: Passive, max_time: '30', temp_comment: On ice, temp_units: degrees
+      Celsius, time_comment: until ready for library preparation, time_units: minutes,
+    verb: store}
+  stepnum: 4

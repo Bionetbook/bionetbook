@@ -1,0 +1,63 @@
+Category_tags: ''
+Input: RNA
+Name: Ethanol precipitation of RNA
+Output: more concentrated RNA
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: This protocol describes a basic ethanol precipitation of RNA, and is included
+  for the sake of completeness. Note that there is a commercially available kit to
+  purify the fragmented RNA using bead-based technology from Applied Biosystems. For
+  labs that do not routinely handle RNA, this may be a more convenient solution.
+Specific_tags: ''
+components-location:
+- [11, 0, 0]
+steps:
+- Actions:
+  - component - list:
+    - {conc_units: Molar, ph: '5.2', reagent_name: 'Buffer, sodium acetate', vol_units: microliter}
+    - {max_conc: '100', max_vol: '60', min_conc: '100', min_vol: '60', reagent_name: 'ethanol,
+        nuclease-free', vol_units: microliter}
+    duration_comment: Active; Per sample
+    time_units: minutes
+    verb: add
+  stepnum: 0
+- Actions:
+  - {duration_comment: Passive, max_temp: '-80', max_time: '30', min_temp: '-80',
+    min_time: '30', temp_units: degrees Celsius, time_units: minutes, verb: incubate}
+  stepnum: 1
+- Actions:
+  - {duration_comment: Passive, max_speed: '14000', max_time: '25', min_speed: '14000',
+    min_time: '25', speed_units: rpm, temp_units: degrees Celsius, time_units: minutes,
+    verb: centrifuge}
+  stepnum: 2
+- Actions:
+  - {duration_comment: Active; Per sample, how: without disturbing the rna pellet,
+    max_time: '0.25', min_time: '0.25', pipet: without disturbing the RNA pellet,
+    time_units: minutes, verb: remove, what: ethanol}
+  stepnum: 3
+- Actions:
+  - {duration_comment: Active; Per sample, max_conc: '70', max_time: '0.25', max_vol: '250',
+    min_conc: '70', min_time: '0.25', min_vol: '250', reagent_name: Ethanol, time_units: minutes,
+    verb: wash, vol_units: microliter, what: pellet}
+  stepnum: 4
+- Actions:
+  - {duration_comment: Passive, max_speed: '14000', min_speed: '14000', speed_units: rpm,
+    temp_units: degrees Celsius, time_units: minutes, verb: centrifuge}
+  - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
+    verb: pipette_out, what: ethanol}
+  stepnum: 5
+- Actions:
+  - {duration_comment: Passive, how: air dry, max_time: '10', time_units: minutes,
+    verb: dry}
+  stepnum: 6
+- Actions:
+  - {duration_comment: Active; Per sample, max_time: '0.5', max_vol: '10', min_time: '0.5',
+    min_vol: '10', reagent_name: 'Water, nuclease-free, sterile', time_units: minutes,
+    verb: resuspend, vol_units: microliter, what: pellet}
+  stepnum: 7
+- Actions:
+  - {duration_comment: 'Unknown, Protocol', protocol_name: ' ds cDNA synthesis "Alternate
+      Protocol"', protocol_output: ' Nucleic Acid, cDNA, double-stranded', protocol_type: ' ds
+      cDNA synthesis', verb: call_for_protocol}
+  stepnum: 8
