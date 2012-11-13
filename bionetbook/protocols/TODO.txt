@@ -1,0 +1,35 @@
+files to debug:
+
+1. PCR amplification : multiple verbs in thermocycyling
+2. action is not started for some reason:
+	a. Size select amplificaiton - done
+	b. dna extraciton bone - done
+	c. gel extraction qiaquick 
+	d. qiaquick pcr purification
+	e. qiagen gel extraction
+3. qiaquick cr amplificaion: remarks are binary
+4. Any protocol with step options: make into a new version
+
+Protocols to do:
+	PCR amplification - later
+	Size select amp'ed cDNA - fixed step line start, cleared ul.
+	DONE: gel extraction DNA - fix remarks on Protocol{'remarks'} 
+	qiagen gel extraction
+	open wet ware protocols
+
+
+Make a protocol class:
+	instance data input: open(<input>.yaml)
+	write out accessor methods for different features:
+	Schedule: getschedulingdata.py
+	Reagent lists: getreagents.py
+
+	function outputs: 
+		- List of sorted dicts [{},{},{}]
+		- Dicts with internal references: max_conc needs to be directed to conc_units
+
+
+
+Solutions:
+
+microliter chars cause bugs
