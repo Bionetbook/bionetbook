@@ -1,0 +1,22 @@
+- {duration_comment: 'Unknown, Protocol', verb: call_for_protocol}
+- {duration_comment: Active; Per sample, max_time: '2', min_time: '2', time_units: minutes,
+  verb: combine}
+- {duration_comment: Passive, max_time: '5', min_time: '5', time_units: minutes, verb: heat}
+- {duration_comment: Passive, max_time: '1', min_time: '1', time_units: minutes, verb: chill}
+- {duration_comment: Passive, max_time: '1', min_time: '1', time_units: minutes, verb: centrifuge}
+- {duration_comment: Active; Per sample, max_time: '1.5', min_time: '1.5', time_units: minutes,
+  verb: add}
+- {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
+  verb: mix}
+- {duration_comment: Passive, max_time: '1', min_time: '1', time_units: minutes, verb: centrifuge}
+- {duration_comment: Passive, max_time: '2', min_time: '2', time_units: minutes, verb: incubate}
+- {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', time_units: minutes,
+  verb: add}
+- {duration_comment: Active; Per sample, max_time: '0.1', min_time: '0.1', time_units: minutes,
+  verb: mix}
+- {duration_comment: Passive, max_time: '1', min_time: '1', time_units: minutes, verb: centrifuge}
+- {duration_comment: Passive, max_time: '50', min_time: '50', time_units: minutes,
+  verb: incubate}
+- {duration_comment: Passive, max_time: '15', min_time: '15', time_units: minutes,
+  verb: incubate}
+- {duration_comment: Passive, max_time: '2', min_time: '2', time_units: minutes, verb: incubate}

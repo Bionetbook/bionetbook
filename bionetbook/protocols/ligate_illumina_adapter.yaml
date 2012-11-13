@@ -18,17 +18,26 @@ steps:
         Add dA base to 3'' ends)', vol_units: microliter}
     - {max_vol: '15', min_vol: '15', reagent_name: 'Buffer, T4 DNA ligase buffer',
       vol_units: microliter}
-    - {max_conc: '0.1', min_conc: '0.02', note: 'diluted 1:10 to 1:50 in nucelease-free,
-        sterile water', reagent_name: 'Nucleic Acid, Adapter, Illumina adapter mix',
+    - {conc_units: X, max_conc: '0.1', max_vol: '1', min_conc: '0.02', min_vol: '1',
+      note: 'diluted 1:10 to 1:50 in nucelease-free, sterile water', reagent_name: 'Nucleic
+        Acid, Adapter, Illumina adapter mix', vol_units: microliter}
+    - {max_vol: '2', min_vol: '2', reagent_name: 'Water, nuclease-free, sterile',
       vol_units: microliter}
-    - {reagent_name: 'Water, nuclease-free, sterile', vol_units: microliter}
-    - {conc_units: Units/microliter, reagent_name: 'Enzyme, T4 DNA ligase', vol_units: microliter}
+    - {conc_units: Units/microliter, max_conc: '3', max_vol: '2', min_conc: '3', min_vol: '2',
+      reagent_name: 'Enzyme, T4 DNA ligase', vol_units: microliter}
     - {max_vol: '30', min_vol: '30', reagent_name: Total Volume, vol_units: microliter}
     duration_comment: Active; Per Sample
     max_time: '2.5'
     min_time: '2.5'
+    remark: illumina recommends diluting their adapter oligo mix at a ratio of 1:10
+      with water before use. if a low amount of starting material was used, dilute
+      the illumina adapters 1:30, as excess adapters can interfere with sequencing.
+      the adapters may have to be titrated as excess adapters can interfere with sequencing.
+      the adapters may have to be titrated relative to starting material; see troubleshooting
+      for more details.
     time_units: minutes
     verb: combine
+    where: in a clean microfuge tube
   - {duration_comment: Active; Per Sample, how: by pipetting (curator assumption),
     max_time: '0.25', min_time: '0.25', time_units: minutes, verb: mix}
   stepnum: 0
@@ -46,5 +55,10 @@ steps:
     protocol_name: ' Support Protocol 2'
     protocol_output: ' Nucleic Acid, DNA fragments (150bp - 350 bp)'
     protocol_type: ' Gel Purification'
+    remark: elute in a final volume of 23 _l buffer eb. if a large starting amount
+      of rna was used, a qiaquick pcr purification kit can be used instead of agarose
+      gel purification. however, to ensure a higher-quality library, we recommend
+      performing agarose gel purification to remove excess free adapters prior to
+      illumina sequencing. adapters can multimerize if this step is not  performed.
     verb: call_for_protocol
   stepnum: 2
