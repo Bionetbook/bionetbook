@@ -18,7 +18,7 @@ steps:
   - component - list:
     - {conc_units: nanograms/microLiter, mass_units: nanograms, max_mass: '1000',
       min_conc: '100', min_mass: '100', reagent_name: 'Nucleic Acid, RNA, poly(A)+'}
-    duration_comment: Unknown, Protocol
+    duration_comment: Active; Per sample
     protocol_input: ' Nucleic Acid, RNA, total'
     protocol_name: ' poly(A)+ RNA isolation'
     protocol_output: ' Nucleic Acid, RNA, poly(A)+'
@@ -57,7 +57,7 @@ steps:
   - {duration_comment: Passive, max_temp: '0', max_time: '1', min_temp: '0', min_time: '1',
     temp_comment: On ice, temp_units: degrees Celsius, time_comment: Brief, time_units: minutes,
     verb: chill}
-  - {duration_comment: Passive, max_time: '1', min_time: '1', speed_comment: Pulse,
+  - {duration_comment: Active, max_time: '1', min_time: '1', speed_comment: Pulse,
     time_comment: Brief, time_units: minutes, verb: centrifuge, what: tube, why: to
       collect the contents of the tube}
   stepnum: 2

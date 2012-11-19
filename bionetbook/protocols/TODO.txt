@@ -25,8 +25,23 @@ Make a protocol class:
 	Reagent lists: getreagents.py
 
 	function outputs: 
+	All outputs are in .yaml
 		- List of sorted dicts [{},{},{}]
 		- Dicts with internal references: max_conc needs to be directed to conc_units
+
+
+A protocol instance:
+1. User takes protocol and uses as is, no changes to values - only scheduling instance
+2. User changes a value of a volume
+3. User changes a concentration
+4. User changes a reagent name / stock num / supplier
+5. User changes a machine model
+6. User changes a machine type
+7. User changes a strain name / strain batch num / strain source
+8. User changes a model organism
+ 
+
+
 
 
 
