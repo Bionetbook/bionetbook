@@ -1,0 +1,38 @@
+{
+  "protocols": [
+    {
+      "name": "Protocol 1",
+      "type": "protocol",
+      "steps": [
+        {
+          "name": "Step 1",
+          "type": "step",
+          "actions": [
+            {
+              "verb": "add",
+              "name": "Action 1",
+              "type": "action",
+              "attributes": [
+                {
+                  "name": "Attribute 1",
+                  "type": "attribute",
+                  "item": "sodium",
+                  "value": "10",
+                  "measurement": "mg"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Step 2",
+          "type": "step"
+        },
+        {
+          "name": "Step 3",
+          "type": "step"
+        }
+      ]
+    }
+  ]
+}
