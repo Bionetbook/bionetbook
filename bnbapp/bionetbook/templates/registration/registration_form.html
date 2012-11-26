@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register for BioNetBook{% endblock  %}
+{% block page_title %}Registration for BioNetBook{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">
+        <form class='form-stacked well' action="" method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Change</button>
+          </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_username").focus();
+    });
+</script>
+{% endblock extrajs %}
