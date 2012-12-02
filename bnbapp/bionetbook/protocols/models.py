@@ -44,19 +44,21 @@ class Protocol(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        super(Protocol, self).save(*args, **kwargs)
+        super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
-            slug = slugify(self.name)
-            try:
-                Protocol.objects.get(slug=slug)
-                self.slug = "%s-%d" % (slug, self.pk)
-            except ObjectDoesNotExist:
-                self.slug = slug
+            self.slug = self.generate_slug()
             self.save()
+
+    def generate_slug(self):
+        slug = slugify(self.name)
+        try:
+            Protocol.objects.get(slug=slug)
+            return "%s-%d" % (slug, self.pk)
+        except ObjectDoesNotExist:
+            return slug
 
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
-
 
     def get_data(self):
         if self.data:
