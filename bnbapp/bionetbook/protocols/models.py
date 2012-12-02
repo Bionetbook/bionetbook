@@ -6,6 +6,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 import django.utils.simplejson as json
+from jsonfield import JSONField
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -26,7 +27,7 @@ class Protocol(TimeStampedModel):
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     #organization = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
-    data = models.TextField(blank=True, null=True)
+    data = JSONField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
 
