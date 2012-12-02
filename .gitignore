@@ -6,3 +6,5 @@ _templates
 .DS_Store
 venv
 build
+
+bnbapp/bionetbook/database.sqlite
