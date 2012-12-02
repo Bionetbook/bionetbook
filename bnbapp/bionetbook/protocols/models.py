@@ -68,6 +68,7 @@ class Protocol(TimeStampedModel):
     @property
     def steps(self):
         data = self.get_data()
+        return data['steps']
 
 
 
