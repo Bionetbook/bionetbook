@@ -21,17 +21,18 @@ class Protocol(TimeStampedModel):
     name = models.CharField(_("Name"), max_length=255, unique=True)
     owner = models.ForeignKey(User)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-    duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
-    company = models.CharField(_("Company"), max_length=100, blank=True, null=True)
+    #duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
+    #company = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
     status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
-    version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
+    #version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
+    doc = models.TextField(blank=True, null=True)
 
     # reference fields
-    url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
-    PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
-    DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
-    document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
+    #url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
+    #PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
+    #DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
+    #document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -50,7 +51,7 @@ class Protocol(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
 
-    @property
-    def actions(self):
-        from actions.models import Action
-        return Action.objects.filter(step__protocol=self)
+    #@property
+    #def actions(self):
+    #    from actions.models import Action
+    #    return Action.objects.filter(step__protocol=self)
