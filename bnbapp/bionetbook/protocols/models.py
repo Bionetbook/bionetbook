@@ -24,7 +24,7 @@ class Protocol(TimeStampedModel):
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
-    organization = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
+    #organization = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
     data = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -44,14 +44,14 @@ class Protocol(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         super(Protocol, self).save(*args, **kwargs)
-        if not self.slug:
-            slug = slugify(self.name)
-            try:
-                Protocol.objects.get(slug=slug)
-                self.slug = "%s-%d" % (slug, self.pk)
-            except ObjectDoesNotExist:
-                self.slug = slug
-            self.save()
+        #if not self.slug:
+        #    slug = slugify(self.name)
+        #    try:
+        #        Protocol.objects.get(slug=slug)
+        #        self.slug = "%s-%d" % (slug, self.pk)
+        #    except ObjectDoesNotExist:
+        #        self.slug = slug
+        #    self.save()
 
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
