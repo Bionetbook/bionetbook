@@ -58,7 +58,9 @@ class Protocol(TimeStampedModel):
 
 
     def get_data(self):
-        return json.loads(self.data)
+        if self.data:
+            return json.loads(self.data)
+        return None
 
     #@property
     #def actions(self):
@@ -68,7 +70,9 @@ class Protocol(TimeStampedModel):
     @property
     def steps(self):
         data = self.get_data()
-        return data['steps']
+        if data:
+            return data['steps']
+        return []
 
 
 
