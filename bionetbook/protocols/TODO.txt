@@ -2,27 +2,20 @@ files to debug:
 
 1. PCR amplification : multiple verbs in thermocycyling
 2. action is not started for some reason:
-	a. Size select amplificaiton - done
-	b. dna extraciton bone - done
-	c. gel extraction qiaquick 
-	d. qiaquick pcr purification
-	e. qiagen gel extraction
-3. qiaquick cr amplificaion: remarks are binary
-4. Any protocol with step options: make into a new version
+ 
+	a. gel_extraction_qiaquick.csv -- utf-8 error 
+	b. qiaquick_pcr_purification.csv -- utf-8 error
+	c. agarose_gel_electro.csv -- utf-8 error
+
+
+3. Any protocol with step options: make into a new version
 
 Protocols to do:
 	PCR amplification - later
-	Size select amp'ed cDNA - fixed step line start, cleared ul.
 	DONE: gel extraction DNA - fix remarks on Protocol{'remarks'} 
 	qiagen gel extraction
 	open wet ware protocols
 
-
-Make a protocol class:
-	instance data input: open(<input>.yaml)
-	write out accessor methods for different features:
-	Schedule: getschedulingdata.py
-	Reagent lists: getreagents.py
 
 	function outputs: 
 	All outputs are in .yaml
@@ -39,7 +32,19 @@ A protocol instance:
 6. User changes a machine type
 7. User changes a strain name / strain batch num / strain source
 8. User changes a model organism
- 
+
+
+Calendar:
+create a calendar
+Figure out time zones. 
+Look for conflicts
+raise event start/stop errors. 
+make a protocol schedule with time additions
+group events into 30 min increments. 
+Upload a new schedule to ical through bash
+
+
+
 
 
 

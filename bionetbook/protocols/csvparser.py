@@ -21,6 +21,12 @@ import json
 
 
 filename = sys.argv[1]
+if len(sys.argv) >2:
+	output_format = '.' + sys.argv[2]
+else:
+	output_format = '.yaml'
+
+
 f=csv.reader(open(filename,'rU'))
 rows = []
 
@@ -209,6 +215,18 @@ for j in Protocol['components-location']:
    	else:
    		steps[j[1]]['Actions'][j[2]]['component - list'] = {}
 	
-fname_new= filename[:filename.index('.')] + '.yaml'
-stream = file(fname_new, 'w')
-yaml.dump(Protocol, stream)
+
+# Write the output file in selected format:	
+fname_pure= filename[filename.index('/')+1:filename.index('.')] + output_format
+
+if output_format == '.yaml':
+	fname = 'YAML_files/' + fname_pure 
+	stream = file(fname, 'w')
+	yaml.dump(Protocol, stream)
+
+if output_format == '.json':
+	fname = 'JSON_files/' + fname_pure 
+	stream = open(fname, 'w')
+	stream.write(json.dumps(Protocol))
+	stream.close()
+

@@ -14,7 +14,7 @@ stream = file(fname, 'r')
 Protocol = yaml.load(stream)
 
 # find all the reagents needed in the protocol and return as a list
-needed = []
+needed_reagents = []
 
 # check if there are components in the protocol:
 
