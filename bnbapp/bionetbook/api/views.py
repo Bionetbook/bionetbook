@@ -9,6 +9,9 @@ def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
         try:
             p = Protocol.objects.get(slug=protocol_slug)
-            return HttpResponse(json.dumps(p.data), mimetype="application/json")
+            if p.data:
+                return HttpResponse(json.dumps(p.data), mimetype="application/json")
+            else:
+                return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
         except ObjectDoesNotExist:
-            return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Could not find the requested protocol.'}), mimetype="application/json")
+            return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
