@@ -31,6 +31,9 @@ class Protocol(TimeStampedModel):
     description = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
 
+    #protocol_input = models.CharField(_("Input"), max_length=255, unique=True)
+    #protocol_output = models.CharField(_("Output"), max_length=255, unique=True)
+
     #status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
     #version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
 
@@ -79,5 +82,26 @@ class Protocol(TimeStampedModel):
 
 
 
-#class Step(object):
-#    pass
+class ComponentBase(object):
+
+    keylist = ['name','objectid']
+
+    def __init__(self, data=None, **kwargs):
+        for item in self.keylist:
+            if item in kwargs:
+                setattr(self, item, kwargs[item])
+            elif item in data:
+                setattr(self, item, data[item])
+            else:
+                setattr(self, item, "")
+
+
+class Action(ComponentBase):
+    pass
+
+
+class Step(ComponentBase):
+    pass    
+
+
+
