@@ -89,42 +89,30 @@ class Protocol(TimeStampedModel):
             return data['steps']
         return []
 
-    @property
     def get_num_steps(self):
-        self.num_steps = len(self.steps)
-        return self.num_steps
+        return len(self.steps)
 
-    @ property
     def get_num_actions(self):
-        self.num_actions = [len(self.steps[r]['Actions']) for r in range(0, self.get_num_steps)]  
-        return self.num_actions 
+        return [len(self.steps[r]['Actions']) for r in range(0, self.get_num_steps())]
 
-    @property
     def get_actions_by_step(self):
-        self.actions_by_step = []
-        for stepnum in range(0, self.get_num_steps):
+        actions_by_step = []
+        for stepnum in range(0, self.get_num_steps()):
             tmp = [self.steps[stepnum]['Actions'][r]['verb'] for r in range(0, self.get_num_actions[stepnum])]
-            self.actions_by_Step.append(tmp)
-        return self.actions_by_step
+            actions_by_step.append(tmp)
+        return actions_by_step
 
-    @property
     def get_action_tree(self):
-        self.action_tree = []
+        action_tree = []
         for stepnum in range(0, self.get_num_steps): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
-                self.action_tree.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum]['verb']])
+                action_tree.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum]['verb']])
         
-        return self.action_tree
+        return action_tree
 
 
 
 
-
-
-
-
-<<<<<<< HEAD
-=======
 class ComponentBase(object):
 
     keylist = ['name','objectid']
@@ -148,4 +136,3 @@ class Step(ComponentBase):
 
 
 
->>>>>>> 48a77accbd917cb810994245c7505446df538f1b
