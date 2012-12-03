@@ -3,8 +3,10 @@
 import os.path
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+#PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if 'bionetbook/bionetbook' in PROJECT_ROOT:
-    PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/', '')
+    #PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/', '')
+    PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/bionetbook', 'bionetbook')
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -36,7 +38,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'bionetbook/static'),
+    os.path.join(PROJECT_ROOT, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -82,7 +84,7 @@ ROOT_URLCONF = 'bionetbook.urls'
 WSGI_APPLICATION = 'bionetbook.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, 'bionetbook/templates'),
+    os.path.join(PROJECT_ROOT, 'templates'),
 )
 
 BASE_APPS = (

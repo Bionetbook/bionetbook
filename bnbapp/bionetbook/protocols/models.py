@@ -6,6 +6,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 import django.utils.simplejson as json
+from jsonfield import JSONField
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -26,9 +27,12 @@ class Protocol(TimeStampedModel):
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     #organization = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
-    data = models.TextField(blank=True, null=True)
+    data = JSONField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
+
+    #protocol_input = models.CharField(_("Input"), max_length=255, unique=True)
+    #protocol_output = models.CharField(_("Output"), max_length=255, unique=True)
 
     #status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
     #version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
@@ -43,19 +47,21 @@ class Protocol(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        super(Protocol, self).save(*args, **kwargs)
-        #if not self.slug:
-        #    slug = slugify(self.name)
-        #    try:
-        #        Protocol.objects.get(slug=slug)
-        #        self.slug = "%s-%d" % (slug, self.pk)
-        #    except ObjectDoesNotExist:
-        #        self.slug = slug
-        #    self.save()
+        super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+        if not self.slug:
+            self.slug = self.generate_slug()
+            self.save()
+
+    def generate_slug(self):
+        slug = slugify(self.name)
+        try:
+            Protocol.objects.get(slug=slug)
+            return "%s-%d" % (slug, self.pk)
+        except ObjectDoesNotExist:
+            return slug
 
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
-
 
     def get_data(self):
         if self.data:
@@ -117,3 +123,29 @@ class Protocol(TimeStampedModel):
 
 
 
+<<<<<<< HEAD
+=======
+class ComponentBase(object):
+
+    keylist = ['name','objectid']
+
+    def __init__(self, data=None, **kwargs):
+        for item in self.keylist:
+            if item in kwargs:
+                setattr(self, item, kwargs[item])
+            elif item in data:
+                setattr(self, item, data[item])
+            else:
+                setattr(self, item, "")
+
+
+class Action(ComponentBase):
+    pass
+
+
+class Step(ComponentBase):
+    pass    
+
+
+
+>>>>>>> 48a77accbd917cb810994245c7505446df538f1b
