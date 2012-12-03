@@ -126,6 +126,9 @@ class ComponentBase(object):
             else:
                 setattr(self, item, "")
 
+    def __json(self):
+        pass
+
 
 class Action(ComponentBase):
     pass
