@@ -111,9 +111,8 @@ class Protocol(TimeStampedModel):
         return action_tree
 
 
-
-
 class ComponentBase(object):
+    """Base class for the protocol components"""
 
     keylist = ['name','objectid']
 
@@ -127,7 +126,11 @@ class ComponentBase(object):
                 setattr(self, item, "")
 
     def __json(self):
-        pass
+        return self.__dict__
+
+
+class Verb(ComponentBase):
+    pass
 
 
 class Action(ComponentBase):
