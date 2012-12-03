@@ -95,7 +95,7 @@ class ComponentBase(object):
             else:
                 setattr(self, item, "")
 
-    def __json__(self):
+    def __json(self):
         pass
 
 
