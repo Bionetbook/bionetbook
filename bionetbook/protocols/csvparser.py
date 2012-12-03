@@ -37,7 +37,7 @@ def labelRowType(cellchars):
 	if cellchars[0] == 1:
 		return 'Step'
 	if cellchars[2] > 1 and cellchars[3] > 1:
-		return 'Action'
+		return 'action'
 	if cellchars[2] == 1 and cellchars[3] > 1: # and cellchars[0] == 0:
 		return 'new_attribute'
 	if cellchars[2] == 1 and cellchars[3] == 1 and cellchars [1] == 1:
@@ -177,24 +177,24 @@ for rownum in range(current_row, len(rows)): # pute each rows data in plac
 		actionnum = 0
 		steps[Stepnum]['stepnum'] =  Stepnum
 		# step[Stepnum] = {'container'} : rows[rownum][1]
-		steps[Stepnum]['Actions']=  [] 
-		steps[Stepnum]['Actions'].append({})
-		steps[Stepnum]['Actions'][actionnum]['verb'] = rows[rownum][2].strip().replace(' ', '_').lower()
+		steps[Stepnum]['actions']=  [] 
+		steps[Stepnum]['actions'].append({})
+		steps[Stepnum]['actions'][actionnum]['verb'] = rows[rownum][2].strip().replace(' ', '_').lower()
 		attribute = add_attribute(rownum,Stepnum,actionnum)
 		if attribute:
 			if 'no update' in attribute.keys():
 				continue
-			steps[Stepnum]['Actions'][actionnum] = dict(steps[Stepnum]['Actions'][actionnum].items() + attribute.items())
+			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + attribute.items())
 		continue
 
-	if rowtype == 'Action':
+	if rowtype == 'action':
 		actionnum += 1
-		steps[Stepnum]['Actions'].append({'verb':rows[rownum][2].strip().replace(' ', '_').lower()})
+		steps[Stepnum]['actions'].append({'verb':rows[rownum][2].strip().replace(' ', '_').lower()})
 		attribute = add_attribute(rownum,Stepnum,actionnum)
 		if attribute:
-			steps[Stepnum]['Actions'][actionnum] = dict(steps[Stepnum]['Actions'][actionnum].items() + attribute.items())
+			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + attribute.items())
 		else:
-			steps[Stepnum]['Actions'][actionnum] = dict(steps[Stepnum]['Actions'][actionnum].items() + {}.items())
+			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + {}.items())
 		continue
 
    	if rowtype == 'new_attribute':
@@ -202,18 +202,18 @@ for rownum in range(current_row, len(rows)): # pute each rows data in plac
    		attribute = add_attribute(rownum,Stepnum,actionnum)
    		# assign the step number and action number
    		if attribute:
-   			steps[Stepnum]['Actions'][actionnum] = dict(steps[Stepnum]['Actions'][actionnum].items() + attribute.items())
+   			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + attribute.items())
    		else:
-   			steps[Stepnum]['Actions'][actionnum] = dict(steps[Stepnum]['Actions'][actionnum].items() + {}.items())
+   			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + {}.items())
     	continue
 
 Protocol['steps'] = steps
 for j in Protocol['components-location']:
 	attribute = add_component_list(j[0])
 	if attribute:
-   		steps[j[1]]['Actions'][j[2]]['component - list'] = attribute.values()[0]
+   		steps[j[1]]['actions'][j[2]]['component - list'] = attribute.values()[0]
    	else:
-   		steps[j[1]]['Actions'][j[2]]['component - list'] = {}
+   		steps[j[1]]['actions'][j[2]]['component - list'] = {}
 	
 
 # Write the output file in selected format:	

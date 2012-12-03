@@ -14,7 +14,7 @@ components-location:
 - [51, 3, 0]
 - [77, 5, 0]
 steps:
-- Actions:
+- actions:
   - component - list:
     - {conc_units: nanograms/microLiter, mass_units: nanograms, max_mass: '1000',
       min_conc: '100', min_mass: '100', reagent_name: 'Nucleic Acid, RNA, poly(A)+'}
@@ -26,7 +26,7 @@ steps:
     remark: see critical parameters and troubleshooting for more details.
     verb: call_for_protocol
   stepnum: 0
-- Actions:
+- actions:
   - component - list:
     - {conc_units: nanograms/microLiter, mass_units: nanograms, max_conc: '500', max_mass: '500',
       max_vol: '10', min_conc: '50', min_mass: '500', min_vol: '1', note: User input
@@ -50,7 +50,7 @@ steps:
     time_units: minutes
     verb: combine
   stepnum: 1
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '65', max_time: '5', min_temp: '65', min_time: '5',
     temp_comment: in a heat block, temp_units: degrees Celsius, time_units: minutes,
     verb: heat, what: sample}
@@ -61,7 +61,7 @@ steps:
     time_comment: Brief, time_units: minutes, verb: centrifuge, what: tube, why: to
       collect the contents of the tube}
   stepnum: 2
-- Actions:
+- actions:
   - component - list:
     - {conc_units: X, max_conc: '5', max_vol: '4', min_conc: '5', min_vol: '4', reagent_name: 'Buffer,
         First strand cDNA synthesis (Invitrogen)', vol_units: microliter}
@@ -83,11 +83,11 @@ steps:
     time_comment: Brief, time_units: minutes, verb: centrifuge, what: tube, why: to
       collect the contents of the tube}
   stepnum: 3
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '42', max_time: '2', min_temp: '42', min_time: '2',
     temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: samples}
   stepnum: 4
-- Actions:
+- actions:
   - component - list:
     - {conc_units: Units/microliter, mass_units: Units, max_conc: '200', max_mass: '200',
       max_vol: '1', min_conc: '200', min_mass: '200', min_vol: '1', reagent_name: 'Enzyme,
@@ -103,16 +103,16 @@ steps:
     time_comment: Brief, time_units: minutes, verb: centrifuge, what: sample, why: to
       collect the contents of the tube}
   stepnum: 5
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '42', max_time: '50', min_temp: '42', min_time: '50',
     temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: sample}
   stepnum: 6
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '70', max_time: '15', min_temp: '70', min_time: '15',
     temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: sample,
     why: to inactivate the reverse transcriptase}
   stepnum: 7
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '0', max_time: '2', min_temp: '0', min_time: '2',
     remark: this step based on reagent (superscript ii) manufacturers instructions,
     temp_comment: On ice, temp_units: degrees Celsius, time_units: minutes, verb: incubate,

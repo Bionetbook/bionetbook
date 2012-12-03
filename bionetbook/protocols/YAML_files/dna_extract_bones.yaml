@@ -14,25 +14,25 @@ components-location:
 - [69, 4, 2]
 - [96, 6, 0]
 steps:
-- Actions:
+- actions:
   - {duration_comment: Active, how: by washing with diluted bleach and distilled water,
     max_time: '15', min_time: '15', time_units: minutes, verb: remove, what: surface_material_from_the_bones}
   stepnum: 0
-- Actions:
+- actions:
   - {duration_comment: Active, how: from each bone diaphysis, max_time: '15', min_time: '15',
     time_units: minutes, verb: cut, what: a_2_x_5_cm_portion_of_bone}
   - {duration_comment: Active, how: with a sand disk, max_time: '15', min_time: '15',
     time_units: minutes, verb: remove, what: the_surfaces_of_these_bone_portions,
     why: in order to get rid of the modern dna contamination}
   stepnum: 1
-- Actions:
+- actions:
   - {duration_comment: Passive, how: with uv light, machine: 1.0 joule per square
       centimeter, max_time: '30', min_time: '30', time_units: minutes, verb: treat,
     what: the_cleaned_bone_fragments}
   - {duration_comment: Active, how: in a sterile agate mortar, max_time: '30', min_time: '30',
     time_units: minutes, verb: grind, what: the_cleaned_bone_fragments}
   stepnum: 2
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '1.6', min_vol: '1.6', reagent_name: Extraction buffer, vol_units: milliliter}
     duration_comment: Active
@@ -47,7 +47,7 @@ steps:
     max_temp: '37', max_time: '18', min_temp: '37', min_time: '12', temp_units: degrees
       Celsius, time_comment: Overnight, time_units: hours, verb: incubate}
   stepnum: 3
-- Actions:
+- actions:
   - {duration_comment: Passive, max_speed: '12000', max_temp: '25', max_time: '10',
     min_speed: '12000', min_temp: '20', min_time: '10', speed_units: rpm, temp_comment: Room
       Temperature, temp_units: degrees Celsius, time_units: minutes, verb: centrifuge,
@@ -55,12 +55,12 @@ steps:
   - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
     verb: transfer, what: supernatant, where: to a 1.5 ml eppendorf tube}
   - component - list:
-    - {conc_units: micrograms/microLiter, max_vol: '3.5', min_vol: '3.5', reagent_name: 'Dextran
-        Blue (Sigma, Budapest, Hungary)', vol_units: microliter}
-    - {conc_units: Molar, max_vol: '250', min_vol: '250', reagent_name: NH4-acetate,
-      vol_units: microliter}
-    - {max_conc: '96', max_vol: '500', min_conc: '96', min_vol: '500', reagent_name: Ethanol,
-      vol_units: microliter}
+    - {conc_units: micrograms/microLiter, max_conc: '1', max_vol: '3.5', min_conc: '1',
+      min_vol: '3.5', reagent_name: 'Dextran Blue (Sigma, Budapest, Hungary)', vol_units: microliter}
+    - {conc_units: Molar, max_conc: '4', max_vol: '250', min_conc: '4', min_vol: '250',
+      reagent_name: NH4-acetate, vol_units: microliter}
+    - {conc_units: '%', max_conc: '96', max_vol: '500', min_conc: '96', min_vol: '500',
+      reagent_name: Ethanol, vol_units: microliter}
     duration_comment: Active
     max_time: '1.5'
     min_time: '1.5'
@@ -73,14 +73,14 @@ steps:
       well during the gel run and thus does not interfere with sequence recordings
       (34).', time_units: minutes, verb: mix}
   stepnum: 4
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '-70', max_time: '7', min_temp: '-70', min_time: '7',
     temp_units: degrees Celsius, time_units: minutes, verb: precipitate, what: dna}
-  - {duration_comment: Passive, max_speed: '14000', max_time: '15', min_speed: '14000',
-    min_time: '15', speed_units: rpm, temp_units: degrees Celsius, time_units: minutes,
-    verb: centrifuge}
+  - {duration_comment: Passive, max_speed: '14000', max_temp: '4', max_time: '15',
+    min_speed: '14000', min_temp: '4', min_time: '15', speed_units: rpm, temp_units: degrees
+      Celsius, time_units: minutes, verb: centrifuge}
   stepnum: 5
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '30', min_vol: '20', reagent_name: 'deionised, distilled water', vol_units: microliter}
     duration_comment: Passive
@@ -91,7 +91,7 @@ steps:
     verb: dissolve
     what: the_pellet
   stepnum: 6
-- Actions:
+- actions:
   - {duration_comment: 'Passive, end of protocol', max_temp: '-20', min_temp: '-20',
     temp_units: degrees Celsius, verb: store, what: the_remaining_extract}
   stepnum: 7

@@ -23,15 +23,18 @@ components-location:
 - [135, 8, 8]
 - [156, 8, 11]
 steps:
-- Actions:
+- actions:
   - component - list:
-    - {max_conc: '100', max_vol: See bottle label, min_conc: '96', min_vol: See bottle
-        label, reagent_name: Ethanol}
+    - {conc_units: '%', max_conc: '100', max_vol: See bottle label, min_conc: '96',
+      min_vol: See bottle label, reagent_name: Ethanol}
     duration_comment: Active; Optional
+    max_time: '1'
+    min_time: '1'
     time_units: minutes
     verb: add
+    where: to buffer pe
   stepnum: 0
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '0.004', min_vol: '0.004', reagent_name: 'pH Indicator I,  (Qiagen''s
         QIAquick PCR Purification Kit)', vol_units: Volumes of target}
@@ -44,28 +47,30 @@ steps:
       of ph indicator i.
     time_units: minutes
     verb: add
+    where: to buffer pb
   stepnum: 1
-- Actions:
+- actions:
   - component - list:
-    - {reagent_name: 'Buffer, PB (Qiagen''s QIAquick PCR Purification Kit)', vol_units: Volumes
-        of target}
+    - {max_vol: '5', min_vol: '5', reagent_name: 'Buffer, PB (Qiagen''s QIAquick PCR
+        Purification Kit)', vol_units: Volumes of target}
     duration_comment: Active; Per sample
     max_time: '0.5'
     min_time: '0.5'
     remark: it is not necessary to remove mineral oil or kerosene.
     time_units: minutes
     verb: add
+    where: to pcr sample
   - {duration_comment: Active; Per sample, how: by pipetting up and down (curator
       assumed), max_time: '0.25', min_time: '0.25', time_units: minutes, verb: mix}
   stepnum: 2
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', remark: 'if
       the color of the mixture is orange or violet, add 10 _l of 3 m sodium acetate,
       ph 5.0, and mix. the color of the mixture will turn to yellow.', time_units: minutes,
     verb: check, what: color_of_buffer_pb_with_ph_indicator_i}
   - component - list:
-    - {conc_units: Molar, max_vol: '10', min_vol: '10', reagent_name: 'Buffer, Sodium
-        acetate', vol_units: microliter}
+    - {conc_units: Molar, max_conc: '3', max_vol: '10', min_conc: '3', min_vol: '10',
+      ph: '5', reagent_name: 'Buffer, Sodium acetate', vol_units: microliter}
     duration_comment: Active; Per sample
     max_time: '0.5'
     min_time: '0.5'
@@ -76,26 +81,26 @@ steps:
       i has been added to buffer pb', time_units: minutes, verb: mix}
   remark: 'Optional: If pH indicator I has been added to Buffer PB'
   stepnum: 3
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
-    verb: place, what: qiaquick_spin_column}
+    verb: place, what: qiaquick_spin_column, where: in a provided 2ml collection tube}
   stepnum: 4
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.5', min_time: '0.5', time_units: minutes,
-    verb: transfer, what: the_sample}
+    verb: transfer, what: the_sample, where: to the qiaquick column}
   - {duration_comment: Passive, machine: conventional tabletop microcentrifuge, max_speed: '17900',
-    max_temp: '25', max_time: '60', min_speed: '17900', min_temp: '20', min_time: '0.5',
+    max_temp: '25', max_time: '1', min_speed: '17900', min_temp: '20', min_time: '0.5',
     speed_units: xg-force, temp_comment: Room temperature, temp_units: degrees Celsius,
     time_units: minutes, verb: centrifuge, why: to bind dna}
   stepnum: 5
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
     verb: discard, what: flow-through}
   - {duration_comment: Active; Per sample, max_time: '0.1', min_time: '0.1', remark: collection
       tubes are re-used to reduce plastic waste., time_units: minutes, verb: place,
-    what: the_qiaquick_column}
+    what: the_qiaquick_column, where: back into the same tube}
   stepnum: 6
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '750', min_vol: '750', reagent_name: 'Buffer, PE (Qiagen''s QIAquick
         PCR Purification Kit)', vol_units: microliter}
@@ -104,25 +109,27 @@ steps:
     min_time: '0.5'
     time_units: minutes
     verb: add
+    where: to the qiaquick column
   - {duration_comment: Passive, machine: conventional tabletop microcentrifuge, max_speed: '17900',
-    max_temp: '25', max_time: '60', min_speed: '17900', min_temp: '20', min_time: '0.5',
+    max_temp: '25', max_time: '1', min_speed: '17900', min_temp: '20', min_time: '0.5',
     speed_units: xg-force, temp_comment: Room temperature, temp_units: degrees Celsius,
     time_units: minutes, verb: centrifuge, why: to wash}
   stepnum: 7
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
     verb: discard, what: flow-through}
   - {duration_comment: Active; Per sample, max_time: '0.1', min_time: '0.1', time_units: minutes,
-    verb: place, what: the_qiaquick_column}
+    verb: place, what: the_qiaquick_column, where: back into same tube}
   - {duration_comment: Passive, machine: conventional tabletop microcentrifuge, max_speed: '17900',
-    max_temp: '25', min_speed: '17900', min_temp: '20', remark: 'important: residual
-      ethanol from buffer pe will not be completely removed unless
+    max_temp: '25', max_time: '1', min_speed: '17900', min_temp: '20', min_time: '1',
+    remark: 'important: residual ethanol from buffer pe will not be completely removed
+      unless
 
       the flow-through is discarded before this additional centrifugation.', speed_units: xg-force,
     temp_comment: Room temperature, temp_units: degrees Celsius, time_units: minutes,
     verb: centrifuge}
   - {duration_comment: Active; Per sample, max_time: '0.1', min_time: '0.1', time_units: minutes,
-    verb: place, what: qiaquick_column}
+    verb: place, what: qiaquick_column, where: into clean 1.5 ml microcentrifuge tube}
   - component - list:
     - {conc_units: milliMolar, max_conc: '10', max_vol: '50', min_conc: '10', min_vol: '50',
       note: Buffer EB, ph: '8.5', reagent_name: 'Buffer, Tris-HCl', vol_units: microliter}
@@ -140,9 +147,11 @@ steps:
       bWF5IGluaGliaXQgc3Vic2VxdWVudCBlbnp5bWF0aWMgcmVhY3Rpb25zLg==
     time_units: minutes
     verb: add
+    where: to the qiaquick column
   - {duration_comment: Passive, machine: conventional tabletop microcentrifuge, max_speed: '17900',
-    max_temp: '25', min_speed: '17900', min_temp: '20', speed_units: xg-force, temp_comment: Room
-      temperature, temp_units: degrees Celsius, time_units: minutes, verb: centrifuge}
+    max_temp: '25', max_time: '1', min_speed: '17900', min_temp: '20', min_time: '1',
+    speed_units: xg-force, temp_comment: Room temperature, temp_units: degrees Celsius,
+    time_units: minutes, verb: centrifuge}
   - component - list:
     - {max_vol: '50', min_vol: '50', ph: 7.0-8.5, reagent_name: Water, vol_units: microliter}
     duration_comment: Active; Per sample
@@ -150,12 +159,15 @@ steps:
     min_time: '0.5'
     time_units: minutes
     verb: add
+    where: to the qiaquick column
   - duration_comment: Passive
     machine: conventional tabletop microcentrifuge
     max_speed: '17900'
     max_temp: '25'
+    max_time: '1'
     min_speed: '17900'
     min_temp: '20'
+    min_time: '1'
     remark: !!binary |
       aW1wb3J0YW50OiBlbnN1cmUgdGhhdCB0aGUgd2F0ZXIgaXMgZGlzcGVuc2VkIGRpcmVjdGx5IG9u
       dG8gdGhlIHFpYXF1aWNrIG1lbWJyYW5lIGZvciBjb21wbGV0ZSBlbHV0aW9uIG9mIGJvdW5kIGRu
@@ -181,14 +193,18 @@ steps:
     min_time: '0.5'
     time_units: minutes
     verb: add
-  - {duration_comment: Passive, max_temp: '25', min_temp: '20', temp_comment: Room
-      temperature, temp_units: degrees Celsius, time_units: minutes, verb: incubate}
+    where: to the qiaquick column
+  - {duration_comment: Passive, max_temp: '25', max_time: '1', min_temp: '20', min_time: '1',
+    temp_comment: Room temperature, temp_units: degrees Celsius, time_units: minutes,
+    verb: incubate}
   - duration_comment: Passive
     machine: conventional tabletop microcentrifuge
     max_speed: '17900'
     max_temp: '25'
+    max_time: '1'
     min_speed: '17900'
     min_temp: '20'
+    min_time: '1'
     remark: !!binary |
       aW1wb3J0YW50OiBlbnN1cmUgdGhhdCB0aGUgZWx1dGlvbiBidWZmZXIgaXMgZGlzcGVuc2VkIGRp
       cmVjdGx5IG9udG8gdGhlIHFpYXF1aWNrIG1lbWJyYW5lIGZvciBjb21wbGV0ZSBlbHV0aW9uIG9m
@@ -211,6 +227,7 @@ steps:
     min_time: '0.5'
     time_units: minutes
     verb: add
+    where: to purified dna
   - {duration_comment: Active; Per sample, how: by pipetting up and down, max_time: '0.25',
     min_time: '0.25', remark: 'optional: this step to be done if loading the dna onto
       a gel. loading dye contains 3 marker dyes (bromophenol blue, xylene cyanol,

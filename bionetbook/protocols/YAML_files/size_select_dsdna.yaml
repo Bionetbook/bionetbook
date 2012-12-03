@@ -11,7 +11,7 @@ components-location:
 - [12, 0, 0]
 - [25, 2, 0]
 steps:
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '15', min_vol: '15', reagent_name: PCR-amplified product from prior
         protocol, vol_units: microliter}
@@ -22,13 +22,13 @@ steps:
     time_units: minutes
     verb: electrophorese
   stepnum: 0
-- Actions:
+- actions:
   - {duration_comment: active, max_time: '30', min_time: '5', remark: 'excise the
       bands in a range of 150 to 350 bp with a clean, disposable scalpel (support
       protocol 2).', time_units: minutes, tool: a clean disposable scalpel, verb: excise,
     what: 'nucleic_acid,_dna_fragments_(150bp_-_350_bp)'}
   stepnum: 1
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '15', min_vol: '15', reagent_name: 'Nucleic Acid, DNA, purified',
       vol_units: microliter}
@@ -44,7 +44,7 @@ steps:
     time_units: minutes
     verb: call_for_protocol
   stepnum: 2
-- Actions:
+- actions:
   - {duration_comment: Active, machine: spectrophotometer, max_time: '15', min_time: '10',
     remark: 'a nanodrop spectrophotometer is recommended, as only 1 to 2 ul volume
       is required. the ideal concentration is 15 to 25 ng/ul. if the cdna concentration

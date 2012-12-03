@@ -16,33 +16,40 @@ components-location:
 - [11, 0, 0]
 - [33, 2, 0]
 steps:
-- Actions:
+- actions:
   - component - list:
-    - {max_conc: '10', min_conc: '10', reagent_name: 'Buffer, End-repair (Epicentre
+    - {conc_units: X, max_conc: '10', max_vol: '5', min_conc: '10', min_vol: '5',
+      reagent_name: 'Buffer, End-repair (Epicentre Biotechnologies, End-It DNA End-Repair
+        Kit)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '2.5', max_vol: '5', min_conc: '2.5', min_vol: '5',
+      reagent_name: 'Nucleic Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair
+        Kit)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '10', max_vol: '5', min_conc: '10', min_vol: '5',
+      reagent_name: 'Nucleic Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair
+        Kit)', vol_units: microliter}
+    - {max_vol: '1', min_vol: '1', reagent_name: 'Enzyme Mix, End-repair (Epicentre
         Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
-    - {conc_units: milliMolar, max_conc: '2.5', min_conc: '2.5', reagent_name: 'Nucleic
-        Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
-    - {conc_units: milliMolar, max_conc: '10', min_conc: '10', reagent_name: 'Nucleic
-        Acid, dATP (Epicentre Biotechnologies, End-It DNA End-Repair Kit)', vol_units: microliter}
-    - {reagent_name: 'Enzyme Mix, End-repair (Epicentre Biotechnologies, End-It DNA
-        End-Repair Kit)', vol_units: microliter}
     - {max_vol: '34', min_vol: '34', reagent_name: 'Output from prior protocol (Illumina,
         Fragment ds cDNA)', vol_units: microliter}
     - {max_vol: '50', min_vol: '50', reagent_name: Total Volume, vol_units: microliter}
     duration_comment: Active; Per Sample
     max_time: '2.5'
     min_time: '2.5'
+    remark: 'the standard 50-_l reaction will end-repair up to 5 _g of dna; the reaction
+      can be
+
+      scaled up if necessary.'
     time_units: minutes
     verb: add
   - {duration_comment: Active; Per Sample, how: by pipetting up and down, max_time: '0.25',
     min_time: '0.25', time_units: minutes, verb: mix}
   stepnum: 0
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '25', max_time: '45', min_temp: '20', min_time: '45',
     temp_comment: Room temperature, temp_units: degrees Celsius, time_units: minutes,
     verb: incubate}
   stepnum: 1
-- Actions:
+- actions:
   - component - list:
     - {max_vol: '34', min_vol: '34', reagent_name: 'Nucleic Acid, end-repaired cDNA
         fragments', vol_units: microliter}
@@ -51,5 +58,9 @@ steps:
     protocol_name: ' QIAquick PCR Purification Kit'
     protocol_output: ' Nucleic Acid, end-repaired cDNA fragments'
     protocol_type: ' PCR Purification'
+    remark: 'follow the manufacturer''s recommended protocol, but elute in a final
+      volume of
+
+      34 _l of buffer eb'
     verb: call_for_protocol
   stepnum: 2

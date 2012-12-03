@@ -13,51 +13,55 @@ Specific_tags: ''
 components-location:
 - [11, 0, 0]
 steps:
-- Actions:
+- actions:
   - component - list:
-    - {conc_units: Molar, ph: '5.2', reagent_name: 'Buffer, sodium acetate', vol_units: microliter}
-    - {max_conc: '100', max_vol: '60', min_conc: '100', min_vol: '60', reagent_name: 'ethanol,
-        nuclease-free', vol_units: microliter}
+    - {conc_units: Molar, max_conc: '3', max_vol: '2', min_conc: '3', min_vol: '2',
+      ph: '5.2', reagent_name: 'Buffer, sodium acetate', vol_units: microliter}
+    - {conc_units: '%', max_conc: '100', max_vol: '60', min_conc: '100', min_vol: '60',
+      reagent_name: 'ethanol, nuclease-free', vol_units: microliter}
     duration_comment: Active; Per sample
+    max_time: '1'
+    min_time: '1'
     time_units: minutes
     verb: add
   stepnum: 0
-- Actions:
+- actions:
   - {duration_comment: Passive, max_temp: '-80', max_time: '30', min_temp: '-80',
     min_time: '30', temp_units: degrees Celsius, time_units: minutes, verb: incubate}
   stepnum: 1
-- Actions:
-  - {duration_comment: Passive, max_speed: '14000', max_time: '25', min_speed: '14000',
-    min_time: '25', speed_units: rpm, temp_units: degrees Celsius, time_units: minutes,
-    verb: centrifuge}
+- actions:
+  - {duration_comment: Passive, max_speed: '14000', max_temp: '4', max_time: '25',
+    min_speed: '14000', min_temp: '4', min_time: '25', speed_units: rpm, temp_units: degrees
+      Celsius, time_units: minutes, verb: centrifuge}
   stepnum: 2
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, how: without disturbing the rna pellet,
-    max_time: '0.25', min_time: '0.25', pipet: without disturbing the RNA pellet,
-    time_units: minutes, verb: remove, what: ethanol}
+    max_time: '0.25', min_time: '0.25', time_units: minutes, tool: pipet, verb: remove,
+    what: ethanol}
   stepnum: 3
-- Actions:
-  - {duration_comment: Active; Per sample, max_conc: '70', max_time: '0.25', max_vol: '250',
-    min_conc: '70', min_time: '0.25', min_vol: '250', reagent_name: Ethanol, time_units: minutes,
-    verb: wash, vol_units: microliter, what: pellet}
+- actions:
+  - {conc_units: '%', duration_comment: Active; Per sample, max_conc: '70', max_time: '0.25',
+    max_vol: '250', min_conc: '70', min_time: '0.25', min_vol: '250', reagent_name: Ethanol,
+    time_units: minutes, verb: wash, vol_units: microliter, what: pellet}
   stepnum: 4
-- Actions:
-  - {duration_comment: Passive, max_speed: '14000', min_speed: '14000', speed_units: rpm,
-    temp_units: degrees Celsius, time_units: minutes, verb: centrifuge}
-  - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', time_units: minutes,
-    verb: pipette_out, what: ethanol}
+- actions:
+  - {duration_comment: Passive, max_speed: '14000', max_temp: '4', max_time: '5',
+    min_speed: '14000', min_temp: '4', min_time: '5', speed_units: rpm, temp_units: degrees
+      Celsius, time_units: minutes, verb: centrifuge}
+  - {duration_comment: Active; Per sample, max_time: '0.25', min_time: '0.25', remark: without
+      disturbing the rna pellet, time_units: minutes, verb: pipette_out, what: ethanol}
   stepnum: 5
-- Actions:
-  - {duration_comment: Passive, how: air dry, max_time: '10', time_units: minutes,
+- actions:
+  - {duration_comment: Passive, how: air dry, max_time: '10', min_time: '5', time_units: minutes,
     verb: dry}
   stepnum: 6
-- Actions:
+- actions:
   - {duration_comment: Active; Per sample, max_time: '0.5', max_vol: '10', min_time: '0.5',
     min_vol: '10', reagent_name: 'Water, nuclease-free, sterile', time_units: minutes,
     verb: resuspend, vol_units: microliter, what: pellet}
   stepnum: 7
-- Actions:
+- actions:
   - {duration_comment: 'Unknown, Protocol', protocol_name: ' ds cDNA synthesis "Alternate
       Protocol"', protocol_output: ' Nucleic Acid, cDNA, double-stranded', protocol_type: ' ds
-      cDNA synthesis', verb: call_for_protocol}
+      cDNA synthesis', remark: '"alternate protocol"', verb: call_for_protocol}
   stepnum: 8

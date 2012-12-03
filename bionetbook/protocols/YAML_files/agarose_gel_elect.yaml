@@ -11,7 +11,7 @@ components-location:
 - [23, 0, 2]
 - [47, 0, 6]
 steps:
-- Actions:
+- actions:
   - {duration_comment: Active, max_time: '5', min_time: '5', time_units: minutes,
     verb: prepare, what: an_adequate_volume_of_electrophoresis_buffer_(tae_or_tbe),
     why: to fill the electrophoresis tank and prepare the gel}
@@ -68,7 +68,7 @@ steps:
   remark: "Remember to keep in mind that the volume of the sample wells will be \n\
     determined by both the thickness of the gel and the size of the gel \ncomb."
   stepnum: 0
-- Actions:
+- actions:
   - {duration_comment: Active, max_time: '15', min_time: '15', time_units: minutes,
     verb: seal, what: the_gel_casting_platform}
   - {duration_comment: Active; Optional, max_time: '5', min_time: '5', remark: optional
@@ -91,7 +91,7 @@ steps:
     verb: cool, what: agarose_gel, why: to gain extra rigidity and prevent tearing.}
   remark: Most gel platforms are sealed by taping the open ends with adhesive tape
   stepnum: 1
-- Actions:
+- actions:
   - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
     verb: remove, what: the_tape_from_the_open_ends_of_the_gel_platform}
   - {duration_comment: Active, how: take care not to tear the sample wells, max_time: '1',
@@ -105,7 +105,7 @@ steps:
     to ensure that the sample wells are completely sealed and to prevent tearing of
     the agarose upon removal of the comb.
   stepnum: 2
-- Actions:
+- actions:
   - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
     verb: place, what: the_gel_casting_platform_containing_the_set_gel, where: in
       the electrophoresis tank}
@@ -113,7 +113,7 @@ steps:
       wells., max_time: '1', min_time: '1', time_units: minutes, verb: add, what: sufficient_electrophoresis_buffer,
     where: to the electrophoresis tank}
   stepnum: 3
-- Actions:
+- actions:
   - {duration_comment: Active, how: in a volume that will not overflow the gel wells
       by addition of the appropriate amount of 10_ loading buffer., max_time: '1',
     min_time: '1', remark: recommended, time_units: minutes, verb: prepare, what: dna_samples}
@@ -122,7 +122,7 @@ steps:
     time_units: minutes, tool: pipettor or micropipet, verb: load, what: dna_samples_in_loading_buffer,
     where: into wells in agarose gel}
   stepnum: 4
-- Actions:
+- actions:
   - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
     verb: check, what: be_sure_that_the_leads_are_attached_so_that_the_dna_will_migrate_into_the_gel_toward_the_anode_or_positive_lead.}
   - {duration_comment: Passive, max_time: '45', max_voltage: '10', min_time: '10',
