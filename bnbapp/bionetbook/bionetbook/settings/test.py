@@ -11,7 +11,7 @@ INSTALLED_APPS += ('django_coverage', )
 TEST_RUNNER = 'testrunner.OurCoverageRunner'
 COVERAGE_MODULE_EXCLUDES = (
     'tests$', 'settings$', 'urls$', 'locale$',
-    'migrations', 'fixtures', 'debug_toolbar',
+    'migrations', 'debug_toolbar',
     'admin',
 )
 COVERAGE_MODULE_EXCLUDES += BASE_APPS
@@ -28,3 +28,7 @@ DATABASES = {
         "PORT": "",
     },
 }
+
+FIXTURE_DIRS = (
+   '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/fixtures/',
+)

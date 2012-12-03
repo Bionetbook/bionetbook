@@ -69,3 +69,6 @@ MEDIA_URL = STATIC_URL
 ########## END STORAGE CONFIGURATION
 
 DJANGO_WYSIWYG_MEDIA_URL = os.path.join(STATIC_URL, 'ckeditor')
+FIXTURE_DIRS = (
+   '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/fixtures/',
+)

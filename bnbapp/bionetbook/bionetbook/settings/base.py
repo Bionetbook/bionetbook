@@ -148,6 +148,10 @@ LOGGING = {
     }
 }
 
+FIXTURE_DIRS = (
+   '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/fixtures/',
+)
+
 EMAIL_SUBJECT_PREFIX = '[bionetbook]'
 
 # DO MEMCACHE
@@ -171,3 +175,5 @@ AUTH_PROFILE_MODULE = "profiles.Profile"
 
 DJANGO_WYSIWYG_FLAVOR = 'ckeditor'
 DJANGO_WYSIWYG_MEDIA_URL = "%sckeditor/" % STATIC_URL
+
+

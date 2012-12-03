@@ -37,7 +37,7 @@ class Protocol:
  		return self.num_steps
 
  	def get_num_actions(self):
- 		self.num_actions = [len(self.steps[r]['Actions']) for r in range(0, self.get_num_steps())]  
+ 		self.num_actions = [len(s['Actions']) for s in self.steps]
  		return self.num_actions
 
  	def get_actions_by_step(self):
