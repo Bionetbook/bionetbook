@@ -114,6 +114,7 @@ PROJECT_APPS = (
     #'actions',
     'profiles',
     #'schedule',
+    'api',
 )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
