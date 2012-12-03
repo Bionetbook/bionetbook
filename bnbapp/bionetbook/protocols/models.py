@@ -62,9 +62,18 @@ class Protocol(TimeStampedModel):
             return json.loads(self.data)
         return None
 
+    def read_data(self, *args):
+        filename = str(args[0])
+        self.data = open(filename, 'r').read()
+        if self.data:
+            return self.data
+        else:
+            print 'no data loaded'
+            
+
     #@property
     #def actions(self):
-    #    from actions.models import Action
+    #  self.  fr()om actions.models import Action
     #    return Action.objects.filter(step__protocol=self)
 
     @property
@@ -74,7 +83,37 @@ class Protocol(TimeStampedModel):
             return data['steps']
         return []
 
+    @property
+    def get_num_steps(self):
+        self.num_steps = len(self.steps)
+        return self.num_steps
+
+    @ property
+    def get_num_actions(self):
+        self.num_actions = [len(self.steps[r]['Actions']) for r in range(0, self.get_num_steps)]  
+        return self.num_actions 
+
+    @property
+    def get_actions_by_step(self):
+        self.actions_by_step = []
+        for stepnum in range(0, self.get_num_steps):
+            tmp = [self.steps[stepnum]['Actions'][r]['verb'] for r in range(0, self.get_num_actions[stepnum])]
+            self.actions_by_Step.append(tmp)
+        return self.actions_by_step
+
+    @property
+    def get_action_tree(self):
+        self.action_tree = []
+        for stepnum in range(0, self.get_num_steps): # traversign all steps
+            for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
+                self.action_tree.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum]['verb']])
+        
+        return self.action_tree
 
 
-#class Step(object):
-#    pass
+
+
+
+
+
+
