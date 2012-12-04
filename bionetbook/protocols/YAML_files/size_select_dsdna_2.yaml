@@ -1,0 +1,53 @@
+Category_tags: ''
+Input: PCR-amplified pool of cDNA
+Name: Size selection of pool of dsDNA
+Output: Size-selected pool of cDNA
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: Refer to Support Protocol 2.
+Specific_tags: ''
+components-location:
+- [12, 0, 0]
+- [25, 2, 0]
+steps:
+- actions:
+  - component - list:
+    - {max_vol: '15', min_vol: '15', reagent_name: PCR-amplified product from prior
+        protocol, vol_units: microliter}
+    duration_comment: passive
+    max_time: '45'
+    min_time: '15'
+    remark: on 1.5% to 2% tae agarose gel (support protocol 2).
+    time_units: minutes
+    verb: electrophorese
+  stepnum: 0
+- actions:
+  - {duration_comment: active, max_time: '30', min_time: '5', remark: 'excise the
+      bands in a range of 150 to 350 bp with a clean, disposable scalpel (support
+      protocol 2).', time_units: minutes, tool: a clean disposable scalpel, verb: excise,
+    what: 'nucleic_acid,_dna_fragments_(150bp_-_350_bp)'}
+  stepnum: 1
+- actions:
+  - component - list:
+    - {max_vol: '15', min_vol: '15', reagent_name: 'Nucleic Acid, DNA, purified',
+      vol_units: microliter}
+    - {max_vol: '15', min_vol: '15', reagent_name: Total Volume, vol_units: microliter}
+    duration_comment: active
+    max_time: '30'
+    min_time: '10'
+    protocol_kit name: ' Qiagen''s Gel Extraction Kit'
+    protocol_output: ' Nucleic Acid, DNA, purified'
+    protocol_type: ' Gel Extraction'
+    remark: follow the manufacturer's recommended protocol and include all optional
+      steps, but elute in a final volume of 15 _l of buffer eb.
+    time_units: minutes
+    verb: call_for_protocol
+  stepnum: 2
+- actions:
+  - {duration_comment: Active, machine: spectrophotometer, max_time: '15', min_time: '10',
+    remark: 'a nanodrop spectrophotometer is recommended, as only 1 to 2 ul volume
+      is required. the ideal concentration is 15 to 25 ng/ul. if the cdna concentration
+      is lower, the sequencing efficiency will be low.', time_units: minutes, verb: check,
+    what: dna_concentration}
+  stepnum: 3

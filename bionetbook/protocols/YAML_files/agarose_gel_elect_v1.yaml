@@ -1,0 +1,127 @@
+Category_tags: ''
+Input: Nucleic Acid, DNA
+Name: Agarose Gel Electrophoresis
+Output: Image Data, separated dsDNA in agarose gel
+Reference_DOI: 10.1002/0471142727.mb0205as51
+Reference_PMID: '18265185'
+Reference_URL: ''
+Remarks: ''
+Specific_tags: ''
+components-location:
+- [23, 1, 0]
+steps:
+- actions:
+  - {duration_comment: Active, max_time: '5', min_time: '5', time_units: minutes,
+    verb: prepare, what: an_adequate_volume_of_electrophoresis_buffer_(tae_or_tbe),
+    why: to fill the electrophoresis tank and prepare the gel}
+  - {duration_comment: Active; Optional, how: to a final concentration of 0.5 ug/ml,
+    max_time: '2', min_time: '2', remark: 'if buffer is prepared for the electrophoresis
+      tank and the gel separately, be sure to bring both to an identical concentration
+      of ethidium bromide.', time_units: minutes, verb: add, what: ethidium_bromide_solution,
+    where: to the electrophoresis buffer}
+  remark: If buffer is prepared for the electrophoresis tank and the gel separately,
+    be sure to bring both to an identical concentration of ethidium bromide.
+  stepnum: 0
+- actions:
+  - component - list:
+    - {conc_units: '%', max_conc: '1.5', max_vol: user input, min_conc: '0.8', min_vol: user
+        input, note: Percentage (mass/vol) of agarose in electrophoresis buffer, reagent_name: 'Agarose,
+        Electrophoresis-grade', vol_units: User input}
+    - {max_vol: user input, min_vol: user input, reagent_name: 'Buffer, Electrophoresis
+        buffer (TAE)', vol_units: User input}
+    duration_comment: Active
+    max_time: '1'
+    min_time: '1'
+    time_units: minutes
+    verb: combine
+  - {duration_comment: 'Passive, ~1 minute per 100ml of Agarose solution', machine: in
+      a microwave oven or autoclave, max_time: '1', min_time: '1', time_units: minutes,
+    verb: melt, what: the_agarose}
+  - {duration_comment: Active, max_time: '1', min_time: '1', remark: 'gels typically
+      contain 0.8 to 1.5% agarose (see critical parameters, agarose concentration)',
+    time_units: minutes, verb: swirl, why: to ensure even mixing}
+  - {duration_comment: Passive; Optional, machine: water bath, max_temp: '55', max_time: '15',
+    min_temp: '55', min_time: '15', remark: "remember to keep in mind that the volume\
+      \ of the sample wells will be \ndetermined by both the thickness of the gel\
+      \ and the size of the gel \ncomb.", temp_comment: Target temperature, temp_units: degrees
+      Celsius, time_units: minutes, verb: cool, what: the_melted_agarose, why: this
+      prevents warping of the gel apparatus.}
+  remark: "Remember to keep in mind that the volume of the sample wells will be \n\
+    determined by both the thickness of the gel and the size of the gel \ncomb."
+  stepnum: 1
+- actions:
+  - {duration_comment: Active, max_time: '15', min_time: '15', time_units: minutes,
+    verb: seal, what: the_gel_casting_platform}
+  - {duration_comment: Active; Optional, max_time: '5', min_time: '5', remark: optional
+      1, time_units: minutes, tool: pasteur pipet, verb: apply, what: hot_agarose,
+    where: to the joints and edges of the gel platform, why: as an added measure to
+      prevent leakage}
+  - {duration_comment: Active; Optional, how: until the gel has hardened, max_time: '5',
+    min_time: '5', remark: optional 2, time_units: minutes, verb: let_sit/stand}
+  - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
+    verb: pour, what: the_melted_agarose, where: into the gel casting platform}
+  - {duration_comment: Active, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: insert, what: the_gel_comb}
+  - {duration_comment: Active, max_time: '1', min_time: '1', remark: most gel platforms
+      are sealed by taping the open ends with adhesive tape, time_units: minutes,
+    verb: check, what: make_sure_that_no_bubbles_are_trapped_underneath_the_combs_and_all_bubbles_on_the_surface_of_the_agarose_are_removed_before_the_gel_sets.}
+  - {duration_comment: Passive, how: until the gel has hardened, max_time: '15', min_time: '15',
+    time_units: minutes, verb: let_sit/stand}
+  - {duration_comment: Passive; Optional, max_temp: '4', max_time: '15', min_temp: '4',
+    min_time: '15', remark: recommended, temp_units: degrees Celsius, time_units: minutes,
+    verb: cool, what: agarose_gel, why: to gain extra rigidity and prevent tearing.}
+  remark: Most gel platforms are sealed by taping the open ends with adhesive tape
+  stepnum: 2
+- actions:
+  - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
+    verb: remove, what: the_tape_from_the_open_ends_of_the_gel_platform}
+  - {duration_comment: Active, how: take care not to tear the sample wells, max_time: '1',
+    min_time: '1', remark: most gel platforms are designed so that 0.5 to 1 mm of
+      agarose remains between the bottom of the comb and the base of the gel platform.
+      this is usually sufficient to ensure that the sample wells are completely sealed
+      and to prevent tearing of the agarose upon removal of the comb., time_units: minutes,
+    verb: withdraw, what: the_gel_comb}
+  remark: Most gel platforms are designed so that 0.5 to 1 mm of agarose remains between
+    the bottom of the comb and the base of the gel platform. This is usually sufficient
+    to ensure that the sample wells are completely sealed and to prevent tearing of
+    the agarose upon removal of the comb.
+  stepnum: 3
+- actions:
+  - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
+    verb: place, what: the_gel_casting_platform_containing_the_set_gel, where: in
+      the electrophoresis tank}
+  - {duration_comment: Active, how: make sure no air pockets are trapped within the
+      wells., max_time: '1', min_time: '1', time_units: minutes, verb: add, what: sufficient_electrophoresis_buffer,
+    where: to the electrophoresis tank}
+  stepnum: 4
+- actions:
+  - {duration_comment: Active, how: in a volume that will not overflow the gel wells
+      by addition of the appropriate amount of 10_ loading buffer., max_time: '1',
+    min_time: '1', remark: recommended, time_units: minutes, verb: prepare, what: dna_samples}
+  - {duration_comment: Active; Per sample, max_time: '1', min_time: '1', remark: be
+      sure to include appropriate dna molecular weight markers (see fig. 2.5.3).,
+    time_units: minutes, tool: pipettor or micropipet, verb: load, what: dna_samples_in_loading_buffer,
+    where: into wells in agarose gel}
+  stepnum: 5
+- actions:
+  - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,
+    verb: check, what: be_sure_that_the_leads_are_attached_so_that_the_dna_will_migrate_into_the_gel_toward_the_anode_or_positive_lead.}
+  - {duration_comment: Passive, max_time: '45', max_voltage: '10', min_time: '10',
+    min_voltage: '1', the_progress_of_the_separation_can_be_monitored_by_the_migration_of_the_dyes_in_the_loading_buffer.: 'CAUTION:
+      To prevent electrical shocks, the gel apparatus should always be covered and
+      kept away from heavily used work spaces.', time_units: minutes, verb: electrophorese,
+    voltage_comment: 1 to 10 volts per centimeter of gel, voltage_units: Volts/centimeter}
+  stepnum: 6
+- actions:
+  - {duration_comment: Active, max_time: '0.5', min_time: '0.5', time_units: minutes,
+    verb: switch_off, what: the_power_supply}
+  - {duration_comment: Passive; Conditional, how: in water, max_time: '30', min_time: '30',
+    remark: optional, time_units: minutes, verb: shake, what: the_agarose_gel, why: this
+      serves to remove excess ethidium bromide which causes background fluorescence
+      and makes visualization of small quantities of dna difficult.}
+  - {duration_comment: Active; Conditional, max_time: '1', min_time: '1', time_units: minutes,
+    verb: place, what: the_agarose_gel, where: on a uv light source}
+  - {duration_comment: Active, max_time: '10', min_time: '5', remark: see support
+      protocol 2 (specific to this protocol), time_units: minutes, verb: photograph,
+    what: the_agarose_gel}
+  stepnum: 7
