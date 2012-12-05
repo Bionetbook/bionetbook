@@ -92,20 +92,20 @@ class Protocol(TimeStampedModel):
         return len(self.steps)
 
     def get_num_actions(self):
-        return [len(s['Actions']) for s in self.steps]
+        return [len(s['actions']) for s in self.steps]
 
     def get_actions_by_step(self):
         actions_by_step = []
         for stepnum in range(0, self.get_num_steps()):
-            tmp = [self.steps[stepnum]['Actions'][r]['verb'] for r in range(0, self.get_num_actions[stepnum])]
+            tmp = [self.steps[stepnum]['actions'][r]['verb'] for r in range(0, self.get_num_actions[stepnum])]
             actions_by_step.append(tmp)
         return actions_by_step
 
     def get_action_tree(self):
         action_tree = []
         for stepnum in range(0, self.get_num_steps): # traversign all steps
-            for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
-                action_tree.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum]['verb']])
+            for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
+                action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         
         return action_tree
 
@@ -115,12 +115,12 @@ class Protocol(TimeStampedModel):
         # traversing all step and action nodes in the protocol:
         
         for stepnum in range(0, self.get_num_steps()): # traversign all steps
-            for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
+            for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
                 tmp = {}
                 # find the time related annotated field that this protcol has
-                tagged_fields = [r for r in self.steps[stepnum]['Actions'][actionnum].keys() if r in time_atts]
+                tagged_fields = [r for r in self.steps[stepnum]['actions'][actionnum].keys() if r in time_atts]
                 for l in tagged_fields: # insert the valid tagged_fields into a tmp dict
-                    tmp[l] = self.steps[stepnum]['Actions'][actionnum][l] 
+                    tmp[l] = self.steps[stepnum]['actions'][actionnum][l] 
                 actions_sequence.append(tmp)   # append this action dict to the action_sequence list
         return actions_sequence     
 
@@ -181,9 +181,9 @@ class Protocol(TimeStampedModel):
                 if line[3]=='minutes':
                     total_list.append(float(line[1]))
                 if line [3]=='hours':
-                    total_list.append(float(line[1]*60))
+                    total_list.append(float(line[1])*60)
                 if line [3]=='days':
-                    total_list.append(float(line[1]*60*24))
+                    total_list.append(float(line[1])*60*24)
                 if 'Active'.lower() in line[4].lower():
                     active_list.append(total_list[-1])
                 if 'Passive'.lower() in line[4].lower():

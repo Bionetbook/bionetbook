@@ -1,18 +1,25 @@
-Category_tags: http://nar.oxfordjournals.org/content/28/12/e67.full
+Category_tags: DNA Extraction
 Input: ancient bone
-Name: A simple and efficient method for PCR amplifiable DNA extraction from ancient
-  bones
+Name: DNA extraction from ancient bones
 Output: DNA
-Reference_DOI: '10871390'
-Reference_PMID: ''
-Reference_URL: ''
-Remarks: ''
-Specific_tags: 'doi: 10.1093/nar/28.12.e67'
+Reference_DOI: 'doi: 10.1093/nar/28.12.e67'
+Reference_PMID: '10871390'
+Reference_URL: http://nar.oxfordjournals.org/content/28/12/e67.full
+Remarks: A simple and efficient method for PCR amplifiable DNA extraction from ancient
+  bones
+Specific_tags: from paper
 components-location:
-- [39, 3, 0]
-- [42, 3, 0]
-- [69, 4, 2]
-- [96, 6, 0]
+- [44, 3, 0]
+- [71, 4, 2]
+- [98, 6, 0]
+protocol-reagents:
+  ' Extraction buffer':
+    component - list:
+    - {conc_units: Molar, max_conc: '0.1', min_conc: '0.1', reagent_name: EDTA}
+    - {max_vol: '0.5', min_vol: '0.5', reagent_name: N-laurylsacosine-na salt, vol_units: percent}
+    - {mass_units: mg/ ml, max_mass: '100', min_mass: '100', reagent_name: Proteinase
+        K}
+    - {}
 steps:
 - actions:
   - {duration_comment: Active, how: by washing with diluted bleach and distilled water,
@@ -29,16 +36,21 @@ steps:
   - {duration_comment: Passive, how: with uv light, machine: 1.0 joule per square
       centimeter, max_time: '30', min_time: '30', time_units: minutes, verb: treat,
     what: the_cleaned_bone_fragments}
-  - {duration_comment: Active, how: in a sterile agate mortar, max_time: '30', min_time: '30',
-    time_units: minutes, verb: grind, what: the_cleaned_bone_fragments}
+  - {duration_comment: Active, how: 'mechanically, into a fine meal, in a sterile
+      agate mortar', max_time: '30', min_time: '30', time_units: minutes, verb: grind,
+    what: the_cleaned_bone_fragments}
   stepnum: 2
 - actions:
   - component - list:
     - {max_vol: '1.6', min_vol: '1.6', reagent_name: Extraction buffer, vol_units: milliliter}
     duration_comment: Active
     how: in
+    mass_units: milligrams
+    max_mass: '750'
     max_time: '15'
+    min_mass: '750'
     min_time: '15'
+    reagent_name: physically powdered bone
     time_units: minutes
     verb: suspend
   - {duration_comment: Active, max_time: '1', min_time: '1', time_units: minutes,

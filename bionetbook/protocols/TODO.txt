@@ -9,7 +9,7 @@ files to debug:
 
 
 3. Any protocol with step options: make into a new version
-4. change Actions to actions in all YAML and JSON files. 
+
 
 Protocols to do:
 	PCR amplification - later

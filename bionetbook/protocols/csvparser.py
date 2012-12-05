@@ -33,9 +33,9 @@ rows = []
 for line in f:
 	rows.append('| '.join(line).split('|'))
 
-def labelRowType(cellchars):
-	if cellchars[0] == 1:
-		return 'Step'
+def labelRowType(rows, rownum, cellchars):
+	if cellchars[0] >= 1 :
+		return 'Step' 
 	if cellchars[2] > 1 and cellchars[3] > 1:
 		return 'action'
 	if cellchars[2] == 1 and cellchars[3] > 1: # and cellchars[0] == 0:
@@ -44,18 +44,30 @@ def labelRowType(cellchars):
 		return 'Field'
 
 
+
 def add_attribute(rownum,Stepnum,actionnum):
 
 	attribute = {}
 	attributetype = rows[rownum][3].strip()
+
+	if 'sample' in attributetype:
+		colnum = 4
+		cellchars = [len(rows[rownum][cell]) for cell in range(len(rows[rownum]))]
+		# print cellchars
+		if 1 in cellchars[colnum:]:
+			endcolumn = 4 + cellchars[4:].index(1)
+		else:
+			endcolumn = len(cellchars)
+		for i in range(colnum,endcolumn): # add all specified attributes to the dict
+			if len(rows[rownum + 1][i].strip())>0:
+				attribute[rows[rownum][i].strip().replace(' ', '_').lower()] = rows[rownum + 1][i].strip()
+		return attribute
+
+
 	if 'what' in attributetype and 'component' not in attributetype:
 		attribute['what'] = rows[rownum][4].strip().replace(' ', '_').lower()
 		return attribute	
 		
-	# if 'what' in attributetype and 'components'  in attributetype:
-	# 	attribute['what - component'] = 'later'
-	# 	return attribute
-
 	if  'protocol' in attributetype and 'component' not in attributetype:
 		attribute[rows[rownum][3].strip().replace(' - ', '_').lower()] = rows[rownum][4]
 		return attribute
@@ -157,11 +169,23 @@ Protocol =  {
 	'Reference_DOI': rows[6][1].strip(),
 	'Category_tags': rows[7][1].strip(),
 	'Specific_tags': rows[8][1].strip(),
-	'components-location': []
+	'components-location': [],
+	'protocol-reagents': {}
 	}
-# Populate the Protocol Dict with actions verbs atts fields and values
 
-step_start = [r+1 for r in range(7,12) if 'tep' in rows[r][0]]
+# Add buffers and recipes:
+# find step start:
+step_start = [r+1 for r in range(7,30) if 'Step' in rows[r][0]]
+
+for rownum in range(9, step_start[0]-1):
+	if len(rows[rownum][0]) > 2:
+		attribute = add_component_list(rownum)
+		# relation= (rows[rownum][1].split(','))
+		# Protocol['components-location'].append([rows[rownum], relation[0], relation[1]])
+		Protocol['protocol-reagents'][rows[rownum+1][2]]=attribute
+		continue
+		  
+# Populate the Protocol Dict with actions verbs atts fields and values
 
 current_row = step_start[0]
 
@@ -170,7 +194,7 @@ Stepnum = -1
 
 for rownum in range(current_row, len(rows)): # pute each rows data in plac
 	cellchars = [len(rows[rownum][cell]) for cell in range(len(rows[rownum]))]
-	rowtype = labelRowType(cellchars)
+	rowtype = labelRowType(rows, current_row, cellchars)
 	if rowtype == 'Step':
 		steps.append({})
 		Stepnum +=1
@@ -186,6 +210,7 @@ for rownum in range(current_row, len(rows)): # pute each rows data in plac
 				continue
 			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + attribute.items())
 		continue
+		print Stepnum
 
 	if rowtype == 'action':
 		actionnum += 1
@@ -196,6 +221,7 @@ for rownum in range(current_row, len(rows)): # pute each rows data in plac
 		else:
 			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + {}.items())
 		continue
+		print actionnum
 
    	if rowtype == 'new_attribute':
    		# verified that this is not a new action and not a new step
@@ -207,6 +233,17 @@ for rownum in range(current_row, len(rows)): # pute each rows data in plac
    			steps[Stepnum]['actions'][actionnum] = dict(steps[Stepnum]['actions'][actionnum].items() + {}.items())
     	continue
 
+
+	if rowtype == 'reagent':
+		attribute = add_component_list(row[rownum])
+		relation= (rows[rownum][1].split(','))
+		# Protocol['components-location'].append([rows[rownum], relation[0], relation[1]])
+		Protocol['protocol-reagents'][rows[rownum+1][2]]=attribute
+		continue
+
+
+
+# Summarize all component lists into one variable:
 Protocol['steps'] = steps
 for j in Protocol['components-location']:
 	attribute = add_component_list(j[0])

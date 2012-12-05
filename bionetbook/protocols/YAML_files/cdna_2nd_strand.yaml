@@ -12,7 +12,7 @@ components-location:
 - [11, 0, 0]
 - [33, 2, 0]
 - [47, 3, 0]
-- [65, 4, 0]
+- [67, 4, 0]
 steps:
 - actions:
   - component - list:
@@ -75,7 +75,8 @@ steps:
   - {duration_comment: Passive, max_time: '1', min_time: '1', speed_comment: Pulse,
     time_comment: Brief, time_units: minutes, verb: centrifuge, what: tubes, why: to
       collect the contents of the tube}
-  - {verb: place, what: sample, where: on ice}
+  - {duration_comment: Passive, max_time: '99', min_time: '1', time_units: minutes,
+    verb: place, what: sample, where: on ice}
   stepnum: 3
 - actions:
   - component - list:

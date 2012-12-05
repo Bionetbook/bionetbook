@@ -9,43 +9,45 @@ import sys
 import yaml
 import math
 
+# fname = sys.argv[1]
 
 class Protocol:
 	def __init__(self, fname):
 		stream = file(fname, 'r')
 		self.yaml = yaml.load(stream)
-		self.name = self.Yaml['Name']
-		self.components = self.Yaml['components-location']
-	 	self.specific_tags = self.Yaml['Specific_tags']
-	 	self.doi = self.Yaml['Reference_DOI']
-	 	self.url = self.Yaml['Reference_URL']
-	 	self.ssteps = self.Yaml['steps'] # make this a summary option with keyword tags
-	 	self.pmid = self.Yaml['Reference_PMID']
-	 	self.input = self.Yaml['Input']
-	 	self.remarks = self.Yaml['Remarks']
-	 	self.output = self.Yaml['Output']
-	 	self.category_tags = self.Yaml['Category_tags']
+		self.name = self.yaml['Name']
+		self.components = self.yaml['components-location']
+	 	self.specific_tags = self.yaml['Specific_tags']
+	 	self.doi = self.yaml['Reference_DOI']
+	 	self.url = self.yaml['Reference_URL']
+	 	self.steps = self.yaml['steps'] # make this a summary option with keyword tags
+	 	self.pmid = self.yaml['Reference_PMID']
+	 	self.input = self.yaml['Input']
+	 	self.remarks = self.yaml['Remarks']
+	 	self.output = self.yaml['Output']
+	 	self.category_tags = self.yaml['Category_tags']
+	 	self.reagents = self.yaml['protocol-reagents']
 	 	# self.schedule_padded = 'None'
 	 	# self.totaltime = 'None'
 	 	
-
+	@property  	
  	def get_name(self):
-		return self.Name
+		return self.name
 
 	def get_num_steps(self):
- 		self.num_steps = len(self.Yaml['steps'])
+ 		self.num_steps = len(self.yaml['steps'])
  		return self.num_steps
 
  	def get_num_actions(self):
- 		self.num_actions = [len(s['Actions']) for s in self.steps]
+ 		self.num_actions = [len(s['actions']) for s in self.steps]
  		return self.num_actions
 
  	def get_actions_by_step(self):
- 	 	self.actions_by_Step = []
+ 	 	self.actions_by_step = []
  	 	for stepnum in range(0, self.get_num_steps()):
-			tmp = [self.steps[stepnum]['Actions'][r]['verb'] for r in range(0, self.get_num_actions()[stepnum])]
-			self.actions_by_Step.append(tmp)
-		return self.actions_by_Step
+			tmp = [self.steps[stepnum]['actions'][r]['verb'] for r in range(0, self.get_num_actions()[stepnum])]
+			self.actions_by_step.append(tmp)
+		return self.actions_by_step
 
 	def get_reagent_data(self, format):
 		
@@ -53,13 +55,13 @@ class Protocol:
 		# check if there are components in the protocol:
 		if self.components[0] > 0:
 			if format == 'None':
-				for l in self.Components: # l = [rownum, stepnum, actionnum]
-					cur_list = self.steps[l[1]]['Actions'][l[2]]['component - list'] # list of reagents starting at stepnum(l[1]), actionnum(l[2])
+				for l in self.components: # l = [rownum, stepnum, actionnum]
+					cur_list = self.steps[l[1]]['actions'][l[2]]['component - list'] # list of reagents starting at stepnum(l[1]), actionnum(l[2])
 					[self.needed_reagents.append(r) for r in cur_list]
 			
 			else:
-				for l in self.Components: # l = [rownum, stepnum, actionnum]
-					cur_list = [self.steps[l[1]]['Actions'][l[2]]['component - list'][r]['reagent_name'] for r in range(0, len(self.steps[l[1]]['Actions'][l[2]]['component - list']))]
+				for l in self.components: # l = [rownum, stepnum, actionnum]
+					cur_list = [self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name'] for r in range(0, len(self.steps[l[1]]['actions'][l[2]]['component - list']))]
 					[self.needed_reagents.append(r) for r in cur_list]
 
 		return self.needed_reagents
@@ -67,17 +69,17 @@ class Protocol:
 	def get_action_tree(self):
 		self.action_tree = []
 		for stepnum in range(0, self.get_num_steps()): # traversign all steps
-			for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
-				self.Action_tree.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum]['verb']])
+			for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
+				self.action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
 		
 		return self.action_tree		
 
 	def get_tree_by_field(self, field):
 		self.Tree_by_field = []
 		for stepnum in range(0, self.get_num_steps()): # traversign all steps
-			for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
+			for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
 				try:
-					self.Tree_by_field.append([stepnum, actionnum, self.steps[stepnum]['Actions'][actionnum][field]])
+					self.Tree_by_field.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum][field]])
 				except KeyError:
 					continue	
 			
@@ -95,12 +97,12 @@ class Protocol:
 		# traversing all step and action nodes in the protocol:
 		
 		for stepnum in range(0, self.get_num_steps()): # traversign all steps
-			for actionnum in range(0, len(self.steps[stepnum]['Actions'])): # traversing all actions per step
+			for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
 				tmp = {}
 				# find the time related annotated field that this protcol has
-				tagged_fields = [r for r in self.steps[stepnum]['Actions'][actionnum].keys() if r in time_atts]
+				tagged_fields = [r for r in self.steps[stepnum]['actions'][actionnum].keys() if r in time_atts]
 				for l in tagged_fields: # insert the valid tagged_fields into a tmp dict
-					tmp[l] = self.steps[stepnum]['Actions'][actionnum][l] 
+					tmp[l] = self.steps[stepnum]['actions'][actionnum][l] 
 				self.actions_sequence.append(tmp)	# append this action dict to the action_sequence list
 		return self.actions_sequence
 	
@@ -162,9 +164,9 @@ class Protocol:
 				if line[3]=='minutes':
 					total_list.append(float(line[1]))
 				if line	[3]=='hours':
-					total_list.append(float(line[1]*60))
+					total_list.append(float(line[1])*60)
 				if line	[3]=='days':
-					total_list.append(float(line[1]*60*24))
+					total_list.append(float(line[1])*60*24)
 				if 'Active'.lower() in line[4].lower():
 					active_list.append(total_list[-1])
 				if 'Passive'.lower() in line[4].lower():

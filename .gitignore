@@ -8,3 +8,4 @@ venv
 build
 
 bnbapp/bionetbook/database.sqlite
+bionetbook/protocols/csvparser.py
