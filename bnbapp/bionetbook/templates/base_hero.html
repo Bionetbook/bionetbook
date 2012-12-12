@@ -24,7 +24,11 @@
         </ul>
         {% if request.user.is_authenticated %}
           <ul class="nav pull-right">
-              <li class="active"><a>{{ request.user }}</a></li>
+              {% if request.my_profile == None %}
+                  <li class="active"><a>{{ request.user }}</a></li>
+              {% else %}
+                  <li class="active"><a href="{% url profile_detail request.my_profile.pk %}">{{ request.user }}</a></li>
+              {% endif %}
             <li><a href="{% url logout %}">logout</a></li>  
           </ul>
         {% else %}
