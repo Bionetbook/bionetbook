@@ -11,8 +11,8 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<protocol_slug>[-\w]+)/publish/$', view=views.ProtocolPublishView.as_view(), name='protocol_publish'),
 
 
-    url(regex=r'^(?P<slug>[-\w]+)/steps/$', view=views.ProtocolDetailView.as_view(), name='step_list'),
-    url(regex=r'^(?P<slug>[-\w]+)/step/create/$', view=views.ProtocolDetailView.as_view(), name='step_create'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/steps/$', view=views.StepListView.as_view(), name='step_list'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/step/create/$', view=views.ProtocolDetailView.as_view(), name='step_create'),
 
 
 )

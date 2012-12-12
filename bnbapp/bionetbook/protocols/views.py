@@ -18,6 +18,7 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
+        context['steps'] = self.object.steps
         #context['steps'] = self.object.step_set.filter()
 
         return context
@@ -58,11 +59,11 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     form_class = ProtocolForm
     slug_url_kwarg = "protocol_slug"
 
-    def get_context_data(self, **kwargs):
-        context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
-        #context['steps'] = self.object.step_set.select_related()
+    #def get_context_data(self, **kwargs):
+    #    context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
+    #    #context['steps'] = self.object.step_set.select_related()
 
-        return context
+    #    return context
 
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
@@ -82,4 +83,29 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
         messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
         return super(ProtocolPublishView, self).form_valid(form)
 
+
+####################
+# Step Tools
+
+class StepListView(ListView):
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    template_name = "steps/step_list.html"
+
+    def get_queryset(self):     # NEEDS TO GET THIS FROM THE SLUG PASSED IN
+
+        slug = self.kwargs.get('slug')
+
+        #if self.request.user.is_superuser or self.request.user.is_staff:
+        return Protocol.objects.filter()
+        #if self.request.user.is_authenticated():
+        #    return Protocol.objects.filter(
+        #            Q(status=Protocol.STATUS_PUBLISHED) |
+        #            Q(owner=self.request.user)
+        #            )
+        #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
+
+        #return []
+        #return slug
 
