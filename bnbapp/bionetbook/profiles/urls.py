@@ -14,4 +14,8 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<pk>\d+)/$',
         view=views.ProfileDetailView.as_view(),
         name='profile_detail'),
+
 )
+
+
+

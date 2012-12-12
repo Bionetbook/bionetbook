@@ -18,7 +18,7 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
-        context['steps'] = self.object.step_set.filter()
+        #context['steps'] = self.object.step_set.filter()
 
         return context
 
@@ -60,7 +60,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
-        context['steps'] = self.object.step_set.select_related()
+        #context['steps'] = self.object.step_set.select_related()
 
         return context
 
