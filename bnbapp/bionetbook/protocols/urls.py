@@ -10,10 +10,7 @@ urlpatterns = patterns("",
     url(regex=r'^$', view=views.ProtocolListView.as_view(), name='protocol_list'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/publish/$', view=views.ProtocolPublishView.as_view(), name='protocol_publish'),
 
-
     url(regex=r'^(?P<protocol_slug>[-\w]+)/steps/$', view=views.StepListView.as_view(), name='step_list'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/step/create/$', view=views.ProtocolDetailView.as_view(), name='step_create'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/detail/$', view=views.StepListView.as_view(), name='step_detail'),
-
-
 )

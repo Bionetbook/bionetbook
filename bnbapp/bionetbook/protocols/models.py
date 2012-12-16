@@ -117,8 +117,8 @@ class Protocol(TimeStampedModel):
     @property
     def steps(self):
         data = self.data
-        if data:
-            return data['steps']
+        if data:          
+            return [ Step(protocol=self, data=s) for s in data['steps'] ]
         return []
 
     ###########
@@ -266,7 +266,25 @@ class Action(ComponentBase):
 
 
 class Step(ComponentBase):
-    pass    
+
+    actions = []
+
+    def __init__(self, protocol, data=None):
+        self.protocol = protocol
+
+        if data:
+            self.slug = data['slug']
+            self.actions = data['actions']
+
+    def get_absolute_url(self):
+        return self.protocol.get_absolute_url() + self.slug + "/"
+
+    #@property
+    #def actions(self):
+    #    return self.actions
+
+    #                <td>{{ item.duration_in_seconds|default:"0" }}</td>
+
 
 
 class ProtocolIngest(Protocol):

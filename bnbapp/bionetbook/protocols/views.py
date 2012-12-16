@@ -98,7 +98,7 @@ class StepListView(ListView):
         slug = self.kwargs.get('slug')
 
         #if self.request.user.is_superuser or self.request.user.is_staff:
-        return Protocol.objects.filter()
+        return Protocol.objects.filter(slug="first-strand-cdna-synthesis-oligodt")
         #if self.request.user.is_authenticated():
         #    return Protocol.objects.filter(
         #            Q(status=Protocol.STATUS_PUBLISHED) |
