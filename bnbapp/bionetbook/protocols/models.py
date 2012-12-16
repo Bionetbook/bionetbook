@@ -253,7 +253,7 @@ class ComponentBase(object):
             else:
                 setattr(self, item, "")
 
-    def __json(self):
+    def __dict(self):
         return self.__dict__
 
 
@@ -262,7 +262,13 @@ class Verb(ComponentBase):
 
 
 class Action(ComponentBase):
-    pass
+    #slug = "FOO"
+    def __init__(self, step, data=None, **kwargs):
+        self.step = step
+        super(Action, self).__init__(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    def get_absolute_url(self):
+        return self.step.get_absolute_url() + self.objectid + "/"
 
 
 class Step(ComponentBase):
@@ -274,10 +280,14 @@ class Step(ComponentBase):
 
         if data:
             self.slug = data['slug']
-            self.actions = data['actions']
+            self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
 
     def get_absolute_url(self):
         return self.protocol.get_absolute_url() + self.slug + "/"
+        #return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
+
+    #def action_names(self):
+    #    return ', '.join([a.objectid for a in self.actions ])
 
     #@property
     #def actions(self):

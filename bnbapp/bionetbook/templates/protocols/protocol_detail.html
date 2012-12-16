@@ -36,6 +36,7 @@
                   <th>Step</th>
                   <th>Duration</th>
                   <th>Actions</th>
+                  <th>Action Names</th>
               </tr>
             </thead>
             <tbody>
@@ -44,6 +45,11 @@
                     <td><a href="{{ item.get_absolute_url }}">{{ item.slug }}</a></td>
                     <td>{{ item.duration_in_seconds|default:"0" }}</td>
                     <td>{{ item.actions|length }}</td>
+                    <td>
+                    {% for a in item.actions %}
+                    <a href="{{ a.get_absolute_url }}">{{ a.objectid }}</a><br>
+                    {% endfor %}
+                    </td>
                 </tr>
                 {% endfor%}
             </tbody>
