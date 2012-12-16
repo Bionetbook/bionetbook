@@ -109,3 +109,31 @@ class StepListView(ListView):
         #return []
         #return slug
 
+
+
+class StepDetailView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "steps/step_detail.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(StepDetailView, self).get_context_data(**kwargs)
+        step_slug = self.kwargs['step_slug']
+        context['step'] = self.object.components[step_slug]
+        return context
+
+
+class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "actions/action_detail.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionDetailView, self).get_context_data(**kwargs)
+        action_slug = self.kwargs['action_slug']
+        context['action'] = self.object.components[action_slug]
+        context['step'] = context['action'].step
+        return context
+

@@ -14,9 +14,11 @@ class ProtocolForm(forms.ModelForm):
 class PublishForm(forms.Form):
     pass
 
+
 class StepForm(forms.Form):
     name = forms.CharField(max_length=100)
     remark = forms.CharField()
+
 
 class ActionForm(forms.Form):
 

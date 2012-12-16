@@ -4,9 +4,9 @@
 {% block title %}Step: {{ object.name }}{% endblock %}
 
 {% block page_title %}
-<a href="{% url step_list protocol.slug %}">Step</a>: {{ object.name }}
+Step: {{ step.slug }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url step_update protocol.slug object.slug  %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 
@@ -15,16 +15,16 @@
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
-        {% object_data_table object %}
+        {{step.actions}}
     </div>
 
     <div class="span6">
-      <h2><a href="{% url action_list protocol.slug object.slug %}">Actions</a></h2>
+      <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{% url action_create protocol.slug object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_create protocol.slug object.slug %}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{% url action_create object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_create object.slug step.slug %}">Add Action</a></p>      
       {% endif %}
 
-      {% if actions|length %}
+      {% if step.actions|length %}
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
@@ -35,11 +35,11 @@
               </tr>
             </thead>
             <tbody>
-                {% for item in actions %}
+                {% for item in step.actions %}
                 <tr>
-                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                    <td><a href="{{ item.get_absolute_url }}">{{ item.objectid }}</a></td>
                     <td>{{ item.duration_in_seconds|default:"0" }}</td>
-                    <td><a href="{% url verb_detail item.verb %}">{{ item.verb }}</a></td>
+                    <td>{{ item.verb }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>
                 {% endfor%}

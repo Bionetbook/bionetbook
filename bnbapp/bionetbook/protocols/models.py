@@ -121,6 +121,18 @@ class Protocol(TimeStampedModel):
             return [ Step(protocol=self, data=s) for s in data['steps'] ]
         return []
 
+    @property
+    def components(self):
+        result = {}
+        for step in self.steps:
+            result[step.objectid] = step
+
+            for action in step.actions:
+                result[action.objectid] = action
+
+        return result
+
+
     ###########
     # Methods
 
@@ -256,13 +268,16 @@ class ComponentBase(object):
     def __dict(self):
         return self.__dict__
 
+    def __unicode__(self):
+        return self.slug
+
 
 class Verb(ComponentBase):
     pass
 
 
 class Action(ComponentBase):
-    #slug = "FOO"
+
     def __init__(self, step, data=None, **kwargs):
         self.step = step
         super(Action, self).__init__(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
@@ -281,23 +296,18 @@ class Step(ComponentBase):
         if data:
             self.slug = data['slug']
             self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
+            self.objectid = data['objectid']
 
     def get_absolute_url(self):
-        return self.protocol.get_absolute_url() + self.slug + "/"
+        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+        #return self.protocol.get_absolute_url() + self.slug + "/"
         #return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
-
-    #def action_names(self):
-    #    return ', '.join([a.objectid for a in self.actions ])
-
-    #@property
-    #def actions(self):
-    #    return self.actions
-
-    #                <td>{{ item.duration_in_seconds|default:"0" }}</td>
 
 
 
 class ProtocolIngest(Protocol):
+    '''Used for loading protocols from JSON formatted text files.'''
 
     class Meta:
         db_table = 'protocols_protocol'
