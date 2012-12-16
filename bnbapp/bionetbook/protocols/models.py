@@ -1,3 +1,7 @@
+import string
+import random
+import math
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -8,7 +12,6 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 
 from django_extensions.db.models import TimeStampedModel
-import math
 
 
 class Protocol(TimeStampedModel):
@@ -46,10 +49,17 @@ class Protocol(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
+
+        self.set_data_ids()
+        self.set_data_slugs()
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
             self.slug = self.generate_slug()
             self.save()
+
+    ##########
+    # Generators
 
     def generate_slug(self):
         slug = slugify(self.name)
@@ -62,24 +72,47 @@ class Protocol(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
 
-    # def get_data(self):
-    #     if self.data:
-    #         return json.loads(self.data)
-    #     return None
+    def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
+        '''Always returns a unique ID in the protocol'''
+        uid_list = []
+        uid = ''.join(random.choice(chars) for x in range(size))
 
-    def read_data(self, *args):
-        filename = str(args[0])
-        self.data = open(filename, 'r').read()
-        if self.data:
-            return self.data
-        else:
-            print 'no data loaded'
-            
+        for step in self.steps:
+            if 'objectid' in step:
+                uid_list.append(step['objectid'])
 
-    #@property
-    #def actions(self):
-    #  self.  fr()om actions.models import Action
-    #    return Action.objects.filter(step__protocol=self)
+            for action in step['actions']:
+                if 'objectid' in action:
+                    uid_list.append(action['objectid'])
+
+        if uid not in uid_list:
+            return uid
+
+        return self.get_hash_id(size, chars)
+
+    ###########
+    # Validators
+
+    def set_data_ids(self):
+        for step in self.steps:
+            if not 'objectid' in step:
+                step['objectid'] = self.get_hash_id()
+
+            for action in step['actions']:
+                if not 'objectid' in action:
+                    action['objectid'] = self.get_hash_id()
+
+    def set_data_slugs(self):
+        for step in self.steps:
+            if not 'slug' in step:
+                step['slug'] = slugify(step['objectid'])
+
+            for action in step['actions']:
+                if not 'slug' in action:
+                    action['slug'] = slugify(action['objectid'])
+
+    ###########
+    # Properties
 
     @property
     def steps(self):
@@ -87,6 +120,9 @@ class Protocol(TimeStampedModel):
         if data:
             return data['steps']
         return []
+
+    ###########
+    # Methods
 
     def get_num_steps(self):
         return len(self.steps)
@@ -233,4 +269,15 @@ class Step(ComponentBase):
     pass    
 
 
+class ProtocolIngest(Protocol):
 
+    class Meta:
+        db_table = 'protocols_protocol'
+
+    def read_data(self, *args):
+        filename = str(args[0])
+        self.data = open(filename, 'r').read()
+        if self.data:
+            return self.data
+        else:
+            print 'no data loaded'
