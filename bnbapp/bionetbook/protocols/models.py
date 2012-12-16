@@ -103,7 +103,7 @@ class Protocol(TimeStampedModel):
 
     def get_action_tree(self):
         action_tree = []
-        for stepnum in range(0, self.get_num_steps): # traversign all steps
+        for stepnum in range(0, self.get_num_steps()): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
                 action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         

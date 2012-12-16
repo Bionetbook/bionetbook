@@ -10,6 +10,7 @@ def init_prot(ind, fname, user, Protocol):
 	ind.name = ind.data['Name']
 	ind.owner = user
 	ind.description = ind.data['Remarks']
+	ind.duration_in_seconds = ind.get_duration()
 	ind.save()
 	return ind
 
@@ -17,9 +18,6 @@ def update_param(Protocol,i):
 	a = Protocol.objects.get(pk=i); 
 	a.duration_in_seconds = a.get_duration('padding'); 
 	a.save()
-
-	
-
 
 
 

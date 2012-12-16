@@ -74,7 +74,7 @@ event.add('priority', 5)
 padding.add_component(event)
 fname_out= filename[:filename.index('.')] + '_pad1.ics'
 f = open(fname_out, 'wb')
-f.write(cal.to_ical())
+f.write(pad.to_ical())
 f.close()
 
 
