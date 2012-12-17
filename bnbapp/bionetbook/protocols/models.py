@@ -294,9 +294,9 @@ class Step(ComponentBase):
         self.protocol = protocol
 
         if data:
-            self.slug = data.get('slug', None)
+            self.slug = data['slug']
             self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
-            self.objectid = data.get('objectid', None)
+            self.objectid = data['objectid']
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
