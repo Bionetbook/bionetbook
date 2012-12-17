@@ -18,24 +18,25 @@ def object_data_table(model_instance):
 
     fields = []
     raw = None
-    
+
     for field_name in model_instance._meta.get_all_field_names():
-        try:
-            value = getattr(model_instance, field_name, None)
-        except:
-            value = None
+        if field_name not in ['data']:
+            try:
+                value = getattr(model_instance, field_name, None)
+            except:
+                value = None
 
-        if field_name == "raw":
-            raw = dict(
+            if field_name == "raw":
+                raw = dict(
+                    key=field_name,
+                    value=mark_safe(value)
+
+                )
+                continue
+            field = dict(
                 key=field_name,
-                value=mark_safe(value)
-
+                value=value
             )
-            continue
-        field = dict(
-            key=field_name,
-            value=value
-        )
-        fields.append(field)
+            fields.append(field)
     fields.append(raw)
     return {'fields': fields}
