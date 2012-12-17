@@ -27,4 +27,4 @@ class ActionForm(forms.Form):
     name = forms.CharField(max_length=100)
     remark = forms.CharField()
     duration = forms.IntegerField()
-    #verb = forms.CharField(choice=VERB_CHOICES)
+    verb = forms.ChoiceField(choices=VERB_CHOICES)
