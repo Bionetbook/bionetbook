@@ -79,11 +79,11 @@ class Protocol(TimeStampedModel):
 
         for step in self.steps:
             if hasattr(step, 'objectid'):
-                uid_list.append(step['objectid'])
+                uid_list.append(step.objectid)
 
             for action in step.actions:
                 if hasattr(action, 'objectid'):
-                    uid_list.append(action['objectid'])
+                    uid_list.append(action.objectid)
 
         if uid not in uid_list:
             return uid
