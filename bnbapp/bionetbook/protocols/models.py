@@ -325,13 +325,16 @@ class Step(ComponentBase):
         self['actions'] = []
 
         if data:
-            if 'slug' in data:
-                self['slug'] = data['slug']
+            for key in data:
+                self[key] = data[key]
+
+            #if 'slug' in data:
+            #    self['slug'] = data['slug']
 
             self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
 
-            if 'objectid' in data:
-                self['objectid'] = data['objectid']
+            #if 'objectid' in data:
+            #    self['objectid'] = data['objectid']
 
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
