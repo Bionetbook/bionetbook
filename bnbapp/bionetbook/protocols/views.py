@@ -6,7 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, F
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
-from protocols.forms import ProtocolForm, PublishForm
+from protocols.forms import ProtocolForm, PublishForm, ActionForm
 from protocols.models import Protocol
 
 
@@ -98,7 +98,7 @@ class StepListView(ListView):
         slug = self.kwargs.get('slug')
 
         #if self.request.user.is_superuser or self.request.user.is_staff:
-        return Protocol.objects.filter()
+        return Protocol.objects.filter(slug="first-strand-cdna-synthesis-oligodt")
         #if self.request.user.is_authenticated():
         #    return Protocol.objects.filter(
         #            Q(status=Protocol.STATUS_PUBLISHED) |
@@ -108,4 +108,46 @@ class StepListView(ListView):
 
         #return []
         #return slug
+
+
+
+class StepDetailView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "steps/step_detail.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(StepDetailView, self).get_context_data(**kwargs)
+        step_slug = self.kwargs['step_slug']
+        context['step'] = self.object.components[step_slug]
+        return context
+
+
+class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "actions/action_detail.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionDetailView, self).get_context_data(**kwargs)
+        action_slug = self.kwargs['action_slug']
+        context['action'] = self.object.components[action_slug]
+        context['step'] = context['action'].step
+        return context
+
+
+class ActionCreateView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "actions/action_create.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActionCreateView, self).get_context_data(**kwargs)
+        step_slug = self.kwargs['step_slug']
+        context['step'] = self.object.components[step_slug]
+        context['form'] = ActionForm()
+        return context
 

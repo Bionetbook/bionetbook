@@ -117,9 +117,21 @@ class Protocol(TimeStampedModel):
     @property
     def steps(self):
         data = self.data
-        if data:
-            return data['steps']
+        if data:          
+            return [ Step(protocol=self, data=s) for s in data['steps'] ]
         return []
+
+    @property
+    def components(self):
+        result = {}
+        for step in self.steps:
+            result[step.objectid] = step
+
+            for action in step.actions:
+                result[action.objectid] = action
+
+        return result
+
 
     ###########
     # Methods
@@ -253,8 +265,11 @@ class ComponentBase(object):
             else:
                 setattr(self, item, "")
 
-    def __json(self):
+    def __dict(self):
         return self.__dict__
+
+    def __unicode__(self):
+        return self.slug
 
 
 class Verb(ComponentBase):
@@ -262,14 +277,37 @@ class Verb(ComponentBase):
 
 
 class Action(ComponentBase):
-    pass
+
+    def __init__(self, step, data=None, **kwargs):
+        self.step = step
+        super(Action, self).__init__(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    def get_absolute_url(self):
+        return self.step.get_absolute_url() + self.objectid + "/"
 
 
 class Step(ComponentBase):
-    pass    
+
+    actions = []
+
+    def __init__(self, protocol, data=None):
+        self.protocol = protocol
+
+        if data:
+            self.slug = data['slug']
+            self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
+            self.objectid = data['objectid']
+
+    def get_absolute_url(self):
+        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+        #return self.protocol.get_absolute_url() + self.slug + "/"
+        #return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
+
 
 
 class ProtocolIngest(Protocol):
+    '''Used for loading protocols from JSON formatted text files.'''
 
     class Meta:
         db_table = 'protocols_protocol'
