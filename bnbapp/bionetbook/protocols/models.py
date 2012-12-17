@@ -45,6 +45,12 @@ class Protocol(TimeStampedModel):
     #DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
     #document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
 
+
+    def __init__(self, *args, **kwargs):
+        super(Protocol, self).__init__(*args, **kwargs)
+        self.steps_data = []
+
+
     def __unicode__(self):
         return self.name
 
@@ -54,7 +60,7 @@ class Protocol(TimeStampedModel):
         self.set_data_slugs()
 
         # NEED TO RETURN STEPS TO JSON
-        #print json.dumps(self.steps)
+        self.data['steps'] = self.steps
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
@@ -82,56 +88,60 @@ class Protocol(TimeStampedModel):
 
         for step in self.steps:
             if hasattr(step, 'objectid'):
-                uid_list.append(step.objectid)
+                if step['objectid']:
+                    uid_list.append(step.objectid)
 
-            for action in step.actions:
+            for action in step['actions']:
                 if hasattr(action, 'objectid'):
-                    uid_list.append(action.objectid)
+                    if action['objectid']:
+                        uid_list.append(action['objectid'])
 
         if uid not in uid_list:
             return uid
 
         return self.get_hash_id(size, chars)
 
+    def rebuild_steps(self):
+        self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+
     ###########
     # Validators
 
     def set_data_ids(self):
         for step in self.steps:
-            if not step.objectid:
-                step.objectid = self.get_hash_id()
+            if not step['objectid']:
+                step['objectid'] = self.get_hash_id()
 
-            for action in step.actions:
-                if not action.objectid:
-                    action.objectid = self.get_hash_id()
+            for action in step['actions']:
+                if not action['objectid']:
+                    action['objectid'] = self.get_hash_id()
 
     def set_data_slugs(self):
         for step in self.steps:
-            if not step.slug:
-                step.slug = slugify(step.objectid)
+            if not step['slug']:
+                step['slug'] = slugify(step['objectid'])
 
-            for action in step.actions:
-                if not action.slug:
-                    action.slug = slugify(action.objectid)
+            for action in step['actions']:
+                if 'slug' in action and not action['slug']:
+                    action['slug'] = slugify(action['objectid'])
 
     ###########
     # Properties
 
     @property
     def steps(self):
-        data = self.data
-        if data:          
-            return [ Step(protocol=self, data=s) for s in data['steps'] ]
-        return []
+        if not self.steps_data:
+            self.rebuild_steps()
+        return self.steps_data
 
     @property
     def components(self):
         result = {}
         for step in self.steps:
-            result[step.objectid] = step
+            result[step['objectid']] = step
 
             for action in step.actions:
-                result[action.objectid] = action
+                result[action['objectid']] = action
 
         return result
 
@@ -254,25 +264,25 @@ class Protocol(TimeStampedModel):
 
 
 
-class ComponentBase(object):
+class ComponentBase(dict):
     """Base class for the protocol components"""
 
     keylist = ['name','objectid']
 
     def __init__(self, data=None, **kwargs):
-        for item in self.keylist:
-            if item in kwargs:
-                setattr(self, item, kwargs[item])
-            elif item in data:
-                setattr(self, item, data[item])
-            else:
-                setattr(self, item, "")
+        super(ComponentBase, self).__init__(**kwargs)
 
-    def __dict(self):
-        return self.__dict__
+        for item in self.keylist:
+            self[item] = None
+
+        for item in data:
+            self[item] = data[item]
+
+        for item in kwargs:
+            self[item] = kwargs[item]
 
     def __unicode__(self):
-        return self.slug
+        return self['slug']
 
 
 class Verb(ComponentBase):
@@ -290,27 +300,42 @@ class Action(ComponentBase):
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
-    @property
-    def dump(self):
-        result = {}
-        for k,v in self.__dict__.items():
-            if k not in ['protocol','step']:
-                result[k] = v
-        return result
+    #@property
+    #def dump(self):
+    #    result = {}
+    #    for k,v in self.__dict__.items():
+    #        if k not in ['protocol','step']:
+    #            result[k] = v
+    #    return result
 
 
 class Step(ComponentBase):
 
-    actions = []
-    objectid = None
+    #actions = []
+    #objectid = None
 
     def __init__(self, protocol, data=None):
         self.protocol = protocol
+        self['objectid'] = None #self.get_hash_id()
+        self['slug'] = None
+        self['actions'] = []
 
         if data:
-            self.slug = data.get('slug', None)
-            self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
-            self.objectid = data.get('objectid', None)
+            if 'slug' in data:
+                self['slug'] = data['slug']
+
+            self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
+
+            if 'objectid' in data:
+                self['objectid'] = data['objectid']
+
+
+    def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
+        '''Always returns a unique ID in the protocol'''
+        uid_list = []
+        uid = ''.join(random.choice(chars) for x in range(size))
+        return uid
+
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
