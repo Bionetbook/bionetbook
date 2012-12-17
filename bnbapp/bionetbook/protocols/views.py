@@ -6,7 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, F
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
-from protocols.forms import ProtocolForm, PublishForm, ActionForm
+from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
 from protocols.models import Protocol
 
 
@@ -122,6 +122,21 @@ class StepDetailView(AuthorizedForProtocolMixin, DetailView):
         step_slug = self.kwargs['step_slug']
         context['step'] = self.object.components[step_slug]
         return context
+
+
+class StepCreateView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "steps/step_create.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        context = super(StepCreateView, self).get_context_data(**kwargs)
+        context['steps'] = self.object.steps
+        context['form'] = StepForm()
+        return context
+
+
 
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
