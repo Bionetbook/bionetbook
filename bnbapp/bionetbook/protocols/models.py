@@ -53,6 +53,9 @@ class Protocol(TimeStampedModel):
         self.set_data_ids()
         self.set_data_slugs()
 
+        # NEED TO RETURN STEPS TO JSON
+        #print json.dumps(self.steps)
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
             self.slug = self.generate_slug()
@@ -287,6 +290,14 @@ class Action(ComponentBase):
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
+    @property
+    def dump(self):
+        result = {}
+        for k,v in self.__dict__.items():
+            if k not in ['protocol','step']:
+                result[k] = v
+        return result
+
 
 class Step(ComponentBase):
 
@@ -303,6 +314,17 @@ class Step(ComponentBase):
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+    #@property
+    #def __repr__(self):
+    #    result = {}
+    #    for k,v in self.__dict__.items():
+    #        if k not in ['protocol','actions']:
+    #            result[k] = v
+    #    return result
+
+    #def __repr__(self):
+    #    return json.dumps(self.__dict__)
 
 
 class ProtocolIngest(Protocol):
