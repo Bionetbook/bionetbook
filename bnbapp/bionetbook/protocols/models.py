@@ -78,11 +78,11 @@ class Protocol(TimeStampedModel):
         uid = ''.join(random.choice(chars) for x in range(size))
 
         for step in self.steps:
-            if 'objectid' in step:
+            if hasattr(step, 'objectid'):
                 uid_list.append(step['objectid'])
 
-            for action in step['actions']:
-                if 'objectid' in action:
+            for action in step.actions:
+                if hasattr(action, 'objectid'):
                     uid_list.append(action['objectid'])
 
         if uid not in uid_list:
@@ -95,21 +95,21 @@ class Protocol(TimeStampedModel):
 
     def set_data_ids(self):
         for step in self.steps:
-            if not 'objectid' in step:
-                step['objectid'] = self.get_hash_id()
+            if not step.objectid:
+                step.objectid = self.get_hash_id()
 
-            for action in step['actions']:
-                if not 'objectid' in action:
-                    action['objectid'] = self.get_hash_id()
+            for action in step.actions:
+                if not action.objectid:
+                    action.objectid = self.get_hash_id()
 
     def set_data_slugs(self):
         for step in self.steps:
-            if not 'slug' in step:
-                step['slug'] = slugify(step['objectid'])
+            if not step.slug:
+                step.slug = slugify(step.objectid)
 
-            for action in step['actions']:
-                if not 'slug' in action:
-                    action['slug'] = slugify(action['objectid'])
+            for action in step.actions:
+                if not action.slug:
+                    action.slug = slugify(action.objectid)
 
     ###########
     # Properties
@@ -280,15 +280,18 @@ class Action(ComponentBase):
 
     def __init__(self, step, data=None, **kwargs):
         self.step = step
+        self.objectid = None
         super(Action, self).__init__(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        self.slug = self.objectid
 
     def get_absolute_url(self):
-        return self.step.get_absolute_url() + self.objectid + "/"
+        return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
 
 class Step(ComponentBase):
 
     actions = []
+    objectid = None
 
     def __init__(self, protocol, data=None):
         self.protocol = protocol
@@ -300,10 +303,6 @@ class Step(ComponentBase):
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
-
-        #return self.protocol.get_absolute_url() + self.slug + "/"
-        #return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
-
 
 
 class ProtocolIngest(Protocol):
