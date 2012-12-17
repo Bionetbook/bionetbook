@@ -151,7 +151,7 @@ class Protocol(TimeStampedModel):
 
     def get_action_tree(self):
         action_tree = []
-        for stepnum in range(0, self.get_num_steps()): # traversign all steps
+        for stepnum in range(0, self.get_num_steps): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
                 action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         
@@ -297,9 +297,9 @@ class Step(ComponentBase):
         self.protocol = protocol
 
         if data:
-            self.slug = data['slug']
+            self.slug = data.get('slug', None)
             self.actions = [ Action(step=self, data=a) for a in data['actions'] ]
-            self.objectid = data['objectid']
+            self.objectid = data.get('objectid', None)
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
