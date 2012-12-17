@@ -62,6 +62,10 @@ class Protocol(TimeStampedModel):
         # NEED TO RETURN STEPS TO JSON
         self.data['steps'] = self.steps
 
+        if not self.name:
+            if self.data['Name']:
+                self.name = self.data['Name']
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
             self.slug = self.generate_slug()
