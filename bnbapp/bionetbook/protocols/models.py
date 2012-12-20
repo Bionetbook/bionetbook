@@ -347,6 +347,13 @@ class Step(ComponentBase):
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
+
+    @property
+    def slug(self):
+        if not self['slug']:
+            self['slug'] = slugify(self['objectid'])
+        return self['slug']
+
     #@property
     #def __repr__(self):
     #    result = {}
