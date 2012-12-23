@@ -9,5 +9,6 @@ build
 
 bnbapp/bionetbook/database.sqlite
 bionetbook/protocols/csvparser.py
+bnbapp/data/
 
 bnbapp copy/

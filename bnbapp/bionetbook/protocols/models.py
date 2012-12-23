@@ -96,6 +96,11 @@ class Protocol(TimeStampedModel):
                     if action['objectid']:
                         uid_list.append(action['objectid'])
 
+                if 'component - list' in action.keys():        
+                    for reagent in action['component - list']:
+                        if 'objectid' in reagent:
+                            uid_list.append(reagent['objectid'])          
+
         if uid not in uid_list:
             return uid
 
@@ -115,6 +120,14 @@ class Protocol(TimeStampedModel):
             for action in step['actions']:
                 if not action['objectid']:
                     action['objectid'] = self.get_hash_id()
+                
+                if 'component - list' in action.keys():
+                    for reagent in action['component - list']:
+                        if 'objectid' not in reagent.keys():
+                            reagent['objectid'] = self.get_hash_id()
+
+
+
 
     def set_data_slugs(self):
         for step in self.steps:
@@ -134,48 +147,92 @@ class Protocol(TimeStampedModel):
             self.rebuild_steps()
         return self.steps_data
 
-    @property
-    def components(self):
-        result = {}
-        for step in self.steps:
-            result[step['objectid']] = step
 
-            for action in step.actions:
-                result[action['objectid']] = action
 
-        return result
+
+
+    # @property
+    # def components(self):
+    #     result = {}
+    #     for step in self.steps:
+    #         result[step['objectid']] = step
+
+    #         for action in step.actions:
+    #             result[action['objectid']] = action
+
+    #     return result
 
 
     ###########
     # Methods
-
+    @property 
     def get_num_steps(self):
         return len(self.steps)
-
+    
     def get_num_actions(self):
         return [len(s['actions']) for s in self.steps]
 
     def get_actions_by_step(self):
         actions_by_step = []
-        for stepnum in range(0, self.get_num_steps()):
-            tmp = [self.steps[stepnum]['actions'][r]['verb'] for r in range(0, self.get_num_actions[stepnum])]
+        # num_actions = self.get_num_actions()
+        for stepnum in range(0, self.get_num_steps):
+            tmp = [self.data['steps'][stepnum]['actions'][r]['verb'] for r in range(0, self.get_num_actions()[stepnum])]
             actions_by_step.append(tmp)
         return actions_by_step
 
-    def get_action_tree(self):
+    # def get_verb_by_tree(self, **kwargs):
+        
+    #     # test if kwargs pair is in protocol:
+
+    def nodes_detail(act):
+        # act = [0, 0, u'call_for_protocol'] -> 0-0-call_for_protocol
+        return ''.join(str(act)).replace(', ','-').replace('[','').replace(']','').replace('\'','').replace('-u','-')
+
+
+    def get_action_tree(self, format = None):
         action_tree = []
         for stepnum in range(0, self.get_num_steps): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
-                action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
+                if format == 'objectid':
+                    action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['objectid']])
+                else:    
+                    action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         
         return action_tree
+
+    def get_reagent_data(self, format=None):
+        # function takes the format argument and returns the (step, action) format of the reagent, i.e. verb, objectid, slug etc.  
+        self.needed_reagents = []
+        
+        if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
+            for l in self.data['components-location']: # iterate over all step,action locations where there are components
+                components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) 
+                for r in range(0,components_per_cur_list):
+                    reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
+                    cur_reagent_name = []
+                    cur_reagent_name.append(reagent_name)
+                    if 'total volume' in reagent_name.lower():
+                        continue
+                    if format == 'detail':
+                        cur_reagent_name.append(l[1])
+                        cur_reagent_name.append(l[2])
+                    if format == 'all': 
+                        tmp = []
+                        tmp.append(l[1])
+                        tmp.append(l[2])
+                        tmp.append(self.steps[l[1]]['actions'][l[2]]['verb'])
+                        cur_reagent_name.append(tmp)
+                    
+                    self.needed_reagents.append(cur_reagent_name)    
+
+        return self.needed_reagents    
 
     def get_schedule_data(self):
         time_atts = ('verb','min_time','max_time','time_units','duration_comment')
         actions_sequence =[]
         # traversing all step and action nodes in the protocol:
         
-        for stepnum in range(0, self.get_num_steps()): # traversign all steps
+        for stepnum in range(0, self.get_num_steps): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
                 tmp = {}
                 # find the time related annotated field that this protcol has
