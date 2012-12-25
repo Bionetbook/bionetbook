@@ -17,6 +17,8 @@ Step: {{ step.slug }}
         <h2>Detail</h2>
         {{step.slug}}
         {{step.actions}}
+        {% object_data_table step %}
+
     </div>
 
     <div class="span6">

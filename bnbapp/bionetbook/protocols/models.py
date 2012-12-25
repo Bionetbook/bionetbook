@@ -330,16 +330,25 @@ class ComponentBase(dict):
 
     keylist = ['name','objectid']
 
+    # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
+
+    class Meta:
+        def __init__(self, componenet):
+            self.component = componenet
+
+        def get_all_field_names(self):
+            return self.component.keys()
+
     def __init__(self, data=None, **kwargs):
         super(ComponentBase, self).__init__(**kwargs)
 
-        for item in self.keylist:
+        for item in self.keylist:       # MANE SURE THE ITEMS IN THE KEYLIST EXIST AT LEAST
             self[item] = None
 
-        for item in data:
+        for item in data:               # DO ANY DATA OVERRIDES HERE
             self[item] = data[item]
 
-        for item in kwargs:
+        for item in kwargs:             # OVERRIDE DATA WITH ANY PARTICULAR KWARGS PASSED
             self[item] = kwargs[item]
 
     def __unicode__(self):
@@ -361,18 +370,11 @@ class Action(ComponentBase):
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
-    #@property
-    #def dump(self):
-    #    result = {}
-    #    for k,v in self.__dict__.items():
-    #        if k not in ['protocol','step']:
-    #            result[k] = v
-    #    return result
-
 
 class Step(ComponentBase):
 
     def __init__(self, protocol, data=None):
+        self._meta = Step.Meta(self)
         self.protocol = protocol
         self['objectid'] = None #self.get_hash_id()
         self['slug'] = None
@@ -382,16 +384,11 @@ class Step(ComponentBase):
             for key in data:
                 self[key] = data[key]
 
-            if 'slug' in data:
-                self['slug'] = data['slug']
-
             if 'actions' in data:
                 self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
             else:
                 self['actions'] = []
 
-            if 'objectid' in data:
-                self['objectid'] = data['objectid']
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
