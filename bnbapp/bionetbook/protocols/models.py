@@ -115,6 +115,7 @@ class Protocol(TimeStampedModel):
             self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
         else:
             self.data = {'steps':[]}
+            self.steps_data = []
 
     ###########
     # Validators
@@ -154,20 +155,16 @@ class Protocol(TimeStampedModel):
             self.rebuild_steps()
         return self.steps_data
 
+    @property
+    def components(self):
+        result = {}
+        for step in self.steps:
+            result[step['objectid']] = step
 
+            for action in step['actions']:
+                result[action['objectid']] = action
 
-
-
-    # @property
-    # def components(self):
-    #     result = {}
-    #     for step in self.steps:
-    #         result[step['objectid']] = step
-
-    #         for action in step.actions:
-    #             result[action['objectid']] = action
-
-    #     return result
+        return result
 
 
     ###########
@@ -375,9 +372,6 @@ class Action(ComponentBase):
 
 class Step(ComponentBase):
 
-    #actions = []
-    #objectid = None
-
     def __init__(self, protocol, data=None):
         self.protocol = protocol
         self['objectid'] = None #self.get_hash_id()
@@ -399,34 +393,20 @@ class Step(ComponentBase):
             #if 'objectid' in data:
             #    self['objectid'] = data['objectid']
 
-
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
         uid_list = []
         uid = ''.join(random.choice(chars) for x in range(size))
         return uid
 
-
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
-
 
     @property
     def slug(self):
         if not self['slug']:
             self['slug'] = slugify(self['objectid'])
         return self['slug']
-
-    #@property
-    #def __repr__(self):
-    #    result = {}
-    #    for k,v in self.__dict__.items():
-    #        if k not in ['protocol','actions']:
-    #            result[k] = v
-    #    return result
-
-    #def __repr__(self):
-    #    return json.dumps(self.__dict__)
 
 
 class ProtocolIngest(Protocol):
