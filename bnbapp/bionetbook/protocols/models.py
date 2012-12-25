@@ -382,6 +382,7 @@ class Step(ComponentBase):
 
         if data:
             for key in data:
+                print "%s -> %s" % (key, data[key])
                 self[key] = data[key]
 
             if 'actions' in data:
