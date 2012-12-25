@@ -1,7 +1,10 @@
+from django.core.urlresolvers import reverse
 from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormMixin
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
@@ -40,6 +43,9 @@ class ProtocolListView(ListView):
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):
+    '''
+    View used to create new protocols
+    '''
 
     model = Protocol
     form_class = ProtocolForm
@@ -85,6 +91,63 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
 
 
 ####################
+# Component Base Classes
+
+#class ComponentCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormMixin, DetailView):
+class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+    '''This view needs to properly create a view, set a form and process the form'''
+
+    model = Protocol
+    template_name = "steps/step_create.html"
+    slug_url_kwarg = "protocol_slug"
+    form_class = StepForm
+    success_url = None
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        return {'protocol_slug': protocol.slug}
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_context_data(self, **kwargs):
+        print "GET CONTEXT DATA"
+        context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
+        context['steps'] = self.object.steps
+        context['form'] = self.form_class()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        print "GET CALLED"
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        print "POST CALLED"
+
+        self.object = self.get_object()
+
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            print "FORM VALID"
+            return self.form_valid(form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form)
+
+
+####################
 # Step Tools
 
 class StepListView(AuthorizedForProtocolMixin, ListView):
@@ -124,18 +187,29 @@ class StepDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class StepCreateView(AuthorizedForProtocolMixin, DetailView):
+class StepCreateView(ComponentCreateViewBase):
+    '''Creates and appends a step to a protocol.'''
 
-    model = Protocol
     template_name = "steps/step_create.html"
-    slug_url_kwarg = "protocol_slug"
+    form_class = StepForm
+    success_url = 'protocol_detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(StepCreateView, self).get_context_data(**kwargs)
-        context['steps'] = self.object.steps
-        context['form'] = StepForm()
-        return context
+    def form_valid(self, form):
+        protocol = self.get_protocol()
 
+        if 'steps' in protocol.data:
+            protocol.data['steps'].append(form.cleaned_data)
+        else:
+            protocol.data['steps'] = [form.cleaned_data]
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your step was added.")
+        return super(StepCreateView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        protocol = self.get_protocol()
+        # NEED TO SET OBJECT
+        return super(StepCreateView, self).form_invalid(form)
 
 
 
@@ -151,6 +225,8 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
         context['action'] = self.object.components[action_slug]
         context['step'] = context['action'].step
         return context
+
+
 
 
 class ActionCreateView(AuthorizedForProtocolMixin, DetailView):

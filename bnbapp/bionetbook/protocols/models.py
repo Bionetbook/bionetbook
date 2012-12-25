@@ -391,7 +391,10 @@ class Step(ComponentBase):
             #if 'slug' in data:
             #    self['slug'] = data['slug']
 
-            self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
+            if 'actions' in data:
+                self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
+            else:
+                self['actions'] = []
 
             #if 'objectid' in data:
             #    self['objectid'] = data['objectid']
