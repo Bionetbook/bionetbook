@@ -382,16 +382,16 @@ class Step(ComponentBase):
             for key in data:
                 self[key] = data[key]
 
-            #if 'slug' in data:
-            #    self['slug'] = data['slug']
+            if 'slug' in data:
+                self['slug'] = data['slug']
 
             if 'actions' in data:
                 self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
             else:
                 self['actions'] = []
 
-            #if 'objectid' in data:
-            #    self['objectid'] = data['objectid']
+            if 'objectid' in data:
+                self['objectid'] = data['objectid']
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
