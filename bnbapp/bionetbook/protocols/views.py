@@ -122,6 +122,10 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
+
+        if 'step_slug' in self.kwargs:
+            context['step'] = self.object.components[self.kwargs['step_slug']]
+
         context['form'] = self.form_class()
         return context
 
@@ -229,16 +233,16 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
 
 
 
-class ActionCreateView(AuthorizedForProtocolMixin, DetailView):
+class ActionCreateView(ComponentCreateViewBase):
 
-    model = Protocol
+    form_class = ActionForm
     template_name = "actions/action_create.html"
-    slug_url_kwarg = "protocol_slug"
+    success_url = 'protocol_detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(ActionCreateView, self).get_context_data(**kwargs)
-        step_slug = self.kwargs['step_slug']
-        context['step'] = self.object.components[step_slug]
-        context['form'] = ActionForm()
-        return context
+    #def get_context_data(self, **kwargs):
+    #    context = super(ActionCreateView, self).get_context_data(**kwargs)
+    #    step_slug = self.kwargs['step_slug']
+    #    context['step'] = self.object.components[step_slug]
+    #    context['form'] = ActionForm()
+    #    return context
 

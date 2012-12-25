@@ -6,7 +6,7 @@
 {% block title %}Step: {{ object.name }}{% endblock %}
 
 {% block page_title %}
-Action Create: {{ step.slug }}
+Action Create: {{ step.name }}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
@@ -17,7 +17,7 @@ Action Create: {{ step.slug }}
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
-        {{step.actions}}
+        {% object_data_table step %}
     </div>
 
     <div class="span6">
