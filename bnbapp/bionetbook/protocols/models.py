@@ -111,7 +111,10 @@ class Protocol(TimeStampedModel):
         return self.get_hash_id(size, chars)
 
     def rebuild_steps(self):
-        self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+        if self.data:
+            self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+        else:
+            self.data = {'steps':[]}
 
     ###########
     # Validators

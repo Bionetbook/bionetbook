@@ -87,7 +87,7 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
 ####################
 # Step Tools
 
-class StepListView(ListView):
+class StepListView(AuthorizedForProtocolMixin, ListView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
