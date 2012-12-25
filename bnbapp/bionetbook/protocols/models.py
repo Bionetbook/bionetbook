@@ -333,11 +333,13 @@ class ComponentBase(dict):
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
 
     class Meta:
-        def __init__(self, componenet):
-            self.component = componenet
+        def __init__(self, component):
+            self.component = component
 
         def get_all_field_names(self):
-            return self.component.keys()
+            result = self.component.keys()
+            result.sort()
+            return result
 
     def __init__(self, data=None, **kwargs):
         super(ComponentBase, self).__init__(**kwargs)
