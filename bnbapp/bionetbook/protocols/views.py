@@ -202,11 +202,12 @@ class StepCreateView(ComponentCreateViewBase):
 
     def form_valid(self, form):
         protocol = self.get_protocol()
+        new_step = Step(protocol, data=form.cleaned_data)
 
         if 'steps' in protocol.data:
-            protocol.data['steps'].append(Step(protocol, data=form.cleaned_data))
+            protocol.data['steps'].append(new_step)
         else:
-            protocol.data['steps'] = [Step(protocol, data=form.cleaned_data)]
+            protocol.data['steps'] = [new_step]
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your step was added.")
@@ -249,18 +250,12 @@ class ActionCreateView(ComponentCreateViewBase):
         protocol = self.get_protocol()
         context = self.get_context_data()
         step = context['step']
-
-        print "ACTION VALID"
-        print step['name']
-
-        # CREATE THE ACTION
-
-        # ADD ACTION TO STEP
+        new_action = Action(protocol, step=step, data=form.cleaned_data)
 
         if 'actions' in step:
-            step['actions'].append(Action(protocol, step=step, data=form.cleaned_data))
+            step['actions'].append(new_action)
         else:
-            step['actions'] = [Action(protocol, step=step, data=form.cleaned_data)]
+            step['actions'] = [new_action]
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")

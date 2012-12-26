@@ -6,14 +6,14 @@
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="#">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="#">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
       <li class="active">{{object.name}}</li>
     </ul>
 {% endblock %}
 
 
 
-{% block page_title %}<a href="{% url protocol_list %}">Protocol</a>: {{ object.name }}
+{% block page_title %}Protocol: {{ object.name }}
 {% if protocol_edit_authorization %}
     <small><a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
