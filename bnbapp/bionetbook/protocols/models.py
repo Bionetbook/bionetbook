@@ -383,8 +383,8 @@ class ComponentBase(dict):
         return self.protocol.name
 
 
-#class Verb(ComponentBase):
-#    pass
+class Verb(ComponentBase):
+    pass
 
 
 class Action(ComponentBase):

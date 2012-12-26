@@ -2,6 +2,16 @@
 {% load core_tags %}
 {% load crispy_forms_tags %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="#">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li class="active">Add Action</li>
+    </ul>
+{% endblock %}
+
 
 {% block title %}Create Action => {{step.title}}{% endblock %}
 

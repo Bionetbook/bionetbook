@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="#">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li class="active">{{action.name}}</li>
+    </ul>
+{% endblock %}
+
 {% block title %}Action: {{ object.name }}{% endblock %}
 
 {% block page_title %}
-Action: {{ action.objectid }}
+Action: {{ action.name }}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url action_update object.slug step.slug action.objectid  %}"><i class="icon-edit"></i>edit </a></small>
 {% endif %}
@@ -14,7 +24,7 @@ Action: {{ action.objectid }}
 
 <div class="row">
     <div class="span6">
-    	{{action.objectid}}
+        {% object_data_table action %}
     </div>
     <div class="span6">
         
