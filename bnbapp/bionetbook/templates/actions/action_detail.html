@@ -11,10 +11,10 @@
     </ul>
 {% endblock %}
 
-{% block title %}Action: {{ object.name }}{% endblock %}
+{% block title %}Action: {{ action.title }}{% endblock %}
 
 {% block page_title %}
-Action: {{ action.name }}
+Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url action_update object.slug step.slug action.objectid  %}"><i class="icon-edit"></i>edit </a></small>
 {% endif %}
