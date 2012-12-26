@@ -21,7 +21,7 @@ def object_data_table(model_instance):
     raw = None
 
     for field_name in model_instance._meta.get_all_field_names():
-        if field_name not in ['data']:  # USED TO NOT DISPLAY RAW DOCUMENT DATA
+        if field_name not in ['data', 'actions']:  # USED TO NOT DISPLAY RAW DOCUMENT DATA
             try:
                 value = model_instance[field_name]
             except:

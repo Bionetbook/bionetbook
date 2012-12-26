@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}Step: {{ object.name }}{% endblock %}
+{% block title %}{{ step.title }}{% endblock %}
+
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="#">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="#">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li class="active">{{step.name}}</li>
+    </ul>
+{% endblock %}
+
 
 {% block page_title %}
-Step: {{ step.slug }}
+Step: {{ step.title }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{% url step_update object.slug step.slug %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 

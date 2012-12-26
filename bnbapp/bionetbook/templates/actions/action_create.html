@@ -3,10 +3,10 @@
 {% load crispy_forms_tags %}
 
 
-{% block title %}Step: {{ object.name }}{% endblock %}
+{% block title %}Create Action => {{step.title}}{% endblock %}
 
 {% block page_title %}
-Action Create: {{ step.name }}
+Create Action => {{step.title}}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}

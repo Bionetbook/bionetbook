@@ -341,73 +341,87 @@ class ComponentBase(dict):
             result.sort()
             return result
 
-    def __init__(self, data=None, **kwargs):
-        super(ComponentBase, self).__init__(**kwargs)
-
-        for item in self.keylist:       # MANE SURE THE ITEMS IN THE KEYLIST EXIST AT LEAST
-            self[item] = None
-
-        for item in data:               # DO ANY DATA OVERRIDES HERE
-            self[item] = data[item]
-
-        for item in kwargs:             # OVERRIDE DATA WITH ANY PARTICULAR KWARGS PASSED
-            self[item] = kwargs[item]
-
-    def __unicode__(self):
-        return self['slug']
-
-
-class Verb(ComponentBase):
-    pass
-
-
-class Action(ComponentBase):
-
-    def __init__(self, step, data=None, **kwargs):
-        self.step = step
-        self.objectid = None
-        super(Action, self).__init__(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        self.slug = self.objectid
-
-    def get_absolute_url(self):
-        return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
-
-
-class Step(ComponentBase):
-
-    def __init__(self, protocol, data=None):
-        self._meta = Step.Meta(self)
-        self.protocol = protocol
-        self['objectid'] = None #self.get_hash_id()
-        self['slug'] = None
-        self['actions'] = []
-
-        if data:
-            for key in data:
-                print "%s -> %s" % (key, data[key])
-                self[key] = data[key]
-
-            if 'actions' in data:
-                self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
-            else:
-                self['actions'] = []
-
-
-    def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
-        '''Always returns a unique ID in the protocol'''
-        uid_list = []
-        uid = ''.join(random.choice(chars) for x in range(size))
-        return uid
-
-    def get_absolute_url(self):
-        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
-
     @property
     def slug(self):
         if not self['slug']:
             self['slug'] = slugify(self['objectid'])
         return self['slug']
 
+    def __init__(self, protocol, data={}, **kwargs):
+        super(ComponentBase, self).__init__(**kwargs)
+
+        self.protocol = protocol
+
+        self['objectid'] = None #self.get_hash_id()
+        self['slug'] = None
+
+        self._meta = ComponentBase.Meta(self)
+
+        for item in self.keylist:       # REQUIRED ATTRIBUTES
+            self[item] = None
+
+        self.update_data(data)
+        #for item in data:               # DO ANY DATA OVERRIDES HERE
+        #    self[item] = data[item]
+
+        if not 'name' in self or not self['name']:
+            self['name'] = self['slug']
+
+    def update_data(self, data={}, **kwargs):
+        for key in data:
+            #print "%s -> %s" % (key, data[key])
+            self[key] = data[key]
+
+        #for item in kwargs:             # OVERRIDE DATA WITH ANY PARTICULAR KWARGS PASSED
+        #    self[item] = kwargs[item]
+
+    def __unicode__(self):
+        return self['slug']
+
+    @property
+    def title(self):
+        return self.protocol.name
+
+
+#class Verb(ComponentBase):
+#    pass
+
+
+class Action(ComponentBase):
+
+    def __init__(self, protocol, step=None, data=None, **kwargs):
+        self.step = step
+        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    def get_absolute_url(self):
+        return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self['slug'] })
+
+    @property
+    def title(self):
+        return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
+
+
+class Step(ComponentBase):
+
+    def update_data(self, data={}, **kwargs):
+        super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+        if 'actions' in data:
+            self['actions'] = [ Action(self.protocol, step=self, data=a) for a in data['actions'] ]
+        else:
+            self['actions'] = []
+
+    def get_absolute_url(self):
+        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['slug'] })
+
+    @property
+    def title(self):
+        return "%s - %s" % (self.protocol.name, self['name'])
+
+
+
+####################
+# Utility Classes
 
 class ProtocolIngest(Protocol):
     '''Used for loading protocols from JSON formatted text files.'''

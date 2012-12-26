@@ -10,7 +10,7 @@ from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
-from protocols.models import Protocol
+from protocols.models import Protocol, Action
 
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -121,10 +121,12 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
     def get_context_data(self, **kwargs):
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
-        context['steps'] = self.object.steps
+        #context['steps'] = self.object.steps
 
-        if 'step_slug' in self.kwargs:
-            context['step'] = self.object.components[self.kwargs['step_slug']]
+        for key in ['step_slug', 'action_slug']:
+            if key in self.kwargs:
+                ctx_key = key.split('_')[0]
+                context[ctx_key] = self.object.components[self.kwargs[key]]
 
         context['form'] = self.form_class()
         return context
@@ -237,7 +239,34 @@ class ActionCreateView(ComponentCreateViewBase):
 
     form_class = ActionForm
     template_name = "actions/action_create.html"
-    success_url = 'protocol_detail'
+    success_url = 'step_detail'
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        step = context['step']
+
+        print "ACTION VALID"
+        print step['name']
+
+        # CREATE THE ACTION
+
+        # ADD ACTION TO STEP
+
+        if 'actions' in step:
+            step['actions'].append(Action(protocol, step=step, data=form.cleaned_data))
+        else:
+            step['actions'] = [Action(protocol, step=step, data=form.cleaned_data)]
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your action was added.")
+        return super(ActionCreateView, self).form_valid(form)
 
     #def get_context_data(self, **kwargs):
     #    context = super(ActionCreateView, self).get_context_data(**kwargs)
