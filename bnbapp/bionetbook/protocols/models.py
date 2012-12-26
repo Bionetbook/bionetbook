@@ -411,6 +411,8 @@ class Step(ComponentBase):
         else:
             self['actions'] = []
 
+        # UPDATE DURATION AT THE SAME TIME
+
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['slug'] })
 
