@@ -10,7 +10,7 @@ from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
-from protocols.models import Protocol, Action
+from protocols.models import Protocol, Step, Action
 
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -121,7 +121,6 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
     def get_context_data(self, **kwargs):
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
-        #context['steps'] = self.object.steps
 
         for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
@@ -156,6 +155,7 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
 ####################
 # Step Tools
 
+"""
 class StepListView(AuthorizedForProtocolMixin, ListView):
 
     model = Protocol
@@ -177,7 +177,7 @@ class StepListView(AuthorizedForProtocolMixin, ListView):
 
         #return []
         #return slug
-
+"""
 
 
 class StepDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -204,9 +204,9 @@ class StepCreateView(ComponentCreateViewBase):
         protocol = self.get_protocol()
 
         if 'steps' in protocol.data:
-            protocol.data['steps'].append(form.cleaned_data)
+            protocol.data['steps'].append(Step(protocol, data=form.cleaned_data))
         else:
-            protocol.data['steps'] = [form.cleaned_data]
+            protocol.data['steps'] = [Step(protocol, data=form.cleaned_data)]
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your step was added.")
@@ -214,9 +214,7 @@ class StepCreateView(ComponentCreateViewBase):
 
     def form_invalid(self, form):
         protocol = self.get_protocol()
-        # NEED TO SET OBJECT
         return super(StepCreateView, self).form_invalid(form)
-
 
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
