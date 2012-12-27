@@ -33,7 +33,7 @@ Create Action => {{step.title}}
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{% url action_create object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_create object.slug step.slug %}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{% url action_verb_list object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_verb_list object.slug step.slug %}">Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}

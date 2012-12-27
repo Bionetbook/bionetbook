@@ -122,7 +122,7 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
 
-        for key in ['step_slug', 'action_slug']:
+        for key in ['step_slug', 'action_slug', 'verb_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
                 context[ctx_key] = self.object.components[self.kwargs[key]]
@@ -228,10 +228,23 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
         context = super(ActionDetailView, self).get_context_data(**kwargs)
         action_slug = self.kwargs['action_slug']
         context['action'] = self.object.components[action_slug]
-        context['step'] = context['action'].step
+        context['step'] = context['action'].steps       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
 
+class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    template_name = "actions/action_verb_list.html"
+    slug_url_kwarg = "protocol_slug"
+
+    def get_context_data(self, **kwargs):
+        print "ACTION VERB LIST"
+        context = super(ActionVerbListView, self).get_context_data(**kwargs)
+        step_slug = self.kwargs['step_slug']
+        context['step'] = self.object.components[step_slug]
+        context['verbs'] = ['add','mix','dilute']
+        return context
 
 
 class ActionCreateView(ComponentCreateViewBase):
