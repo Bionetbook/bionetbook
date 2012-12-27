@@ -62,10 +62,6 @@ class Protocol(TimeStampedModel):
         # NEED TO RETURN STEPS TO JSON
         self.data['steps'] = self.steps
 
-        if not self.name:
-            if self.data['Name']:
-                self.name = self.data['Name']
-
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
             self.slug = self.generate_slug()
@@ -102,7 +98,7 @@ class Protocol(TimeStampedModel):
 
                 if 'component - list' in action.keys():        
                     for reagent in action['component - list']:
-                        if 'objectid' in reagent:
+                        if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])          
 
         if uid not in uid_list:
@@ -193,19 +189,24 @@ class Protocol(TimeStampedModel):
         return ''.join(str(act)).replace(', ','-').replace('[','').replace(']','').replace('\'','').replace('-u','-')
 
 
-    def get_action_tree(self, format = None):
+    def get_action_tree(self, display = None):
         action_tree = []
         for stepnum in range(0, self.get_num_steps): # traversign all steps
             for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
-                if format == 'objectid':
+                if display == 'objectid':
                     action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['objectid']])
                 else:    
                     action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         
         return action_tree
 
-    def get_reagent_data(self, format=None):
-        # function takes the format argument and returns the (step, action) format of the reagent, i.e. verb, objectid, slug etc.  
+    def get_objectid(self, stepnum, actionnum):
+        step = self.steps[stepnum]['objectid']
+        action = self.steps[stepnum]['actions'][actionnum]['objectid']
+        return (step,action)
+
+    def get_reagent_data(self, display=None):
+        # function takes the display argument and returns the (step, action) display of the reagent, i.e. verb, objectid, slug etc.  
         self.needed_reagents = []
         
         if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
@@ -213,24 +214,90 @@ class Protocol(TimeStampedModel):
                 components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) 
                 for r in range(0,components_per_cur_list):
                     reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
+                    objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
                     cur_reagent_name = []
                     cur_reagent_name.append(reagent_name)
                     if 'total volume' in reagent_name.lower():
                         continue
-                    if format == 'detail':
+                    if display == 'detail':
                         cur_reagent_name.append(l[1])
                         cur_reagent_name.append(l[2])
-                    if format == 'all': 
+                    if display == 'all': 
                         tmp = []
                         tmp.append(l[1])
                         tmp.append(l[2])
                         tmp.append(self.steps[l[1]]['actions'][l[2]]['verb'])
                         cur_reagent_name.append(tmp)
-                    
+                    if display =='name_objectid':
+                        cur_reagent_name = (reagent_name, objectid)
+                    if display == 'objectid':
+                        actionid = self.get_objectid(l[1], l[2])
+                        cur_reagent_name = (objectid, actionid[1])
+                            
                     self.needed_reagents.append(cur_reagent_name)    
 
-        return self.needed_reagents    
+        return self.needed_reagents   
 
+    def get_reagents_by_action(self, display='objectid'):
+        self.verb_reagents = {}
+        for l in self.data['components-location']: # iterate over all step,action locations where there are components 
+            components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) # iterate over reagents
+            verb = self.steps[l[1]]['actions'][l[2]]['verb']
+            verbid = self.steps[l[1]]['actions'][l[2]]['objectid']
+            # if display == 'literal':
+            #     self.verb_reagents[verb]=[]
+            if display == 'objectid':
+                self.verb_reagents[verbid]=[]
+
+            for r in range(0,components_per_cur_list):
+                    reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
+                    objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
+                    # if display == 'literal':
+                    #     self.verb_reagents[verb].append(reagent_name)
+                    if display == 'objectid':
+                        self.verb_reagents[verbid].append(objectid)
+        
+        return self.verb_reagents   
+
+    def objectid2name(self, objid, **kwargs):
+    
+        ''' function takes in a protocol instance (self) and an objid. If the objid is not in the protocol instance, a False is returned. 
+        if the objid is in the protocol it returns a list:
+        rank: step action or reagent
+        name: returns the name of the object.
+        location: returns a (step, action) location. If step, it returns a single int.''' 
+        
+        # make lists of all objectid's:
+        steps_by_id = [self.steps[r]['objectid'] for r in range(self.get_num_steps)]
+        
+        actions_by_id = self.get_action_tree('objectid')
+        actions = [actions_by_id[r][2] for r in range(len(actions_by_id))]
+
+        reagent_by_objectid = self.get_reagent_data('objectid')
+        reagents_by_id = [reagent_by_objectid[r][0] for r in range(len(reagent_by_objectid))]
+
+        # find what rank of objectid:
+        if objid in steps_by_id:
+            rank =  'step'
+            name = steps_by_id.index(objid) 
+            location = steps_by_id.index(objid) 
+            return [rank, name, location]
+        
+        if objid in actions:
+            rank = 'action'
+            name = self.get_action_tree()[actions.index(objid)][2]
+            location = actions_by_id[actions.index(objid)][0:2]
+            return [rank, name, location]
+        
+        if objid in reagents_by_id:
+            rank = 'reagent'
+            name = self.get_reagent_data('name_objectid')[reagents_by_id.index(objid)][0]
+            location = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
+            return [rank, name, location]
+        
+        else:
+            return False   
+           
     def get_schedule_data(self):
         time_atts = ('verb','min_time','max_time','time_units','duration_comment')
         actions_sequence =[]
@@ -382,16 +449,13 @@ class Step(ComponentBase):
         self['actions'] = []
 
         if data:
-            for key in data:
-                self[key] = data[key]
-
-            #if 'slug' in data:
-            #    self['slug'] = data['slug']
+            if 'slug' in data:
+                self['slug'] = data['slug']
 
             self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
 
-            #if 'objectid' in data:
-            #    self['objectid'] = data['objectid']
+            if 'objectid' in data:
+                self['objectid'] = data['objectid']
 
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
@@ -403,13 +467,6 @@ class Step(ComponentBase):
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
-
-
-    @property
-    def slug(self):
-        if not self['slug']:
-            self['slug'] = slugify(self['objectid'])
-        return self['slug']
 
     #@property
     #def __repr__(self):
