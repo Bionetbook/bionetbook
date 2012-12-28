@@ -2,9 +2,19 @@
 {% load core_tags %}
 {% load crispy_forms_tags %}
 
-{% block title %}Step Create: {{ object.name }}{% endblock %}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li class="active">Create Step</li>
+    </ul>
+{% endblock %}
 
-{% block page_title %}<a href="{% url protocol_list %}">Step Create</a>: {{ object.name }}
+
+{% block title %}Create Step: {{ object.name }}{% endblock %}
+
+{% block page_title %}Create Step: {{ object.name }}
 {% if protocol_edit_authorization %}
     <small><a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
@@ -30,7 +40,7 @@
           <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>
       {% endif %}
 
-      {% if steps|length %}
+      {% if object.steps|length %}
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
@@ -41,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-                {% for item in steps %}
+                {% for item in object.steps %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.slug }}</a></td>
                     <td>{{ item.duration_in_seconds|default:"0" }}</td>
@@ -66,18 +76,10 @@
         <h2>Detail</h2>
           <div class="well">{% csrf_token %}
           {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Submit">
           </div>
       </div>
-
 </div>
-
-<div class="row">
-    <div class="span12">
-        <div class="actions">
-            <input type="submit" class="btn btn-primary" value="Submit">
-        </div>
-    </div>
-</div>      
 </form>
 
   </div>    

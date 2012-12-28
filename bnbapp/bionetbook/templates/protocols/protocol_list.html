@@ -2,6 +2,13 @@
 
 {% block title %}Protocol List{% endblock %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li class="active">Protocols</li>
+    </ul>
+{% endblock %}
+
 {% block page_title %}Protocol List 
     {% if request.user.is_authenticated %}
         <small>( <a href="{% url protocol_create %}">new</a> )</small>
@@ -56,6 +63,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <a href="{% url protocol_create %}">ADD PROTOCOL</a>
 
     </div>
   </div>

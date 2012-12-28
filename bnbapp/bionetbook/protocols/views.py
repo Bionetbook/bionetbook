@@ -1,13 +1,16 @@
+from django.core.urlresolvers import reverse
 from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormMixin
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
-from protocols.models import Protocol
+from protocols.models import Protocol, Step, Action
 
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -40,6 +43,9 @@ class ProtocolListView(ListView):
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):
+    '''
+    View used to create new protocols
+    '''
 
     model = Protocol
     form_class = ProtocolForm
@@ -85,9 +91,72 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
 
 
 ####################
+# Component Base Classes
+
+#class ComponentCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormMixin, DetailView):
+class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+    '''This view needs to properly create a view, set a form and process the form'''
+
+    model = Protocol
+    template_name = "steps/step_create.html"
+    slug_url_kwarg = "protocol_slug"
+    form_class = StepForm
+    success_url = None
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        return {'protocol_slug': protocol.slug}
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_context_data(self, **kwargs):
+        print "GET CONTEXT DATA"
+        context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
+
+        for key in ['step_slug', 'action_slug']:
+            if key in self.kwargs:
+                ctx_key = key.split('_')[0]
+                context[ctx_key] = self.object.components[self.kwargs[key]]
+
+        context['form'] = self.form_class()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        print "GET CALLED"
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        print "POST CALLED"
+
+        self.object = self.get_object()
+
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            print "FORM VALID"
+            return self.form_valid(form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form)
+
+
+####################
 # Step Tools
 
-class StepListView(ListView):
+"""
+class StepListView(AuthorizedForProtocolMixin, ListView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -108,7 +177,7 @@ class StepListView(ListView):
 
         #return []
         #return slug
-
+"""
 
 
 class StepDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -124,19 +193,29 @@ class StepDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class StepCreateView(AuthorizedForProtocolMixin, DetailView):
+class StepCreateView(ComponentCreateViewBase):
+    '''Creates and appends a step to a protocol.'''
 
-    model = Protocol
     template_name = "steps/step_create.html"
-    slug_url_kwarg = "protocol_slug"
+    form_class = StepForm
+    success_url = 'protocol_detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(StepCreateView, self).get_context_data(**kwargs)
-        context['steps'] = self.object.steps
-        context['form'] = StepForm()
-        return context
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        new_step = Step(protocol, data=form.cleaned_data)
 
+        if 'steps' in protocol.data:
+            protocol.data['steps'].append(new_step)
+        else:
+            protocol.data['steps'] = [new_step]
+        protocol.save()
 
+        messages.add_message(self.request, messages.INFO, "Your step was added.")
+        return super(StepCreateView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        protocol = self.get_protocol()
+        return super(StepCreateView, self).form_invalid(form)
 
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -153,16 +232,39 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class ActionCreateView(AuthorizedForProtocolMixin, DetailView):
 
-    model = Protocol
+
+class ActionCreateView(ComponentCreateViewBase):
+
+    form_class = ActionForm
     template_name = "actions/action_create.html"
-    slug_url_kwarg = "protocol_slug"
+    success_url = 'step_detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(ActionCreateView, self).get_context_data(**kwargs)
-        step_slug = self.kwargs['step_slug']
-        context['step'] = self.object.components[step_slug]
-        context['form'] = ActionForm()
-        return context
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        step = context['step']
+        new_action = Action(protocol, step=step, data=form.cleaned_data)
+
+        if 'actions' in step:
+            step['actions'].append(new_action)
+        else:
+            step['actions'] = [new_action]
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your action was added.")
+        return super(ActionCreateView, self).form_valid(form)
+
+    #def get_context_data(self, **kwargs):
+    #    context = super(ActionCreateView, self).get_context_data(**kwargs)
+    #    step_slug = self.kwargs['step_slug']
+    #    context['step'] = self.object.components[step_slug]
+    #    context['form'] = ActionForm()
+    #    return context
 

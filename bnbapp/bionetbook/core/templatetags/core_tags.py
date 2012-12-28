@@ -15,16 +15,20 @@ def bootstrapcheck(value):
 
 @register.inclusion_tag('core/model_instance_data_table.html')
 def object_data_table(model_instance):
+    # NEEDS TO BE UPDATED TO HANDLE DICTIONARIES
 
     fields = []
     raw = None
 
     for field_name in model_instance._meta.get_all_field_names():
-        if field_name not in ['data']:
+        if field_name not in ['data', 'actions']:  # USED TO NOT DISPLAY RAW DOCUMENT DATA
             try:
-                value = getattr(model_instance, field_name, None)
+                value = model_instance[field_name]
             except:
-                value = None
+                try:
+                    value = getattr(model_instance, field_name, None)
+                except:
+                    value = None
 
             if field_name == "raw":
                 raw = dict(

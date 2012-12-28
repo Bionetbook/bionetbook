@@ -2,11 +2,21 @@
 {% load core_tags %}
 {% load crispy_forms_tags %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li class="active">Add Action</li>
+    </ul>
+{% endblock %}
 
-{% block title %}Step: {{ object.name }}{% endblock %}
+
+{% block title %}Create Action => {{step.title}}{% endblock %}
 
 {% block page_title %}
-Action Create: {{ step.slug }}
+Create Action => {{step.title}}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
@@ -17,7 +27,7 @@ Action Create: {{ step.slug }}
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
-        {{step.actions}}
+        {% object_data_table step %}
     </div>
 
     <div class="span6">

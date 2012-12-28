@@ -62,6 +62,10 @@ class Protocol(TimeStampedModel):
         # NEED TO RETURN STEPS TO JSON
         self.data['steps'] = self.steps
 
+        if not self.name:
+            if self.data['Name']:
+                self.name = self.data['Name']
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
             self.slug = self.generate_slug()
@@ -449,13 +453,16 @@ class Step(ComponentBase):
         self['actions'] = []
 
         if data:
-            if 'slug' in data:
-                self['slug'] = data['slug']
+            for key in data:
+                self[key] = data[key]
+
+            #if 'slug' in data:
+            #    self['slug'] = data['slug']
 
             self['actions'] = [ Action(step=self, data=a) for a in data['actions'] ]
 
-            if 'objectid' in data:
-                self['objectid'] = data['objectid']
+            #if 'objectid' in data:
+            #    self['objectid'] = data['objectid']
 
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
@@ -467,6 +474,13 @@ class Step(ComponentBase):
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+
+    @property
+    def slug(self):
+        if not self['slug']:
+            self['slug'] = slugify(self['objectid'])
+        return self['slug']
 
     #@property
     #def __repr__(self):
