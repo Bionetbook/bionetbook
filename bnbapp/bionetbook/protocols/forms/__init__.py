@@ -1,5 +1,6 @@
-#import floppyforms as forms
-from django import forms
+import floppyforms as forms
+#from django import forms
+
 
 from protocols.models import Protocol
 
@@ -36,6 +37,7 @@ class VerbForm(forms.Form):
 ###########
 # VERB FORMS
 
+"""
 class VerbAddForm(VerbForm):
 
     name = "Add"  # cannot silence the name without an error, the name here is redundant
@@ -58,3 +60,5 @@ class VerbApplyForm(VerbForm):
     edit_remarks = forms.CharField()
     specify_tool = forms.CharField()
     comment_why = forms.CharField()
+"""
+forms.VerbForm = VerbForm
