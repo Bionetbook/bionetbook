@@ -1,4 +1,4 @@
-from protocols import forms
+from protocols.forms import forms
 
 
 class CoolForm(forms.VerbForm):

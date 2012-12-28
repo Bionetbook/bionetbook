@@ -1,5 +1,5 @@
 from protocols.forms import verbs as verb_forms
-from protocols import forms
+from protocols.forms import forms
 
 
 def get_verb_list():
@@ -15,3 +15,4 @@ def get_verb_list():
 
 VERB_LIST = get_verb_list()
 VERB_CHOICES = [(x.slug, x.name) for x in VERB_LIST]
+VERB_NAMES = [x.slug for x in VERB_LIST]
