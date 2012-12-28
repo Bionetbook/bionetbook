@@ -62,8 +62,8 @@ Action Verb List: {{ step.title }}
         <h2>Action Types</h2>
           <div class="well">
             <ul>
-              {% for verb in verbs %}
-              <li><a href="{% url action_verb_create object.slug step.slug verb %}">{{verb}}</a></li>
+              {% for slug,name in verbs %}
+              <li><a href="{% url action_verb_create object.slug step.slug slug %}">{{name}}</a></li>
               {% endfor %}
             </ul>
         </div>
