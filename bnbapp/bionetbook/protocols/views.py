@@ -251,7 +251,7 @@ class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
 
 class ActionCreateView(ComponentCreateViewBase):
 
-    form_class = ActionForm
+    form_class = ActionForm # THIS WILL LIKELY NOT WORK AS THE FORM NEEDS TO BE DYNAMIC
     template_name = "actions/action_create.html"
     success_url = 'step_detail'
 
