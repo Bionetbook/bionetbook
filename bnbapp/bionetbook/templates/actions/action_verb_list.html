@@ -15,7 +15,7 @@
 
 
 {% block page_title %}
-Step: {{ step.title }}
+Action Verb List: {{ step.title }}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url step_update object.slug step.slug %}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
@@ -54,10 +54,21 @@ Step: {{ step.title }}
                     <td>{{ item.verb }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>
-                {% endfor%}
+                {% endfor %}
             </tbody>
         </table>                    
       {% endif %}
+
+        <h2>Action Types</h2>
+          <div class="well">
+            <ul>
+              {% for verb in verbs %}
+              <li><a href="{% url action_verb_create object.slug step.slug verb %}">{{verb}}</a></li>
+              {% endfor %}
+            </ul>
+        </div>
+
+
     </div>
 
   </div>
