@@ -12,6 +12,8 @@ from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixi
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
 
+from protocols.utils import VERB_LIST
+
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
@@ -243,7 +245,7 @@ class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
         context = super(ActionVerbListView, self).get_context_data(**kwargs)
         step_slug = self.kwargs['step_slug']
         context['step'] = self.object.components[step_slug]
-        context['verbs'] = ['add','mix','dilute']
+        context['verbs'] = VERB_LIST
         return context
 
 

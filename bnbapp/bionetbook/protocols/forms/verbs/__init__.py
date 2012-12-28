@@ -1,6 +1,4 @@
 from cook import CookForm
-
-
 from add import AddForm
 from adjust import AdjustForm
 from agitate import AgitateForm

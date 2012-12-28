@@ -1,4 +1,4 @@
-from verbs.baseforms import forms
+from protocols import forms
 
 
 class ElectrophoreseForm(forms.VerbForm):

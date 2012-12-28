@@ -1,4 +1,4 @@
-from verbs.baseforms import forms
+from protocols import forms
 
 
 class SwitchOffForm(forms.VerbForm):
