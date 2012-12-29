@@ -230,7 +230,7 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
         context = super(ActionDetailView, self).get_context_data(**kwargs)
         action_slug = self.kwargs['action_slug']
         context['action'] = self.object.components[action_slug]
-        context['step'] = context['action'].steps       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
+        context['step'] = context['action'].step       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
 
