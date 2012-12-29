@@ -47,6 +47,7 @@ class Protocol(TimeStampedModel):
 
 
     def __init__(self, *args, **kwargs):
+        self.data = {}
         super(Protocol, self).__init__(*args, **kwargs)
         self.steps_data = []
 
@@ -59,8 +60,9 @@ class Protocol(TimeStampedModel):
         self.set_data_ids()
         self.set_data_slugs()
 
-        # NEED TO RETURN STEPS TO JSON
-        self.data['steps'] = self.steps
+        if self.data:
+            # NEED TO RETURN STEPS TO JSON
+            self.data['steps'] = self.steps
 
         if not self.name:
             if self.data['Name']:
@@ -111,7 +113,8 @@ class Protocol(TimeStampedModel):
         return self.get_hash_id(size, chars)
 
     def rebuild_steps(self):
-        self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+        if self.data and 'steps' in self.data:
+            self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
     ###########
     # Validators
