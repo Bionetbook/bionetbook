@@ -15,3 +15,4 @@ def get_verb_list():
 
 VERB_LIST = get_verb_list()
 VERB_CHOICES = [(x.slug, x.name) for x in VERB_LIST]
+VERB_FORM_DICT = {x.slug: x for x in VERB_LIST}

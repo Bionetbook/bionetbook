@@ -12,7 +12,7 @@ from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixi
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
 
-from protocols.utils import VERB_CHOICES
+from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -104,6 +104,7 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
     slug_url_kwarg = "protocol_slug"
     form_class = StepForm
     success_url = None
+    form_prefix = None
 
     def get_url_args(self):
         protocol = self.get_protocol()
@@ -124,26 +125,27 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
 
-        for key in ['step_slug', 'action_slug', 'verb_slug']:
+        for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
                 context[ctx_key] = self.object.components[self.kwargs[key]]
 
-        context['form'] = self.form_class()
+        context['verb_slug'] = self.kwargs['verb_slug']
+        context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
         return context
 
     def get(self, request, *args, **kwargs):
-        print "GET CALLED"
+        '''Gets the context data'''
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        print "POST CALLED"
+        #print "POST CALLED"
 
         self.object = self.get_object()
 
-        form_class = self.get_form_class()
+        form_class = self.get_form_class(prefix=self.form_prefix)
         form = self.get_form(form_class)
 
         if form.is_valid():
@@ -254,11 +256,39 @@ class ActionCreateView(ComponentCreateViewBase):
     form_class = ActionForm # THIS WILL LIKELY NOT WORK AS THE FORM NEEDS TO BE DYNAMIC
     template_name = "actions/action_create.html"
     success_url = 'step_detail'
+    form_prefix = 'action'
 
     def get_url_args(self):
         protocol = self.get_protocol()
         context = self.get_context_data()
         return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+
+
+    def get_context_data(self, **kwargs):
+        '''Ads the Verb form to the context'''
+        context = super(ActionCreateView, self).get_context_data(**kwargs)
+
+        verb_slug = context['verb_slug']
+        context['verb_form'] = VERB_FORM_DICT[verb_slug](prefix='verb')
+        context['verb_name'] = context['verb_form'].name
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        '''This is done to handle the two forms'''
+
+        self.object = self.get_object()
+
+        form_class = self.get_form_class(prefix=self.form_prefix)
+        form = self.get_form(form_class)
+        # NEED TO GET VERB FORM HERE
+
+        if form.is_valid():
+            print "FORM VALID"
+            return self.form_valid(form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form)
 
 
     def form_valid(self, form):

@@ -65,16 +65,11 @@ Create Action => {{step.title}}
     <!-- main form div -->
     
       <div class="span6">
-        <h2>Detail</h2>
+        <h2>Action: {{verb_name}}</h2>
           <div class="well">{% csrf_token %}
           {{ form|crispy }}
-          </div>
-      </div>
-
-      <!-- secondary form div -->
-        <div class="span6">
-          <h2>Verb</h2>
-          <div class="well verb">
+          <hr>
+          {{ verb_form|crispy }}
           </div>
         </div>
 </div>
