@@ -412,12 +412,6 @@ class ComponentBase(dict):
             result.sort()
             return result
 
-    @property
-    def slug(self):
-        if not self['slug']:
-            self['slug'] = slugify(self['objectid'])
-        return self['slug']
-
     def __init__(self, protocol, data={}, **kwargs):
         super(ComponentBase, self).__init__(**kwargs)
 
@@ -432,15 +426,21 @@ class ComponentBase(dict):
             self[item] = None
 
         self.update_data(data)
-        #for item in data:               # DO ANY DATA OVERRIDES HERE
-        #    self[item] = data[item]
 
         if not 'name' in self or not self['name']:
-            self['name'] = self['slug']
+            self.set_name()
+
+    @property
+    def slug(self):
+        if not self['slug']:
+            self['slug'] = slugify(self['objectid'])
+        return self['slug']
+
+    def set_name(self):
+        self['name'] = self['slug']
 
     def update_data(self, data={}, **kwargs):
         for key in data:
-            #print "%s -> %s" % (key, data[key])
             self[key] = data[key]
 
         #for item in kwargs:             # OVERRIDE DATA WITH ANY PARTICULAR KWARGS PASSED
@@ -463,8 +463,9 @@ class Action(ComponentBase):
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
         super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        if not 'name' in self and not self['name']:
-            self['name'] = self.slug
+
+    def set_name(self):
+        self['name'] = self['verb']
 
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })

@@ -57,7 +57,7 @@
                     <td>{{ item.actions|length }}</td>
                     <td>
                     {% for a in item.actions %}
-                    <a href="{{ a.get_absolute_url }}">{{ a.objectid }}</a><br>
+                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
                     {% endfor %}
                     </td>
                 </tr>
