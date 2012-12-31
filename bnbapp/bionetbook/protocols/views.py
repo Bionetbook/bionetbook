@@ -24,8 +24,6 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
-        #context['steps'] = self.object.step_set.filter()
-
         return context
 
 
@@ -67,11 +65,10 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     form_class = ProtocolForm
     slug_url_kwarg = "protocol_slug"
 
-    #def get_context_data(self, **kwargs):
-    #    context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
-    #    #context['steps'] = self.object.step_set.select_related()
-
-    #    return context
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
+        context['steps'] = self.object.steps
+        return context
 
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
@@ -381,7 +378,7 @@ class ActionUpdateView(ActionCreateView):
 
         verb_key = context['action']['verb']   # GET THE VERB SLUG FROM THE ACTION
 
-        # NEED TO PREPOPULATE ACTION FORM
+        # PREPOPULATE ACTION FORM
         context['form'] = self.form_class(initial=context['action'],prefix=self.form_prefix)  #Set the prefix on the form
 
         # PREPOPULATE VERB FORM
