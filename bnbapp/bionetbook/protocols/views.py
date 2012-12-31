@@ -259,6 +259,102 @@ class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Au
     pass
 
 
+class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+    model = Protocol
+    form_class = ActionForm
+    slug_url_kwarg = "protocol_slug"
+    template_name = "steps/step_form.html"
+    success_url = 'step_detail'
+
+    def get(self, request, *args, **kwargs):
+        '''Gets the context data'''
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instanciating the form.
+        """
+        kwargs = {'initial': self.get_initial()}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(StepUpdateView, self).get_context_data(**kwargs)
+
+        if self.object:
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
+
+        for key in ['step_slug', 'action_slug']:
+            if key in self.kwargs:
+                ctx_key = key.split('_')[0]
+                context[ctx_key] = self.object.components[self.kwargs[key]]
+        
+        context['form'] = self.form_class(initial=context['step'])
+
+        if 'form' in kwargs:
+            print "FORM IN KWARGS"
+            context['form'] = kwargs['form']
+
+        #if not 'form' in kwargs:
+        #context['form'] = self.form_class(initial=context['step'])
+        #else:
+        #    context['form'] = kwargs['form']
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        '''This is done to handle the two forms'''
+        self.object = self.get_object()
+        #context = self.get_context_data(**kwargs)
+        #args = self.get_form_kwargs()
+        form = ActionForm(request.POST)
+
+        if form.is_valid():
+            print "FORM VALID"
+            return self.form_valid(form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        step = context['step']
+
+        data = form.cleaned_data.items()
+        step.update(data)   # THIS KEEPS IT FROM DESTROYING THE ACTIONS ATTACHED TO THE STEP
+
+        self.object.save()
+
+        messages.add_message(self.request, messages.INFO, "Your step was updated.")
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
 

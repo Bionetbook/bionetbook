@@ -13,10 +13,9 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<protocol_slug>[-\w]+)/publish/$', view=views.ProtocolPublishView.as_view(), name='protocol_publish'),
 
     # STEP URLS
-    #url(regex=r'^(?P<protocol_slug>[-\w]+)/steps/$', view=views.StepListView.as_view(), name='step_list'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/add-step/$', view=views.StepCreateView.as_view(), name='step_create'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/$', view=views.StepDetailView.as_view(), name='step_detail'),
-    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/update/$', view=views.StepDetailView.as_view(), name='step_update'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/update/$', view=views.StepUpdateView.as_view(), name='step_update'),
 
     # ACTION URLS
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/add-action/$', view=views.ActionVerbListView.as_view(), name='action_verb_list'),
