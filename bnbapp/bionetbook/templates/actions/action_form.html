@@ -4,9 +4,21 @@
 
 {% block title %}Action Form{% endblock %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
+      <li class="active">Edit Action</li>
+    </ul>
+{% endblock %}
+
+
 {% block page_title %}
 {% if object %}
-  Editing Action: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+  Editing Action: {{ object }} -> {{ step.name }} -> {{ action.name }}
 {% else %}
   Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}</a>
 {% endif %}
@@ -30,6 +42,7 @@
         <div class="span6">
           <h2>Verb</h2>
           <div class="well verb">
+          {{ verb_form|crispy }}
 
           </div>
         </div>

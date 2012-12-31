@@ -253,6 +253,10 @@ class StepCreateView(ComponentCreateViewBase):
         return super(StepCreateView, self).get_context_data(**context)
 '''
 
+class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+    pass
+
+
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
 
@@ -368,22 +372,48 @@ class ActionCreateView(ComponentCreateViewBase):
     #    context['form'] = ActionForm()
     #    return context
 
-class ActionUpdateView(ActionCreateView):
+class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
-    template_name = "actions/action_update.html"
+    model = Protocol
+    form_class = ActionForm
+    slug_url_kwarg = "protocol_slug"
+    template_name = "actions/action_form.html"
 
+    """
     def get_context_data(self, **kwargs):
         '''Ads the Verb form to the context'''
-        context = super(ActionCreateView, self).get_context_data(**kwargs)
+        print "GET CONTEXT DATA"
+        context = super(ActionUpdateView, self).get_context_data(**kwargs)
 
+        print "CHECKPOINT"
         verb_key = context['action']['verb']   # GET THE VERB SLUG FROM THE ACTION
 
         # PREPOPULATE ACTION FORM
         context['form'] = self.form_class(initial=context['action'],prefix=self.form_prefix)  #Set the prefix on the form
+        print "CONTEXT PASSED"
 
         # PREPOPULATE VERB FORM
         context['verb_form'] = VERB_FORM_DICT[verb_key](initial=context['action'],prefix='verb')
-        
         context['verb_name'] = context['verb_form'].name
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        '''This is done to handle the two forms'''
+        context = self.get_context_data(**kwargs)
+
+        self.object = self.get_object()
+        args = self.get_form_kwargs()
+
+        form = ActionForm(request.POST, prefix='action')
+        verb_key = context['action']['verb']
+        verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
+
+        if form.is_valid() and verb_form.is_valid():
+            print "FORM VALID"
+            return self.form_valid(form, verb_form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form, verb_form)
+            """
+    #
