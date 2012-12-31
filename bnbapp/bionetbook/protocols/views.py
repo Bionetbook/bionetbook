@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
+from django.http import HttpResponseRedirect
+
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
@@ -379,34 +381,48 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
     slug_url_kwarg = "protocol_slug"
     template_name = "actions/action_form.html"
 
-    """
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instanciating the form.
+        """
+        kwargs = {'initial': self.get_initial()}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        return kwargs
+
     def get_context_data(self, **kwargs):
-        '''Ads the Verb form to the context'''
-        print "GET CONTEXT DATA"
         context = super(ActionUpdateView, self).get_context_data(**kwargs)
 
-        print "CHECKPOINT"
-        verb_key = context['action']['verb']   # GET THE VERB SLUG FROM THE ACTION
+        if self.object:
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
 
-        # PREPOPULATE ACTION FORM
-        context['form'] = self.form_class(initial=context['action'],prefix=self.form_prefix)  #Set the prefix on the form
-        print "CONTEXT PASSED"
-
-        # PREPOPULATE VERB FORM
-        context['verb_form'] = VERB_FORM_DICT[verb_key](initial=context['action'],prefix='verb')
+        for key in ['step_slug', 'action_slug']:
+            if key in self.kwargs:
+                ctx_key = key.split('_')[0]
+                context[ctx_key] = self.object.components[self.kwargs[key]]
+        
+        context['verb_form'] = VERB_FORM_DICT[context['action']['name']](initial=context['action'], prefix='verb')
         context['verb_name'] = context['verb_form'].name
+        context['form'] = self.form_class(initial=context['action'], prefix='action')
 
         return context
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
+        self.object = self.get_object()
         context = self.get_context_data(**kwargs)
 
-        self.object = self.get_object()
         args = self.get_form_kwargs()
 
         form = ActionForm(request.POST, prefix='action')
         verb_key = context['action']['verb']
+        print context['action']
+        print verb_key
         verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
 
         if form.is_valid() and verb_form.is_valid():
@@ -415,5 +431,25 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         else:
             print "FORM INVALID"
             return self.form_invalid(form, verb_form)
-            """
-    #
+
+    def form_valid(self, form, verb_form):
+        '''Takes in two forms for processing'''
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        step = context['step']
+        action = context['action']
+
+        # COMBINE THE DATA FROM THE TWO FORMS
+        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
+        #ADD THE VERB
+        #verb_slug = self.kwargs.get('verb_slug', None)
+        data['verb'] = action['verb']
+
+        # UPDATE THE ACTION VALUES WITH THE CLEANED DATA
+        action.update(data)
+
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your action was updated.")
+        return HttpResponseRedirect(self.get_success_url())
+
