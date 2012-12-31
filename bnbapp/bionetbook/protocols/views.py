@@ -322,6 +322,11 @@ class ActionCreateView(ComponentCreateViewBase):
 
         # COMBINE THE DATA FROM THE TWO FORMS
         new_data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
+        #ADD THE VERB
+        verb_slug = self.kwargs.get('verb_slug', None)
+        new_data['verb'] = verb_slug
+
+
         new_action = Action(protocol, step=step, data=new_data)
 
         if 'actions' in step:
