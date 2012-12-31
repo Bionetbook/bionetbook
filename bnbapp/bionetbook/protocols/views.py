@@ -125,13 +125,23 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         print "GET CONTEXT DATA"
         context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
 
+        if self.object:
+            context['object'] = self.object
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
+
         for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
                 context[ctx_key] = self.object.components[self.kwargs[key]]
 
-        context['verb_slug'] = self.kwargs['verb_slug']
-        context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
+        if 'verb_slug' in self.kwargs:
+            context['verb_slug'] = self.kwargs['verb_slug']
+
+        if not 'form' in context:
+            context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
+            
         return context
 
     def get(self, request, *args, **kwargs):
@@ -141,11 +151,12 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        #print "POST CALLED"
-
         self.object = self.get_object()
 
-        form_class = self.get_form_class(prefix=self.form_prefix)
+        if self.form_prefix:
+            form_class = self.get_form_class(prefix=self.form_prefix)
+        else:
+            form_class = self.get_form_class()
         form = self.get_form(form_class)
 
         if form.is_valid():
@@ -218,8 +229,32 @@ class StepCreateView(ComponentCreateViewBase):
         return super(StepCreateView, self).form_valid(form)
 
     def form_invalid(self, form):
-        protocol = self.get_protocol()
-        return super(StepCreateView, self).form_invalid(form)
+        #protocol = self.get_protocol()
+
+        #print self.object
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+        #print "FORM INVALID 2"
+        #result = super(StepCreateView, self).form_invalid(form)
+        #print "FORM INVALID 3"
+        #return result
+
+'''
+    def get_context_data(self, **kwargs):
+        """
+        If an object has been supplied, inject it into the context with the
+        supplied context_object_name name.
+        """
+        context = {}
+        if self.object:
+            context['object'] = self.object
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
+        context.update(kwargs)
+        return super(StepCreateView, self).get_context_data(**context)
+'''
 
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
@@ -280,14 +315,6 @@ class ActionCreateView(ComponentCreateViewBase):
 
         self.object = self.get_object()
         args = self.get_form_kwargs()
-        #ctx = self.get_context_data()
-        #ctx['object'] = self.get_protocol()
-
-        # POPULATE FORMS
-        #form_class = self.get_form_class()
-        #form = self.get_form(form_class, prefix=self.form_prefix)
-        #form = form_class(args, prefix=self.form_prefix) 
-        # NEED TO GET VERB FORM HERE
 
         form = ActionForm(request.POST, prefix='action')
         verb_slug = self.kwargs.get('verb_slug', None)
@@ -326,7 +353,6 @@ class ActionCreateView(ComponentCreateViewBase):
         verb_slug = self.kwargs.get('verb_slug', None)
         new_data['verb'] = verb_slug
 
-
         new_action = Action(protocol, step=step, data=new_data)
 
         if 'actions' in step:
@@ -345,3 +371,5 @@ class ActionCreateView(ComponentCreateViewBase):
     #    context['form'] = ActionForm()
     #    return context
 
+class ActionUpdateView(ActionCreateView):
+    pass

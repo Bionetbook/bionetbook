@@ -49,6 +49,10 @@ class Protocol(TimeStampedModel):
     def __init__(self, *args, **kwargs):
         self.data = {}
         super(Protocol, self).__init__(*args, **kwargs)
+
+        if not self.data:
+            self.data={}
+
         self.steps_data = []
 
 
