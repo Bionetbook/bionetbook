@@ -228,16 +228,7 @@ class StepCreateView(ComponentCreateViewBase):
         return super(StepCreateView, self).form_valid(form)
 
     def form_invalid(self, form):
-        #protocol = self.get_protocol()
-
-        #print self.object
-
         return self.render_to_response(self.get_context_data(form=form))
-
-        #print "FORM INVALID 2"
-        #result = super(StepCreateView, self).form_invalid(form)
-        #print "FORM INVALID 3"
-        #return result
 
 '''
     def get_context_data(self, **kwargs):
@@ -476,6 +467,7 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
     form_class = ActionForm
     slug_url_kwarg = "protocol_slug"
     template_name = "actions/action_form.html"
+    success_url = 'action_detail'
 
     def get_form_kwargs(self):
         """
@@ -502,7 +494,7 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
                 ctx_key = key.split('_')[0]
                 context[ctx_key] = self.object.components[self.kwargs[key]]
         
-        context['verb_form'] = VERB_FORM_DICT[context['action']['name']](initial=context['action'], prefix='verb')
+        context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
         context['verb_name'] = context['verb_form'].name
         context['form'] = self.form_class(initial=context['action'], prefix='action')
 
@@ -549,3 +541,31 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         messages.add_message(self.request, messages.INFO, "Your action was updated.")
         return HttpResponseRedirect(self.get_success_url())
 
+
+    def form_invalid(self, form, verb_form):
+        """
+        If the form is invalid, re-render the context data with the
+        data-filled form and errors.
+        """
+        #ctx = self.get_context_data(object=self.object, form=form, verb_form=verb_form)
+        ctx = self.get_context_data(object=self.object)
+        ctx['form'] = form
+        ctx['verb_form'] = verb_form
+        # FORMS NOT PASSING POPULATED
+        return self.render_to_response(ctx)
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug, 'action_slug': context['action'].slug}
