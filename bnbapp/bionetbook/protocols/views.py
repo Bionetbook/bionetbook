@@ -253,7 +253,7 @@ class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
 
 class ActionCreateView(ComponentCreateViewBase):
 
-    form_class = ActionForm # THIS WILL LIKELY NOT WORK AS THE FORM NEEDS TO BE DYNAMIC
+    form_class = ActionForm # THIS WILL ONLY COVER ONE OF TWO FORMS
     template_name = "actions/action_create.html"
     success_url = 'step_detail'
     form_prefix = 'action'
@@ -269,8 +269,9 @@ class ActionCreateView(ComponentCreateViewBase):
         context = super(ActionCreateView, self).get_context_data(**kwargs)
 
         verb_slug = context['verb_slug']
-        context['verb_form'] = VERB_FORM_DICT[verb_slug](prefix='verb')
-        context['verb_name'] = context['verb_form'].name
+        if not 'verb_form' in kwargs:
+            context['verb_form'] = VERB_FORM_DICT[verb_slug](prefix='verb')
+            context['verb_name'] = context['verb_form'].name
         return context
 
 
@@ -278,30 +279,56 @@ class ActionCreateView(ComponentCreateViewBase):
         '''This is done to handle the two forms'''
 
         self.object = self.get_object()
+        args = self.get_form_kwargs()
+        #ctx = self.get_context_data()
+        #ctx['object'] = self.get_protocol()
 
-        form_class = self.get_form_class(prefix=self.form_prefix)
-        form = self.get_form(form_class)
+        # POPULATE FORMS
+        #form_class = self.get_form_class()
+        #form = self.get_form(form_class, prefix=self.form_prefix)
+        #form = form_class(args, prefix=self.form_prefix) 
         # NEED TO GET VERB FORM HERE
 
-        if form.is_valid():
+        form = ActionForm(request.POST, prefix='action')
+        verb_slug = self.kwargs.get('verb_slug', None)
+        verb_form = VERB_FORM_DICT[verb_slug](request.POST, prefix='verb')
+
+        if form.is_valid() and verb_form.is_valid():
             print "FORM VALID"
-            return self.form_valid(form)
+            return self.form_valid(form, verb_form)
         else:
             print "FORM INVALID"
-            return self.form_invalid(form)
+            return self.form_invalid(form, verb_form)
 
 
-    def form_valid(self, form):
+    def form_invalid(self, form, verb_form):
+        """
+        If the form is invalid, re-render the context data with the
+        data-filled form and errors.
+        """
+        #ctx = self.get_context_data(object=self.object, form=form, verb_form=verb_form)
+        ctx = self.get_context_data(object=self.object)
+        ctx['form'] = form
+        ctx['verb_form'] = verb_form
+        # FORMS NOT PASSING POPULATED
+        return self.render_to_response(ctx)
+
+
+    def form_valid(self, form, verb_form):
+        '''Takes in two forms for processing'''
         protocol = self.get_protocol()
         context = self.get_context_data()
         step = context['step']
-        new_action = Action(protocol, step=step, data=form.cleaned_data)
+
+        # COMBINE THE DATA FROM THE TWO FORMS
+        new_data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
+        new_action = Action(protocol, step=step, data=new_data)
 
         if 'actions' in step:
             step['actions'].append(new_action)
         else:
             step['actions'] = [new_action]
-        protocol.save()
+        #protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")
         return super(ActionCreateView, self).form_valid(form)
