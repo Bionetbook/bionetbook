@@ -328,7 +328,7 @@ class ActionCreateView(ComponentCreateViewBase):
             step['actions'].append(new_action)
         else:
             step['actions'] = [new_action]
-        #protocol.save()
+        protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")
         return super(ActionCreateView, self).form_valid(form)
