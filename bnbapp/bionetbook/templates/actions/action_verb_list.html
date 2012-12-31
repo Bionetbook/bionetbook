@@ -63,7 +63,7 @@ Action Verb List: {{ step.title }}
           <div class="well">
             <ul>
               {% for slug,name in verbs %}
-              <li><a href="{% url action_verb_create object.slug step.slug slug %}">{{name}}</a></li>
+              <li><a href="{% url action_create object.slug step.slug slug %}">{{name}}</a></li>
               {% endfor %}
             </ul>
         </div>
