@@ -348,17 +348,17 @@ class ActionCreateView(ComponentCreateViewBase):
         step = context['step']
 
         # COMBINE THE DATA FROM THE TWO FORMS
-        new_data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
+        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
         #ADD THE VERB
         verb_slug = self.kwargs.get('verb_slug', None)
-        new_data['verb'] = verb_slug
+        data['verb'] = verb_slug
 
-        new_action = Action(protocol, step=step, data=new_data)
+        action = Action(protocol, step=step, data=data)
 
         if 'actions' in step:
-            step['actions'].append(new_action)
+            step['actions'].append(action)
         else:
-            step['actions'] = [new_action]
+            step['actions'] = [action]
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")
@@ -372,4 +372,21 @@ class ActionCreateView(ComponentCreateViewBase):
     #    return context
 
 class ActionUpdateView(ActionCreateView):
-    pass
+
+    template_name = "actions/action_update.html"
+
+    def get_context_data(self, **kwargs):
+        '''Ads the Verb form to the context'''
+        context = super(ActionCreateView, self).get_context_data(**kwargs)
+
+        verb_key = context['action']['verb']   # GET THE VERB SLUG FROM THE ACTION
+
+        # NEED TO PREPOPULATE ACTION FORM
+        context['form'] = self.form_class(initial=context['action'],prefix=self.form_prefix)  #Set the prefix on the form
+
+        # PREPOPULATE VERB FORM
+        context['verb_form'] = VERB_FORM_DICT[verb_key](initial=context['action'],prefix='verb')
+        
+        context['verb_name'] = context['verb_form'].name
+
+        return context

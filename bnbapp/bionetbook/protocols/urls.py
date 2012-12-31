@@ -22,7 +22,7 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/add-action/$', view=views.ActionVerbListView.as_view(), name='action_verb_list'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/add-action/(?P<verb_slug>[-\w]+)/$', view=views.ActionCreateView.as_view(), name='action_verb_create'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/$', view=views.ActionDetailView.as_view(), name='action_detail'),
-    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/update/$', view=views.ActionDetailView.as_view(), name='action_update'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/update/$', view=views.ActionUpdateView.as_view(), name='action_update'),
 )
 
 

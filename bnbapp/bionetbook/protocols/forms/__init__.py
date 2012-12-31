@@ -1,9 +1,5 @@
 import floppyforms as forms
-#from django import forms
-
-
 from protocols.models import Protocol
-
 
 class ProtocolForm(forms.ModelForm):
 
@@ -23,12 +19,9 @@ class StepForm(forms.Form):
 
 class ActionForm(forms.Form):
 
-    #VERB_CHOICES = (('add','Add'), ('mix','Mix'))
-
     name = forms.CharField(max_length=100, required=False)
     remark = forms.CharField(required=False)
     duration = forms.IntegerField()
-    #verb = forms.ChoiceField(choices=VERB_CHOICES)
 
 
 class VerbForm(forms.Form):
