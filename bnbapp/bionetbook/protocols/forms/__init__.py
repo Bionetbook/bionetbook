@@ -17,8 +17,8 @@ class PublishForm(forms.Form):
 
 
 class StepForm(forms.Form):
-    name = forms.CharField(max_length=100)
-    remark = forms.CharField()
+    name = forms.CharField(max_length=100, required=False)
+    remark = forms.CharField(required=False)
 
 
 class ActionForm(forms.Form):
@@ -26,7 +26,7 @@ class ActionForm(forms.Form):
     #VERB_CHOICES = (('add','Add'), ('mix','Mix'))
 
     name = forms.CharField(max_length=100)
-    remark = forms.CharField()
+    remark = forms.CharField(required=False)
     duration = forms.IntegerField()
     #verb = forms.ChoiceField(choices=VERB_CHOICES)
 
