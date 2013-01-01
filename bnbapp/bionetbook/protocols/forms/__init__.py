@@ -21,7 +21,9 @@ class ActionForm(forms.Form):
 
     name = forms.CharField(max_length=100, required=False)
     remark = forms.CharField(required=False)
+    time_units = forms.CharField(required=False)
     duration = forms.IntegerField()
+    duration_comment = forms.CharField(required=False)
 
 
 class VerbForm(forms.Form):

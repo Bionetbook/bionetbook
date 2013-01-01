@@ -252,7 +252,7 @@ class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Au
 
 class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
     model = Protocol
-    form_class = ActionForm
+    form_class = StepForm
     slug_url_kwarg = "protocol_slug"
     template_name = "steps/step_form.html"
     success_url = 'step_detail'
@@ -306,7 +306,7 @@ class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         self.object = self.get_object()
         #context = self.get_context_data(**kwargs)
         #args = self.get_form_kwargs()
-        form = ActionForm(request.POST)
+        form = self.form_class(request.POST)
 
         if form.is_valid():
             print "FORM VALID"
@@ -507,7 +507,8 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
 
         args = self.get_form_kwargs()
 
-        form = ActionForm(request.POST, prefix='action')
+        form = self.form_class(request.POST, prefix='action')
+
         verb_key = context['action']['verb']
         print context['action']
         print verb_key

@@ -30,9 +30,8 @@
 <form action="." method="post">
 <div class="row">
     <!-- main form div -->
-    
       <div class="span6">
-        <h2>Detail</h2>
+        <h2>Action</h2>
           <div class="well">{% csrf_token %}
           {{ form|crispy }}
           </div>
@@ -40,10 +39,10 @@
 
       <!-- secondary form div -->
         <div class="span6">
-          <h2>Verb</h2>
+          <h2>Details</h2>
           <div class="well verb">
-          {{ verb_form|crispy }}
-
+            <h3>type: {{action.verb}}</h3>
+            {{ verb_form|crispy }}
           </div>
         </div>
 </div>

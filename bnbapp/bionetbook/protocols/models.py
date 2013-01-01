@@ -458,7 +458,7 @@ class ComponentBase(dict):
         return self.protocol.name
 
 
-class Verb(ComponentBase):
+class Componenet(ComponentBase):
     pass
 
 
@@ -490,6 +490,12 @@ class Step(ComponentBase):
             self['actions'] = []
 
         # UPDATE DURATION AT THE SAME TIME
+        duration = 0
+        for action in self['actions']:
+            if 'duration' in action:
+                duration += int(action['duration'])
+
+        self['duration'] = duration
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['slug'] })
