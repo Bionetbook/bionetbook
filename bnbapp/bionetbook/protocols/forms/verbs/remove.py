@@ -10,3 +10,6 @@ class RemoveForm(forms.VerbForm):
     specify_tool = forms.CharField()
     duration_min_time = forms.IntegerField()
     specify_date = forms.DateField()
+    how = forms.CharField()
+    min_time = forms.IntegerField()
+    max_time = forms.IntegerField()
