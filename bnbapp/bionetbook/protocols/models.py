@@ -10,7 +10,6 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 import django.utils.simplejson as json
 from jsonfield import JSONField
-
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -246,23 +245,26 @@ class Protocol(TimeStampedModel):
 
         return self.needed_reagents   
 
-    def get_reagents_by_action(self, display='objectid'):
+    def get_reagents_by_action(self, out_label='objectid'):
         self.verb_reagents = {}
         for l in self.data['components-location']: # iterate over all step,action locations where there are components 
             components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) # iterate over reagents
             verb = self.steps[l[1]]['actions'][l[2]]['verb']
             verbid = self.steps[l[1]]['actions'][l[2]]['objectid']
-            # if display == 'literal':
-            #     self.verb_reagents[verb]=[]
-            if display == 'objectid':
+            if out_label == 'literal':
+                self.verb_reagents[verb]=[]
+            if out_label == 'objectid':
                 self.verb_reagents[verbid]=[]
 
             for r in range(0,components_per_cur_list):
                     reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
+                    if 'total volume' in reagent_name.lower():
+                        continue
+
                     objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
-                    # if display == 'literal':
-                    #     self.verb_reagents[verb].append(reagent_name)
-                    if display == 'objectid':
+                    if out_label == 'literal':
+                        self.verb_reagents[verb].append(reagent_name)
+                    if out_label == 'objectid':
                         self.verb_reagents[verbid].append(objectid)
         
         return self.verb_reagents   
