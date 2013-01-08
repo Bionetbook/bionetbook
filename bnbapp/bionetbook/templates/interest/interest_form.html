@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %}Interest List{% endblock %}
+
+{% block page_title %}
+Join our Interest List!
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">
+
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+      {{ form|crispy }}
+        <div class="actions">
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+
+    </div>
+    <div class="span6">
+        
+    </div>
+  </div>
+{% endblock %}
+

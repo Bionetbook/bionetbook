@@ -114,6 +114,7 @@ PROJECT_APPS = (
     #'actions',
     'profiles',
     #'schedule',
+    'interest',
     'api',
 )
 
