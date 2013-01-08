@@ -1,0 +1,50 @@
+curation tool comments
+
+metadata:
+no input and output fields
+no fields for starting conditions: A 20-μL reaction volume can be used for 1 ng–5 μg of total RNA or 1–500 ng
+of mRNA.
+
+Reagents: 
+We are identifying reagents as a dict in the JSON (from CSV): self.data['components-location'], its not a method.
+- should we make it an automatic method? 
+but not in the curation tool
+Machines: 
+We don't have a method for determining an action where a machine is necessary. 
+Examples: incubate, heat, chill, centrifuge. 
+Should we make it an automatic method? 
+
+
+Add verb: 
+has attributes duration and  duration min time that mean the same
+'describe where' should not be mandatory
+There is no field for concentration / amount / measurement type
+Describe where is used to specify sample Vs master mix
+'Add what' is a mandatory field, unecessary, 
+'Edit remarks' used to specify if add what is per sample or for master mix
+There are 2 remark fields
+
+Heat:
+No machine field, used the first remark block to enter it
+mandatory edit remarks is unecessary
+'edit what remark' unclear, used to specify that the heat applies to 'sample'
+duration min eime - no time units specified
+
+
+Chill 
+'edit what remark' unclear, 
+
+Centrifuge:
+'edit what remark' unclear, used to specify that the heat applies to 'sample'
+min and max temp can be optional
+
+mix
+duration min time unecessary mandatory
+comment why, optional
+edit remarks, optional
+no - field for how to mix - should be optional  - used 'edit remarks*'
+
+Incubate:
+has edit input, output, protocol output, vessel type, kit name - these are fields for a call_for_protocol
+
+
