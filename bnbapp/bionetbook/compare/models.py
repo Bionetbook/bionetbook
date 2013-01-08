@@ -25,37 +25,26 @@ def plot_base_protocol(protocol_name, **kvargs):
 	
 	# Define graph node and edge attributes:
 	
+	Plot.G.node_attr['shape']='square'
+	Plot.G.edge_attr['dir']='forward'
+	Plot.G.edge_attr['arrowhead'] = 'normal'
+	for i in range(1, sum(Plot.prot.get_num_actions())):
+	    Plot.G.add_edge(Plot.action_tree[i-1][2],Plot.action_tree[i][2])
+	    n=Plot.G.get_node(Plot.action_tree[i][2])
+	    n.attr['shape']='box'
+	    n.attr['label']= "%s"%(Plot.prot.get_action_tree()[i][2])
+
+	n = Plot.G.get_node(Plot.G.nodes()[0])
+	n.attr['shape']='box'
+	n.attr['label']=Plot.prot.get_action_tree()[0][2]
+
 	if kvargs and kvargs['layout'] == 'blocks':
-		Plot.G.node_attr['shape']='square'	
-		Plot.G.graph_attr['rankdir'] = 'TB'
-		for i in range(1, sum(Plot.prot.get_num_actions())):
-		    Plot.G.add_nodes_from([Plot.action_tree[r][2] for r in range(len(Plot.action_tree))])
-		    # fix this, ad nodes from list
-		    n=Plot.G.get_node(Plot.action_tree[i][2])
-		    n.attr['shape']='box'
-		    n.attr['label']= "%s"%(Plot.prot.get_action_tree()[i][2])
-
-		n = Plot.G.get_node(Plot.G.nodes()[0])
-		n.attr['shape']='box'
-		n.attr['label']=Plot.prot.get_action_tree()[0][2]    
-	else: 
-
-		Plot.G.node_attr['shape']='square'
-		Plot.G.edge_attr['dir']='forward'
-		Plot.G.edge_attr['arrowhead'] = 'normal'
-		for i in range(1, sum(Plot.prot.get_num_actions())):
-		    Plot.G.add_edge(Plot.action_tree[i-1][2],Plot.action_tree[i][2])
-		    n=Plot.G.get_node(Plot.action_tree[i][2])
-		    n.attr['shape']='box'
-		    n.attr['label']= "%s"%(Plot.prot.get_action_tree()[i][2])
-
-		n = Plot.G.get_node(Plot.G.nodes()[0])
-		n.attr['shape']='box'
-		n.attr['label']=Plot.prot.get_action_tree()[0][2]
+		Plot.G.edge_attr['arrowhead']='none'
+		Plot.G.edge_attr['color']='white'
 
 	return Plot
 	
-def add_subgraph_reagent(Plot):
+def add_subgraph_reagent(Plot, **kvargs):
 
 	# Getting a list of reagent->verb objectid mapping
 	
@@ -87,18 +76,29 @@ def add_subgraph_reagent(Plot):
 		n.attr['shape'] = 'rectangle'
 		# n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'
 
+	if kvargs and kvargs['layout']=='neat':
+		'''
+		figure out how to render the subgraph on the right side of the main graph 
+		add the record with automatic reagent naming
+
+
+
+		'''
+
 	return Plot 
 
 # def add_subgraph_machine(A):
 	# identify machine steps:
 
-A.draw('compare.svg', prog = 'dot')
+	
+
+# Plot.draw('compare.svg', prog = 'dot')
 
 
 #TODO:
 '''
 turn into objects
-add urls and slugs
+add urls and slugs'''
 
 
 
