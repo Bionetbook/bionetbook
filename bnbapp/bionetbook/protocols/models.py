@@ -252,7 +252,7 @@ class Protocol(TimeStampedModel):
             verb = self.steps[l[1]]['actions'][l[2]]['verb']
             verbid = self.steps[l[1]]['actions'][l[2]]['objectid']
             if out_label == 'literal':
-                self.verb_reagents[verb]=[]
+                self.verb_reagents[verbid]=[]
             if out_label == 'objectid':
                 self.verb_reagents[verbid]=[]
 
@@ -263,7 +263,7 @@ class Protocol(TimeStampedModel):
 
                     objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
                     if out_label == 'literal':
-                        self.verb_reagents[verb].append(reagent_name)
+                        self.verb_reagents[verbid].append(reagent_name)
                     if out_label == 'objectid':
                         self.verb_reagents[verbid].append(objectid)
         
