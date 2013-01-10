@@ -12,10 +12,12 @@ class ProtocolPlot(Protocol):
 
 	class Meta:
 		
-		db_table = 'protocols_protocol'# check the docs for this. 
-
+		abstract = True
+		db_table = "protocols_protocol"
 
 	def plot(self):
+		super(ProtocolPlot, self).__init__(**kwargs)
+
 		# self.prot = Protocol.objects.get(name__icontains=protocol_name)
 		agraph = pgv.AGraph()  # change all the Plot.G. to agraph. 
 		self.action_tree  = self.get_action_tree('objectid')
@@ -30,8 +32,10 @@ class ProtocolPlot(Protocol):
 
 		n = agraph.get_node(agraph.nodes()[0])
 		n.attr['shape']='box'
-		n.attr['label']=Plot.prot.get_action_tree()[0][2]
+		n.attr['label']=self.get_action_tree()[0][2]
 		return agraph 	
+
+
 
 def plotprotocol(protocol_name):
 	protocol = ProtocolPlot.objects.get(name__icontains=protocol_name)
