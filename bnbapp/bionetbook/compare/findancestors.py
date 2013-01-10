@@ -1,14 +1,14 @@
-
 def findancestors(thing):
 	''' specify and object (thing) to traceback, 
 	return G an AGraph object'''
 	import pygraphviz as pgv
 
 	mro = thing.__mro__
-	bases = {}
+	base_relations = {}
+	base_relations_literal = {}
 	for i in mro:
-		bases[i] = i.__bases__ # if I can capture the objectname and not a str of the object name. 
-
+		base_relations[i] = i.__bases__ 
+		base_relations_literal[i.__name__] = [r.__name__ for r in base_relations[i]]
 	# draw out main graph
 
 	G = pgv.AGraph()
@@ -19,8 +19,8 @@ def findancestors(thing):
 
 	edges = []
 
-	for i in bases:
-		for k in bases[i]:
+	for i in base_relations:
+		for k in base_relations[i]:
 			edges.append((i.__name__,k.__name__))
 
 	G.add_edges_from(edges)
