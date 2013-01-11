@@ -1,6 +1,10 @@
 def findancestors(thing):
 	''' specify and object (thing) to traceback, 
-	return G an AGraph object'''
+	returns G wich is an AGraph object
+	to plot:
+	G.draw('<filename>.svg/jpg/tiff/pdf', prog = 'dot')
+
+	'''
 	import pygraphviz as pgv
 
 	mro = thing.__mro__
