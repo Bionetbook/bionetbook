@@ -1,6 +1,6 @@
 from django.db import models
 
-
+import pygraphviz as pgv 
 from protocols.models import Protocol, Action, Step
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
@@ -15,31 +15,40 @@ class ProtocolPlot(Protocol):
 		abstract = True
 		db_table = "protocols_protocol"
 
-	def plot(self):
-		super(ProtocolPlot, self).__init__(**kwargs)
+	def __init__(self, *args, **kwargs):
+		super(ProtocolPlot, self).__init__(*args, **kwargs)
+	
+	def setProtocol(self, protocol_name):	
+		self.prot = ProtocolPlot.objects.get(name__icontains=protocol_name)	
 
+
+
+	def plot(self, **kwargs):
+		super(ProtocolPlot, self).__init__(**kwargs)
 		# self.prot = Protocol.objects.get(name__icontains=protocol_name)
 		agraph = pgv.AGraph()  # change all the Plot.G. to agraph. 
-		self.action_tree  = self.get_action_tree('objectid')
+		self.prot.action_tree  = self.prot.get_action_tree('objectid')
 		agraph.node_attr['shape']='square'
 		agraph.edge_attr['dir']='forward'
 		agraph.edge_attr['arrowhead'] = 'normal'
 		for i in range(1, sum(self.prot.get_num_actions())):
-		    agraph.add_edge(self.action_tree[i-1][2],self.action_tree[i][2])
-		    n=agraph.get_node(self.action_tree[i][2])
+		    agraph.add_edge(self.prot.action_tree[i-1][2],self.prot.action_tree[i][2])
+		    n=agraph.get_node(self.prot.action_tree[i][2])
 		    n.attr['shape']='box'
-		    n.attr['label']= "%s"%(self.get_action_tree()[i][2])
+		    n.attr['label']= "%s"%(self.prot.get_action_tree()[i][2])
 
 		n = agraph.get_node(agraph.nodes()[0])
 		n.attr['shape']='box'
-		n.attr['label']=self.get_action_tree()[0][2]
-		return agraph 	
+		n.attr['label']=self.prot.get_action_tree()[0][2]
+		self.agraph = agraph
+		return self 	
 
 
 
 def plotprotocol(protocol_name):
-	protocol = ProtocolPlot.objects.get(name__icontains=protocol_name)
-	return protocol.plot()
+	prot = ProtocolPlot()
+	prot.setProtocol(protocol_name)
+	return prot.plot()
 
 
 
@@ -50,7 +59,7 @@ def plotprotocol(protocol_name):
 # 		pass
 
 # 	from protocols.models import Protocol, Action, Step
-# 	import pygraphviz as pgv 
+# 	
 # 	try:
 # 		Plot.prot = Protocol.objects.get(name__icontains=protocol_name)
 # 	except: # fix to ObjectDoesNotExsist
