@@ -292,7 +292,7 @@ class Protocol(TimeStampedModel):
         default_setting['objectid'] = objid
         default_setting['rank'] =  'None'
         default_setting['name'] = 'None'
-        default_setting['location'] = [0,0]
+        default_setting['location'] = []
         outDict = {}
         
         if kwargs:
@@ -312,7 +312,7 @@ class Protocol(TimeStampedModel):
         if objid in steps_by_id:
             outDict['rank'] =  'step'
             outDict['name'] = steps_by_id.index(objid) 
-            outDict['location'] = steps_by_id.index(objid) 
+            outDict['location'] = [steps_by_id.index(objid)]
             # outDict['slug'] = 
         
         if objid in actions:
