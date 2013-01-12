@@ -33,7 +33,9 @@
           </ul>
         {% else %}
             <ul class="nav pull-right">
-                <li><a href="{% url registration_register %}">Register</a></li>
+              {% if REGISTRATION_ENABLED %}
+              <li><a href="{% url registration_register %}">Register</a></li>
+              {% endif %}
               <li><a href="{% url login %}">Login</a></li>  
             </ul>        
         {% endif %}
