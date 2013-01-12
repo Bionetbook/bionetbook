@@ -15,7 +15,7 @@ DATABASES = {
     }
 }
 
-
+REGISTRATION_ENABLED = True
 
 """
 DATABASES = {
