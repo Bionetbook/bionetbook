@@ -43,6 +43,67 @@ class ProtocolPlot(Protocol):
 		self.agraph = agraph
 		return self 	
 
+	def add_layer(self, **kwargs):
+		super(ProtocolPlot, self).__init__(**kwargs)
+		
+		if not self.agraph:
+			self.plot()
+
+		self.same_rank_objects = self.prot.get_reagents_by_action()	
+		rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
+		for i in self.same_rank_objects:
+			if kvargs and kvargs['layout'] == 'record':
+				rank_verbs[i] = []
+				rank_verbs[i].append(self.same_rank_objects[i][0])
+				rank_verbs[i].append(i)
+			else:
+				rank_verbs[i] = self.same_rank_objects[i]
+				rank_verbs[i].append(i)
+	
+		self.agraph.add_edges_from([(i, rank_verbs[i][0]) for i in rank_verbs])
+	  #   if kvargs and kvargs['layout'] == 'record':
+	  	
+	  #   else:
+			# self.agraph.add_edges_from(self.reagent_verb_edges)
+
+
+		# build all subgraphs:
+		names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
+		nc=0
+		for i in rank_verbs:
+			N = self.agraph.add_subgraph(rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
+			nc+=1
+
+
+		for i in rank_verbs:
+			n = self.agraph.get_node(rank_verbs[i][0])
+			v = self.same_rank_objects_lit[i]
+			n.attr['shape'] = 'record'
+			''' assemble the label:
+			remove commas,  - done
+			attach measurement units -not yet
+			add kwargs here
+			'''	
+			label_assembly = []
+
+			for k in range(len(v)):
+				label_assembly.append(v[k].replace(',',''))
+			
+			n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
+			
+			'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
+			Import the slug system into this,
+			'''
+
+
+		return self
+
+
+
+
+
+
+
 
 
 def plotprotocol(protocol_name):

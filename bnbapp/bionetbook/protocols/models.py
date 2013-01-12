@@ -1,6 +1,7 @@
 import string
 import random
 import math
+import itertools
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -273,10 +274,31 @@ class Protocol(TimeStampedModel):
     
         ''' function takes in a protocol instance (self) and an objid. If the objid is not in the protocol instance, a False is returned. 
         if the objid is in the protocol it returns a list:
-        rank: step action or reagent
-        name: returns the name of the object.
-        location: returns a (step, action) location. If step, it returns a single int.''' 
+        rank = True : step action or reagent
+        name = True: returns the name of the object.
+        location = True: returns a (step, action) location. If step, it returns a single int.
+        siblings = True: returns all siblings
+        parents = True: returns parents
+        children = True: returns children
+        attributes = full: return list of all attributes with type
+
+
+
+
+
+
+        ''' 
+        default_setting = {}
+        default_setting['objectid'] = objid
+        default_setting['rank'] =  'None'
+        default_setting['name'] = 'None'
+        default_setting['location'] = [0,0]
+        outDict = {}
         
+        if kwargs:
+            for k, v in itertools.chain(default_setting.iteritems(), kwargs.iteritems()):
+                outDict[k] = v 
+
         # make lists of all objectid's:
         steps_by_id = [self.steps[r]['objectid'] for r in range(self.get_num_steps)]
         
@@ -288,25 +310,48 @@ class Protocol(TimeStampedModel):
 
         # find what rank of objectid:
         if objid in steps_by_id:
-            rank =  'step'
-            name = steps_by_id.index(objid) 
-            location = steps_by_id.index(objid) 
-            return [rank, name, location]
+            outDict['rank'] =  'step'
+            outDict['name'] = steps_by_id.index(objid) 
+            outDict['location'] = steps_by_id.index(objid) 
+            # outDict['slug'] = 
         
         if objid in actions:
-            rank = 'action'
-            name = self.get_action_tree()[actions.index(objid)][2]
-            location = actions_by_id[actions.index(objid)][0:2]
-            return [rank, name, location]
+            outDict['rank'] = 'action'
+            outDict['name'] = self.get_action_tree()[actions.index(objid)][2]
+            outDict['location'] = actions_by_id[actions.index(objid)][0:2]
         
         if objid in reagents_by_id:
-            rank = 'reagent'
-            name = self.get_reagent_data('name_objectid')[reagents_by_id.index(objid)][0]
-            location = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
-            return [rank, name, location]
-        
-        else:
-            return False   
+            outDict['rank'] = 'reagent'
+            outDict['name'] = self.get_reagent_data('name_objectid')[reagents_by_id.index(objid)][0]
+            outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
+            s = self.get_reagents_by_action()
+            for k,v in s.items():
+                if objid in v:
+                    reagent_order = s[k].index(objid)
+
+            outDict['location'].append(reagent_order)
+    
+        # Return general requensts:   
+        if kwargs and kwargs['attributes'] == 'true': 
+            if outDict['rank'] == 'step':
+                outDict['attributes'] = self.data['steps'][outDict['location'][0]].keys()
+            if outDict['rank'] == 'action':
+                outDict['attributes'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]].keys()
+            if outDict['rank'] == 'reagent':
+                outDict['attributes'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]['component - list'][outDict['location'][2]].keys()
+
+            
+                
+
+
+        # Returm reagent handlers:    
+
+        # if kwargs and kwargs['conc']:
+        #     outDict['unit'] = 
+
+
+
+        return outDict   
            
     def get_schedule_data(self):
         time_atts = ('verb','min_time','max_time','time_units','duration_comment')
