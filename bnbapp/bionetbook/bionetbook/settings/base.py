@@ -76,6 +76,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
     'profiletools.context_processors.fetch_profile',
+    "core.context_processors.registration_enabled",
 ]
 
 ROOT_URLCONF = 'bionetbook.urls'
@@ -116,7 +117,7 @@ PROJECT_APPS = (
     #'schedule',
     'interest',
     'api',
-    'compare'
+    #'compare'
 )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS
@@ -161,6 +162,7 @@ from memcacheify import memcacheify
 CACHES = memcacheify()
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
+REGISTRATION_ENABLED = False
 
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 3
