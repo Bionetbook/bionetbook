@@ -277,27 +277,82 @@ class Protocol(TimeStampedModel):
         rank = True : step action or reagent
         name = True: returns the name of the object.
         location = True: returns a (step, action) location. If step, it returns a single int.
-        siblings = True: returns all siblings
+        
+        attributes = true: return list of all attribute names
+        units = 'true': returns a shorthand format for reagent units
         parents = True: returns parents
+        
+        full_data = 'true': adds (merges) all key: value pairs from the object to the outDict. object_data overrites 
+        not completed:
+        siblings = True: returns all siblings
+        
         children = True: returns children
-        attributes = full: return list of all attributes with type
-
-
-
-
-
+        
 
         ''' 
+        def unify(units_dict, shorthand = 'true'):
+
+            units = ''
+
+            conc = dict((k, v) for k, v in units_dict.iteritems() if 'conc' in k)
+            vol = dict((k, v) for k, v in units_dict.iteritems() if 'vol' in k)
+            mass = dict((k, v) for k, v in units_dict.iteritems() if 'mass' in k)
+
+            if conc:
+                if conc['max_conc'] == conc['min_conc']:
+                    units = conc['max_conc']
+                else:
+                    units = units + conc['min_conc'] + '-' + conc['max_conc']           
+                
+                units = units + ' ' + conc['conc_units'] + ', ' 
+            
+            if vol:
+                if vol['max_vol'] == vol['min_vol']:
+                    units = units + vol['max_vol']
+                else:
+                    units = units + vol['min_vol'] + '-' + vol['max_vol']               
+                
+                units = units + ' ' + vol['vol_units'] + ', '
+
+            if mass:
+                if mass['min_mass'] == mass['max_mass']:
+                    units = units + mass['max_mass']
+                else:
+                    units = units + mass['min_mass'] + '-' + mass['max_mass']
+
+                units = units + ' ' + mass['mass_units']
+
+            if shorthand == 'true':
+                units = units.replace('nanograms','ng') 
+                units = units.replace('micrograms','ug')    
+                units = units.replace('milligrams','mg')    
+                units = units.replace('grams','g')  
+                units = units.replace('kilograms','kg') 
+                units = units.replace('nanoLiter','ng') 
+                units = units.replace('microLiter','ug')    
+                units = units.replace('milliLiter','mg')    
+                units = units.replace('Liters','g')
+                units = units.replace('nanoMolar','ng') 
+                units = units.replace('microMolar','ug')    
+                units = units.replace('milliMolar','mg')    
+                units = units.replace('Molar','g')
+            return units
+
         default_setting = {}
         default_setting['objectid'] = objid
         default_setting['rank'] =  'None'
         default_setting['name'] = 'None'
         default_setting['location'] = []
+        default_setting['full_data'] = 'false'
         outDict = {}
         
         if kwargs:
             for k, v in itertools.chain(default_setting.iteritems(), kwargs.iteritems()):
                 outDict[k] = v 
+        else:
+            for k, v in default_setting.iteritems():
+                outDict[k] = v 
+
 
         # make lists of all objectid's:
         steps_by_id = [self.steps[r]['objectid'] for r in range(self.get_num_steps)]
@@ -313,13 +368,16 @@ class Protocol(TimeStampedModel):
             outDict['rank'] =  'step'
             outDict['name'] = steps_by_id.index(objid) 
             outDict['location'] = [steps_by_id.index(objid)]
+            outDict['object_data']  = self.data['steps'][outDict['location'][0]]
             # outDict['slug'] = 
         
         if objid in actions:
             outDict['rank'] = 'action'
             outDict['name'] = self.get_action_tree()[actions.index(objid)][2]
             outDict['location'] = actions_by_id[actions.index(objid)][0:2]
-        
+            outDict['object_data'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]
+
+
         if objid in reagents_by_id:
             outDict['rank'] = 'reagent'
             outDict['name'] = self.get_reagent_data('name_objectid')[reagents_by_id.index(objid)][0]
@@ -330,25 +388,40 @@ class Protocol(TimeStampedModel):
                     reagent_order = s[k].index(objid)
 
             outDict['location'].append(reagent_order)
-    
+            outDict['object_data'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]['component - list'][outDict['location'][2]]
+        
+
+        if kwargs:    
         # Return general requensts:   
-        if kwargs and kwargs['attributes'] == 'true': 
-            if outDict['rank'] == 'step':
-                outDict['attributes'] = self.data['steps'][outDict['location'][0]].keys()
-            if outDict['rank'] == 'action':
-                outDict['attributes'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]].keys()
-            if outDict['rank'] == 'reagent':
-                outDict['attributes'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]['component - list'][outDict['location'][2]].keys()
-
+            if 'attributes' in kwargs and kwargs['attributes'] == 'true': 
+                outDict['attributes'] = outDict['object_data'].keys()
             
-                
+            if 'units' in kwargs and kwargs['units'] == 'true':
+                outDict['units'] = unify(outDict['object_data'])
 
+            if 'parents' in kwargs and kwargs['parents'] == 'true':
+                tmp = self.get_objectid(outDict['location'][0], outDict['location'][1])
+                if outDict['rank'] =='step':
+                    outDict['parents'] = 'protocol'
+                if outDict['rank'] == 'action':
+                    outDict['parents'] = tmp[0]
+                if outDict['rank'] == 'reagent':
+                    outDict['parents'] = tmp[1]        
+
+            if 'full_data' in kwargs and kwargs['full_data'] == 'true':
+                full_data = outDict.pop('object_data')
+                temp = {}
+                for k, v in itertools.chain(outDict.iteritems(), full_data.iteritems()):
+                    temp[k] = v 
+                    
+                outDict = temp
 
         # Returm reagent handlers:    
-
-        # if kwargs and kwargs['conc']:
-        #     outDict['unit'] = 
-
+        # destruct object_data unless specicied in options
+        if outDict['full_data'] == 'false':
+            outDict.pop('object_data')
+        
+        outDict.pop('full_data')    
 
 
         return outDict   
