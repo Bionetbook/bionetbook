@@ -60,8 +60,6 @@ class ProtocolPlot(Protocol):
 
 
 		'''
-
-		# super(ProtocolPlot, self).__init__(**kwargs)
 		
 		# create base plot:
 		if not self.agraph:
@@ -72,39 +70,36 @@ class ProtocolPlot(Protocol):
 
 		# add a reagents layer: 
 		if 'reagents' in kwargs.keys():	
+			# find the nodes and edges that define the layer:
+			self.same_layer_objects = self.get_reagents_by_action()	
+			self.same_layer_objects_lit = self.get_reagents_by_action('literal')	
 			
-			self.same_rank_objects = self.get_reagents_by_action()	
-			self.same_rank_objects_lit = self.get_reagents_by_action('literal')	
-			self.rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
-			for i in self.same_rank_objects:
+			# define the subgraph with a dict that groups objects into a single rank 
+			self.rank_objects = {} 
+			for i in self.same_layer_objects:
 				if kwargs['layout'] == 'compact':
-					self.rank_verbs[i] = []
-					self.rank_verbs[i].append(self.same_rank_objects[i][0])
-					self.rank_verbs[i].append(i)
+					self.rank_objects[i] = []
+					self.rank_objects[i].append(self.same_layer_objects[i][0])
+					self.rank_objects[i].append(i)
 				else:
-					self.rank_verbs[i] = self.same_rank_objects[i]
-					self.rank_verbs[i].append(i)
+					self.rank_objects[i] = self.same_layer_objects[i]
+					self.rank_objects[i].append(i)
 		
-				self.agraph.add_edges_from([(i, self.rank_verbs[i][0]) for i in self.rank_verbs])
-	  #   if kvargs and kvargs['layout'] == 'record':
-	  	
-	  #   else:
-			# self.agraph.add_edges_from(self.reagent_verb_edges)
-
+				self.agraph.add_edges_from([(i, self.rank_objects[i][0]) for i in self.rank_objects])
 
 			# build all subgraphs:
 			names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
 			nc=0
-			for i in self.rank_verbs:
-				N = self.agraph.add_subgraph(self.rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
+			for i in self.rank_objects:
+				N = self.agraph.add_subgraph(self.rank_objects[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
 				nc+=1
-
-
-			for i in self.rank_verbs:
-				n = self.agraph.get_node(self.rank_verbs[i][0])
-				e = self.agraph.get_edge(self.rank_verbs[i][0], self.rank_verbs[i][1]) # fix this
-				v = self.same_rank_objects_lit[i]
+			# label the nodes in the subgraph of the current layer:
+			for i in self.rank_objects:
+				n = self.agraph.get_node(self.rank_objects[i][0]) # get rank node that links to base node for each rank
+				# e = self.agraph.get_edge(self.rank_objects[i][0], self.rank_objects[i][1]) # fix this
+				v = self.same_layer_objects[i] # get a list of all nodes of this subgraph
 				n.attr['shape'] = 'record'
+				
 				''' assemble the label:
 				remove commas,  - done
 				attach measurement units -not yet
@@ -112,8 +107,12 @@ class ProtocolPlot(Protocol):
 				'''	
 				label_assembly = []
 
-				for k in range(len(v)):
-					label_assembly.append(v[k].replace(',',''))
+				for k in range(len(v)): # rename all reagents in an action
+					tmp = self.objectid2name(v[k], reagents=True, units=True)
+					name = tmp['name'].replace(',','')
+					units = tmp['units']
+					label_assembly.append(name + ' ' + units)
+
 				
 				n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
 				
@@ -122,8 +121,13 @@ class ProtocolPlot(Protocol):
 				'''
 
 	def get_svg(self):
-		self.agraph.layout = 'dot'
-		return self.agraph.draw(format='svg')	
+		self.agraph.layout('dot')
+		return self.agraph
+
+	def get_graph(self, agraph):
+		agraph = self.agraph
+		agraph.layout('dot')
+		return agraph	
 
 
 

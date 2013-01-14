@@ -323,20 +323,25 @@ class Protocol(TimeStampedModel):
 
                 units = units + ' ' + mass['mass_units']
 
-            if shorthand:
+            if shorthand == True:
                 units = units.replace('nanograms','ng') 
                 units = units.replace('micrograms','ug')    
                 units = units.replace('milligrams','mg')    
                 units = units.replace('grams','g')  
                 units = units.replace('kilograms','kg') 
                 units = units.replace('nanoLiter','ng') 
-                units = units.replace('microLiter','ug')    
-                units = units.replace('milliLiter','mg')    
-                units = units.replace('Liters','g')
-                units = units.replace('nanoMolar','ng') 
-                units = units.replace('microMolar','ug')    
-                units = units.replace('milliMolar','mg')    
-                units = units.replace('Molar','g')
+                units = units.replace('microLiter','ul')    
+                units = units.replace('microliter','ul')    
+                units = units.replace('milliLiter','ml')    
+                units = units.replace('Liters','L')
+                units = units.replace('nanoMolar','nM') 
+                units = units.replace('microMolar','uM')    
+                units = units.replace('milliMolar','mM')    
+                units = units.replace('Molar','M')
+                units = units.replace('nanomole','nm') 
+                units = units.replace('micromole','um')    
+                units = units.replace('millimole','mm')    
+                units = units.replace('mole','m')
             return units
 
         default_setting = {}
@@ -344,7 +349,7 @@ class Protocol(TimeStampedModel):
         default_setting['rank'] =  'None'
         default_setting['name'] = 'None'
         default_setting['location'] = []
-        default_setting['full_data'] = 'false'
+        default_setting['full_data'] = False
         outDict = {}
         
         # Merging the 2 dicts together, kwargs overites default settings:
@@ -395,13 +400,13 @@ class Protocol(TimeStampedModel):
 
         if kwargs:    
         # Return general requensts:   
-            if 'attributes' in kwargs and kwargs['attributes']: 
+            if 'attributes' in kwargs and kwargs['attributes'] == True: 
                 outDict['attributes'] = outDict['object_data'].keys()
             
-            if 'units' in kwargs and kwargs['units']:
+            if 'units' in kwargs and kwargs['units'] == True:
                 outDict['units'] = unify(outDict['object_data'])
 
-            if 'parents' in kwargs and kwargs['parents']:
+            if 'parents' in kwargs and kwargs['parents'] == True:
                 tmp = self.get_objectid(outDict['location'][0], outDict['location'][1])
                 if outDict['rank'] =='step':
                     outDict['parents'] = 'protocol'
@@ -420,7 +425,7 @@ class Protocol(TimeStampedModel):
 
         # Returm reagent handlers:    
         # destruct object_data unless specicied in options
-        if not outDict['full_data']:
+        if not outDict['full_data'] == True:
             outDict.pop('object_data')
         
         outDict.pop('full_data')    
