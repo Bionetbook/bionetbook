@@ -522,7 +522,7 @@ class Protocol(TimeStampedModel):
 
 
 
-class ComponentBase(dict):
+class NodeBase(dict):
     """Base class for the protocol components"""
 
     keylist = ['name','objectid']
@@ -539,14 +539,14 @@ class ComponentBase(dict):
             return result
 
     def __init__(self, protocol, data={}, **kwargs):
-        super(ComponentBase, self).__init__(**kwargs)
+        super(NodeBase, self).__init__(**kwargs)
 
         self.protocol = protocol
 
         self['objectid'] = None #self.get_hash_id()
         self['slug'] = None
 
-        self._meta = ComponentBase.Meta(self)
+        self._meta = NodeBase.Meta(self)
 
         for item in self.keylist:       # REQUIRED ATTRIBUTES
             self[item] = None
@@ -580,11 +580,11 @@ class ComponentBase(dict):
         return self.protocol.name
 
 
-class Componenet(ComponentBase):
+class Componenet(NodeBase):
     pass
 
 
-class Action(ComponentBase):
+class Action(NodeBase):
 
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
@@ -601,7 +601,7 @@ class Action(ComponentBase):
         return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
 
 
-class Step(ComponentBase):
+class Step(NodeBase):
 
     def update_data(self, data={}, **kwargs):
         super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
