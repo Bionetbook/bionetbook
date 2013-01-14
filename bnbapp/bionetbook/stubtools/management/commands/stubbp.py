@@ -16,7 +16,16 @@ class Command(AppCommand):
             raise CommandError('Need to pass App names')
 
         app_name = args[0]
-        root_path = settings.PROJECT_PATH
+        try:
+            root_path = settings.PROJECT_PATH
+        except:
+            try:
+                root_path = settings.PROJECT_ROOT
+            except:
+                print "You need to have either a PROJECT_PATH or PROJECT_ROOT settings variable."
+                return
+
+
         app_path = os.path.join(root_path, app_name)
         self.add_url(app_name, app_path)
         self.add_admin(app_name, app_path)
@@ -64,6 +73,10 @@ class Command(AppCommand):
         lines = []
         comment, models = self.get_models(app_name, app_path)
 
+        if not models:
+            print "No Models to process."
+            return
+
         if models[0] == "ExampleModel":
             comment = "#"
 
@@ -100,9 +113,14 @@ class Command(AppCommand):
 
     def get_models(self, app_name, app_path):
 
-        classes = inspect.getmembers(sys.modules["%s.models" % app_name], inspect.isclass)  # COULD ALSO ADD CHECK TO SEE IF IT IS A DJANO MODEL CLASS
         models = []
         comment = ""
+
+        try:
+            classes = inspect.getmembers(sys.modules["%s.models" % app_name], inspect.isclass)  # COULD ALSO ADD CHECK TO SEE IF IT IS A DJANO MODEL CLASS
+        except KeyError:
+            print "\'%s\'' app is not included in your installed apps, please include it and run again." % app_name
+            return comment, models
 
         for cl in classes:
             if cl[1].__module__ == "%s.models" % app_name:
