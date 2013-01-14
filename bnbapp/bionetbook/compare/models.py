@@ -74,17 +74,18 @@ class ProtocolPlot(Protocol):
 		if 'reagents' in kwargs.keys():	
 			
 			self.same_rank_objects = self.get_reagents_by_action()	
-			rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
+			self.same_rank_objects_lit = self.get_reagents_by_action('literal')	
+			self.rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
 			for i in self.same_rank_objects:
 				if kwargs['layout'] == 'compact':
-					rank_verbs[i] = []
-					rank_verbs[i].append(self.same_rank_objects[i][0])
-					rank_verbs[i].append(i)
+					self.rank_verbs[i] = []
+					self.rank_verbs[i].append(self.same_rank_objects[i][0])
+					self.rank_verbs[i].append(i)
 				else:
-					rank_verbs[i] = self.same_rank_objects[i]
-					rank_verbs[i].append(i)
+					self.rank_verbs[i] = self.same_rank_objects[i]
+					self.rank_verbs[i].append(i)
 		
-				self.agraph.add_edges_from([(i, rank_verbs[i][0]) for i in rank_verbs])
+				self.agraph.add_edges_from([(i, self.rank_verbs[i][0]) for i in self.rank_verbs])
 	  #   if kvargs and kvargs['layout'] == 'record':
 	  	
 	  #   else:
@@ -94,14 +95,14 @@ class ProtocolPlot(Protocol):
 			# build all subgraphs:
 			names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
 			nc=0
-			for i in rank_verbs:
-				N = self.agraph.add_subgraph(rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
+			for i in self.rank_verbs:
+				N = self.agraph.add_subgraph(self.rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
 				nc+=1
 
 
-			for i in rank_verbs:
-				n = self.agraph.get_node(rank_verbs[i][0])
-				e = self.agraph.get_edge(tuple(rank_verbs[i])) # fix this
+			for i in self.rank_verbs:
+				n = self.agraph.get_node(self.rank_verbs[i][0])
+				e = self.agraph.get_edge(self.rank_verbs[i][0], self.rank_verbs[i][1]) # fix this
 				v = self.same_rank_objects_lit[i]
 				n.attr['shape'] = 'record'
 				''' assemble the label:
@@ -120,21 +121,16 @@ class ProtocolPlot(Protocol):
 				Import the slug system into this,
 				'''
 
-
-			return self
-
-
-
+	def get_svg(self):
+		self.agraph.layout = 'dot'
+		return self.agraph.draw(format='svg')	
 
 
 
-
-
-
-def plotprotocol(protocol_name):
-	prot = ProtocolPlot()
-	prot.setProtocol(protocol_name)
-	return prot.plot()
+# def plotprotocol(protocol_name):
+# 	prot = ProtocolPlot
+# 	prot.setProtocol(protocol_name)
+# 	return prot.plot()
 
 
 
