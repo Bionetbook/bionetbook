@@ -17,6 +17,14 @@ DATABASES = {
 
 REGISTRATION_ENABLED = True
 
+
+DEV_APPS = (
+    'stubtools',
+)
+
+INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
+
+
 """
 DATABASES = {
     'default': {
