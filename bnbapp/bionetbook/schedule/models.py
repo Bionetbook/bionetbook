@@ -4,16 +4,24 @@ from django.db import models
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-from actions.models import Action
+from protocols.models import Protocol, Step, Action
 
 from django_extensions.db.models import TimeStampedModel
 
 
-class Schedule(TimeStampedModel):
-    owner = models.ForeignKey(User)
-    start = models.DateTimeField()
-    name = models.CharField(_("Name"), max_length=255)
-    uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
+class ProtocolSchedule(TimeStampedModel):
+
+    # class Meta: 
+    #     proxy = True
+
+    def __init__(self, *args, **kwargs):
+        super(ProtocolSchedule, self).__init__(*args, **kwargs)
+        owner = models.ForeignKey(User)
+        uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
+
+        start = models.DateTimeField()
+        name = models.CharField(_("Name"), max_length=255)
+        permitted_protocols = models.ForeignKey(Protocol)
 
     def __unicode__(self):
         return self.name
@@ -35,8 +43,8 @@ class Schedule(TimeStampedModel):
 
 class Event(TimeStampedModel):
     child = models.ForeignKey("self", blank=True, null=True, unique=True)
-    schedule = models.ForeignKey(Schedule)
-    action = models.ForeignKey(Action, blank=True, null=True)
+    schedule = models.ForeignKey(ProtocolSchedule)
+    # action = models.ForeignKey(Action, blank=True, null=True)
     name = models.CharField(_("Summary"), max_length=255)
     description = models.TextField(blank=True, null=True)
     start = models.DateTimeField()
