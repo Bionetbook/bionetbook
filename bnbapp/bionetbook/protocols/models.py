@@ -300,33 +300,33 @@ class Protocol(TimeStampedModel):
 
             if conc:
                 # check that all data is present:
-                if not conc['conc_units']
+                if not conc['conc_units']:
                     return 'no concentration units specified for %s' % units_dict['name']
-                if not conc['max_conc'] and not conc['min_conc']:
-                    return 'enter concentration units for %s' % units_dict['name']
+                if 'max_conc' not in conc and 'min_conc' not in conc:
+                    return 'enter concentration units for %s' % units_dict['name']    
 
-                if conc['max_conc'] and conc['min_conc']:
+                if 'max_conc' in conc and 'min_conc' in conc:
 
                     if conc['max_conc'] == conc['min_conc']:
                         units = conc['max_conc']
                     else:
                         units = units + conc['min_conc'] + '-' + conc['max_conc']
                 else:
-                    if conc['max_conc']:
+                    if 'max_conc' in conc:
                          units = conc['max_conc']
-                    if conc['min_conc']:
+                    if 'min_conc' in conc:
                          units = conc['min_conc']                        
                     
                 units = units + ' ' + conc['conc_units']  
 
             
             if vol:
-                if not vol['vol_units']
-                    return 'no concentration units specified for %s' % units_dict['name']
-                if not vol['max_vol'] and not vol['min_vol']:
-                    return 'enter concentration units for %s' % units_dict['name']
+                if not vol['vol_units']:
+                    return 'no Volume units specified for %s' % units_dict['name']
+                if 'max_vol' not in vol and 'min_vol' not in vol:
+                    return 'enter Volume units for %s' % units_dict['name']
 
-                if vol['max_vol'] and vol['min_vol']:        
+                if 'max_vol' in vol and 'min_vol' in vol:
 
                     if vol['max_vol'] == vol['min_vol']:
                         units = units + ', ' + vol['max_vol']
@@ -334,20 +334,20 @@ class Protocol(TimeStampedModel):
                         units = units + ', ' + vol['min_vol'] + '-' + vol['max_vol']
 
                 else:
-                    if vol['max_vol']:
+                    if 'max_vol' in vol:
                          units = vol['max_vol']
-                    if vol['min_vol']:
+                    if 'min_vol' in vol:
                          units = vol['min_vol']          
                 
                 units = units + ' ' + vol['vol_units'] 
 
             if mass:
-                if not mass['mass_units']
-                    return 'no concentration units specified for %s' % units_dict['name']
-                if not mass['max_mass'] and not mass['min_mass']:
-                    return 'enter concentration units for %s' % units_dict['name']
+                if not mass['mass_units']:
+                    return 'no mass units specified for %s' % units_dict['name']
+                if 'max_mass' not in mass and 'min_mass' not in mass:
+                    return 'enter mass units for %s' % units_dict['name']
 
-                if mass['max_mass'] and mass['min_mass']:
+                if 'max_mass' in mass and 'min_mass' in mass:
 
                     if mass['min_mass'] == mass['max_mass']:
                         units = units + ', ' + mass['max_mass']
@@ -355,9 +355,9 @@ class Protocol(TimeStampedModel):
                         units = units + ', ' + mass['min_mass'] + '-' + mass['max_mass']
 
                 else:
-                    if mass['max_mass']:
+                    if 'max_mass' in mass:
                          units = mass['max_mass']
-                    if mass['min_mass']:
+                    if 'min_mass' in mass:
                          units = mass['min_mass']
 
                 units = units + ' ' + mass['mass_units']
@@ -626,6 +626,19 @@ class NodeBase(dict):
 
 class Component(NodeBase):
     pass
+    # def __init__(self, protocol, step=None, data=None, **kwargs):
+    #     self.action = action
+    #     super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    # def set_name(self):
+    #     self['name'] = self['reagent_name']
+
+    # def get_absolute_url(self):
+    #     return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
+
+    # @property
+    # def title(self):
+    #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self.action['name'], self['reagent_name'])
 
 class Action(NodeBase):
 
