@@ -119,6 +119,7 @@ PROJECT_APPS = (
     'interest',
     'api',
     'compare',
+    'organization',
 )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS

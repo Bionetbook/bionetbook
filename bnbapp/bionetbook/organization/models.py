@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import ObjectDoesNotExist
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from django_extensions.db.models import TimeStampedModel
 
 
-"""
 class Organization(TimeStampedModel):
     name = models.CharField(_("Name"), max_length="60")
     slug = models.SlugField(_("Slug"), max_length="60", null=True, blank=True)
@@ -40,5 +41,8 @@ class Organization(TimeStampedModel):
 class Membership(TimeStampedModel):
     user = models.ForeignKey(User)
     org = models.ForeignKey(Organization)
-    role = models.CharField(max_length=1, choices=(('View', 'r'),('Edit', 'w'),('Admin', 'a')))
-"""
+    role = models.CharField(max_length=1, choices=(('r', 'Viewer'),('w', 'Editor'),('a', 'Administrator')))
+
+    def __unicode__(self):
+        return self.user.username + " - " + self.org.name
+
