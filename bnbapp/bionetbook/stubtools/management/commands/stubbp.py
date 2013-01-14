@@ -74,7 +74,7 @@ class Command(AppCommand):
         comment, models = self.get_models(app_name, app_path)
 
         if not models:
-            print "No Models to process."
+            print "No Models to create Forms from."
             return
 
         if models[0] == "ExampleModel":
