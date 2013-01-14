@@ -278,11 +278,11 @@ class Protocol(TimeStampedModel):
         name = True: returns the name of the object.
         location = True: returns a (step, action) location. If step, it returns a single int.
         
-        attributes = true: return list of all attribute names
-        units = 'true': returns a shorthand format for reagent units
+        attributes = True: return list of all attribute names
+        units = True: returns a shorthand format for reagent units
         parents = True: returns parents
         
-        full_data = 'true': adds (merges) all key: value pairs from the object to the outDict. object_data overrites 
+        full_data = True: adds (merges) all key: value pairs from the object to the outDict. object_data overrites 
         not completed:
         siblings = True: returns all siblings
         
@@ -290,7 +290,7 @@ class Protocol(TimeStampedModel):
         
 
         ''' 
-        def unify(units_dict, shorthand = 'true'):
+        def unify(units_dict, shorthand = True):
 
             units = ''
 
@@ -304,25 +304,26 @@ class Protocol(TimeStampedModel):
                 else:
                     units = units + conc['min_conc'] + '-' + conc['max_conc']           
                 
-                units = units + ' ' + conc['conc_units'] + ', ' 
+                units = units + ' ' + conc['conc_units']  
+
             
             if vol:
                 if vol['max_vol'] == vol['min_vol']:
-                    units = units + vol['max_vol']
+                    units = units + ', ' + vol['max_vol']
                 else:
-                    units = units + vol['min_vol'] + '-' + vol['max_vol']               
+                    units = units + ', ' + vol['min_vol'] + '-' + vol['max_vol']               
                 
-                units = units + ' ' + vol['vol_units'] + ', '
+                units = units + ' ' + vol['vol_units'] 
 
             if mass:
                 if mass['min_mass'] == mass['max_mass']:
-                    units = units + mass['max_mass']
+                    units = units + ', ' + mass['max_mass']
                 else:
-                    units = units + mass['min_mass'] + '-' + mass['max_mass']
+                    units = units + ', ' + mass['min_mass'] + '-' + mass['max_mass']
 
                 units = units + ' ' + mass['mass_units']
 
-            if shorthand == 'true':
+            if shorthand:
                 units = units.replace('nanograms','ng') 
                 units = units.replace('micrograms','ug')    
                 units = units.replace('milligrams','mg')    
@@ -346,6 +347,7 @@ class Protocol(TimeStampedModel):
         default_setting['full_data'] = 'false'
         outDict = {}
         
+        # Merging the 2 dicts together, kwargs overites default settings:
         if kwargs:
             for k, v in itertools.chain(default_setting.iteritems(), kwargs.iteritems()):
                 outDict[k] = v 
@@ -393,13 +395,13 @@ class Protocol(TimeStampedModel):
 
         if kwargs:    
         # Return general requensts:   
-            if 'attributes' in kwargs and kwargs['attributes'] == 'true': 
+            if 'attributes' in kwargs and kwargs['attributes']: 
                 outDict['attributes'] = outDict['object_data'].keys()
             
-            if 'units' in kwargs and kwargs['units'] == 'true':
+            if 'units' in kwargs and kwargs['units']:
                 outDict['units'] = unify(outDict['object_data'])
 
-            if 'parents' in kwargs and kwargs['parents'] == 'true':
+            if 'parents' in kwargs and kwargs['parents']:
                 tmp = self.get_objectid(outDict['location'][0], outDict['location'][1])
                 if outDict['rank'] =='step':
                     outDict['parents'] = 'protocol'
@@ -408,7 +410,7 @@ class Protocol(TimeStampedModel):
                 if outDict['rank'] == 'reagent':
                     outDict['parents'] = tmp[1]        
 
-            if 'full_data' in kwargs and kwargs['full_data'] == 'true':
+            if 'full_data' in kwargs and kwargs['full_data']:
                 full_data = outDict.pop('object_data')
                 temp = {}
                 for k, v in itertools.chain(outDict.iteritems(), full_data.iteritems()):
@@ -418,7 +420,7 @@ class Protocol(TimeStampedModel):
 
         # Returm reagent handlers:    
         # destruct object_data unless specicied in options
-        if outDict['full_data'] == 'false':
+        if not outDict['full_data']:
             outDict.pop('object_data')
         
         outDict.pop('full_data')    

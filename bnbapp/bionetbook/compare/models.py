@@ -10,93 +10,118 @@ from django_extensions.db.models import TimeStampedModel
 
 class ProtocolPlot(Protocol):
 
-	class Meta:
-		
-		abstract = True
-		db_table = "protocols_protocol"
+	class Meta:	
+		proxy = True
 
 	def __init__(self, *args, **kwargs):
 		super(ProtocolPlot, self).__init__(*args, **kwargs)
 	
-	def setProtocol(self, protocol_name):	
-		self.prot = ProtocolPlot.objects.get(name__icontains=protocol_name)	
+		self.agraph = pgv.AGraph()  # change all the Plot.G. to agraph. 	
+	
+
+
+
+	# def setProtocol(self, protocol_name):	
+	# 	self.prot = ProtocolPlot.objects.get(name__icontains=protocol_name)	
 
 
 
 	def plot(self, **kwargs):
-		super(ProtocolPlot, self).__init__(**kwargs)
+		# super(ProtocolPlot, self).__init__(**kwargs)
 		# self.prot = Protocol.objects.get(name__icontains=protocol_name)
-		agraph = pgv.AGraph()  # change all the Plot.G. to agraph. 
-		self.prot.action_tree  = self.prot.get_action_tree('objectid')
-		agraph.node_attr['shape']='square'
-		agraph.edge_attr['dir']='forward'
-		agraph.edge_attr['arrowhead'] = 'normal'
-		for i in range(1, sum(self.prot.get_num_actions())):
-		    agraph.add_edge(self.prot.action_tree[i-1][2],self.prot.action_tree[i][2])
-		    n=agraph.get_node(self.prot.action_tree[i][2])
+		
+		action_tree  = self.get_action_tree('objectid')
+		self.agraph.node_attr['shape']='square'
+		self.agraph.edge_attr['dir']='forward'
+		self.agraph.edge_attr['arrowhead'] = 'normal'
+		for i in range(1, sum(self.get_num_actions())):
+		    self.agraph.add_edge(action_tree[i-1][2],action_tree[i][2])
+		    n=self.agraph.get_node(action_tree[i][2])
 		    n.attr['shape']='box'
-		    n.attr['label']= "%s"%(self.prot.get_action_tree()[i][2])
+		    n.attr['label']= "%s"%(self.get_action_tree()[i][2])
 
-		n = agraph.get_node(agraph.nodes()[0])
+		n = self.agraph.get_node(self.agraph.nodes()[0])
 		n.attr['shape']='box'
-		n.attr['label']=self.prot.get_action_tree()[0][2]
-		self.agraph = agraph
-		return self 	
+		n.attr['label']=self.get_action_tree()[0][2]
+		
+		
 
 	def add_layer(self, **kwargs):
-		super(ProtocolPlot, self).__init__(**kwargs)
+
+		''' determines the way layer data is displayed on the plot:
+		keys:
+			layer: sets the data in the layer, values:
+				- reagent: displayes the reagents layer.
+				- machines: displays what machines are needed.
+			display: sets the display options for the current layer, values:
+				- compact: minimal information, for reagents 'name, conc, vol'
+				- full: each object in the layer is node; each reagent is a node, each machine is a node. 
+
+
+
+		'''
+
+		# super(ProtocolPlot, self).__init__(**kwargs)
 		
+		# create base plot:
 		if not self.agraph:
 			self.plot()
 
-		self.same_rank_objects = self.prot.get_reagents_by_action()	
-		rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
-		for i in self.same_rank_objects:
-			if kvargs and kvargs['layout'] == 'record':
-				rank_verbs[i] = []
-				rank_verbs[i].append(self.same_rank_objects[i][0])
-				rank_verbs[i].append(i)
-			else:
-				rank_verbs[i] = self.same_rank_objects[i]
-				rank_verbs[i].append(i)
-	
-		self.agraph.add_edges_from([(i, rank_verbs[i][0]) for i in rank_verbs])
+		if not kwargs:
+			return 'please add layer=reagents / schedule / machines / strains etc'
+
+		# add a reagents layer: 
+		if 'reagents' in kwargs.keys():	
+			
+			self.same_rank_objects = self.get_reagents_by_action()	
+			rank_verbs = {} # this is the dict that groups objects into a single rank of a subgraph
+			for i in self.same_rank_objects:
+				if kwargs['layout'] == 'compact':
+					rank_verbs[i] = []
+					rank_verbs[i].append(self.same_rank_objects[i][0])
+					rank_verbs[i].append(i)
+				else:
+					rank_verbs[i] = self.same_rank_objects[i]
+					rank_verbs[i].append(i)
+		
+				self.agraph.add_edges_from([(i, rank_verbs[i][0]) for i in rank_verbs])
 	  #   if kvargs and kvargs['layout'] == 'record':
 	  	
 	  #   else:
 			# self.agraph.add_edges_from(self.reagent_verb_edges)
 
 
-		# build all subgraphs:
-		names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
-		nc=0
-		for i in rank_verbs:
-			N = self.agraph.add_subgraph(rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
-			nc+=1
+			# build all subgraphs:
+			names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
+			nc=0
+			for i in rank_verbs:
+				N = self.agraph.add_subgraph(rank_verbs[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
+				nc+=1
 
 
-		for i in rank_verbs:
-			n = self.agraph.get_node(rank_verbs[i][0])
-			v = self.same_rank_objects_lit[i]
-			n.attr['shape'] = 'record'
-			''' assemble the label:
-			remove commas,  - done
-			attach measurement units -not yet
-			add kwargs here
-			'''	
-			label_assembly = []
+			for i in rank_verbs:
+				n = self.agraph.get_node(rank_verbs[i][0])
+				e = self.agraph.get_edge(tuple(rank_verbs[i])) # fix this
+				v = self.same_rank_objects_lit[i]
+				n.attr['shape'] = 'record'
+				''' assemble the label:
+				remove commas,  - done
+				attach measurement units -not yet
+				add kwargs here
+				'''	
+				label_assembly = []
 
-			for k in range(len(v)):
-				label_assembly.append(v[k].replace(',',''))
-			
-			n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
-			
-			'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
-			Import the slug system into this,
-			'''
+				for k in range(len(v)):
+					label_assembly.append(v[k].replace(',',''))
+				
+				n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
+				
+				'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
+				Import the slug system into this,
+				'''
 
 
-		return self
+			return self
 
 
 
@@ -127,22 +152,22 @@ def plotprotocol(protocol_name):
 # 		return 'not in DB, try again'
 
 # 	Plot.G = pgv.AGraph()
-# 	Plot.action_tree  = Plot.prot.get_action_tree('objectid')
+# 	Plot.action_tree  = Plot.get_action_tree('objectid')
 	
 # 	# Define graph node and edge attributes:
 	
 # 	Plot.G.node_attr['shape']='square'
 # 	Plot.G.edge_attr['dir']='forward'
 # 	Plot.G.edge_attr['arrowhead'] = 'normal'
-# 	for i in range(1, sum(Plot.prot.get_num_actions())):
+# 	for i in range(1, sum(Plot.get_num_actions())):
 # 	    Plot.G.add_edge(Plot.action_tree[i-1][2],Plot.action_tree[i][2])
 # 	    n=Plot.G.get_node(Plot.action_tree[i][2])
 # 	    n.attr['shape']='box'
-# 	    n.attr['label']= "%s"%(Plot.prot.get_action_tree()[i][2])
+# 	    n.attr['label']= "%s"%(Plot.get_action_tree()[i][2])
 
 # 	n = Plot.G.get_node(Plot.G.nodes()[0])
 # 	n.attr['shape']='box'
-# 	n.attr['label']=Plot.prot.get_action_tree()[0][2]
+# 	n.attr['label']=Plot.get_action_tree()[0][2]
 
 # 	if kvargs and kvargs['layout'] == 'blocks':
 # 		Plot.G.edge_attr['arrowhead']='none'
@@ -154,9 +179,9 @@ def plotprotocol(protocol_name):
 
 # 	# Getting a list of reagent->verb objectid mapping
 	
-# 	Plot.reagent_verb_edges = Plot.prot.get_reagent_data('objectid')
+# 	Plot.reagent_verb_edges = Plot.get_reagent_data('objectid')
 # 	Plot.G.add_edges_from(Plot.reagent_verb_edges)
-# 	Plot.verb_reagent_oid = Plot.prot.get_reagents_by_action()
+# 	Plot.verb_reagent_oid = Plot.get_reagents_by_action()
 # 	# concatenate verb to reagents for subgraph build:
 # 	[Plot.verb_reagent_oid[i].append(i) for i in Plot.verb_reagent_oid]
 # 	# build all subgraphs:
@@ -175,7 +200,7 @@ def plotprotocol(protocol_name):
 # 		n.attr['style'] = 'dashed'
 
 # 	# set attributes of nodes in reagent subgraph:
-# 	Plot.reagents = Plot.prot.get_reagent_data('name_objectid')
+# 	Plot.reagents = Plot.get_reagent_data('name_objectid')
 # 	for i in Plot.reagents:
 # 		n = Plot.G.get_node(i[1])
 # 		n.attr['label'] = "%s"%(i[0])
