@@ -149,6 +149,11 @@ class Protocol(TimeStampedModel):
                 if 'slug' in action and not action['slug']:
                     action['slug'] = slugify(action['objectid'])
 
+                if 'component - list' in action.keys():
+                    for reagent in action['component - list']:
+                        if 'slug' not in reagent.keys():
+                            reagent['slug'] = slugify(reagent['objectid'])
+
     ###########
     # Properties
 
@@ -167,6 +172,10 @@ class Protocol(TimeStampedModel):
 
             for action in step['actions']:
                 result[action['objectid']] = action
+
+                if 'component - list' in action:
+                    for component in action['component - list']:
+                        result[component['objectid']] = component
 
         return result
 
