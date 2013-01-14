@@ -3,6 +3,7 @@
 import os.path
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+PROJECT_PATH = PROJECT_ROOT
 #PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if 'bionetbook/bionetbook' in PROJECT_ROOT:
     #PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/', '')
