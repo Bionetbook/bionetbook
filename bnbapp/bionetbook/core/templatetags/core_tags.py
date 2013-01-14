@@ -44,3 +44,18 @@ def object_data_table(model_instance):
             fields.append(field)
     fields.append(raw)
     return {'fields': fields}
+
+
+@register.filter(name='protocoltree')
+def protocoltree(value):
+    # GET A LIST OF EACH STEP
+        # HREF EACH STEP, EXCEPT IF IT IS THIS ONE
+
+        # GET A LIST OF EACH STEP'S ACTION
+        # HREF EACH ACTION, EXCEPT IF IT IS THIS ONE
+
+    #if value:
+    #    text = '<span class="badge badge-success"><i class="icon-ok icon-white"></i></span>'
+    #else:
+    #    text = '<span class="badge badge-important"><i class="icon-ok icon-white"></i></span>'
+    return mark_safe("<b>PROTOCOL TREE</b>")
