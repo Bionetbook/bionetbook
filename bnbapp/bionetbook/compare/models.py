@@ -17,14 +17,6 @@ class ProtocolPlot(Protocol):
 		super(ProtocolPlot, self).__init__(*args, **kwargs)
 	
 		self.agraph = pgv.AGraph()  # change all the Plot.G. to agraph. 	
-	
-
-
-
-	# def setProtocol(self, protocol_name):	
-	# 	self.prot = ProtocolPlot.objects.get(name__icontains=protocol_name)	
-
-
 
 	def plot(self, **kwargs):
 		# super(ProtocolPlot, self).__init__(**kwargs)
