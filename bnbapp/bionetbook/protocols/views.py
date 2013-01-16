@@ -133,7 +133,7 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
         for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.components[self.kwargs[key]]
+                context[ctx_key] = self.object.nodes[self.kwargs[key]]
 
         if 'verb_slug' in self.kwargs:
             context['verb_slug'] = self.kwargs['verb_slug']
@@ -203,7 +203,7 @@ class StepDetailView(AuthorizedForProtocolMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(StepDetailView, self).get_context_data(**kwargs)
         step_slug = self.kwargs['step_slug']
-        context['step'] = self.object.components[step_slug]
+        context['step'] = self.object.nodes[step_slug]
         return context
 
 
@@ -286,7 +286,7 @@ class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.components[self.kwargs[key]]
+                context[ctx_key] = self.object.nodes[self.kwargs[key]]
         
         context['form'] = self.form_class(initial=context['step'])
 
@@ -356,7 +356,7 @@ class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ActionDetailView, self).get_context_data(**kwargs)
         action_slug = self.kwargs['action_slug']
-        context['action'] = self.object.components[action_slug]
+        context['action'] = self.object.nodes[action_slug]
         context['step'] = context['action'].step       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
@@ -371,7 +371,7 @@ class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
         print "ACTION VERB LIST"
         context = super(ActionVerbListView, self).get_context_data(**kwargs)
         step_slug = self.kwargs['step_slug']
-        context['step'] = self.object.components[step_slug]
+        context['step'] = self.object.nodes[step_slug]
         context['verbs'] = VERB_CHOICES
         return context
 
@@ -457,7 +457,7 @@ class ActionCreateView(ComponentCreateViewBase):
     #def get_context_data(self, **kwargs):
     #    context = super(ActionCreateView, self).get_context_data(**kwargs)
     #    step_slug = self.kwargs['step_slug']
-    #    context['step'] = self.object.components[step_slug]
+    #    context['step'] = self.object.nodes[step_slug]
     #    context['form'] = ActionForm()
     #    return context
 
@@ -492,7 +492,7 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         for key in ['step_slug', 'action_slug']:
             if key in self.kwargs:
                 ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.components[self.kwargs[key]]
+                context[ctx_key] = self.object.nodes[self.kwargs[key]]
         
         context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
         context['verb_name'] = context['verb_form'].name
