@@ -568,7 +568,7 @@ class Component(NodeBase):
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def get_absolute_url(self):
-        return reverse("component_detail", kwargs={'protocol_slug': self.action.step.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
+        return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
 
     @property
     def title(self):
