@@ -9,6 +9,33 @@ from protocols.models import Protocol, Step, Action
 from django_extensions.db.models import TimeStampedModel
 
 
+class Schedule(TimeStampedModel):
+    owner = models.ForeignKey(User)
+    protocol = models.ForeignKey(Protocol)
+    start = models.DateTimeField()
+    name = models.CharField(_("Name"), max_length=255)
+    uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        super(Schedule, self).save(*args, **kwargs)
+        if not self.uid:
+            uid = slugify("bnb-%d" % self.id)
+            try:
+                Schedule.objects.get(uid=uid)
+                self.uid = "{0}-{1}".format(uid, self.pk)
+            except ObjectDoesNotExist:
+                self.uid = uid
+            self.save()
+
+    #def get_absolute_url(self):
+    #    return reverse("schedule_detail", kwargs={'schedule_uid': self.uid})
+
+
+
+
 class ProtocolSchedule(Protocol):
 
     class Meta: 
