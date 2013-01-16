@@ -19,12 +19,12 @@ COMPONENT_KEY = "component - list"
 
 class Protocol(TimeStampedModel):
 
-    #STATUS_DRAFT = "draft"
-    #STATUS_PUBLISHED = "published"
-    #STATUS = (
+    # STATUS_DRAFT = "draft"
+    # STATUS_PUBLISHED = "published"
+    # STATUS = (
     #    (STATUS_DRAFT, _(STATUS_DRAFT)),
     #    (STATUS_PUBLISHED, _(STATUS_PUBLISHED)),
-    #)
+    # )
 
     parent = models.ForeignKey("self", blank=True, null=True)
     #author = models.ForeignKey(User)
@@ -39,14 +39,15 @@ class Protocol(TimeStampedModel):
     # protocol_input = models.CharField(_("Input"), max_length=255, unique=True)
     # protocol_output = models.CharField(_("Output"), max_length=255, unique=True)
 
-    #status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
-    #version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
+    published = models.BooleanField(_("Published"), default=False)
+    # status = models.CharField(_("Status"), max_length=30, default=STATUS_DRAFT, choices=STATUS)
+    # version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
 
     # reference fields
-    #url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
-    #PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
-    #DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
-    #document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
+    # url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
+    # PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
+    # DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
+    # document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
 
 
     def __init__(self, *args, **kwargs):
