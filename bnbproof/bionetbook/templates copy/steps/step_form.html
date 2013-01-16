@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Step Form{% endblock %}
+
+{% block page_title %}
+{% if object %}
+  Editing Step: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+{% else %}
+  Adding Step to Protocol: <a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- main form div -->
+    <div class="span6">
+      {% if object %}<h2>Detail</h2>{% endif %}
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+      {{ form|crispy }}
+        <div class="actions">
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div>
+
+    <!-- secondary form div -->
+    {% if object %}
+    <div class="span6">
+      <h2>Actions</h2>
+      <p><a class="btn btn-success" href="{% url action_create protocol.slug object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="">Add Action</a></p>
+
+      {% if actions|length %}
+        <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                  <th></th>
+                  <th>Step</th>
+                  <th>Actions</th>
+                  <th>Last Modified</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for item in actions %}
+                <tr>
+                    <td nowrap width="30%">
+                        <div class="btn-group" id="item-{{ item.pk }}">
+                            <button class="btn btn-warning {% if forloop.first %}disabled{% else %}up{% endif %}"><i class="icon-arrow-up icon-white"></i></button>
+                            <button class="btn btn-warning {% if forloop.last %}disabled{% else %}down{% endif %}"><i class="icon-arrow-down icon-white"></i></button>
+                            <button class="btn btn-danger delete"><i class="icon-minus icon-white"></i></button>                            
+                        </div>
+                    </td>
+                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                    <td>{{ item.action_set.all|length }}</td>
+                    <td>{{ item.modified }}</td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>                    
+      {% endif %}
+
+    </div>    
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+    });
+</script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
+{% endblock extrajs %}

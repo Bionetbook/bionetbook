@@ -1,0 +1,58 @@
+from django.template.defaultfilters import slugify
+    #status = models.CharField(_("Status"), max_length=30, blank=True, null=True, default=STATUS_DRAFT, choices=STATUS)
+    def __init__(self, *args, **kwargs):
+    def __unicode__(self):
+    def save(self, *args, **kwargs):
+    def generate_slug(self):
+    def get_absolute_url(self):
+    def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
+    def rebuild_steps(self):
+    def set_data_ids(self):
+    def set_data_slugs(self):
+    def steps(self):
+    def components(self):
+    def get_num_steps(self):
+    def get_num_actions(self):
+    def get_actions_by_step(self):
+    # def get_verb_by_tree(self, **kwargs):
+    def nodes_detail(act):
+    def get_action_tree(self, display = None):
+    def get_objectid(self, stepnum, actionnum):
+    def get_reagent_data(self, display=None):
+    def get_reagents_by_action(self, out_label='objectid'):
+    def objectid2name(self, objid, **kwargs):
+        def unify(units_dict, shorthand = True):
+        default_setting = {}
+        default_setting['objectid'] = objid
+        default_setting['rank'] =  'None'
+        default_setting['name'] = 'None'
+        default_setting['location'] = []
+        default_setting['full_data'] = False
+        # Merging the 2 dicts together, kwargs overites default settings:
+            for k, v in itertools.chain(default_setting.iteritems(), kwargs.iteritems()):
+            for k, v in default_setting.iteritems():
+    def get_schedule_data(self):
+    def get_duration_by_line(self):
+    def set_padding(self):
+    def get_duration(self, *args):
+        def __init__(self, component):
+        def get_all_field_names(self):
+    def __init__(self, protocol, data={}, **kwargs):
+    def slug(self):
+    def set_name(self):
+    def update_data(self, data={}, **kwargs):
+    def __unicode__(self):
+    def title(self):
+    # def __init__(self, protocol, step=None, data=None, **kwargs):
+    # def set_name(self):
+    # def get_absolute_url(self):
+    # def title(self):
+    def __init__(self, protocol, step=None, data=None, **kwargs):
+    def set_name(self):
+    def get_absolute_url(self):
+    def title(self):
+    def update_data(self, data={}, **kwargs):
+    def get_absolute_url(self):
+    def title(self):
+    #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
+    def read_data(self, *args):

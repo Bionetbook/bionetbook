@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Action Form{% endblock %}
+
+{% block page_title %}
+{% if object %}
+  Editing Action: <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+{% else %}
+  Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}</a>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<form action="." method="post">
+<div class="row">
+    <!-- main form div -->
+    
+      <div class="span6">
+        <h2>Detail</h2>
+          <div class="well">{% csrf_token %}
+          {{ form|crispy }}
+          </div>
+      </div>
+
+      <!-- secondary form div -->
+        <div class="span6">
+          <h2>Verb</h2>
+          <div class="well verb">
+
+          </div>
+        </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div class="actions">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    </div>
+</div>      
+</form>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+
+        {% if object %}
+            var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/{{ object.verb }}/';
+            $.get(url, function(data) {
+                  $('.verb').html(data).show();
+            });             
+        {% endif %}
+
+        $("#id_verb").change(function(){
+            {% if object %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/' + this.value + '/';
+            {% else %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/0/' + this.value + '/';
+            {% endif %}
+            $.get(url, function(data) {
+                  $('.verb').html(data).show("slow");
+            });             
+        });        
+    });
+</script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
+{% endblock extrajs %}

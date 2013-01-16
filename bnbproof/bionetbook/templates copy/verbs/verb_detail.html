@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Verb: {{ verb.name }}{% endblock %}
+
+{% block page_title %}<a href="{% url verb_list %}">Verb</a>: {{ verb.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Attribute Name</th>
+                    <th>Input Type</th>
+                    <th>Required</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for field in verb.display_fields %}
+                {% with data=field.data %}
+                    <tr>
+                        <td>{{ field.field_name }}</td>
+                        <td>{{ data.widget.input_type }}</td>                        
+                        <td>{{ data.required|bootstrapcheck }}</td>
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+{% endblock %}
+

@@ -137,9 +137,6 @@ class Protocol(TimeStampedModel):
                         if 'objectid' not in reagent.keys():
                             reagent['objectid'] = self.get_hash_id()
 
-
-
-
     def set_data_slugs(self):
         for step in self.steps:
             if not step['slug']:
@@ -178,7 +175,10 @@ class Protocol(TimeStampedModel):
                         result[component['objectid']] = component
 
         return result
+    ###########
+    # test properties:
 
+    # def levels()
 
     ###########
     # Methods
@@ -196,10 +196,6 @@ class Protocol(TimeStampedModel):
             tmp = [self.data['steps'][stepnum]['actions'][r]['verb'] for r in range(0, self.get_num_actions()[stepnum])]
             actions_by_step.append(tmp)
         return actions_by_step
-
-    # def get_verb_by_tree(self, **kwargs):
-        
-    #     # test if kwargs pair is in protocol:
 
     def nodes_detail(act):
         # act = [0, 0, u'call_for_protocol'] -> 0-0-call_for_protocol
@@ -224,6 +220,14 @@ class Protocol(TimeStampedModel):
 
     def get_reagent_data(self, display=None):
         # function takes the display argument and returns the (step, action) display of the reagent, i.e. verb, objectid, slug etc.  
+        ''' this combiones a find technique with a return technique:
+        find = self.data['components-location']
+        return = through the self.steps accessor and not theough an objid accessor. 
+
+
+        '''
+
+
         self.needed_reagents = []
         
         if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
@@ -256,6 +260,14 @@ class Protocol(TimeStampedModel):
         return self.needed_reagents   
 
     def get_reagents_by_action(self, out_label='objectid'):
+        ''' this combiones a find technique with a return technique:
+        find = self.data['components-location']
+        return = through the self.steps accessor and not theough an objid accessor. 
+
+
+        '''
+
+
         self.verb_reagents = {}
         for l in self.data['components-location']: # iterate over all step,action locations where there are components 
             components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) # iterate over reagents
@@ -410,40 +422,40 @@ class Protocol(TimeStampedModel):
 
 
         # make lists of all objectid's:
-        steps_by_id = [self.steps[r]['objectid'] for r in range(self.get_num_steps)]
+        steps_by_id = [r['objectid'] for r in self.steps]
+        #[self.steps[r]['objectid'] for r in range(self.get_num_steps)]
         
-        actions_by_id = self.get_action_tree('objectid')
-        actions = [actions_by_id[r][2] for r in range(len(actions_by_id))]
+        # actions_by_id = self.get_action_tree('objectid')
+        actions_by_id = [i[2] for i in self.get_action_tree('objectid')]
 
-        reagent_by_objectid = self.get_reagent_data('objectid')
-        reagents_by_id = [reagent_by_objectid[r][0] for r in range(len(reagent_by_objectid))]
+        reagents_by_id = [i[0] for i in c.get_reagent_data('objectid')]
 
         # find what rank of objectid:
         if objid in steps_by_id:
             outDict['rank'] =  'step'
-            outDict['name'] = steps_by_id.index(objid) 
+            outDict['name'] = self.components[objid]['name']
             outDict['location'] = [steps_by_id.index(objid)]
-            outDict['object_data']  = self.data['steps'][outDict['location'][0]]
+            outDict['object_data']  = self.components[objid]
             # outDict['slug'] = 
         
-        if objid in actions:
+        if objid in actions_by_id:
             outDict['rank'] = 'action'
-            outDict['name'] = self.get_action_tree()[actions.index(objid)][2]
-            outDict['location'] = actions_by_id[actions.index(objid)][0:2]
-            outDict['object_data'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]
+            outDict['name'] = self.components[objid]['name']
+            # outDict['location'] = actions_by_id[actions.index(objid)][0:2]
+            outDict['object_data'] = self.components[objid]
 
 
         if objid in reagents_by_id:
             outDict['rank'] = 'reagent'
-            outDict['name'] = self.get_reagent_data('name_objectid')[reagents_by_id.index(objid)][0]
-            outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
+            outDict['name'] = self.components[objid]['name']
+            # outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
             s = self.get_reagents_by_action()
             for k,v in s.items():
                 if objid in v:
                     reagent_order = s[k].index(objid)
 
             outDict['location'].append(reagent_order)
-            outDict['object_data'] = self.data['steps'][outDict['location'][0]]['actions'][outDict['location'][1]]['component - list'][outDict['location'][2]]
+            outDict['object_data'] = self.components[objid]
         
 
         if kwargs:    
@@ -453,6 +465,14 @@ class Protocol(TimeStampedModel):
             
             if 'units' in kwargs and kwargs['units'] == True:
                 outDict['units'] = unify(outDict['object_data'])
+
+            if 'children' in kwargs and kwargs['children'] == True:
+                if outDict['rank'] == 'step':
+                    outDict['children'] = [r['objectid'] for r in self.components[objid]['actions']]
+                if outDict['rank'] == 'action':
+                    outDict['children'] = [r['objectid'] for r in self.components[objid]['component - list']]    
+                if outDict['rank'] == 'reagent':
+                     outDict['children'] = None
 
             if 'parents' in kwargs and kwargs['parents'] == True:
                 tmp = self.get_objectid(outDict['location'][0], outDict['location'][1])
@@ -479,101 +499,7 @@ class Protocol(TimeStampedModel):
         outDict.pop('full_data')    
 
 
-        return outDict   
-           
-    def get_schedule_data(self):
-        time_atts = ('verb','min_time','max_time','time_units','duration_comment')
-        actions_sequence =[]
-        # traversing all step and action nodes in the protocol:
-        
-        for stepnum in range(0, self.get_num_steps): # traversign all steps
-            for actionnum in range(0, len(self.steps[stepnum]['actions'])): # traversing all actions per step
-                tmp = {}
-                # find the time related annotated field that this protcol has
-                tagged_fields = [r for r in self.steps[stepnum]['actions'][actionnum].keys() if r in time_atts]
-                for l in tagged_fields: # insert the valid tagged_fields into a tmp dict
-                    tmp[l] = self.steps[stepnum]['actions'][actionnum][l] 
-                actions_sequence.append(tmp)   # append this action dict to the action_sequence list
-        return actions_sequence     
-
-    def get_duration_by_line(self):
-        # this function can be included in the Quality control after protocol entry.
-        # User can enter unspecified times if they can estimate them. 
-
-        schedule_line = []
-
-        for line in self.get_schedule_data():
-
-            out_line = [] 
-            out_line.append(line['verb'])
-            
-            if 'min_time' in line:
-                out_line.append(line['min_time'])
-
-            if 'max_time' in line:
-                out_line.append(line['max_time'])
-
-            if 'time_units' in line:
-                out_line.append(line['time_units'])
-                
-            if 'duration_comment' in line:
-                out_line.append(line['duration_comment'])
-
-            schedule_line.append(out_line) 
-
-        return schedule_line    
-
-    def set_padding(self):
-
-        # self.schedule_padded ='True'
-        schedule_padding_list = [['pad', 1, 1, 'minutes', 'Active'] for r in range(0, len(self.get_duration_by_line()))]
-        schedule_padded = []
-        dur = self.get_duration_by_line()
-        # try:
-        #     self.schedule_line
-        for i in range(0, len(dur)):
-            schedule_padded.append(dur[i])
-            schedule_padded.append(schedule_padding_list[i])
-        # except AttributeError:
-        #     print 'get_duration_by_list before adding padding'      
-
-        return schedule_padded   
-
-    def get_duration(self, *args):
-        
-        if 'padding' in args:
-            schedule = self.set_padding()
-        else:
-            schedule = self.get_duration_by_line()
-        active_list = []
-        passive_list = []
-        total_list= []
-        for line in schedule:
-            if type(line[1]) == int or line[1][0].isdigit():
-                if line[3]=='minutes':
-                    total_list.append(float(line[1]))
-                if line [3]=='hours':
-                    total_list.append(float(line[1])*60)
-                if line [3]=='days':
-                    total_list.append(float(line[1])*60*24)
-                if 'Active'.lower() in line[4].lower():
-                    active_list.append(total_list[-1])
-                if 'Passive'.lower() in line[4].lower():
-                    passive_list.append(total_list[-1])     
-            else:
-                continue
-
-        total_time = math.ceil(sum(total_list))
-        d = divmod(math.ceil(total_time),60)
-        pprint_total_time = '{0} hours and {1} minutes'.format(d[0], d[1])
-        total_active_time = sum(active_list)            
-        total_passive_time = sum(passive_list)  
-        if 'literal' in args:
-            return pprint_total_time
-        else:
-            return total_time*60      
-
-
+        return outDict  
 
 class NodeBase(dict):
     """Base class for the protocol components"""
@@ -712,3 +638,7 @@ class ProtocolIngest(Protocol):
             return self.data
         else:
             print 'no data loaded'
+
+
+
+

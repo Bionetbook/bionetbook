@@ -9,18 +9,47 @@
 <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(4 1156)">
 <title>_anonymous_0</title>
 <polygon fill="white" stroke="white" points="-4,5 -4,-1156 620,-1156 620,5 -4,5"/>
+<!-- 892zia -->
+<g id="node2" class="node"><title>892zia</title>
+<polygon fill="none" stroke="black" points="83,-706 29,-706 29,-670 83,-670 83,-706"/>
+<text text-anchor="middle" x="56" y="-682.4" font-family="Times,serif" font-size="14.00">add</text>
+</g>
+<!-- d5fd4e -->
+<g id="node3" class="node"><title>d5fd4e</title>
+<polygon fill="none" stroke="black" points="100.53,-650.8 100.53,-725.2 437.47,-725.2 437.47,-650.8 100.53,-650.8"/>
+<text text-anchor="middle" x="269" y="-707.2" font-family="Times,serif" font-size="14.00">Buffer First strand cDNA synthesis (Invitrogen) 5 X, 4 ul</text>
+<polyline fill="none" stroke="black" points="100.53,-700.4 437.47,-700.4 "/>
+<text text-anchor="middle" x="269" y="-682.4" font-family="Times,serif" font-size="14.00">Reducing agent Dithiothreitol (DTT) 100 mM, 2 ul</text>
+<polyline fill="none" stroke="black" points="100.53,-675.6 437.47,-675.6 "/>
+<text text-anchor="middle" x="269" y="-657.6" font-family="Times,serif" font-size="14.00">Water nuclease&#45;free sterile , 1 ul</text>
+</g>
+<!-- 892zia&#45;&#45;d5fd4e -->
+<g id="edge3" class="edge"><title>892zia&#45;&#45;d5fd4e</title>
+<path fill="none" stroke="black" d="M83.041,-688C85.4926,-688 87.9442,-688 90.3958,-688"/>
+<polygon fill="black" stroke="black" points="90.4747,-691.5 100.475,-688 90.4746,-684.5 90.4747,-691.5"/>
+</g>
+<!-- pbud57 -->
+<g id="node25" class="node"><title>pbud57</title>
+<polygon fill="none" stroke="black" points="83,-614 29,-614 29,-578 83,-578 83,-614"/>
+<text text-anchor="middle" x="56" y="-590.4" font-family="Times,serif" font-size="14.00">mix</text>
+</g>
+<!-- 892zia&#45;&#45;pbud57 -->
+<g id="edge24" class="edge"><title>892zia&#45;&#45;pbud57</title>
+<path fill="none" stroke="black" d="M56,-669.647C56,-656.823 56,-639.108 56,-624.381"/>
+<polygon fill="black" stroke="black" points="59.5001,-624.3 56,-614.3 52.5001,-624.3 59.5001,-624.3"/>
+</g>
 <!-- muwzdb -->
-<g id="node2" class="node"><title>muwzdb</title>
+<g id="node6" class="node"><title>muwzdb</title>
 <polygon fill="none" stroke="black" points="83,-397 29,-397 29,-361 83,-361 83,-397"/>
 <text text-anchor="middle" x="56" y="-373.4" font-family="Times,serif" font-size="14.00">add</text>
 </g>
 <!-- w3v4gn -->
-<g id="node3" class="node"><title>w3v4gn</title>
+<g id="node7" class="node"><title>w3v4gn</title>
 <polygon fill="none" stroke="black" points="100.529,-361 100.529,-397 597.471,-397 597.471,-361 100.529,-361"/>
 <text text-anchor="middle" x="349" y="-373.5" font-family="Times,serif" font-size="14.00">Enzyme SuperScript II reverse transcriptase (Invitrogen) 200 Units/ul, 1 ul, 200 Units</text>
 </g>
 <!-- muwzdb&#45;&#45;w3v4gn -->
-<g id="edge3" class="edge"><title>muwzdb&#45;&#45;w3v4gn</title>
+<g id="edge6" class="edge"><title>muwzdb&#45;&#45;w3v4gn</title>
 <path fill="none" stroke="black" d="M83.1826,-379C85.5027,-379 87.8227,-379 90.1428,-379"/>
 <polygon fill="black" stroke="black" points="90.3154,-382.5 100.315,-379 90.3153,-375.5 90.3154,-382.5"/>
 </g>
@@ -35,12 +64,12 @@
 <polygon fill="black" stroke="black" points="59.5001,-334.029 56,-324.029 52.5001,-334.029 59.5001,-334.029"/>
 </g>
 <!-- kttj4d -->
-<g id="node6" class="node"><title>kttj4d</title>
+<g id="node10" class="node"><title>kttj4d</title>
 <polygon fill="none" stroke="black" points="88.1554,-1046 23.8446,-1046 23.8446,-1010 88.1554,-1010 88.1554,-1046"/>
 <text text-anchor="middle" x="56" y="-1022.4" font-family="Times,serif" font-size="14.00">combine</text>
 </g>
 <!-- 0tisce -->
-<g id="node7" class="node"><title>0tisce</title>
+<g id="node11" class="node"><title>0tisce</title>
 <polygon fill="none" stroke="black" points="106.294,-978.4 106.294,-1077.6 615.706,-1077.6 615.706,-978.4 106.294,-978.4"/>
 <text text-anchor="middle" x="361" y="-1059.6" font-family="Times,serif" font-size="14.00">Nucleic Acid Primer Oligo(dT)12&#45;18 primers (Invitrogen) 50&#45;500 ng/ul, 1&#45;10 ul, 500 ng</text>
 <polyline fill="none" stroke="black" points="106.294,-1052.8 615.706,-1052.8 "/>
@@ -51,7 +80,7 @@
 <text text-anchor="middle" x="361" y="-985.2" font-family="Times,serif" font-size="14.00">Water nuclease&#45;free sterile , 0&#45;9 ul</text>
 </g>
 <!-- kttj4d&#45;&#45;0tisce -->
-<g id="edge6" class="edge"><title>kttj4d&#45;&#45;0tisce</title>
+<g id="edge9" class="edge"><title>kttj4d&#45;&#45;0tisce</title>
 <path fill="none" stroke="black" d="M88.168,-1028C90.8101,-1028 93.4523,-1028 96.0945,-1028"/>
 <polygon fill="black" stroke="black" points="96.2858,-1031.5 106.286,-1028 96.2857,-1024.5 96.2858,-1031.5"/>
 </g>
@@ -66,7 +95,7 @@
 <polygon fill="black" stroke="black" points="59.5001,-952.047 56,-942.047 52.5001,-952.047 59.5001,-952.047"/>
 </g>
 <!-- ahd90y -->
-<g id="node10" class="node"><title>ahd90y</title>
+<g id="node14" class="node"><title>ahd90y</title>
 <polygon fill="none" stroke="black" points="112.39,-1151 -0.389557,-1151 -0.389557,-1115 112.39,-1115 112.39,-1151"/>
 <text text-anchor="middle" x="56" y="-1127.4" font-family="Times,serif" font-size="14.00">call_for_protocol</text>
 </g>
@@ -76,43 +105,14 @@
 <polygon fill="black" stroke="black" points="59.5001,-1056.03 56,-1046.03 52.5001,-1056.03 59.5001,-1056.03"/>
 </g>
 <!-- f7zg5q -->
-<g id="node11" class="node"><title>f7zg5q</title>
+<g id="node15" class="node"><title>f7zg5q</title>
 <polygon fill="none" stroke="black" points="130.783,-1115 130.783,-1151 443.217,-1151 443.217,-1115 130.783,-1115"/>
 <text text-anchor="middle" x="287" y="-1127.5" font-family="Times,serif" font-size="14.00">Nucleic Acid RNA poly(A)+ 100 ng/ul, 100&#45;1000 ng</text>
 </g>
 <!-- ahd90y&#45;&#45;f7zg5q -->
-<g id="edge9" class="edge"><title>ahd90y&#45;&#45;f7zg5q</title>
+<g id="edge12" class="edge"><title>ahd90y&#45;&#45;f7zg5q</title>
 <path fill="none" stroke="black" d="M112.396,-1133C115.032,-1133 117.668,-1133 120.304,-1133"/>
 <polygon fill="black" stroke="black" points="120.471,-1136.5 130.471,-1133 120.471,-1129.5 120.471,-1136.5"/>
-</g>
-<!-- 892zia -->
-<g id="node14" class="node"><title>892zia</title>
-<polygon fill="none" stroke="black" points="83,-706 29,-706 29,-670 83,-670 83,-706"/>
-<text text-anchor="middle" x="56" y="-682.4" font-family="Times,serif" font-size="14.00">add</text>
-</g>
-<!-- d5fd4e -->
-<g id="node15" class="node"><title>d5fd4e</title>
-<polygon fill="none" stroke="black" points="100.53,-650.8 100.53,-725.2 437.47,-725.2 437.47,-650.8 100.53,-650.8"/>
-<text text-anchor="middle" x="269" y="-707.2" font-family="Times,serif" font-size="14.00">Buffer First strand cDNA synthesis (Invitrogen) 5 X, 4 ul</text>
-<polyline fill="none" stroke="black" points="100.53,-700.4 437.47,-700.4 "/>
-<text text-anchor="middle" x="269" y="-682.4" font-family="Times,serif" font-size="14.00">Reducing agent Dithiothreitol (DTT) 100 mM, 2 ul</text>
-<polyline fill="none" stroke="black" points="100.53,-675.6 437.47,-675.6 "/>
-<text text-anchor="middle" x="269" y="-657.6" font-family="Times,serif" font-size="14.00">Water nuclease&#45;free sterile , 1 ul</text>
-</g>
-<!-- 892zia&#45;&#45;d5fd4e -->
-<g id="edge12" class="edge"><title>892zia&#45;&#45;d5fd4e</title>
-<path fill="none" stroke="black" d="M83.041,-688C85.4926,-688 87.9442,-688 90.3958,-688"/>
-<polygon fill="black" stroke="black" points="90.4747,-691.5 100.475,-688 90.4746,-684.5 90.4747,-691.5"/>
-</g>
-<!-- pbud57 -->
-<g id="node25" class="node"><title>pbud57</title>
-<polygon fill="none" stroke="black" points="83,-614 29,-614 29,-578 83,-578 83,-614"/>
-<text text-anchor="middle" x="56" y="-590.4" font-family="Times,serif" font-size="14.00">mix</text>
-</g>
-<!-- 892zia&#45;&#45;pbud57 -->
-<g id="edge24" class="edge"><title>892zia&#45;&#45;pbud57</title>
-<path fill="none" stroke="black" d="M56,-669.647C56,-656.823 56,-639.108 56,-624.381"/>
-<polygon fill="black" stroke="black" points="59.5001,-624.3 56,-614.3 52.5001,-624.3 59.5001,-624.3"/>
 </g>
 <!-- f4hds3 -->
 <g id="node20" class="node"><title>f4hds3</title>
