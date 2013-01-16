@@ -568,12 +568,13 @@ class Component(NodeBase):
     # def set_name(self):
     #     self['name'] = self['reagent_name']
 
+
     # def get_absolute_url(self):
     #     return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
 
-    # @property
-    # def title(self):
-    #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self.action['name'], self['reagent_name'])
+    @property
+    def title(self):
+        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
 
 class Action(NodeBase):
 
