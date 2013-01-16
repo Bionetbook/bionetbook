@@ -13,6 +13,9 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
+from organization.models import Orginization
+
+COMPONENT_KEY = "component - list"
 
 class Protocol(TimeStampedModel):
 
@@ -24,11 +27,11 @@ class Protocol(TimeStampedModel):
     #)
 
     parent = models.ForeignKey("self", blank=True, null=True)
-    owner = models.ForeignKey(User)
+    #author = models.ForeignKey(User)
+    owner = models.ForeignKey(Orginization)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
-    #organization = models.CharField(_("Orginization"), max_length=100, blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
     data = JSONField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
