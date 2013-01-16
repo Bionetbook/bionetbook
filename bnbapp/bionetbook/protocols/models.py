@@ -572,7 +572,7 @@ class Component(NodeBase):
 
     @property
     def title(self):
-        return "%s - %s - %s" % (self.protocol.name, self.step['name'], self.action['name'], self['name'])
+        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
 
 
 class Action(NodeBase):
