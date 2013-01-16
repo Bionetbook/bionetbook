@@ -128,13 +128,6 @@ def compare2versions(protocol_A, Protocol_B, **kwargs):
 	protocol_1 = ProtocolPlot.objects.get(name__icontains=protocol_A)	
 	protocol_2 = ProtocolPlot.objects.get(name__icontains=Protocol_B)
 
-		
-
-
-
-
-
-
 	return protocol_1.name,protocol_2.name	
 
 

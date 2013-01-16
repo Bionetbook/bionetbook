@@ -162,7 +162,7 @@ class Protocol(TimeStampedModel):
 
 
     @property
-    def components(self):
+    def nodes(self):
         result = {}
         for step in self.steps:
             result[step['objectid']] = step
@@ -433,29 +433,29 @@ class Protocol(TimeStampedModel):
         # find what rank of objectid:
         if objid in steps_by_id:
             outDict['rank'] =  'step'
-            outDict['name'] = self.components[objid]['name']
+            outDict['name'] = self.nodes[objid]['name']
             outDict['location'] = [steps_by_id.index(objid)]
-            outDict['object_data']  = self.components[objid]
+            outDict['object_data']  = self.nodes[objid]
             # outDict['slug'] = 
         
         if objid in actions_by_id:
             outDict['rank'] = 'action'
-            outDict['name'] = self.components[objid]['name']
+            outDict['name'] = self.nodes[objid]['name']
             # outDict['location'] = actions_by_id[actions.index(objid)][0:2]
-            outDict['object_data'] = self.components[objid]
+            outDict['object_data'] = self.nodes[objid]
 
 
         if objid in reagents_by_id:
             outDict['rank'] = 'reagent'
-            outDict['name'] = self.components[objid]['name']
-            outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:]
+            outDict['name'] = self.nodes[objid]['name']
+            # outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
             s = self.get_reagents_by_action()
             for k,v in s.items():
                 if objid in v:
                     reagent_order = s[k].index(objid)
 
             outDict['location'].append(reagent_order)
-            outDict['object_data'] = self.components[objid]
+            outDict['object_data'] = self.nodes[objid]
         
 
         if kwargs:    
@@ -468,9 +468,9 @@ class Protocol(TimeStampedModel):
 
             if 'children' in kwargs and kwargs['children'] == True:
                 if outDict['rank'] == 'step':
-                    outDict['children'] = [r['objectid'] for r in self.components[objid]['actions']]
+                    outDict['children'] = [r['objectid'] for r in self.nodes[objid]['actions']]
                 if outDict['rank'] == 'action':
-                    outDict['children'] = [r['objectid'] for r in self.components[objid]['component - list']]    
+                    outDict['children'] = [r['objectid'] for r in self.nodes[objid]['component - list']]    
                 if outDict['rank'] == 'reagent':
                      outDict['children'] = None
 

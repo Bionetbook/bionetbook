@@ -30,3 +30,8 @@ class VerbForm(forms.Form):
     pass
 
 forms.VerbForm = VerbForm
+
+
+# class ComponentForm(forms.Form):
+#     name = forms.CharField(max_length=100, required=False)
+#     remark = forms.CharField(required=False)
