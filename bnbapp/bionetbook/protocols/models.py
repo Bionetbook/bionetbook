@@ -13,6 +13,7 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
+COMPONENT_KEY = "component - list"
 
 class Protocol(TimeStampedModel):
 
@@ -106,8 +107,8 @@ class Protocol(TimeStampedModel):
                     if action['objectid']:
                         uid_list.append(action['objectid'])
 
-                if 'component - list' in action.keys():        
-                    for reagent in action['component - list']:
+                if COMPONENT_KEY in action.keys():        
+                    for reagent in action[COMPONENT_KEY]:
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])          
 
@@ -132,8 +133,8 @@ class Protocol(TimeStampedModel):
                 if not action['objectid']:
                     action['objectid'] = self.get_hash_id()
                 
-                if 'component - list' in action.keys():
-                    for reagent in action['component - list']:
+                if COMPONENT_KEY in action.keys():
+                    for reagent in action[COMPONENT_KEY]:
                         if 'objectid' not in reagent.keys():
                             reagent['objectid'] = self.get_hash_id()
 
@@ -146,8 +147,8 @@ class Protocol(TimeStampedModel):
                 if 'slug' in action and not action['slug']:
                     action['slug'] = slugify(action['objectid'])
 
-                if 'component - list' in action.keys():
-                    for reagent in action['component - list']:
+                if COMPONENT_KEY in action.keys():
+                    for reagent in action[COMPONENT_KEY]:
                         if 'slug' not in reagent.keys():
                             reagent['slug'] = slugify(reagent['objectid'])
 
@@ -170,8 +171,8 @@ class Protocol(TimeStampedModel):
             for action in step['actions']:
                 result[action['objectid']] = action
 
-                if 'component - list' in action:
-                    for component in action['component - list']:
+                if COMPONENT_KEY in action:
+                    for component in action[COMPONENT_KEY]:
                         result[component['objectid']] = component
 
         return result
@@ -232,10 +233,10 @@ class Protocol(TimeStampedModel):
         
         if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
             for l in self.data['components-location']: # iterate over all step,action locations where there are components
-                components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) 
+                components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) 
                 for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
-                    objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
+                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['reagent_name']
+                    objectid = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['objectid']
                     cur_reagent_name = []
                     cur_reagent_name.append(reagent_name)
                     if 'total volume' in reagent_name.lower():
@@ -270,7 +271,7 @@ class Protocol(TimeStampedModel):
 
         self.verb_reagents = {}
         for l in self.data['components-location']: # iterate over all step,action locations where there are components 
-            components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]]['component - list']) # iterate over reagents
+            components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) # iterate over reagents
             verb = self.steps[l[1]]['actions'][l[2]]['verb']
             verbid = self.steps[l[1]]['actions'][l[2]]['objectid']
             if out_label == 'literal':
@@ -279,11 +280,11 @@ class Protocol(TimeStampedModel):
                 self.verb_reagents[verbid]=[]
 
             for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['reagent_name']
+                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['reagent_name']
                     if 'total volume' in reagent_name.lower():
                         continue
 
-                    objectid = self.steps[l[1]]['actions'][l[2]]['component - list'][r]['objectid']
+                    objectid = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['objectid']
                     if out_label == 'literal':
                         self.verb_reagents[verbid].append(reagent_name)
                     if out_label == 'objectid':
@@ -470,7 +471,7 @@ class Protocol(TimeStampedModel):
                 if outDict['rank'] == 'step':
                     outDict['children'] = [r['objectid'] for r in self.nodes[objid]['actions']]
                 if outDict['rank'] == 'action':
-                    outDict['children'] = [r['objectid'] for r in self.nodes[objid]['component - list']]    
+                    outDict['children'] = [r['objectid'] for r in self.nodes[objid][COMPONENT_KEY]]    
                 if outDict['rank'] == 'reagent':
                      outDict['children'] = None
 
@@ -501,6 +502,7 @@ class Protocol(TimeStampedModel):
 
         return outDict  
 
+
 class NodeBase(dict):
     """Base class for the protocol components"""
 
@@ -509,11 +511,11 @@ class NodeBase(dict):
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
 
     class Meta:
-        def __init__(self, component):
-            self.component = component
+        def __init__(self, node):
+            self.node = node
 
         def get_all_field_names(self):
-            result = self.component.keys()
+            result = self.node.keys()
             result.sort()
             return result
 
@@ -560,20 +562,18 @@ class NodeBase(dict):
 
 
 class Component(NodeBase):
-    pass
-    # def __init__(self, protocol, step=None, data=None, **kwargs):
-    #     self.action = action
-    #     super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    # def set_name(self):
-    #     self['name'] = self['reagent_name']
+    def __init__(self, protocol, action=None, data=None, **kwargs):
+        self.action = action
+        super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    # def get_absolute_url(self):
-    #     return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
+    def get_absolute_url(self):
+        return reverse("component_detail", kwargs={'protocol_slug': self.action.step.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
 
-    # @property
-    # def title(self):
-    #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self.action['name'], self['reagent_name'])
+    @property
+    def title(self):
+        return "%s - %s - %s" % (self.protocol.name, self.step['name'], self.action['name'], self['name'])
+
 
 class Action(NodeBase):
 
@@ -581,8 +581,16 @@ class Action(NodeBase):
         self.step = step
         super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    def set_name(self):
-        self['name'] = self['verb']
+    def update_data(self, data={}, **kwargs):
+        super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+        if 'components' in data:
+            self['components'] = [ Component(self.protocol, step=self, data=c) for c in data['components'] ]
+        else:
+            self['components'] = []
+
+    #def set_name(self):
+    #    self['name'] = self['verb']
 
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
