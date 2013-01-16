@@ -33,41 +33,6 @@ class Schedule(TimeStampedModel):
     #def get_absolute_url(self):
     #    return reverse("schedule_detail", kwargs={'schedule_uid': self.uid})
 
-
-
-
-class ProtocolSchedule(Protocol):
-
-    class Meta: 
-        proxy = True
-
-    def __init__(self, *args, **kwargs):
-        super(ProtocolSchedule, self).__init__(*args, **kwargs)
-        # owner = models.ForeignKey(User)
-        # uid = models.SlugField(_("UID"), blank=True, null=True, max_length=255)
-
-        # start = models.DateTimeField()
-        # name = models.CharField(_("Name"), max_length=255)
-        # permitted_protocols = models.ForeignKey(Protocol)
-
-    def __unicode__(self):
-        return self.name
-
-    # def save(self, *args, **kwargs):
-    #     super(Schedule, self).save(*args, **kwargs)
-    #     if not self.uid:
-    #         uid = slugify("bnb-%d" % self.id)
-    #         try:
-    #             Schedule.objects.get(uid=uid)
-    #             self.uid = "{0}-{1}".format(uid, self.pk)
-    #         except ObjectDoesNotExist:
-    #             self.uid = uid
-    #         self.save()
-
-    #def get_absolute_url(self):
-    #    return reverse("schedule_detail", kwargs={'schedule_uid': self.uid})
-
-
     def get_schedule_data(self):
         time_atts = ('verb','min_time','max_time','time_units','duration_comment')
         actions_sequence =[]
@@ -164,7 +129,7 @@ class ProtocolSchedule(Protocol):
 
 class Event(TimeStampedModel):
     child = models.ForeignKey("self", blank=True, null=True, unique=True)
-    schedule = models.ForeignKey(ProtocolSchedule)
+    # schedule = models.ForeignKey(ProtocolSchedule)
     # action = models.ForeignKey(Action, blank=True, null=True)
     name = models.CharField(_("Summary"), max_length=255)
     description = models.TextField(blank=True, null=True)

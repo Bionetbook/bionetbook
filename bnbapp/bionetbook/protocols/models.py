@@ -448,7 +448,7 @@ class Protocol(TimeStampedModel):
         if objid in reagents_by_id:
             outDict['rank'] = 'reagent'
             outDict['name'] = self.components[objid]['name']
-            # outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
+            outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:]
             s = self.get_reagents_by_action()
             for k,v in s.items():
                 if objid in v:
