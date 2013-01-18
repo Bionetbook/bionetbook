@@ -278,7 +278,7 @@ if output_format == '.yaml':
 	yaml.dump(Protocol, stream)
 
 if output_format == '.json':
-	fname = 'new_JSON_files/' + fname_pure 
+	fname = '/Users/Oren/Coding/bionetbook/bnbapp/new_JSON_files/' + fname_pure 
 	stream = open(fname, 'w')
 	stream.write(json.dumps(Protocol))
 	stream.close()
