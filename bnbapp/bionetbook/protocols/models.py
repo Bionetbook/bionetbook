@@ -432,11 +432,11 @@ class Protocol(TimeStampedModel):
         # actions_by_id = self.get_action_tree('objectid')
         actions_by_id = [i[2] for i in self.get_action_tree('objectid')]
 
-        reagents_by_id = [i[0] for i in c.get_reagent_data('objectid')]
+        reagents_by_id = [i[0] for i in self.get_reagent_data('objectid')]
 
         # find what rank of objectid:
         if objid in steps_by_id:
-            outDict['rank'] =  'step'
+            outDict['rank'] = 'step'
             outDict['name'] = self.nodes[objid]['name']
             outDict['location'] = [steps_by_id.index(objid)]
             outDict['object_data']  = self.nodes[objid]
@@ -445,14 +445,14 @@ class Protocol(TimeStampedModel):
         if objid in actions_by_id:
             outDict['rank'] = 'action'
             outDict['name'] = self.nodes[objid]['name']
-            # outDict['location'] = actions_by_id[actions.index(objid)][0:2]
+            outDict['location'] = self.get_action_tree()[actions_by_id.index(objid)][:-1]
             outDict['object_data'] = self.nodes[objid]
 
 
         if objid in reagents_by_id:
             outDict['rank'] = 'reagent'
             outDict['name'] = self.nodes[objid]['name']
-            # outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
+            outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
             s = self.get_reagents_by_action()
             for k,v in s.items():
                 if objid in v:
@@ -568,6 +568,12 @@ class Component(NodeBase):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
+    def update_data(self, data={}, **kwargs):
+        super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        # print 'updated action %s' % data['objectid']
+
+        self.parent_node = self.action['objectid']# print 'initiated super of component %s' %data['objectid']    
+        
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
 
@@ -584,7 +590,9 @@ class Action(NodeBase):
 
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-
+        
+        self.parent_node = self.step['objectid']
+        
         if 'components' in data:
             self['components'] = [ Component(self.protocol, step=self, data=c) for c in data['components'] ]
         else:
