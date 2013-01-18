@@ -523,7 +523,7 @@ class NodeBase(dict):
 
     def __init__(self, protocol, data={}, **kwargs):
         super(NodeBase, self).__init__(**kwargs)
-
+        
         self.protocol = protocol
 
         self['objectid'] = None #self.get_hash_id()
@@ -536,24 +536,18 @@ class NodeBase(dict):
 
         self.update_data(data)
 
-        if not 'name' in self or not self['name']:
-            self.set_name()
-
     @property
     def slug(self):
         if not self['slug']:
             self['slug'] = slugify(self['objectid'])
         return self['slug']
 
-    def set_name(self):
-        self['name'] = self['slug']
-
     def update_data(self, data={}, **kwargs):
         for key in data:
             self[key] = data[key]
 
-        #for item in kwargs:             # OVERRIDE DATA WITH ANY PARTICULAR KWARGS PASSED
-        #    self[item] = kwargs[item]
+        if not 'name' in self or not self['name']:
+            self['name'] = self['slug']
 
     def __unicode__(self):
         return self['slug']
@@ -562,17 +556,21 @@ class NodeBase(dict):
     def title(self):
         return self.protocol.name
 
+    @property
+    def parent(self):
+        return self.protocol
+
 
 class Component(NodeBase):
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    def update_data(self, data={}, **kwargs):
-        super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    #def update_data(self, data={}, **kwargs):
+    #    super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         # print 'updated action %s' % data['objectid']
 
-        self.parent_node = self.action['objectid']# print 'initiated super of component %s' %data['objectid']    
+        #self.parent_node = self.action['objectid']# print 'initiated super of component %s' %data['objectid']    
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
@@ -580,6 +578,10 @@ class Component(NodeBase):
     @property
     def title(self):
         return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+
+    @property
+    def parent(self):
+        return self.action
 
 
 class Action(NodeBase):
@@ -590,8 +592,6 @@ class Action(NodeBase):
 
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        
-        self.parent_node = self.step['objectid']
         
         if 'components' in data:
             self['components'] = [ Component(self.protocol, step=self, data=c) for c in data['components'] ]
@@ -607,6 +607,10 @@ class Action(NodeBase):
     @property
     def title(self):
         return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
+
+    @property
+    def parent(self):
+        return self.step
 
 
 class Step(NodeBase):
