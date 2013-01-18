@@ -18,13 +18,21 @@ import csv
 import yaml
 import json
 
+''' 
+this is a parser for CVS formatted protocols and returns them in nested dictionaries as json format as default
+run with:
 
 
+
+'''
+
+
+print 'starting protocol'
 filename = sys.argv[1]
 if len(sys.argv) >2:
 	output_format = '.' + sys.argv[2]
 else:
-	output_format = '.yaml'
+	output_format = '.json'
 
 
 f=csv.reader(open(filename,'rU'))
@@ -144,7 +152,7 @@ def add_attribute(rownum,Stepnum,actionnum):
 
 def add_component_list(header_row):		
 	
-	attribute = {'component - list': []}
+	attribute = {'components': []}
 	rownum = header_row +1
 	colnum = 4
 	# define width of componenets list:
@@ -153,9 +161,17 @@ def add_component_list(header_row):
 		tmp = {}
 		for i in range(colnum, len(cellchars)): 
 			if len(rows[rownum][i].strip())>0:
-				tmp[rows[header_row][i].strip().replace(' ', '_').lower()] = rows[rownum][i].strip()
-		attribute['component - list'].append(tmp)
+				key = rows[header_row][i].strip().replace(' ', '_').lower()
+				if 'reagent_name' in key:
+					tmp['name'] = rows[rownum][i].strip()
+				else:
+					tmp[key] = rows[rownum][i].strip()
+
+		attribute['components'].append(tmp)
 		rownum +=1	
+	
+		# attribute['components']['name'] = attribute['components']['reagent_name']
+		# del(attribute['components']['reagent_name'])	
 	return attribute
 
 #initiate protocol with meta data
@@ -248,21 +264,21 @@ Protocol['steps'] = steps
 for j in Protocol['components-location']:
 	attribute = add_component_list(j[0])
 	if attribute:
-   		steps[j[1]]['actions'][j[2]]['component - list'] = attribute.values()[0]
+   		steps[j[1]]['actions'][j[2]]['components'] = attribute.values()[0]
    	else:
-   		steps[j[1]]['actions'][j[2]]['component - list'] = {}
+   		steps[j[1]]['actions'][j[2]]['components'] = {}
 	
 
 # Write the output file in selected format:	
 fname_pure= filename[filename.index('/')+1:filename.index('.')] + output_format
 
 if output_format == '.yaml':
-	fname = 'YAML_files/' + fname_pure 
+	fname = 'new_YAML_files/' + fname_pure 
 	stream = file(fname, 'w')
 	yaml.dump(Protocol, stream)
 
 if output_format == '.json':
-	fname = 'JSON_files/' + fname_pure 
+	fname = 'new_JSON_files/' + fname_pure 
 	stream = open(fname, 'w')
 	stream.write(json.dumps(Protocol))
 	stream.close()

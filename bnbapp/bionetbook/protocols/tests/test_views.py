@@ -3,8 +3,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from profiles.models import Profile
-from protocols.models import Protocol
-from steps.models import Step
+from protocols.models import Protocol, Step, Action, Component
+# from steps.models import Step
 
 
 class ProtocolViewTests(TestCase):

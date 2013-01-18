@@ -17,6 +17,17 @@ from organization.models import Organization
 
 COMPONENT_KEY = "component - list"
 
+# when we get the new json files in the db, these are the changes we have to make:
+# COMPONENT_KEY = "components"
+# 'reagent_name' -> 'name'
+# 'component - list' -> 'components'
+
+
+
+
+
+
+
 class Protocol(TimeStampedModel):
 
     # STATUS_DRAFT = "draft"
@@ -566,8 +577,8 @@ class Component(NodeBase):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    # def update_data(self, data={}, **kwargs):
-    #    super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    def update_data(self, data={}, **kwargs):
+       super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         # print 'updated action %s' % data['objectid']
 
         #self.parent_node = self.action['objectid']# print 'initiated super of component %s' %data['objectid']    

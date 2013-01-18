@@ -1,10 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from actions.models import Action
-from protocols.models import Protocol
-from steps.models import Step
-
+# from actions.models import Action
+from protocols.models import Protocol, Action, Step, Component
+# from steps.models import Step
 
 class ProtocolModelTests(TestCase):
 

@@ -13,9 +13,10 @@ components-location:
 - [20, 1, 0]
 - [51, 3, 0]
 - [77, 5, 0]
+protocol-reagents: {}
 steps:
 - actions:
-  - component - list:
+  - components:
     - {conc_units: nanograms/microLiter, mass_units: nanograms, max_mass: '1000',
       min_conc: '100', min_mass: '100', reagent_name: 'Nucleic Acid, RNA, poly(A)+'}
     duration_comment: Active; Per sample
@@ -27,7 +28,7 @@ steps:
     verb: call_for_protocol
   stepnum: 0
 - actions:
-  - component - list:
+  - components:
     - {conc_units: nanograms/microLiter, mass_units: nanograms, max_conc: '500', max_mass: '500',
       max_vol: '10', min_conc: '50', min_mass: '500', min_vol: '1', note: User input
         required, reagent_name: 'Nucleic Acid, Primer, Oligo(dT)12-18 primers (Invitrogen)',
@@ -62,7 +63,7 @@ steps:
       collect the contents of the tube}
   stepnum: 2
 - actions:
-  - component - list:
+  - components:
     - {conc_units: X, max_conc: '5', max_vol: '4', min_conc: '5', min_vol: '4', reagent_name: 'Buffer,
         First strand cDNA synthesis (Invitrogen)', vol_units: microliter}
     - {conc_units: milliMolar, max_conc: '100', max_vol: '2', min_conc: '100', min_vol: '2',
@@ -88,7 +89,7 @@ steps:
     temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: samples}
   stepnum: 4
 - actions:
-  - component - list:
+  - components:
     - {conc_units: Units/microliter, mass_units: Units, max_conc: '200', max_mass: '200',
       max_vol: '1', min_conc: '200', min_mass: '200', min_vol: '1', reagent_name: 'Enzyme,
         SuperScript II reverse transcriptase (Invitrogen)', vol_units: microliter}
