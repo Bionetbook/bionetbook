@@ -566,7 +566,7 @@ class Component(NodeBase):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    #def update_data(self, data={}, **kwargs):
+    # def update_data(self, data={}, **kwargs):
     #    super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         # print 'updated action %s' % data['objectid']
 
@@ -593,10 +593,10 @@ class Action(NodeBase):
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
-        if 'components' in data:
-            self['components'] = [ Component(self.protocol, step=self, data=c) for c in data['components'] ]
+        if 'component - list' in data:
+            self['component - list'] = [ Component(self.protocol, action=self, data=c) for c in data['component - list'] ]
         else:
-            self['components'] = []
+            self['component - list'] = []
 
     #def set_name(self):
     #    self['name'] = self['verb']
