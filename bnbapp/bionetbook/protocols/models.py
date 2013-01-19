@@ -71,15 +71,19 @@ class Protocol(TimeStampedModel):
         self.steps_data = []
 
 
+
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
+        BADKEYS = {'component - list': 'components', 'reagent_name': 'name'}
 
         self.set_data_ids()
         self.set_data_slugs()
 
-        if self.data:
+        
+
+        if self.data: # this doesn't get called for some reason.
             # NEED TO RETURN STEPS TO JSON
             self.data['steps'] = self.steps
 
@@ -133,6 +137,7 @@ class Protocol(TimeStampedModel):
 
     def rebuild_steps(self):
         if self.data and 'steps' in self.data:
+            self.rename_attributes(BADKEYS)
             self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
     ###########
@@ -165,6 +170,20 @@ class Protocol(TimeStampedModel):
                     for reagent in action[COMPONENT_KEY]:
                         if 'slug' not in reagent.keys():
                             reagent['slug'] = slugify(reagent['objectid'])
+
+
+    # def rename_attributes(self, BADKEYS):
+    #     for step in self.data['steps']:
+    #         switch = set(BADKEYS.keys()) & set(step.keys())
+    #         if switch:
+    #             for attributes in switch:
+    #                 step[sttributes]
+
+
+
+
+
+               
 
     ###########
     # Properties
