@@ -15,18 +15,7 @@ from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
 
-COMPONENT_KEY = "component - list"
-
-# when we get the new json files in the db, these are the changes we have to make:
-# COMPONENT_KEY = "components"
-# 'reagent_name' -> 'name'
-# 'component - list' -> 'components'
-
-
-
-
-
-
+COMPONENT_KEY = "components"
 
 class Protocol(TimeStampedModel):
 
@@ -76,20 +65,23 @@ class Protocol(TimeStampedModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        BADKEYS = {'component - list': 'components', 'reagent_name': 'name'}
 
         self.set_data_ids()
         self.set_data_slugs()
 
         
+        # !!!this will overwrite the self.data!!!!
+        # if self.data:       
+        #     # NEED TO RETURN STEPS TO JSON
+        #     self.data['steps'] = self.steps
 
-        if self.data: # this doesn't get called for some reason.
-            # NEED TO RETURN STEPS TO JSON
-            self.data['steps'] = self.steps
+        if not self.steps_data:
+            self.steps
 
         if not self.name:
             if self.data['Name']:
                 self.name = self.data['Name']
+
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
@@ -135,9 +127,22 @@ class Protocol(TimeStampedModel):
 
         return self.get_hash_id(size, chars)
 
+    def rename_attributes(self):
+        for step in self.steps_data:
+            if 'actions' in step.keys():
+                for action in step['actions']:
+                    if 'component - list' in action:
+                        action['components'] = action['component - list']
+                        del(action['component - list'])            
+                        for component in action['components']:
+                            if 'reagent_name' in component:
+                                component['name'] = component['reagent_name']
+                                del(component['reagent_name']) 
+
+
     def rebuild_steps(self):
         if self.data and 'steps' in self.data:
-            self.rename_attributes(BADKEYS)
+            
             self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
     ###########
@@ -172,26 +177,15 @@ class Protocol(TimeStampedModel):
                             reagent['slug'] = slugify(reagent['objectid'])
 
 
-    # def rename_attributes(self, BADKEYS):
-    #     for step in self.data['steps']:
-    #         switch = set(BADKEYS.keys()) & set(step.keys())
-    #         if switch:
-    #             for attributes in switch:
-    #                 step[sttributes]
-
-
-
-
-
-               
-
     ###########
     # Properties
+
 
     @property
     def steps(self):
         if not self.steps_data:
             self.rebuild_steps()
+            self.rename_attributes()
         return self.steps_data
 
 
@@ -623,10 +617,10 @@ class Action(NodeBase):
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
-        if 'component - list' in data:
-            self['component - list'] = [ Component(self.protocol, action=self, data=c) for c in data['component - list'] ]
+        if 'components' in data:
+            self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
         else:
-            self['component - list'] = []
+            self['components'] = []
 
     #def set_name(self):
     #    self['name'] = self['verb']
