@@ -89,7 +89,7 @@ class ProtocolPlot(Protocol):
 			for i in self.rank_objects:
 				n = self.agraph.get_node(self.rank_objects[i][0]) # get rank node that links to base node for each rank
 				# e = self.agraph.get_edge(self.rank_objects[i][0], self.rank_objects[i][1]) # fix this
-				v = self.same_layer_objects[i] # get a list of all nodes of this subgraph
+				v = self.get_reagents_by_action()[i] # get a list of all nodes of this subgraph
 				n.attr['shape'] = 'record'
 				
 				''' assemble the label:

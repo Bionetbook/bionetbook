@@ -319,7 +319,7 @@ class Protocol(TimeStampedModel):
     
         ''' function takes in a protocol instance (self) and an objid. If the objid is not in the protocol instance, a False is returned. 
         if the objid is in the protocol it returns a list:
-        rank = True : step action or reagent
+        nodetype = True : step action or reagent
         name = True: returns the name of the object.
         location = True: returns a (step, action) location. If step, it returns a single int.
         
@@ -430,7 +430,7 @@ class Protocol(TimeStampedModel):
 
         default_setting = {}
         default_setting['objectid'] = objid
-        default_setting['rank'] =  'None'
+        default_setting['nodetype'] =  'None'
         default_setting['name'] = 'None'
         default_setting['location'] = []
         default_setting['full_data'] = False
@@ -454,23 +454,23 @@ class Protocol(TimeStampedModel):
 
         reagents_by_id = [i[0] for i in self.get_reagent_data('objectid')]
 
-        # find what rank of objectid:
+        # find what nodetype of objectid:
         if objid in steps_by_id:
-            outDict['rank'] = 'step'
+            outDict['nodetype'] = 'step'
             outDict['name'] = self.nodes[objid]['name']
             outDict['location'] = [steps_by_id.index(objid)]
             outDict['object_data']  = self.nodes[objid]
             # outDict['slug'] = 
         
         if objid in actions_by_id:
-            outDict['rank'] = 'action'
+            outDict['nodetype'] = 'action'
             outDict['name'] = self.nodes[objid]['name']
             outDict['location'] = self.get_action_tree()[actions_by_id.index(objid)][:-1]
             outDict['object_data'] = self.nodes[objid]
 
 
         if objid in reagents_by_id:
-            outDict['rank'] = 'reagent'
+            outDict['nodetype'] = 'reagent'
             outDict['name'] = self.nodes[objid]['name']
             outDict['location'] = self.get_reagent_data('detail')[reagents_by_id.index(objid)][1:3]
             s = self.get_reagents_by_action()
@@ -491,20 +491,20 @@ class Protocol(TimeStampedModel):
                 outDict['units'] = unify(outDict['object_data'])
 
             if 'children' in kwargs and kwargs['children'] == True:
-                if outDict['rank'] == 'step':
+                if outDict['nodetype'] == 'step':
                     outDict['children'] = [r['objectid'] for r in self.nodes[objid]['actions']]
-                if outDict['rank'] == 'action':
+                if outDict['nodetype'] == 'action':
                     outDict['children'] = [r['objectid'] for r in self.nodes[objid][COMPONENT_KEY]]    
-                if outDict['rank'] == 'reagent':
+                if outDict['nodetype'] == 'reagent':
                      outDict['children'] = None
 
             if 'parents' in kwargs and kwargs['parents'] == True:
                 tmp = self.get_objectid(outDict['location'][0], outDict['location'][1])
-                if outDict['rank'] =='step':
+                if outDict['nodetype'] =='step':
                     outDict['parents'] = 'protocol'
-                if outDict['rank'] == 'action':
+                if outDict['nodetype'] == 'action':
                     outDict['parents'] = tmp[0]
-                if outDict['rank'] == 'reagent':
+                if outDict['nodetype'] == 'reagent':
                     outDict['parents'] = tmp[1]        
 
             if 'full_data' in kwargs and kwargs['full_data']:
