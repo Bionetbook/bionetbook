@@ -35,13 +35,15 @@ class ProtocolListView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
-            return Protocol.objects.filter()
+            return Protocol.objects.filter()    # GET ALL THE PROTOCOLS
         if self.request.user.is_authenticated():
-            return Protocol.objects.filter(
-                    Q(status=Protocol.STATUS_PUBLISHED) |
-                    Q(owner=self.request.user)
-                    )
-        return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
+            #return self.request.user.organizations.protocols
+            # return Protocol.objects.filter(
+            #         Q(status=Protocol.STATUS_PUBLISHED) |
+            #         Q(owner=self.request.user)
+            #         )
+        #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
+        return Protocol.objects.filter(published=True)
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):
