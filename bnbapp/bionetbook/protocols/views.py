@@ -36,7 +36,7 @@ class ProtocolListView(ListView):
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
             return Protocol.objects.filter()    # GET ALL THE PROTOCOLS
-        if self.request.user.is_authenticated():
+        #if self.request.user.is_authenticated():
             #return self.request.user.organizations.protocols
             # return Protocol.objects.filter(
             #         Q(status=Protocol.STATUS_PUBLISHED) |

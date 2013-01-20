@@ -614,7 +614,7 @@ class Action(NodeBase):
 
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
-        super(Action, self).__init__(pro
+        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
         if 'component - list' in self:
             self['components'] = self.pop("component - list")
