@@ -5,6 +5,8 @@ class AgitateForm(forms.VerbForm):
 
     name = "Agitate"
     slug = "agitate"
+    has_machines = True
+
 
     duration_min_time = forms.IntegerField()
     add_conditional_statement = forms.CharField()

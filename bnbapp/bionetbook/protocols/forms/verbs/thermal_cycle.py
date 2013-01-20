@@ -5,6 +5,7 @@ class ThermalCycleForm(forms.VerbForm):
 
     name = "Thermal Cycle"
     slug = "thermal-cycle"
+    has_machines = True
 
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()

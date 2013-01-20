@@ -5,7 +5,7 @@ class HeatForm(forms.VerbForm):
 
     name = "heat"
     slug = "heat"
-
+    has_machines = True
 
     edit_what_remark = forms.CharField()
     min_temp = forms.IntegerField()

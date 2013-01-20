@@ -5,6 +5,7 @@ class ChillForm(forms.VerbForm):
 
     name = "Chill"
     slug = "chill"
+    has_machines = True
 
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()

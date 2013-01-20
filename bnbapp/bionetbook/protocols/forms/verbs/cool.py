@@ -5,11 +5,11 @@ class CoolForm(forms.VerbForm):
 
     name = "Cool"
     slug = "cool"
-
+    has_machines = True
 
     edit_remarks = forms.CharField()
     edit_what_remark = forms.CharField()
-    specify_machine = forms.CharField()
+    #specify_machine = forms.CharField()
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()
     specify_date = forms.DateField()

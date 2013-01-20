@@ -5,6 +5,7 @@ class VortexForm(forms.VerbForm):
 
     name = "Vortex"
     slug = "vortex"
+    has_machines = True
 
     edit_what_remark = forms.CharField()
     duration_min_time = forms.IntegerField()

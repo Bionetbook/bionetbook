@@ -5,7 +5,7 @@ class PhotographForm(forms.VerbForm):
 
     name = "photograph"
     slug = "photograph"
-
+    has_machines = True
 
     edit_what_remark = forms.CharField()
     edit_remarks = forms.CharField()

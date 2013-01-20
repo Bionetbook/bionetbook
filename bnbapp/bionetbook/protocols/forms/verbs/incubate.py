@@ -5,6 +5,7 @@ class IncubateForm(forms.VerbForm):
 
     name = "Incubate"
     slug = "incubate"
+    has_machines = True
 
     edit_what_remark = forms.CharField()
     min_temp = forms.IntegerField()
