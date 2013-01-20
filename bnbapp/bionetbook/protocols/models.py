@@ -71,12 +71,12 @@ class Protocol(TimeStampedModel):
 
         
         # !!!this will overwrite the self.data!!!!11111
-        # if self.data:       
-        #     # NEED TO RETURN STEPS TO JSON
-        #     self.data['steps'] = self.steps
+        if self.data:       
+            # NEED TO RETURN STEPS TO JSON
+            self.data['steps'] = self.steps
 
-        if not self.steps_data:
-            self.steps
+        # if not self.steps_data:
+        #     self.steps
 
         if not self.name:
             if self.data['Name']:
@@ -127,19 +127,6 @@ class Protocol(TimeStampedModel):
 
         return self.get_hash_id(size, chars)
 
-    def rename_attributes(self):
-        for step in self.steps_data:
-            if 'actions' in step.keys():
-                for action in step['actions']:
-                    if 'component - list' in action:
-                        action['components'] = action['component - list']
-                        del(action['component - list'])            
-                        for component in action['components']:
-                            if 'reagent_name' in component:
-                                component['name'] = component['reagent_name']
-                                del(component['reagent_name']) 
-
-
     def rebuild_steps(self):
         if self.data and 'steps' in self.data:
             
@@ -181,14 +168,15 @@ class Protocol(TimeStampedModel):
     # Properties
 
 
+    # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def steps(self):
         if not self.steps_data:
             self.rebuild_steps()
-            self.rename_attributes()
         return self.steps_data
 
 
+    # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def nodes(self):
         result = {}
@@ -586,6 +574,9 @@ class Component(NodeBase):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
+        if 'reagent_name' in self:
+            self['name'] = self.pop("reagent_name")
+
     def update_data(self, data={}, **kwargs):
        super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         # print 'updated action %s' % data['objectid']
@@ -608,7 +599,10 @@ class Action(NodeBase):
 
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
-        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        super(Action, self).__init__(pro
+
+        if 'component - list' in self:
+            self['components'] = self.pop("component - list")
 
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
