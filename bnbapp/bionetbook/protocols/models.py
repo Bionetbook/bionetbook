@@ -254,15 +254,13 @@ class Protocol(TimeStampedModel):
 
 
         '''
-
-
         self.needed_reagents = []
         
         if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
             for l in self.data['components-location']: # iterate over all step,action locations where there are components
                 components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) 
                 for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['reagent_name']
+                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['name']
                     objectid = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['objectid']
                     cur_reagent_name = []
                     cur_reagent_name.append(reagent_name)
@@ -294,8 +292,6 @@ class Protocol(TimeStampedModel):
 
 
         '''
-
-
         self.verb_reagents = {}
         for l in self.data['components-location']: # iterate over all step,action locations where there are components 
             components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) # iterate over reagents
@@ -307,7 +303,7 @@ class Protocol(TimeStampedModel):
                 self.verb_reagents[verbid]=[]
 
             for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['reagent_name']
+                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['name']
                     if 'total volume' in reagent_name.lower():
                         continue
 
