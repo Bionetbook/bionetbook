@@ -510,8 +510,8 @@ class Protocol(TimeStampedModel):
         
         outDict.pop('full_data')    
 
-
         return outDict  
+
 
 class NodeBase(dict):
     """Base class for the protocol components"""
@@ -570,21 +570,35 @@ class NodeBase(dict):
 
 
 class Component(NodeBase):
+
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
         if 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
-
-    def update_data(self, data={}, **kwargs):
-       super(Component, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        # print 'updated action %s' % data['objectid']
-
-        #self.parent_node = self.action['objectid']# print 'initiated super of component %s' %data['objectid']    
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
+
+    @property
+    def title(self):
+        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+
+    @property
+    def parent(self):
+        return self.action
+
+
+class Machine(NodeBase):
+
+    def __init__(self, protocol, action=None, data=None, **kwargs):
+        self.action = action
+        super(Machine, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        
+    def get_absolute_url(self):
+        return "#NEDF"
+        #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
 
     @property
     def title(self):
@@ -609,8 +623,12 @@ class Action(NodeBase):
         
         if 'components' in data:
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
-        else:
-            self['components'] = []
+
+        if 'machines' in data:
+            self['machines'] = [ Machine(self.protocol, action=self, data=c) for c in data['machines'] ]
+
+        #else:
+        #    self['components'] = []
 
     #def set_name(self):
     #    self['name'] = self['verb']

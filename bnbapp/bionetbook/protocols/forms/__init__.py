@@ -27,7 +27,8 @@ class ActionForm(forms.Form):
 
 
 class VerbForm(forms.Form):
-    pass
+    has_components = False
+    has_machines = False
 
 forms.VerbForm = VerbForm
 
