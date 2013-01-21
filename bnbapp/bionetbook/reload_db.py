@@ -1,5 +1,8 @@
+# Loading new protocols in to a database:
+from organization.models import Organization
 from django.contrib.auth.models import User
 from protocols.models import Protocol	
+org = Organization.objects.get(name='bionetbook')
 user = User.objects.get(pk=1)
 user.save()
 def init_prot(ind, fname, user, Protocol):
@@ -26,3 +29,5 @@ def update_param(Protocol,i):
 	ind.protocol_input = ind.data['Input']
 	ind.protocol_output = ind.data['Output']
 	
+
+
