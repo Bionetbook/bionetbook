@@ -566,6 +566,10 @@ class NodeBase(dict):
         #    self['slug'] = slugify(self['name'])
         return self['slug']
 
+    @property
+    def graph_label(self):
+        return self['name']
+
     def update_data(self, data={}, **kwargs):
         if data:
             for key in data:
@@ -706,7 +710,7 @@ class Machine(NodeBase):
         super(Machine, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
-        return "#NEDF"
+        return "#NDF"
         #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
 
     @property
@@ -726,29 +730,39 @@ class Action(NodeBase):
     
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        #print data['name']
 
         MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 
-        if 'component - list' in data:
+        if 'component - list' in data:                          # CLEANING UP DATA
             data['components'] = data.pop("component - list")
 
-        if data['verb'] in MACHINE_VERBS:
+        if 'components' in data:                                # Convert dictionaries into Component Objects
+            self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
+
+        if not self['name']:                # Action default name should be the same as the verb
+            self['name'] = self['verb']
+
+        if 'verb' in data and data['verb'] in MACHINE_VERBS:
+            self['machine'] = Machine(self.protocol, action=self)
+
             if not 'machine' in data:
                 data['machine'] = {}
-
                 MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-
                 for item in MACHINE_ATTRIBUTES:
                     if item in data:
                         data['machine'][item] = data.pop(item)
-        
-        if 'components' in data:
-            print 'components'
-            self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
-        # print 'find machines'    
-        if 'machine' in data:
-            self[u'machine'] = Machine(self.protocol, action=self, data=data['machine']) #for c in data['machine'] ]
+            print "%s - %s" % (self.protocol.name, data['machine'])
+            #self['machine'].update(data['machine'])
+
+        # # print 'find machines'    
+        # if 'machine' in data:
+        #     print "MACHINE HERE"
+        #     m = data['machine']
+        #     print "%s - %s" % (self.protocol.name, self['name'])
+        #     self['machine'] = Machine(self.protocol, action=self, data=m)
+        #     #self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
 
         #else:
         #    self['components'] = []
@@ -768,7 +782,19 @@ class Action(NodeBase):
     def parent(self):
         return self.step
 
+    @property
+    def components(self):
+        if 'components' in self:
+            return self['components']
+        else:
+            return None
 
+    @property
+    def machine(self):
+        if 'machine' in self:
+            return self['machine']
+        else:
+            return None
 
 
 class Step(NodeBase):
