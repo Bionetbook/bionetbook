@@ -94,16 +94,16 @@ class ProtocolPlot(Protocol):
 				
 				''' assemble the label:
 				remove commas,  - done
-				attach measurement units -not yet
+				attach measurement units -done
 				add kwargs here
 				'''	
 				label_assembly = []
 
-				for k in range(len(v)): # rename all reagents in an action
-					tmp = self.objectid2name(v[k], reagents=True, units=True)
-					name = tmp['name'].replace(',','')
-					units = tmp['units']
-					label_assembly.append(name + ' '  + units)
+				for k in v: # rename all reagents in an action
+					# tmp = self.objectid2name(v[k], reagents=True, units=True)
+					name = self.nodes[k]['name']
+					label = self.nodes[k].label
+					label_assembly.append(name + ' '  + label)
 
 				
 				n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
