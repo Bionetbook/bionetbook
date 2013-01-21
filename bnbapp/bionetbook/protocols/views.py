@@ -13,6 +13,7 @@ from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixi
 
 from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
+from organization.models import Organization
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
@@ -31,19 +32,22 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
 class ProtocolListView(ListView):
 
-    model = Protocol
+    model = Organization
+    #template_name = "protocols/protocol_list.html"
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
-            return Protocol.objects.filter()    # GET ALL THE PROTOCOLS
-        #if self.request.user.is_authenticated():
+            return Organization.objects.all()    # GET ALL THE PROTOCOLS
+        if self.request.user.is_authenticated():
             #return self.request.user.organizations.protocols
             # return Protocol.objects.filter(
             #         Q(status=Protocol.STATUS_PUBLISHED) |
             #         Q(owner=self.request.user)
             #         )
+            return self.request.user.organization_set.all()
         #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
-        return Protocol.objects.filter(published=True)
+        #return Protocol.objects.filter(published=True)
+        return []
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):

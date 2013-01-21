@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Protocol List{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li class="active">Protocols</li>
+    </ul>
+{% endblock %}
+
+{% block page_title %}Protocol List 
+    {% if request.user.is_authenticated %}
+        <small>( <a href="{% url protocol_create %}">new</a> )</small>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        {% for object in object_list %}
+        {% with profile=object.owner.get_profile %}
+        <h2>{{ object.name }}</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {% if request.user.is_authenticated %}
+                        <th></th>
+                    {% endif %}
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Steps</th>
+                    <th>Actions</th>
+                    {% if request.user.is_authenticated %}
+                        <th>Status</th>
+                    {% endif %}
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for protocol in object.protocol_set.all %}
+                <tr>
+                    <td>
+                        {% if not protocol.published %}
+                            <a href="{% url protocol_update protocol.slug %}"><i class="icon-edit"></i></a>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url protocol_detail protocol.slug %}">{{ protocol }}</a></td>
+                    <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
+                    <td>{{ protocol.steps|length }}</td>
+                    <td>{{ protocol.actions.count }}</td>
+                    <td>{% if protocol.published %}
+                        Published
+                        {% else %}
+                        Draft
+                        {% endif %}
+                    </td>
+                    <td>{{ protocol.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endwith %}
+        {% endfor %}
+        <a href="{% url protocol_create %}">ADD PROTOCOL</a>
+    </div>
+  </div>
+{% endblock %}
+

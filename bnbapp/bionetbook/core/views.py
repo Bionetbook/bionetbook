@@ -44,7 +44,7 @@ class AuthorizedForProtocolMixin(object):
                 return protocol
 
         # if published just show it.
-        if protocol.status == protocol.STATUS_PUBLISHED:
+        if protocol.published:
             return protocol
 
         # unpublished and not authenticated or part of the org that owns it.
