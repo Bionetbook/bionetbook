@@ -743,18 +743,24 @@ class Action(NodeBase):
         if not self['name']:                # Action default name should be the same as the verb
             self['name'] = self['verb']
 
-        if 'verb' in data and data['verb'] in MACHINE_VERBS:
-            self['machine'] = Machine(self.protocol, action=self)
+        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # MAKE SURE THERE IS SUPPOSED TO BE A MACHINE ATTR
 
             if not 'machine' in data:
+                print "NO SUCH DATA"
                 data['machine'] = {}
                 MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
                 for item in MACHINE_ATTRIBUTES:
                     if item in data:
                         data['machine'][item] = data.pop(item)
 
-            print "%s - %s" % (self.protocol.name, data['machine'])
-            #self['machine'].update(data['machine'])
+            #print "%s - %s" % (self.protocol.name, data['machine'])
+
+            for item in data['machine']:
+                print item
+
+            self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
+
+            #self['machine'].update(data['machine'])                    # Something is causing this to trip
 
         # # print 'find machines'    
         # if 'machine' in data:
