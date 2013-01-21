@@ -14,7 +14,7 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
-from protocols.utils import VERB_FORM_DICT
+# from protocols.utils import VERB_FORM_DICT
 
 COMPONENT_KEY = "components"
 
@@ -717,44 +717,38 @@ class Machine(NodeBase):
     def parent(self):
         return self.action
 
-
-
-
 class Action(NodeBase):
 
     
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
-        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        # MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-        
-        if 'component - list' in self:
-            self['components'] = self.pop("component - list")
-
-        if VERB_FORM_DICT[self['verb']].has_machines: 
-            if not 'machines' in self:
-                self['machines'] = {}
-            # make_machine_object(self, data)
-                MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-                for attribute in data:
-                    if attribute in MACHINE_ATTRIBUTES:
-                        self['machines'][attribute] = self[attribute]
-
-                for attribute in self['machines']:
-                    self.pop(attribute)
-
+        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
+    
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+        MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
+
+        if 'component - list' in data:
+            data['components'] = data.pop("component - list")
+
+        if data['verb'] in MACHINE_VERBS:
+            if not 'machine' in data:
+                data['machine'] = {}
+
+                MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
+
+                for item in MACHINE_ATTRIBUTES:
+                    if item in data:
+                        data['machine'][item] = data.pop(item)
         
         if 'components' in data:
             print 'components'
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
-        print 'find machines'    
-        if 'machines' in data:
-            # make_machine_object(self, data)
-            print 'found machines'
-            self['machines'] = [ Machine(self.protocol, action=self, data=c) for c in data['machines'] ]
+        # print 'find machines'    
+        if 'machine' in data:
+            self[u'machine'] = Machine(self.protocol, action=self, data=data['machine']) #for c in data['machine'] ]
 
         #else:
         #    self['components'] = []
@@ -765,16 +759,6 @@ class Action(NodeBase):
     def get_absolute_url(self):
         print "ACTION ABSOLUTE URL"
         return reverse("action_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
-
-    # def make_machine_object(self, data):
-    #     MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-    #     for attribute in data:
-    #         if attribute in MACHINE_ATTRIBUTES:
-    #             print 'found %s' % attribute 
-    #             self['machines'][attribute] = self[attribute]
-
-    #     for attribute in self['machines']:
-    #         self.pop(attribute)
 
     @property
     def title(self):
