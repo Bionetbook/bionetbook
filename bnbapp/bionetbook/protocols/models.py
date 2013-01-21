@@ -753,25 +753,7 @@ class Action(NodeBase):
                     if item in data:
                         data['machine'][item] = data.pop(item)
 
-            #print "%s - %s" % (self.protocol.name, data['machine'])
-
-            for item in data['machine']:
-                print item
-
             self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
-
-            #self['machine'].update(data['machine'])                    # Something is causing this to trip
-
-        # # print 'find machines'    
-        # if 'machine' in data:
-        #     print "MACHINE HERE"
-        #     m = data['machine']
-        #     print "%s - %s" % (self.protocol.name, self['name'])
-        #     self['machine'] = Machine(self.protocol, action=self, data=m)
-        #     #self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
-
-        #else:
-        #    self['components'] = []
 
     #def set_name(self):
     #    self['name'] = self['verb']
