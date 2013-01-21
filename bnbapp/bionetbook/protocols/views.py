@@ -66,6 +66,15 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
 
         return self.object.get_absolute_url()
 
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = form_class(**self.get_form_kwargs())
+        form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
+        # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
+        return form
+
 
 class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
@@ -225,8 +234,10 @@ class StepCreateView(ComponentCreateViewBase):
         new_step = Step(protocol, data=form.cleaned_data)
 
         if 'steps' in protocol.data:
+            print "HAS DATA"
             protocol.data['steps'].append(new_step)
         else:
+            print "CREATING DATA"
             protocol.data['steps'] = [new_step]
         protocol.save()
 

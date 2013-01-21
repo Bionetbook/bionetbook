@@ -58,7 +58,7 @@ class Protocol(TimeStampedModel):
         if not self.data:
             self.data={}
 
-        self.steps_data = []
+        self.rebuild_steps()
 
 
 
@@ -72,9 +72,9 @@ class Protocol(TimeStampedModel):
 
         
         # !!!this will overwrite the self.data!!!!11111
-        if self.data:       
+        #if self.data:       
             # NEED TO RETURN STEPS TO JSON
-            self.data['steps'] = self.steps
+        #    self.data['steps'] = self.steps
 
         # if not self.steps_data:
         #     self.steps
@@ -82,7 +82,6 @@ class Protocol(TimeStampedModel):
         if not self.name:
             if self.data['Name']:
                 self.name = self.data['Name']
-
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         if not self.slug:
@@ -130,7 +129,8 @@ class Protocol(TimeStampedModel):
 
     def rebuild_steps(self):
         if self.data and 'steps' in self.data:
-            self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+            self.data['steps'] = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+            #self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
     ###########
     # Validators
@@ -171,9 +171,12 @@ class Protocol(TimeStampedModel):
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def steps(self):
-        if not self.steps_data:
-            self.rebuild_steps()
-        return self.steps_data
+        # if not self.steps_data:
+        #     self.rebuild_steps()
+        #     self.steps_data = self.data['steps']
+
+        # return self.steps_data
+        return self.data['steps']
 
 
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
@@ -543,7 +546,9 @@ class NodeBase(dict):
             self[item] = None
 
         self.update_data(data)
+        self.set_defaults()
 
+    def set_defaults(self):
         # OBJECT KEY GENERATOR IF MISSING
         if not self['objectid']:
             self['objectid'] = self.protocol.get_hash_id()
@@ -552,7 +557,7 @@ class NodeBase(dict):
             self['name'] = self['objectid']
 
         if not self['slug']:
-            self['slug'] = slugify(self['name'])
+            self['slug'] = slugify(self['objectid'])
 
     @property
     def slug(self):
@@ -737,7 +742,8 @@ class Action(NodeBase):
     #    self['name'] = self['verb']
 
     def get_absolute_url(self):
-        return reverse("action_detail", kwargs={'protocol_slug': self.step.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
+        print "ACTION ABSOLUTE URL"
+        return reverse("action_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
     @property
     def title(self):
@@ -767,7 +773,8 @@ class Step(NodeBase):
         self['duration'] = duration
 
     def get_absolute_url(self):
-        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['slug'] })
+        #return "serious_URL_STUFF"
+        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
 
     @property
     def title(self):
