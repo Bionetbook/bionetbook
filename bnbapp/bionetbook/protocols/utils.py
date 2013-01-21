@@ -1,25 +1,26 @@
-from protocols.forms import verbs as verb_forms
-from protocols.forms import forms
+# from protocols.forms import verbs as verb_forms
+# from protocols.forms import forms
 
 
-def get_verb_list():
-    verb_list = []
-    for attr_name in dir(verb_forms):
-        form_candidate = getattr(verb_forms, attr_name, None)
-        try:
-            if issubclass(form_candidate, forms.Form):
-                verb_list.append(form_candidate)
-        except TypeError:
-            continue
-    return verb_list
+# def get_verb_list():
+#     verb_list = []
+#     for attr_name in dir(verb_forms):
+#         form_candidate = getattr(verb_forms, attr_name, None)
+#         try:
+#             if issubclass(form_candidate, forms.Form):
+#                 verb_list.append(form_candidate)
+#         except TypeError:
+#             continue
+#     return verb_list
 
-VERB_LIST = get_verb_list()
-VERB_CHOICES = [(x.slug, x.name) for x in VERB_LIST]
-VERB_FORM_DICT = {x.slug: x for x in VERB_LIST}
+# VERB_LIST = get_verb_list()
+# VERB_CHOICES = [(x.slug, x.name) for x in VERB_LIST]
+# VERB_FORM_DICT = {x.slug: x for x in VERB_LIST}
 
 def settify(settings_dict, shorthand = True):
 
     settings = []
+    units = ''
 
     temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k)
     time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k)
@@ -200,5 +201,5 @@ def unify(units_dict, shorthand = True):
         units = units.replace('micromole','um')    
         units = units.replace('millimole','mm')    
         units = units.replace('mole','m')
-        
+
     return units

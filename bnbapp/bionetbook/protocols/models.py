@@ -14,7 +14,8 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
-from protocols.utils import settify , unify
+from protocols.utils import settify, unify
+# from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
 
 COMPONENT_KEY = "components"
@@ -194,6 +195,10 @@ class Protocol(TimeStampedModel):
                 if COMPONENT_KEY in action:
                     for component in action[COMPONENT_KEY]:
                         result[component['objectid']] = component
+
+                if 'machine' in action:
+                    result[action['machine']['objectid']] = action['machine']
+                            
 
         return result
     ###########
@@ -615,95 +620,7 @@ class Component(NodeBase):
     def label(self):
         return unify(self, shorthand = True)
 
-        # self.units = ''
-        # conc = dict((k, v) for k, v in self.iteritems() if 'conc' in k)
-        # vol = dict((k, v) for k, v in self.iteritems() if 'vol' in k)
-        # mass = dict((k, v) for k, v in self.iteritems() if 'mass' in k)
-
-        # if conc:
-        #     # check that all data is present:
-        #     if not conc['conc_units']:
-        #         return 'no concentration units specified for %s' % self['name']
-        #     if 'max_conc' not in conc and 'min_conc' not in conc:
-        #         return 'enter concentration units for %s' % self['name']    
-
-        #     if 'max_conc' in conc and 'min_conc' in conc:
-
-        #         if conc['max_conc'] == conc['min_conc']:
-        #             self.units = conc['max_conc']
-        #         else:
-        #             self.units = self.units + conc['min_conc'] + '-' + conc['max_conc']
-        #     else:
-        #         if 'max_conc' in conc:
-        #              self.units = conc['max_conc']
-        #         if 'min_conc' in conc:
-        #              self.units = conc['min_conc']                        
-                
-        #     self.units = self.units + ' ' + conc['conc_units']  
-
         
-        # if vol:
-        #     if not vol['vol_units']:
-        #         return 'no Volume units specified for %s' % self['name']
-        #     if 'max_vol' not in vol and 'min_vol' not in vol:
-        #         return 'enter Volume units for %s' % self['name']
-
-        #     if 'max_vol' in vol and 'min_vol' in vol:
-
-        #         if vol['max_vol'] == vol['min_vol']:
-        #             self.units = self.units + ', ' + vol['max_vol']
-        #         else:
-        #             self.units = self.units + ', ' + vol['min_vol'] + '-' + vol['max_vol']
-
-        #     else:
-        #         if 'max_vol' in vol:
-        #              self.units = vol['max_vol']
-        #         if 'min_vol' in vol:
-        #              self.units = vol['min_vol']          
-            
-        #     self.units = self.units + ' ' + vol['vol_units'] 
-
-        # if mass:
-        #     if not mass['mass_units']:
-        #         return 'no mass units specified for %s' % self['name']
-        #     if 'max_mass' not in mass and 'min_mass' not in mass:
-        #         return 'enter mass units for %s' % self['name']
-
-        #     if 'max_mass' in mass and 'min_mass' in mass:
-
-        #         if mass['min_mass'] == mass['max_mass']:
-        #             self.units = self.units + ', ' + mass['max_mass']
-        #         else:
-        #             self.units = self.units + ', ' + mass['min_mass'] + '-' + mass['max_mass']
-
-        #     else:
-        #         if 'max_mass' in mass:
-        #              self.units = mass['max_mass']
-        #         if 'min_mass' in mass:
-        #              self.units = mass['min_mass']
-
-        #     self.units = self.units + ' ' + mass['mass_units']
-
-        # if shorthand == True:
-        #     self.units = self.units.replace('nanograms','ng') 
-        #     self.units = self.units.replace('micrograms','ug')    
-        #     self.units = self.units.replace('milligrams','mg')    
-        #     self.units = self.units.replace('grams','g')  
-        #     self.units = self.units.replace('kilograms','kg') 
-        #     self.units = self.units.replace('nanoLiter','ng') 
-        #     self.units = self.units.replace('microLiter','ul')    
-        #     self.units = self.units.replace('microliter','ul')    
-        #     self.units = self.units.replace('milliLiter','ml')    
-        #     self.units = self.units.replace('Liters','L')
-        #     self.units = self.units.replace('nanoMolar','nM') 
-        #     self.units = self.units.replace('microMolar','uM')    
-        #     self.units = self.units.replace('milliMolar','mM')    
-        #     self.units = self.units.replace('Molar','M')
-        #     self.units = self.units.replace('nanomole','nm') 
-        #     self.units = self.units.replace('micromole','um')    
-        #     self.units = self.units.replace('millimole','mm')    
-        #     self.units = self.units.replace('mole','m')
-        # return self.units
 
 class Machine(NodeBase):
 
@@ -726,9 +643,6 @@ class Machine(NodeBase):
     @property
     def label(self):
         return settify(self, shorthand = True)
-
-
-
 
 class Action(NodeBase):
 
@@ -754,13 +668,13 @@ class Action(NodeBase):
 
         if 'verb' in data and data['verb'] in MACHINE_VERBS:            # MAKE SURE THERE IS SUPPOSED TO BE A MACHINE ATTR
 
-            if not 'machine' in data:
-                print "NO SUCH DATA"
-                data['machine'] = {}
-                MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-                for item in MACHINE_ATTRIBUTES:
-                    if item in data:
-                        data['machine'][item] = data.pop(item)
+            # if not 'machine' in data:
+            print "NO SUCH DATA"
+            data['machine'] = {}
+            MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
+            for item in MACHINE_ATTRIBUTES:
+                if item in data:
+                    data['machine'][item] = data.pop(item)
 
             self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
 
