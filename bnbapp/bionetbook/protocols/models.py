@@ -67,8 +67,8 @@ class Protocol(TimeStampedModel):
 
     def save(self, *args, **kwargs):
 
-        self.set_data_ids()
-        self.set_data_slugs()
+        #self.set_data_ids()
+        #self.set_data_slugs()
 
         
         # !!!this will overwrite the self.data!!!!11111
@@ -121,7 +121,7 @@ class Protocol(TimeStampedModel):
                 if COMPONENT_KEY in action.keys():        
                     for reagent in action[COMPONENT_KEY]:
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
-                            uid_list.append(reagent['objectid'])          
+                            uid_list.append(reagent['objectid'])
 
         if uid not in uid_list:
             return uid
@@ -130,39 +130,38 @@ class Protocol(TimeStampedModel):
 
     def rebuild_steps(self):
         if self.data and 'steps' in self.data:
-            
             self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
     ###########
     # Validators
 
-    def set_data_ids(self):
-        for step in self.steps:
-            if not step['objectid']:
-                step['objectid'] = self.get_hash_id()
+    # def set_data_ids(self):
+    #     for step in self.steps:
+    #         if not step['objectid']:
+    #             step['objectid'] = self.get_hash_id()
 
-            for action in step['actions']:
-                if not action['objectid']:
-                    action['objectid'] = self.get_hash_id()
+    #         for action in step['actions']:
+    #             if not action['objectid']:
+    #                 action['objectid'] = self.get_hash_id()
                 
-                if COMPONENT_KEY in action.keys():
-                    for reagent in action[COMPONENT_KEY]:
-                        if 'objectid' not in reagent.keys():
-                            reagent['objectid'] = self.get_hash_id()
+    #             if COMPONENT_KEY in action.keys():
+    #                 for reagent in action[COMPONENT_KEY]:
+    #                     if 'objectid' not in reagent.keys():
+    #                         reagent['objectid'] = self.get_hash_id()
 
-    def set_data_slugs(self):
-        for step in self.steps:
-            if not step['slug']:
-                step['slug'] = slugify(step['objectid'])
+    # def set_data_slugs(self):
+    #     for step in self.steps:
+    #         if not step['slug']:
+    #             step['slug'] = slugify(step['objectid'])
 
-            for action in step['actions']:
-                if 'slug' in action and not action['slug']:
-                    action['slug'] = slugify(action['objectid'])
+    #         for action in step['actions']:
+    #             if 'slug' in action and not action['slug']:
+    #                 action['slug'] = slugify(action['objectid'])
 
-                if COMPONENT_KEY in action.keys():
-                    for reagent in action[COMPONENT_KEY]:
-                        if 'slug' not in reagent.keys():
-                            reagent['slug'] = slugify(reagent['objectid'])
+    #             if COMPONENT_KEY in action.keys():
+    #                 for reagent in action[COMPONENT_KEY]:
+    #                     if 'slug' not in reagent.keys():
+    #                         reagent['slug'] = slugify(reagent['objectid'])
 
 
     ###########
@@ -517,16 +516,16 @@ class Protocol(TimeStampedModel):
 class NodeBase(dict):
     """Base class for the protocol components"""
 
-    keylist = ['name','objectid']
+    keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
 
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
 
     class Meta:
-        def __init__(self, component):
-            self.component = component
+        def __init__(self, node):
+            self.node = node
 
         def get_all_field_names(self):
-            result = self.component.keys()
+            result = self.node.keys()
             result.sort()
             return result
 
@@ -545,18 +544,29 @@ class NodeBase(dict):
 
         self.update_data(data)
 
+        # OBJECT KEY GENERATOR IF MISSING
+        if not self['objectid']:
+            self['objectid'] = self.protocol.get_hash_id()
+
+        if not self['name']:
+            self['name'] = self['objectid']
+
+        if not self['slug']:
+            self['slug'] = slugify(self['name'])
+
     @property
     def slug(self):
-        if not self['slug']:
-            self['slug'] = slugify(self['objectid'])
+        #if not self['slug']:
+        #    self['slug'] = slugify(self['name'])
         return self['slug']
 
     def update_data(self, data={}, **kwargs):
-        for key in data:
-            self[key] = data[key]
+        if data:
+            for key in data:
+                self[key] = data[key]
 
-        if not 'name' in self or not self['name']:
-            self['name'] = self['slug']
+            if not 'name' in self or not self['name']:
+                self['name'] = self['slug']
 
     def __unicode__(self):
         return self['slug']
