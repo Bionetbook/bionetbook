@@ -50,14 +50,14 @@
               </tr>
             </thead>
             <tbody>
-                {% for item in steps %}
+                {% for step in steps %}
                 <tr>
-                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
-                    <td>{{ item.duration_in_seconds|default:"0" }}</td>
-                    <td>{{ item.actions|length }}</td>
+                    <td><a href="{{ step.get_absolute_url }}">{{ step.name }}</a></td>
+                    <td>{{ step.duration_in_seconds|default:"0" }}</td>
+                    <td>{{ step.actions|length }}</td>
                     <td>
-                    {% for a in item.actions %}
-                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
+                    {% for action in step.actions %}
+                    <a href="{{ action.get_absolute_url }}">{{ action.name }}</a><br>
                     {% endfor %}
                     </td>
                 </tr>

@@ -53,12 +53,12 @@
             <tbody>
                 {% for item in object.steps %}
                 <tr>
-                    <td><a href="{{ item.get_absolute_url }}">{{ item.slug }}</a></td>
+                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
                     <td>{{ item.duration_in_seconds|default:"0" }}</td>
                     <td>{{ item.actions|length }}</td>
                     <td>
                     {% for a in item.actions %}
-                    <a href="{{ a.get_absolute_url }}">{{ a.objectid }}</a><br>
+                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
                     {% endfor %}
                     </td>
                 </tr>

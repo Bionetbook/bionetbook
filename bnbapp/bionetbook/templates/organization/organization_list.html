@@ -16,11 +16,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="span12">
+
         {% for object in object_list %}
         {% with profile=object.owner.get_profile %}
+<div class="row">
+    <div class="span3">
         <h2>{{ object.name }}</h2>
+    </div>
+    <div class="span9">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -60,10 +63,19 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% endwith %}
-        {% endfor %}
-        <a href="{% url protocol_create %}">ADD PROTOCOL</a>
     </div>
-  </div>
+</div>
+<div class="row">
+    <div class="span2 offset10">
+        <a class="btn btn-info" href="{% url protocol_create %}">ADD PROTOCOL</a>
+        <br>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>
+{% endwith %}
+{% endfor %}
+
 {% endblock %}
 

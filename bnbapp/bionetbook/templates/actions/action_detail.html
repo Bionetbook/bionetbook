@@ -16,7 +16,7 @@
 {% block page_title %}
 Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url action_update object.slug step.slug action.objectid  %}"><i class="icon-edit"></i>edit </a></small>
+    <small><a href="{% url action_update object.slug step.slug action.slug  %}"><i class="icon-edit"></i>edit </a></small>
 {% endif %}
 {% endblock %}
 
