@@ -5,6 +5,6 @@ def check_protocol_edit_authorization(protocol, user):
 
     if user.is_superuser or \
             user.is_staff or \
-            user == protocol.owner:
+            protocol.owner.pk in [ org.pk for org in user.organization_set.all() ]:
         return True
     return False
