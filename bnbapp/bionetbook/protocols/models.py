@@ -14,7 +14,7 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
-from protocols.utils import settify, unify
+from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
 
@@ -124,6 +124,7 @@ class Protocol(TimeStampedModel):
                     for reagent in action[COMPONENT_KEY]:
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])
+
 
         if uid not in uid_list:
             return uid

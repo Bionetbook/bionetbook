@@ -100,7 +100,6 @@ class ProtocolPlot(Protocol):
 				label_assembly = []
 
 				for k in v: # rename all reagents in an action
-					# tmp = self.objectid2name(v[k], reagents=True, units=True)
 					name = self.nodes[k]['name']
 					label = self.nodes[k].label
 					label_assembly.append(name + ' '  + label)
@@ -111,6 +110,13 @@ class ProtocolPlot(Protocol):
 				'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
 				Import the slug system into this,
 				'''
+
+	
+
+
+
+
+
 
 	def get_svg(self):
 		self.agraph.layout('dot')
