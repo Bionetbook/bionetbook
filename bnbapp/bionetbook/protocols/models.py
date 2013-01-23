@@ -449,7 +449,7 @@ class Protocol(TimeStampedModel):
 class NodeBase(dict):
     """Base class for the protocol components"""
 
-    keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
+    # keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
 
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
 
@@ -467,27 +467,34 @@ class NodeBase(dict):
         
         self.protocol = protocol
 
-        self['objectid'] = None #self.get_hash_id()
-        self['slug'] = None
+        data = self.clean_data(data)
 
         self._meta = NodeBase.Meta(self)
 
-        for item in self.keylist:       # REQUIRED ATTRIBUTES
-            self[item] = None
+        # for item in self.keylist:       # REQUIRED ATTRIBUTES
+        #     self[item] = None
 
         self.update_data(data)
-        self.set_defaults()
+        # self.set_defaults()
 
-    def set_defaults(self):
+    def clean_data(self, data):
         # OBJECT KEY GENERATOR IF MISSING
-        if not self['objectid']:
-            self['objectid'] = self.protocol.get_hash_id()
+        # if not self['objectid']:
+        #    self['objectid'] = self.protocol.get_hash_id()
+        if data == None:
+            data = {}
 
-        if not self['name']:
-            self['name'] = self['objectid']
+        if not 'objectid' in data or not data['objectid']:
+            data['objectid'] = self.protocol.get_hash_id()
 
-        if not self['slug']:
-            self['slug'] = slugify(self['objectid'])
+        if not 'name' in data or not data['name']:
+            data['name'] = data['objectid']
+
+        if not 'slug' in data or not data['slug']:
+            data['slug'] = slugify(data['objectid'])
+
+        return data
+
 
     @property
     def slug(self):
@@ -628,6 +635,14 @@ class Action(NodeBase):
             return self['machine']
         else:
             return None
+
+    @machine.setter
+    def machine(self, value):
+        if value.__class__ == Machine:
+            self['machine'] = value
+        else:
+            raise ValueError("Action's machine attribute can only accept a Machine object")
+
 
     def delete_child_node(self, node_id):
         """
