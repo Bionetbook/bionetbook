@@ -593,3 +593,9 @@ class NodeDeleteView(DeleteView):
     model = Protocol
     slug_url_kwarg = "protocol_slug"
 
+    def post(self):
+        print "I DID A POST"
+
+    def get(self):
+        print "I DID A GET"
+
