@@ -42,11 +42,17 @@ class ProtocolPlot(Protocol):
 
 	def add_layer(self, **kwargs):
 
-		# EDGE_LIST - list of tuples that come off the base graph
-		# RANK_LIST - list of pbjects that sit on the same ayer
+		# EDGE_LIST - list of tuples that mark the parent and child nodes of the base graph
+		# RANK_LIST - list of objects that are linked on the same rank - all edges are drawn out
 		# LABEL-LIST - list of objects that will be added to label one node. needs another argument. 
 
-	# This function takes in ranks_object dict, which contains: keys - anchor_nodes ; the source from which a rank of a layer is generated values - objectid of the child node; draws an attachment to the base diagram. if more than one value, then this is a reference to a mutli-labeled node in which a list or table of objectids for the other labels that appear on the keys child node. 
+		# This function takes in layer_data dict, which contains: 
+			#keys - anchor_nodes ; the source from which a rank of a layer is generated. 
+			#values - objectid of the child node; draws an attachment to the base diagram. 
+			#if more than one value, then this is a reference to a mutli-labeled node in which a list or table 
+			#of objectids for the other labels that appear on the keys child node. 
+		
+		# ----- This Section should stay here and it handles the layer logic ---------
 		self.layer_data = {} 
 
 		if 'machine' in kwargs and kwargs['machine']==True:
@@ -68,18 +74,17 @@ class ProtocolPlot(Protocol):
 
 			self.edges_list = [(i,j) for i,j in remapper.items()]	
 		
-	# compare.view page:
-		# edges_list = [(i,j) for i,j in self.edge_list.items()]
-		self.agraph.add_edges_from(self.edges_list)
-		# print this_list
+	
+
+	# ------- this should be moved to the compare.view page  --------------:
 		
-	# add all self.ranks that will be built together into one layer:
+		self.agraph.add_edges_from(self.edges_list)
+		
+		
+		# add all self.ranks that will be built together into one layer:
 
-	# build all subgraphs:
-		# layer_names=['b1','b2','b3','b4','b5','b6','b7','b8', 'b9', 'b10'] # automate to protName_verb for pairwise comparisson
-		# nc=0
-
-	# label the nodes in the subgraph of the current layer:
+		# build all subgraphs: and label nodes
+		
 		for parent,child in self.edges_list:
 			if 'multi_label' in kwargs and kwargs['multi_label']==True: # add this if you pass a dict but not a list of tuples
 				rank_list = list(self.layer_data[parent])
@@ -88,7 +93,6 @@ class ProtocolPlot(Protocol):
 				rank_list = (parent,child) 		
 			
 			N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-			# nc+=1
 			e = self.agraph.get_edge(parent,child)
 			n = self.agraph.get_node(child) # get rank node that links to base node for each rank
 			n.attr['shape'] = 'record'
@@ -99,7 +103,7 @@ class ProtocolPlot(Protocol):
 			if 'multi_label' in kwargs and kwargs['multi_label'] == True:
 				label_assembly = []
  				items = self.layer_data[parent]
- 				print items
+ 				
 				for v in items:
 					name = self.nodes[v]['name']
 					label = self.nodes[v].label
