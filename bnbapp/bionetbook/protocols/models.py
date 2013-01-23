@@ -495,6 +495,9 @@ class NodeBase(dict):
 
         return data
 
+    @property
+    def pk(self):
+        return "%d-%s" % (self.protocol.pk, self['objectid'])
 
     @property
     def slug(self):
