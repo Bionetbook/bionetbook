@@ -23,6 +23,8 @@ class ProtocolPlot(Protocol):
 		# self.prot = Protocol.objects.get(name__icontains=protocol_name)
 		
 		action_tree  = self.get_action_tree('objectid')
+
+		# this goes to the view page:
 		self.agraph.node_attr['shape']='square'
 		self.agraph.edge_attr['dir']='forward'
 		self.agraph.edge_attr['arrowhead'] = 'normal'
@@ -40,76 +42,76 @@ class ProtocolPlot(Protocol):
 
 	def add_layer(self, **kwargs):
 
-		''' determines the way layer data is displayed on the plot:
-		keys:
-			layer: sets the data in the layer, values:
-				- reagent: displayes the reagents layer.
-				- machines: displays what machines are needed.
-			display: sets the display options for the current layer, values:
-				- compact: minimal information, for reagents 'name, conc, vol'
-				- full: each object in the layer is node; each reagent is a node, each machine is a node. 
+		# EDGE_LIST - list of tuples that come off the base graph
+		# RANK_LIST - list of pbjects that sit on the same ayer
+		# LABEL-LIST - list of objects that will be added to label one node. needs another argument. 
 
+	# This function takes in ranks_object dict, which contains: keys - anchor_nodes ; the source from which a rank of a layer is generated values - objectid of the child node; draws an attachment to the base diagram. if more than one value, then this is a reference to a mutli-labeled node in which a list or table of objectids for the other labels that appear on the keys child node. 
+		self.layer_data = {} 
 
+		if 'machine' in kwargs and kwargs['machine']==True:
 
-		'''
-		
-		# create base plot:
-		if not self.agraph:
-			self.plot()
+			MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
+			anchor_nodes = [self.nodes[r[2]]['objectid'] for r in self.get_action_tree('objectid') if self.nodes[r[2]]['verb'] in MACHINE_VERBS]
+			self.layer_data = {} 
+			for verb in anchor_nodes:
+				self.layer_data[self.nodes[verb]['objectid']] = self.nodes[verb]['machine']['objectid'] 
 
-		if not kwargs:
-			return 'please add layer=reagents / schedule / machines / strains etc'
+			self.edges_list = [(i,j) for i,j in self.layer_data.items()]	
 
-		# add a reagents layer: 
-		if 'reagents' in kwargs.keys():	
-			# find the nodes and edges that define the layer:
-			self.same_layer_objects = self.get_reagents_by_action()	
-			self.same_layer_objects_lit = self.get_reagents_by_action('literal')	
-			
+		if 'components' in kwargs and kwargs['components']==True:
+			self.layer_data = self.get_reagents_by_action()	
 			# define the subgraph with a dict that groups objects into a single rank 
-			self.rank_objects = {} 
-			for i in self.same_layer_objects:
-				if kwargs['layout'] == 'compact':
-					self.rank_objects[i] = []
-					self.rank_objects[i].append(self.same_layer_objects[i][0])
-					self.rank_objects[i].append(i)
-				else:
-					self.rank_objects[i] = self.same_layer_objects[i]
-					self.rank_objects[i].append(i)
+			remapper = {}
+			for k,v in self.layer_data.items():
+				remapper[k] = v[0]		
+
+			self.edges_list = [(i,j) for i,j in remapper.items()]	
 		
-				self.agraph.add_edges_from([(i, self.rank_objects[i][0]) for i in self.rank_objects])
+	# compare.view page:
+		# edges_list = [(i,j) for i,j in self.edge_list.items()]
+		self.agraph.add_edges_from(self.edges_list)
+		# print this_list
+		
+	# add all self.ranks that will be built together into one layer:
 
-			# build all subgraphs:
-			names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
-			nc=0
-			for i in self.rank_objects:
-				N = self.agraph.add_subgraph(self.rank_objects[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
-				nc+=1
-			# label the nodes in the subgraph of the current layer:
-			for i in self.rank_objects:
-				n = self.agraph.get_node(self.rank_objects[i][0]) # get rank node that links to base node for each rank
-				# e = self.agraph.get_edge(self.rank_objects[i][0], self.rank_objects[i][1]) # fix this
-				v = self.get_reagents_by_action()[i] # get a list of all nodes of this subgraph
-				n.attr['shape'] = 'record'
-				
-				''' assemble the label:
-				remove commas,  - done
-				attach measurement units -done
-				add kwargs here
-				'''	
+	# build all subgraphs:
+		# layer_names=['b1','b2','b3','b4','b5','b6','b7','b8', 'b9', 'b10'] # automate to protName_verb for pairwise comparisson
+		# nc=0
+
+	# label the nodes in the subgraph of the current layer:
+		for parent,child in self.edges_list:
+			if 'multi_label' in kwargs and kwargs['multi_label']==True: # add this if you pass a dict but not a list of tuples
+				rank_list = list(self.layer_data[parent])
+				rank_list.append(parent)
+			else:
+				rank_list = (parent,child) 		
+			
+			N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+			# nc+=1
+			e = self.agraph.get_edge(parent,child)
+			n = self.agraph.get_node(child) # get rank node that links to base node for each rank
+			n.attr['shape'] = 'record'
+			
+			if 'what' in self.nodes[parent]:
+				e.attr['label'] = self.nodes[parent]['what'] 
+
+			if 'multi_label' in kwargs and kwargs['multi_label'] == True:
 				label_assembly = []
-
-				for k in v: # rename all reagents in an action
-					name = self.nodes[k]['name']
-					label = self.nodes[k].label
+ 				items = self.layer_data[parent]
+ 				print items
+				for v in items:
+					name = self.nodes[v]['name']
+					label = self.nodes[v].label
 					label_assembly.append(name + ' '  + label)
+					n.attr['label'] = '{' + ' | '.join(label_assembly) +'}'
+			else:	
+				n.attr['label'] = self.nodes[child].label	
 
-				
-				n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
-				
-				'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
-				Import the slug system into this,
-				'''
+	def remove_layer(self): #, layer_names):
+		self.agraph.remove_nodes_from([(v) for k,v in self.edges_list])
+		# [self.agraph.remove_subgraph(name=r) for r in layer_names]
+
 
 	
 
