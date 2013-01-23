@@ -12,6 +12,9 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<protocol_slug>[-\w]+)/edit/$', view=views.ProtocolUpdateView.as_view(), name='protocol_update'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/publish/$', view=views.ProtocolPublishView.as_view(), name='protocol_publish'),
 
+    # NODE
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<node_slug>[-\w]+)/delete/$', view=views.NodeDeleteView.as_view(), name='node_delete'),
+
     # STEP URLS
     url(regex=r'^(?P<protocol_slug>[-\w]+)/add-step/$', view=views.StepCreateView.as_view(), name='step_create'),
     url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/$', view=views.StepDetailView.as_view(), name='step_detail'),

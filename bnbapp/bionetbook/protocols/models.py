@@ -562,20 +562,19 @@ class Action(NodeBase):
     
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-        #print data['name']
 
         MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 
-        if 'component - list' in data:                          # CLEANING UP DATA
+        if 'component - list' in data:                                  # rename "componet - list" to "components"
             data['components'] = data.pop("component - list")
 
-        if 'components' in data:                                # Convert dictionaries into Component Objects
+        if 'components' in data:                                        # Convert dictionaries into Component Objects
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
-        if not self['name']:                # Action default name should be the same as the verb
+        if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
-        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # MAKE SURE THERE IS SUPPOSED TO BE A MACHINE ATTR
+        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
 
             # if not 'machine' in data:
             print "NO SUCH DATA"
@@ -586,9 +585,6 @@ class Action(NodeBase):
                     data['machine'][item] = data.pop(item)
 
             self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
-
-    #def set_name(self):
-    #    self['name'] = self['verb']
 
     def get_absolute_url(self):
         print "ACTION ABSOLUTE URL"

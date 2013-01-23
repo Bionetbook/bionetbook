@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django import forms
 from django.contrib import messages
 from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
+from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
@@ -587,3 +587,9 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         protocol = self.get_protocol()
         context = self.get_context_data()
         return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug, 'action_slug': context['action'].slug}
+
+
+class NodeDeleteView(DeleteView):
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+
