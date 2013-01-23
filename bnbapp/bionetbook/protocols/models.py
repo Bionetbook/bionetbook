@@ -14,9 +14,9 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
-from protocols.helpers import settify, unify
+from protocols.utils import settify, unify
 # from protocols.settify import settify
-# from protocols.utils import VERB_FORM_DICT
+from protocols.utils import VERB_FORM_DICT
 
 COMPONENT_KEY = "components"
 

@@ -135,35 +135,21 @@ class ProtocolPlot(Protocol):
 
 
 
-def compare2versions(protocol_A, Protocol_B, **kwargs):
+	def compare2versions(protocol_A, Protocol_B, **kwargs):
 
-	protocol_1 = ProtocolPlot.objects.get(name__icontains=protocol_A)	
-	protocol_2 = ProtocolPlot.objects.get(name__icontains=Protocol_B)
+		a = ProtocolPlot.objects.get(name__icontains=protocol_A)	
+		b = ProtocolPlot.objects.get(name__icontains=Protocol_B)
 
-	return protocol_1.name,protocol_2.name	
-
-
+# plot both protocols as the same graph with a separate list of ndoes, use the pk attribute to draw them out. 
 
 
-
-# def plotprotocol(protocol_name):
-# 	prot = ProtocolPlot
-# 	prot.setProtocol(protocol_name)
-# 	return prot.plot()
+		# loop through actions:
 
 
-
-# # def add_subgraph_machine(A):
-# 	# identify machine steps:
-
-	
-
-# # Plot.draw('compare.svg', prog = 'dot')
-
-
-# #TODO:
-# '''
-# turn into objects
-# add urls and slugs'''
-
-
+# find verb-type compatabilites
+# determine what type of verb it is: component or machine. 
+#   if both match verb - type make a dim connector add both to the same rank
+#    if they differ in key numbers, change the color of the square
+#  compare both children:
+# 	if they match, color both verbs in green 
+#    if they dont, display both, with red highliting the diff and green the black the same
