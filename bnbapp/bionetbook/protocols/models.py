@@ -213,14 +213,11 @@ class Protocol(TimeStampedModel):
         parent = node.parent
         parent.delete_child_node(node_id)
         #self.save()
-        #self.rebuild_steps()
 
     def delete_child_node(self, node_id):
         """ Removes a Child Node with the given name from the list of nodes """
-        #print "PROTOCOL REMOVING: %s" % node_id
-        print "PROTOCOL (%s): REMOVING -> %s" % (self.pk, node_id)
+        #print "%s (%s): REMOVING -> %s" % (self.__class__, self.pk, node_id)
         self.data['steps'] = [ x for x in self.data['steps'] if not x['objectid'] == node_id ]
-        #self.rebuild_steps()
 
     # def levels()
 
@@ -523,7 +520,7 @@ class NodeBase(dict):
 
     def delete_child_node(self, node_id):
         """ Removes a Child Node with the given name from the list of nodes """
-        print "NOT IMPLETMENTED: REMOVING -> %s" % node_id
+        print "NOT YET IMPLETMENTED FOR %s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
 
 
 class Component(NodeBase):
@@ -576,7 +573,6 @@ class Machine(NodeBase):
 
 class Action(NodeBase):
 
-    
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
         super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
@@ -634,12 +630,15 @@ class Action(NodeBase):
             return None
 
     def delete_child_node(self, node_id):
-        """ Removes a Child Node with the given name from the list of nodes """
-        print "ACTION: REMOVING -> %s" % node_id
-        self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
-
+        """
+        Removes a Child Node with the given name from the list of nodes
+        Though it can be called directly it is meant to be called from the protocol and trickle down
+        """
+        #print "%s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
         if self['machine']['objectid'] == node_id:
             del( self['machine'] )
+        else:
+            self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
 
 class Step(NodeBase):
@@ -669,8 +668,11 @@ class Step(NodeBase):
         return "%s - %s" % (self.protocol.name, self['name'])
 
     def delete_child_node(self, node_id):
-        """ Removes a Child Node with the given name from the list of nodes """
-        print "STEP (%s): REMOVING -> %s" % (self['objectid'], node_id)
+        """
+        Removes a Child Node with the given name from the list of nodes
+        Though it can be called directly it is meant to be called from the protocol and trickle down
+        """
+        #print "%s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
         self['actions'] = [ x for x in self['actions'] if not x['objectid'] == node_id ]
 
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
