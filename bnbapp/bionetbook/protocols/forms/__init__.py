@@ -1,6 +1,6 @@
 import floppyforms as forms
 
-from protocols.forms.baseforms import ProtocolForm
+#from protocols.forms.baseforms import ProtocolForm
 
 
 class PublishForm(forms.Form):
