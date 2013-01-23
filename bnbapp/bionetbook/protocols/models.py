@@ -59,10 +59,9 @@ class Protocol(TimeStampedModel):
         super(Protocol, self).__init__(*args, **kwargs)
 
         if not self.data:
-            self.data={}
+            self.data={'steps':[]}
 
         self.rebuild_steps()
-
 
 
     def __unicode__(self):
@@ -186,6 +185,7 @@ class Protocol(TimeStampedModel):
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def nodes(self):
+        ''' Returns a dictionary containing the '''
         result = {}
         for step in self.steps:
             result[step['objectid']] = step
@@ -202,8 +202,25 @@ class Protocol(TimeStampedModel):
                             
 
         return result
+    
     ###########
-    # test properties:
+    # delete node properties:
+
+    def delete_node(self, node_id):
+        """ This will remove a child node form a hierarchy """
+        node = self.nodes[node_id]
+        #print node.__class__.__str__
+        parent = node.parent
+        parent.delete_child_node(node_id)
+        #self.save()
+        #self.rebuild_steps()
+
+    def delete_child_node(self, node_id):
+        """ Removes a Child Node with the given name from the list of nodes """
+        #print "PROTOCOL REMOVING: %s" % node_id
+        print "PROTOCOL (%s): REMOVING -> %s" % (self.pk, node_id)
+        self.data['steps'] = [ x for x in self.data['steps'] if not x['objectid'] == node_id ]
+        #self.rebuild_steps()
 
     # def levels()
 
@@ -504,6 +521,10 @@ class NodeBase(dict):
     def parent(self):
         return self.protocol
 
+    def delete_child_node(self, node_id):
+        """ Removes a Child Node with the given name from the list of nodes """
+        print "NOT IMPLETMENTED: REMOVING -> %s" % node_id
+
 
 class Component(NodeBase):
 
@@ -612,6 +633,14 @@ class Action(NodeBase):
         else:
             return None
 
+    def delete_child_node(self, node_id):
+        """ Removes a Child Node with the given name from the list of nodes """
+        print "ACTION: REMOVING -> %s" % node_id
+        self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
+
+        if self['machine']['objectid'] == node_id:
+            del( self['machine'] )
+
 
 class Step(NodeBase):
 
@@ -638,6 +667,11 @@ class Step(NodeBase):
     @property
     def title(self):
         return "%s - %s" % (self.protocol.name, self['name'])
+
+    def delete_child_node(self, node_id):
+        """ Removes a Child Node with the given name from the list of nodes """
+        print "STEP (%s): REMOVING -> %s" % (self['objectid'], node_id)
+        self['actions'] = [ x for x in self['actions'] if not x['objectid'] == node_id ]
 
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''
