@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from compare.models import ProtocolPlot
-
+import pygraphviz as agraph
 
 
 def protocol_plot(request, protocol_slug):
@@ -8,6 +8,7 @@ def protocol_plot(request, protocol_slug):
 	# svg_plot = None
 	# GET THE PROTOCOL
 	protocol = ProtocolPlot.objects.get(slug__icontains=protocol_slug)
+	
 	# svg_data = protocol.get_svg()
 	# protocol.agraph.layout = 'dot'
 	# svg_data = protocol.agraph.draw(format='svg')
@@ -21,7 +22,7 @@ def protocol_plot(request, protocol_slug):
 	# return HttpResponse(svg_data, mimetype="image/png")
 
 
-	import pygraphviz as P
+	
 	A=P.AGraph() # init empty graph
 	# set some default node attributes
 	# A.node_attr['style']='filled'

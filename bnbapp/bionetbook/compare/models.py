@@ -117,13 +117,6 @@ class ProtocolPlot(Protocol):
 		# [self.agraph.remove_subgraph(name=r) for r in layer_names]
 
 
-	
-
-
-
-
-
-
 	def get_svg(self):
 		self.agraph.layout('dot')
 		return self.agraph
@@ -135,21 +128,131 @@ class ProtocolPlot(Protocol):
 
 
 
-	def compare2versions(protocol_A, Protocol_B, **kwargs):
-
-		a = ProtocolPlot.objects.get(name__icontains=protocol_A)	
-		b = ProtocolPlot.objects.get(name__icontains=Protocol_B)
-
-# plot both protocols as the same graph with a separate list of ndoes, use the pk attribute to draw them out. 
+	def find_same_rank_objects_by_position(self, protocol_B):
 
 
-		# loop through actions:
+		# a = ProtocolPlot.objects.get(name__icontains=protocol_A)	
+		b = ProtocolPlot.objects.get(name__icontains=protocol_B)
+		
+		a_actions = [r[2] for r in self.get_action_tree('objectid')]
+		b_actions = [r[2] for r in b.get_action_tree('objectid')]
+
+	
+		comparator = []
+
+		for idxa in a_actions:
+			
+			a_name = self.nodes[idxa]['verb']
+			if 'machine' in self.nodes[idxa].keys():
+				a_type = 'machine'
+				a_child = self.nodes[idxa]['machine']['objectid']
+			# if 'components' in self.nodes[idxa].keys():
+			else: 
+				if 'components' not in self.nodes[idxa] or len(self.nodes[idxa]['components']) == 0:
+					a_type = 'other'
+					a_child = None
+
+				else: 
+					a_type = 'components'
+					a_child = [r['objectid'] for r in self.nodes[idxa]['components']]
+			
+			a_parent = self.nodes[idxa].parent['objectid'] # pointer to the step object
+			idx_of_a = a_actions.index(idxa)
+			
+			if idx_of_a == 0: 
+				a_previous = self.nodes[idxa]['objectid']
+				a_nextt = self.nodes[a_actions[idx_of_a + 1]]['objectid']
+
+			if idx_of_a == len(a_actions)-1: 
+				a_previous = self.nodes[a_actions[idx_of_a - 1]]['objectid']
+				a_nextt = self.nodes[a_actions[idx_of_a]]['objectid']
+
+			else:
+				a_previous = self.nodes[a_actions[idx_of_a -1 ]]['objectid']
+				a_nextt = self.nodes[a_actions[idx_of_a +1 ]]['objectid']
+
+			# print (idxa, a_name, a_type, a_previous, a_nextt) 	
+			
+			for idxb in b_actions:
+
+				b_name = b.nodes[idxb]['verb']
+				
+				if 'machine' in b.nodes[idxb].keys():
+					b_type = 'machine'
+					b_child = b.nodes[idxb]['machine']['objectid']
+				else: 
+					if 'components' not in b.nodes[idxb] or len(b.nodes[idxb]['components']) == 0:
+						b_type = 'other'
+						b_child = None
+
+					else: 
+						b_type = 'components'
+						b_child = None
+				
+				b_parent = b.nodes[idxb].parent['objectid'] # pointer to the step object
+				idx_of_b = b_actions.index(idxb)
+				
+				if idx_of_b == 0: 
+					b_previous = b.nodes[b_actions[idx_of_b]]['objectid']
+					b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
+
+				if idx_of_b == len(b_actions)-1: 
+					b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
+					b_nextt = b.nodes[b_actions[idx_of_b ]]['objectid']
+
+				else:
+					b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
+					b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
+
+				# print (idxb, b_name, b_type, b_previous, b_nextt)	
+
+				#-------- >  LOGIC < ---------------					
+
+				if a_name == b_name and a_type == b_type:
+					edges = True
+				else:
+					edges = False
+
+				if self.nodes[a_previous]['verb'] ==  b.nodes[b_previous]['verb']:
+					previous = True
+				else:
+					previous = False
+
+				if self.nodes[a_nextt]['verb'] ==  b.nodes[b_nextt]['verb']:
+					nextt = True
+				else:
+					nextt = False	
+				
+				if edges == True and previous ==True and nextt == True:
+					comparator.append([idxa, idxb, 3])
 
 
-# find verb-type compatabilites
-# determine what type of verb it is: component or machine. 
-#   if both match verb - type make a dim connector add both to the same rank
-#    if they differ in key numbers, change the color of the square
-#  compare both children:
-# 	if they match, color both verbs in green 
-#    if they dont, display both, with red highliting the diff and green the black the same
+		return comparator
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+	# plot both protocols as the same graph with a separate list of ndoes, use the pk attribute to draw them out. 
+
+
+			# loop through actions:
+
+
+	# find verb-type compatabilites
+	# determine what type of verb it is: component or machine. 
+	#   if both match verb - type make a dim connector add both to the same rank
+		## create a list with [(pk_A, pk_B), 'identical', 'different_keys', 'different_values', url to the same graph with details ]
+	#    if they differ in key numbers, change the color of the square
+	#  compare both children:
+	# 	if they match, color both verbs in green 
+	#    if they dont, display both, with red highliting the diff and green the black the same
