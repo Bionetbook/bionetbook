@@ -84,80 +84,7 @@ n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
 
 
 	# ________________________________________________
-	# !!! original !!!
-
-
-		def add_layer(self, **kwargs):
-
-			''' determines the way layer data is displayed on the plot:
-			keys:
-				layer: sets the data in the layer, values:
-					- reagent: displayes the reagents layer.
-					- machines: displays what machines are needed.
-				display: sets the display options for the current layer, values:
-					- compact: minimal information, for reagents 'name, conc, vol'
-					- full: each object in the layer is node; each reagent is a node, each machine is a node. 
-
-
-
-			'''
-			
-			# create base plot:
-			if not self.agraph:
-				self.plot()
-
-			if not kwargs:
-				return 'please add layer=reagents / schedule / machines / strains etc'
-
-			# add a reagents layer: 
-			if 'reagents' in kwargs.keys():	
-				# find the nodes and edges that define the layer:
-				self.same_layer_objects = self.get_reagents_by_action()	
-				
-				# define the subgraph with a dict that groups objects into a single rank 
-				self.rank_objects = {} 
-				for i in self.same_layer_objects:
-						self.rank_objects[i] = []
-						self.rank_objects[i].append(self.same_layer_objects[i][0])
-						self.rank_objects[i].append(i)
-					else:
-						self.rank_objects[i] = self.same_layer_objects[i]
-						self.rank_objects[i].append(i)
-			
-					self.agraph.add_edges_from([(i, self.rank_objects[i][0]) for i in self.rank_objects])
-
-				# build all subgraphs:
-				names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
-				nc=0
-				for i in self.rank_objects:
-					N = self.agraph.add_subgraph(self.rank_objects[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
-					nc+=1
-				# label the nodes in the subgraph of the current layer:
-				for i in self.rank_objects:
-					n = self.agraph.get_node(self.rank_objects[i][0]) # get rank node that links to base node for each rank
-					# e = self.agraph.get_edge(self.rank_objects[i][0], self.rank_objects[i][1]) # fix this
-					v = self.get_reagents_by_action()[i] # get a list of all nodes of this subgraph
-					n.attr['shape'] = 'record'
-					
-					''' assemble the label:
-					remove commas,  - done
-					attach measurement units -done
-					add kwargs here
-					'''	
-					label_assembly = []
-
-					for k in v: # rename all reagents in an action
-						name = self.nodes[k]['name']
-						label = self.nodes[k].label
-						label_assembly.append(name + ' '  + label)
-
-					
-					n.attr['label'] = '{' + ' | '.join(label_assembly) +'}' # verticle display, for horizontal, remove "{}"
-					
-					'''n.attr['URL'] = '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/hex.svg'	 
-					Import the slug system into this,
-					'''
-
+	
 def find_children_similarities(self, comparators):
 
 # filtering the first list of lists:
@@ -175,17 +102,78 @@ for i in out1:
 uniq = dict((k,v) for k,v in mappings.items() if len(v)>1)
 
 
-matches = {}
+
+# content filter:
+matches = []
 
 for ref,options in uniq.items():
 	if 'machine' in a.nodes[ref].keys():
 		for candidate in options:
 			if 'machine' in b.nodes[candidate].keys():
 				d = DictDiffer(a.nodes[ref]['machine'],b.nodes[candidate]['machine'])
+				# print [ref, candidate, d.added(), d.removed(), d.changed()]
+				tmp = [ref,candidate, len(d.added()) + len(d.removed()) + len(d.changed())]
+				matches.append(tmp)
+
+
+
+	# there are 3 loops here on purpose, machines and components have different children issues		
+
+for ref,options in uniq.items():
+	if 'components' in a.nodes[ref].keys():
+		for candidate in options:
+			if 'components' in b.nodes[candidate].keys():
+				d = DictDiffer(a.nodes[ref]['components'],b.nodes[candidate]['components'])
 				print [ref, candidate, d.added(), d.removed(), d.changed()]
-				
 
 # !!! ---------  > finish writing this wrpapper for the DictDiffer and diff methods < -------!!!!!!!!
+
+# make a data model that can accept the differnces and pass them on to the pygraphviz data model .
+
+
+
+# Find the rows where matching 1 neighbor isnt enough:
+
+# find the edges that need to be ranked:
+a_s = [r[0] for r in comparators]
+b_s = [r[1] for r in comparators]
+
+a_uniques = [ x for x in a_s if a_s.count(x) == 1]
+a_diffs = [ x for x in a_s if a_s.count(x) > 1]
+
+b_uniques = [ x for x in b_s if b_s.count(x) == 1]
+b_diffs = [ x for x in b_s if b_s.count(x) > 1]
+
+a_uniq_in_comparator = [a_s.index(r) for r in a_uniques]
+b_uniq_in_comparator = [b_s.index(r) for r in b_uniques]
+
+if len(set(a_uniq_in_comparator)-set(b_uniq_in_comparator)):
+	diffs = list(set(range(len(comparators)))- set(a_uniq_in_comparator))
+	diff = [comparators[r] for r in diffs]
+
+
+[u'adrmwt', u'lk1yt0', 5],
+[u'adrmwt', u'i7w4wg', 5],
+# 1 [u'adrmwt', u'8v7w7q', 0],
+
+[u'bavsb0', u'lk1yt0', 4],
+[u'bavsb0', u'i7w4wg', 0],
+# 2 [u'bavsb0', u'8v7w7q', 5],
+
+[u'kbzqcb', u'd6m0hh', 0],
+[u'kbzqcb', u'nwv41j', 0],
+
+[u'thfavi', u'd6m0hh', 0],
+[u'thfavi', u'nwv41j', 0]
+
+
+
+
+
+
+
+
+
 
 
 

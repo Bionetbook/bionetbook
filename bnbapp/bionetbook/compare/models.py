@@ -157,7 +157,7 @@ class ProtocolPlot(Protocol):
 
 
 
-	def find_same_rank_objects_by_position(self, protocol_B):
+	def same_rank_objects_by_1st_degree_nbrs(self, protocol_B):
 
 
 		# a = ProtocolPlot.objects.get(name__icontains=protocol_A)	
