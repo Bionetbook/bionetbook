@@ -1,134 +1,32 @@
 	SANDBOX	
 
-for idxa in a_actions:
-	
-	a_name = a.nodes[idxa]['verb']
-	if 'machine' in a.nodes[idxa].keys():
-		a_type = 'machine'
-		a_child = a.nodes[idxa]['machine']['objectid']
-	# if 'components' in a.nodes[idxa].keys():
-	else: 
-		if len(a.nodes[idxa]['components']) == 0:
-			a_type = 'other'
-			a_child = None
-
-		else: 
-			a_type = 'components'
-			a_child = [r['objectid'] for r in a.nodes[idxa]['components']]
-	
-	a_parent = a.nodes[idxa].parent['objectid'] # pointer to the step object
-	idx_of_a = a_actions.index(idxa)
-	
-	if idx_of_a == 0: 
-		a_previous = None
-		a_next = 1
-
-	if idx_of_a == len(a_actions): 
-		a_previous = len(a_actions)-1#, len(a_actions)-2]
-		a_next = None
-
-	else:
-		a_previous = idx_of_a - 1#, idx_of_self - 2]
-		a_next = idx_of_a + 1#, idx_of_self + 2]
-
-	print (idxa, a_name, a_type, a_previous, a_next) 	
-	
-	for idxb in b_actions:
-
-		b_name = b.nodes[idxb]['verb']
-		
-		if 'machine' in b.nodes[idxb].keys():
-			b_type = 'machine'
-			b_child = b.nodes[idxb]['machine']['objectid']
-		else: 
-			if len(b.nodes[idxb]['components']) == 0:
-				b_type = 'other'
-				b_child = None
-
-			else: 
-				b_type = 'components'
-				b_child = None
-		
-		b_parent = b.nodes[idxb].parent['objectid'] # pointer to the step object
-		idx_of_b = b_actions.index(idxb)
-		
-		if idx_of_b == 0: 
-			b_previous = None
-			b_next = 1#,2]	
-
-		if idx_of_b == len(b_actions): 
-			b_previous = len(b_actions) - 1  #, len(b_actions)-2]
-			b_next = None
-
-		else:
-			b_previous = idx_of_b - 1#, idx_of_b - 2]
-			b_next = idx_of_b + 1#, idx_of_b + 2]	
-
-		print (idxb, b_name, b_type, b_previous, b_next)	
-
-		#-------- >  LOGIC < ---------------					
-
-		if a_name == b_name and a_type == b_type:
-			edges = True
-		else:
-			edges = False
-
-		if a.nodes[a_actions[a_previous]]['verb'] ==  b.nodes[b_actions[b_previous]]['verb']:
-			previous = True
-		else:
-			previous = False
-
-		if a.nodes[a_actions[a_next]]['verb'] ==  b.nodes[b_actions[b_next]]['verb']:
-			next = True
-		else:
-			next = False	
-		
-		if edges == True and previous ==True and next == True:
-			comparator.append([idxa, idxb, 3])
-
-		if edges == True and previous == True:
-			comparator.append([idxa, idxb, 0])
-
-		if edges == True and next == True:
-			comparator.append([idxa, idxb, 1])
-
-
-
-
-
-
-
-
-
-
-
 
 	# add base of first protocol:
 
 	# set node couter:
-	node_counter = len(A)
+node_counter = len(A)
 
 	# add thicl colored line
-	for i in range(1, len(A)):
-		agraph.add_edge(A[i-1], A[i])
-		n=agraph.get_node(A[i])
-		n.attr['shape']='box'
-		n.attr['label']= b.nodes[A[i]]['verb']
-
-	n = agraph.get_node(agraph.nodes()[0])
+for i in range(1, len(A)):
+	agraph.add_edge(A[i-1], A[i])
+	n=agraph.get_node(A[i])
 	n.attr['shape']='box'
-	n.attr['label']=a.nodes[A[0]]['verb']
+	n.attr['label']= a.nodes[A[i]]['verb'] + '_' + a.nodes[A[i]]['objectid']
+
+n = agraph.get_node(agraph.nodes()[0])
+n.attr['shape']='box'
+n.attr['label']=a.nodes[A[0]]['verb'] + '_' + a.nodes[A[0]]['objectid']
 
 	# add base of second protocol:
-	for i in range(1, len(B)):
-		agraph.add_edge(B[i-1], B[i])
-		n=agraph.get_node(B[i])
-		n.attr['shape']='box'
-		n.attr['label']= b.nodes[B[i]]['verb']
-
-	n = agraph.get_node(agraph.nodes()[node_counter])
+for i in range(1, len(B)):
+	agraph.add_edge(B[i-1], B[i])
+	n=agraph.get_node(B[i])
 	n.attr['shape']='box'
-	n.attr['label']=b.nodes[B[0]]['verb']
+	n.attr['label']= b.nodes[B[i]]['verb'] + '_' + b.nodes[B[i]]['objectid']
+
+n = agraph.get_node(agraph.nodes()[node_counter])
+n.attr['shape']='box'
+n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
 
 
 	# add first protocool layer
@@ -260,6 +158,34 @@ for idxa in a_actions:
 					Import the slug system into this,
 					'''
 
+def find_children_similarities(self, comparators):
+
+# filtering the first list of lists:
+
+# find the objects that appear more than once
+
+mappings = {}
+for i in out1:
+    if i[0] not in mappings:
+        mappings[i[0]] = []
+        mappings[i[0]].append(i[1])
+    else:
+        mappings[i[0]].append(i[1])
+
+uniq = dict((k,v) for k,v in mappings.items() if len(v)>1)
+
+
+matches = {}
+
+for ref,options in uniq.items():
+	if 'machine' in a.nodes[ref].keys():
+		for candidate in options:
+			if 'machine' in b.nodes[candidate].keys():
+				d = DictDiffer(a.nodes[ref]['machine'],b.nodes[candidate]['machine'])
+				print [ref, candidate, d.added(), d.removed(), d.changed()]
+				
+
+# !!! ---------  > finish writing this wrpapper for the DictDiffer and diff methods < -------!!!!!!!!
 
 
 
@@ -268,5 +194,55 @@ for idxa in a_actions:
 
 
 
+
+				else:
+					# they are the same length, 
+					# send to compare machine / component function, 
+					# score 10 for perfect match
+					# score 9 for one mismach
+					# score 8 for 2 mismatches
+					# etc. 
+					# return the labels that have to be colored differntly. 
+
+
+
+
+# determine if they have the same number of children
+# determine thier children keys match. 
+# determine if the valuse of the children match. 
+
+
+
+
+
+
+
+class DictDiffer(object):
+	"""
+	Calculate the difference between two dictionaries as:
+	(1) items added
+	(2) items removed
+	(3) keys same in both but changed values
+	(4) keys same in both and unchanged values
+	"""
+	def __init__(self, current_dict, past_dict):
+		self.current_dict, self.past_dict = current_dict, past_dict
+		self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+		self.intersect = self.set_current.intersection(self.set_past)
+	def added(self):
+		return list(self.set_current - self.intersect)
+	def removed(self):
+		return list(self.set_past - self.intersect)
+	def changed(self):
+		delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+		if 'name' in delta:
+			delta.pop(delta.index('name'))
+		if 'objectid' in delta:
+			delta.pop(delta.index('objectid'))
+		if 'slug' in delta:
+			delta.pop(delta.index('slug'))
+		return delta
+	def unchanged(self):
+		return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 
