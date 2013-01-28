@@ -6,6 +6,7 @@ import itertools
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db import IntegrityError
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -66,18 +67,31 @@ class Protocol(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-    def clone(self):
+    def clone(self, save=True, name=None, owner=None):
         '''Turns the current instance into a clone of the previous.
         This instance still need to be saved to be committed.'''
 
         # CAPTURE PK VALUE, SET PARENT TO PK
-        self.parent = self.pk
+        parentid = self.pk
 
         # SET PK TO None
         self.pk = None
 
-        # REMOVE SLUG
-        self.slug = None
+        if name:
+            self.name = self.generate_name(name)
+        else:
+            self.name = self.generate_name(self.owner.name + " " + self.name)
+
+        self.slug = self.generate_slug()
+
+        # NEED TO SET THE ORGANIZATION
+        if owner:
+            self.owner = owner
+
+        self.parent = Protocol.objects.get(pk=parentid)
+
+        if save:
+            self.save()
 
     def save(self, *args, **kwargs):
 
@@ -104,6 +118,22 @@ class Protocol(TimeStampedModel):
 
     ##########
     # Generators
+
+    def generate_name(self, name, count=0):
+
+        if count:
+            new_name = "%s-%d" % (name, count)
+        else:
+            new_name = "%s" % (name)
+
+        try:
+            Protocol.objects.get(name=new_name)
+            #new_count = count + 1
+            #print new_count
+            return self.generate_name(name, count=count + 1)
+        except ObjectDoesNotExist:
+            return new_name
+
 
     def generate_slug(self):
         slug = slugify(self.name)
