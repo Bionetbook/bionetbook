@@ -63,9 +63,21 @@ class Protocol(TimeStampedModel):
 
         self.rebuild_steps()
 
-
     def __unicode__(self):
         return self.name
+
+    def clone(self):
+        '''Turns the current instance into a clone of the previous.
+        This instance still need to be saved to be committed.'''
+
+        # CAPTURE PK VALUE, SET PARENT TO PK
+        self.parent = self.pk
+
+        # SET PK TO None
+        self.pk = None
+
+        # REMOVE SLUG
+        self.slug = None
 
     def save(self, *args, **kwargs):
 
