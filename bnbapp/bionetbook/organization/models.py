@@ -37,6 +37,9 @@ class Organization(TimeStampedModel):
         except ObjectDoesNotExist:
             return slug
 
+    def create_protocol_url(self):
+        return reverse("protocol_create", kwargs={'owner_slug':self.slug})
+
 
 class Membership(TimeStampedModel):
     user = models.ForeignKey(User)

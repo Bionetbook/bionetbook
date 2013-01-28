@@ -10,9 +10,6 @@
 {% endblock %}
 
 {% block page_title %}Protocol List 
-    {% if request.user.is_authenticated %}
-        <small>( <a href="{% url protocol_create %}">new</a> )</small>
-    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -45,10 +42,10 @@
                 <tr>
                     <td>
                         {% if not protocol.published %}
-                            <a href="{% url protocol_update protocol.slug %}"><i class="icon-edit"></i></a>
+                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
                         {% endif %}
                     </td>
-                    <td><a href="{% url protocol_detail protocol.slug %}">{{ protocol }}</a></td>
+                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
                     <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
                     <td>{{ protocol.steps|length }}</td>
                     <td>{{ protocol.actions.count }}</td>
@@ -67,7 +64,9 @@
 </div>
 <div class="row">
     <div class="span2 offset10">
-        <a class="btn btn-info" href="{% url protocol_create %}">ADD PROTOCOL</a>
+        {% if request.user.is_authenticated %}
+        <a class="btn btn-info" href="{{ object.create_protocol_url }}">NEW PROTOCOL</a>
+        {% endif %}
         <br>
         <br>
         <br>

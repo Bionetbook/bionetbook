@@ -134,7 +134,6 @@ class Protocol(TimeStampedModel):
         except ObjectDoesNotExist:
             return new_name
 
-
     def generate_slug(self):
         slug = slugify(self.name)
         try:
@@ -144,7 +143,7 @@ class Protocol(TimeStampedModel):
             return slug
 
     def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'protocol_slug': self.slug})
+        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
