@@ -612,8 +612,7 @@ class NodeBase(dict):
         """ Removes a Child Node with the given name from the list of nodes """
         print "NOT YET IMPLETMENTED FOR %s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
 
-    # def childrn(self):
-    #     return     
+    
 
 
 class Component(NodeBase):
@@ -724,6 +723,24 @@ class Action(NodeBase):
             return self['machine']
         else:
             return None
+
+    @property
+    def children(self):
+        
+        if type(self.components) == 'list' or 'machine' in self:
+            return self['machine']
+
+        if type(self.machine) == 'NoneType' and 'components' in self:   
+            return self['components']
+        
+        if 'components' in self:
+            return self['components']
+
+        if 'machine' in self:
+            return self['machine']
+        else:
+            return None
+
 
     @machine.setter
     def machine(self, value):
