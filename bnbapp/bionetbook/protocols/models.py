@@ -44,7 +44,7 @@ class Protocol(TimeStampedModel):
     # protocol_output = models.CharField(_("Output"), max_length=255, unique=True)
 
     published = models.BooleanField(_("Published"), default=False)
-    public = models.BooleanField(_("Published"), default=False)
+    public = models.BooleanField(_("Public"), default=False)
     # status = models.CharField(_("Status"), max_length=30, default=STATUS_DRAFT, choices=STATUS)
     # version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
 
