@@ -1,0 +1,120 @@
+Category_tags: cDNA synthesis
+Input: Nucleic Acid, RNA, total
+Name: First strand cDNA synthesis, oligo(dT)
+Output: Nucleic Acid, DNA/RNA hybrid
+Reference_DOI: 10.1002/0471142727.mb0411s89
+Reference_PMID: '20069539'
+Reference_URL: http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01
+Remarks: This protocol is intended for first strand cDNA synthesis using oligo(dT)12-18
+  primers
+Specific_tags: Oligo(dT) primers
+components-location:
+- [15, 0, 0]
+- [20, 1, 0]
+- [51, 3, 0]
+- [77, 5, 0]
+protocol-reagents: {}
+steps:
+- actions:
+  - components:
+    - {conc_units: nanograms/microLiter, mass_units: nanograms, max_mass: '1000',
+      min_conc: '100', min_mass: '100', name: 'Nucleic Acid, RNA, poly(A)+'}
+    duration_comment: Active; Per sample
+    protocol_input: ' Nucleic Acid, RNA, total'
+    protocol_name: ' poly(A)+ RNA isolation'
+    protocol_output: ' Nucleic Acid, RNA, poly(A)+'
+    protocol_type: ' poly(A)+ RNA isolation'
+    remark: see critical parameters and troubleshooting for more details.
+    verb: call_for_protocol
+  stepnum: 0
+- actions:
+  - components:
+    - {conc_units: nanograms/microLiter, mass_units: nanograms, max_conc: '500', max_mass: '500',
+      max_vol: '10', min_conc: '50', min_mass: '500', min_vol: '1', name: 'Nucleic
+        Acid, Primer, Oligo(dT)12-18 primers (Invitrogen)', note: User input required,
+      vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '10', max_vol: '1', min_conc: '10', min_vol: '1',
+      name: 'Nucleic Acid, dNTPs (Invitrogen)', vol_units: microliter}
+    - {conc_units: nanograms/microLiter, mass_units: nanograms, max_conc: '1000',
+      max_mass: '1000', max_vol: '10', min_conc: '100', min_mass: '100', min_vol: '1',
+      name: 'Nucleic Acid, RNA, poly(A)+', note: User input required, vol_units: microliter}
+    - {max_vol: '9', min_vol: '0', name: 'Water, nuclease-free, sterile', note: Up
+        to 12 microliters, vol_units: microliter}
+    - {max_vol: '12', min_vol: '12', name: Total Volume, vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_temp: '0'
+    max_time: '2'
+    min_temp: '0'
+    min_time: '2'
+    temp_comment: On ice
+    temp_units: degrees Celsius
+    time_units: minutes
+    verb: combine
+  stepnum: 1
+- actions:
+  - {duration_comment: Passive, max_temp: '65', max_time: '5', min_temp: '65', min_time: '5',
+    temp_comment: in a heat block, temp_units: degrees Celsius, time_units: minutes,
+    verb: heat, what: sample}
+  - {duration_comment: Passive, max_temp: '0', max_time: '1', min_temp: '0', min_time: '1',
+    temp_comment: On ice, temp_units: degrees Celsius, time_comment: Brief, time_units: minutes,
+    verb: chill}
+  - {duration_comment: Active, max_time: '1', min_time: '1', speed_comment: Pulse,
+    time_comment: Brief, time_units: minutes, verb: centrifuge, what: tube, why: to
+      collect the contents of the tube}
+  stepnum: 2
+- actions:
+  - components:
+    - {conc_units: X, max_conc: '5', max_vol: '4', min_conc: '5', min_vol: '4', name: 'Buffer,
+        First strand cDNA synthesis (Invitrogen)', vol_units: microliter}
+    - {conc_units: milliMolar, max_conc: '100', max_vol: '2', min_conc: '100', min_vol: '2',
+      name: 'Reducing agent, Dithiothreitol (DTT)', vol_units: microliter}
+    - {max_vol: '1', min_vol: '1', name: 'Water, nuclease-free, sterile', vol_units: microliter}
+    - {max_vol: '19', min_vol: '19', name: Total volume, vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '1.5'
+    min_time: '1.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Active; Per sample, how: by pipetting, max_time: '0.25', min_time: '0.25',
+    time_units: minutes, verb: mix}
+  - {duration_comment: Passive, max_time: '1', min_time: '1', remark: 'if more than
+      one rna sample needs to be processed to generate cdna, one can prepare a master
+      mix containing these components for all the rna samples at once.', speed_comment: Pulse,
+    time_comment: Brief, time_units: minutes, verb: centrifuge, what: tube, why: to
+      collect the contents of the tube}
+  stepnum: 3
+- actions:
+  - {duration_comment: Passive, max_temp: '42', max_time: '2', min_temp: '42', min_time: '2',
+    temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: samples}
+  stepnum: 4
+- actions:
+  - components:
+    - {conc_units: Units/microliter, mass_units: Units, max_conc: '200', max_mass: '200',
+      max_vol: '1', min_conc: '200', min_mass: '200', min_vol: '1', name: 'Enzyme,
+        SuperScript II reverse transcriptase (Invitrogen)', vol_units: microliter}
+    duration_comment: Active; Per sample
+    max_time: '0.5'
+    min_time: '0.5'
+    time_units: minutes
+    verb: add
+  - {duration_comment: Active; Per sample, how: gently by flicking, max_time: '0.1',
+    min_time: '0.1', time_units: minutes, verb: mix}
+  - {duration_comment: Passive, max_time: '1', min_time: '1', speed_comment: Pulse,
+    time_comment: Brief, time_units: minutes, verb: centrifuge, what: sample, why: to
+      collect the contents of the tube}
+  stepnum: 5
+- actions:
+  - {duration_comment: Passive, max_temp: '42', max_time: '50', min_temp: '42', min_time: '50',
+    temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: sample}
+  stepnum: 6
+- actions:
+  - {duration_comment: Passive, max_temp: '70', max_time: '15', min_temp: '70', min_time: '15',
+    temp_units: degrees Celsius, time_units: minutes, verb: incubate, what: sample,
+    why: to inactivate the reverse transcriptase}
+  stepnum: 7
+- actions:
+  - {duration_comment: Passive, max_temp: '0', max_time: '2', min_temp: '0', min_time: '2',
+    remark: this step based on reagent (superscript ii) manufacturers instructions,
+    temp_comment: On ice, temp_units: degrees Celsius, time_units: minutes, verb: incubate,
+    what: sample, why: to stop inactivation reaction}
+  stepnum: 8

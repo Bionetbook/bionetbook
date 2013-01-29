@@ -266,22 +266,28 @@ class Protocol(TimeStampedModel):
 
         return result
 
-    @propery    
+    @property    
     def get_machines(self):
-         return [a.nodes[r]['objectid'] for r in a.actions if 'machine' in a.nodes[r].keys() ]
+         return [self.nodes[r]['objectid'] for r in self.get_actions if 'machine' in self.nodes[r].keys() ]
 
     @property
     def get_actions(self):
-        return [r[2] for r in a.get_action_tree('objectid')]    
+        return [r[2] for r in self.get_action_tree('objectid')]    
 
 
     @property    
     def get_steps(self):
-        return [r['objectid'] for r in a.steps]
+        return [r['objectid'] for r in self.steps]
 
     @property    
     def get_components(self):
-        return
+        return a.get_reagents_by_action('objectid')
+
+    # @property    
+    #     def get_children(self):
+    #         if 'machine' in 
+
+
     ###########
     # delete node properties:
 
@@ -682,13 +688,13 @@ class Action(NodeBase):
 
         if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
 
-            # if not 'machine' in data:
-            # print "NO SUCH DATA"
-            data['machine'] = {}
-            MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-            for item in MACHINE_ATTRIBUTES:
-                if item in data:
-                    data['machine'][item] = data.pop(item)
+            if not 'machine' in data:
+                print "NO SUCH DATA"  
+                data['machine'] = {}
+                MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
+                for item in MACHINE_ATTRIBUTES:
+                    if item in data:
+                        data['machine'][item] = data.pop(item)
 
             self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
 
