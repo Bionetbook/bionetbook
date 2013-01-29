@@ -612,6 +612,10 @@ class NodeBase(dict):
         """ Removes a Child Node with the given name from the list of nodes """
         print "NOT YET IMPLETMENTED FOR %s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
 
+    @property    
+    def children(self):
+        print 'object does not have children'    
+
     
 
 
@@ -810,7 +814,18 @@ class Step(NodeBase):
         if 'actions' in self:
             return self['actions']
         else:
-            return None    
+            return None 
+
+    @property
+    def children(self):
+        if 'actions' in self:
+            return self['actions']
+        else:
+            return None            
+
+
+
+
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''
     #    uid_list = []
