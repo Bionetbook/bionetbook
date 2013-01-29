@@ -40,6 +40,9 @@ class Organization(TimeStampedModel):
     def create_protocol_url(self):
         return reverse("protocol_create", kwargs={'owner_slug':self.slug})
 
+    def organization_protocol_list(self):
+        return reverse("organization_protocol_list", kwargs={'owner_slug':self.slug})
+
 
 class Membership(TimeStampedModel):
     user = models.ForeignKey(User)
