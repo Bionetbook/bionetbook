@@ -16,6 +16,8 @@ class DictDiffer(object):
 	(3) keys same in both but changed values
 	(4) keys same in both and unchanged values
 	"""
+
+
 	def __init__(self, current_dict, past_dict):
 		self.current_dict, self.past_dict = current_dict, past_dict
 		self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
@@ -24,13 +26,13 @@ class DictDiffer(object):
 		return list(self.set_current - self.intersect)
 	def removed(self):
 		return list(self.set_past - self.intersect)
-	def changed(self):
+	def changed(self, **kwargs):
 		delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
-		if 'name' in delta:
+		if 'name' in delta and 'name' in kwargs:
 			delta.pop(delta.index('name'))
-		if 'objectid' in delta:
+		if 'objectid' in delta and 'objectid' in kwargs:
 			delta.pop(delta.index('objectid'))
-		if 'slug' in delta:
+		if 'slug' in delta and 'slug' in kwargs:
 			delta.pop(delta.index('slug'))
 		return delta
 	def unchanged(self):

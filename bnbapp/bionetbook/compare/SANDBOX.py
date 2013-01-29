@@ -1,88 +1,170 @@
 	SANDBOX	
 
+def compare_protocols(self, protocol_B):
 
+	A = self
+	B = protocol_B # instance of protocol_B
 	# add base of first protocol:
 
 	# set node couter:
-node_counter = len(A)
+	node_counter = len(A)
+	agraph = pgv.AGraph()
+		# add thicl colored line
+	for i in range(1, len(A)):
+		agraph.add_edge(A[i-1], A[i])
+		n=agraph.get_node(A[i])
+		n.attr['shape']='box'
+		n.attr['label']= a.nodes[A[i]]['verb'] + '_' + a.nodes[A[i]]['objectid']
 
-	# add thicl colored line
-for i in range(1, len(A)):
-	agraph.add_edge(A[i-1], A[i])
-	n=agraph.get_node(A[i])
+	n = agraph.get_node(agraph.nodes()[0])
 	n.attr['shape']='box'
-	n.attr['label']= a.nodes[A[i]]['verb'] + '_' + a.nodes[A[i]]['objectid']
+	n.attr['label']=a.nodes[A[0]]['verb'] + '_' + a.nodes[A[0]]['objectid']
 
-n = agraph.get_node(agraph.nodes()[0])
-n.attr['shape']='box'
-n.attr['label']=a.nodes[A[0]]['verb'] + '_' + a.nodes[A[0]]['objectid']
+		# add base of second protocol:
+	for i in range(1, len(B)):
+		agraph.add_edge(B[i-1], B[i])
+		n=agraph.get_node(B[i])
+		n.attr['shape']='box'
+		n.attr['label']= b.nodes[B[i]]['verb'] + '_' + b.nodes[B[i]]['objectid']
 
-	# add base of second protocol:
-for i in range(1, len(B)):
-	agraph.add_edge(B[i-1], B[i])
-	n=agraph.get_node(B[i])
+	n = agraph.get_node(agraph.nodes()[node_counter])
 	n.attr['shape']='box'
-	n.attr['label']= b.nodes[B[i]]['verb'] + '_' + b.nodes[B[i]]['objectid']
+	n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
 
-n = agraph.get_node(agraph.nodes()[node_counter])
-n.attr['shape']='box'
-n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
+	# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
+	a.actions = [r[2] for r in a.get_action_tree('objectid')]
+	b.actions = [r[2] for r in b.get_action_tree('objectid')]
+
+	matching_verbs= zip(a.actions, b.actions)
+
+	matching_verbs.pop(-1)
+	matching_verbs.pop(-1)
+	matching_verbs.pop(-1)
+	matching_verbs.append((u'ya985z',u'lk1yt0'))
+	matching_verbs.append((u'bavsb0',u'i7w4wg'))
+	matching_verbs.append((u'adrmwt',u'8v7w7q'))
+
+	return matching_verbs
+
+# ___________________________________
+
+def add_comparison_layer(self, protocol_B, matching_verbs, **kwargs):
+
+#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
+
+a.actions = [r[2] for r in a.get_action_tree('objectid')]
+b.actions = [r[2] for r in b.get_action_tree('objectid')]
+
+f= zip(a.actions, b.actions)
+
+f.pop(-1)
+f.pop(-1)
+f.pop(-1)
+f.append((u'ya985z',u'lk1yt0'))
+f.append((u'bavsb0',u'i7w4wg'))
+f.append((u'adrmwt',u'8v7w7q'))
+
+for parent,child in f:
+	
+	rank_list = (parent,child) 		
+	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+	N.edge_attr['color'] = 'white'
+	
+
+#_______Adding a compare layer _______
+
+# this layer is a group of objects that are different between the 2 protocols. e
+# each object has an object id with the following layout:
+# 			diff_1 | diff_2
+# 			______both_____
+# 			______both_____
+# this object is drawn between the 2 verbs that call it as a child
+
+# Find the nodes that have differences:
+def add_diff_layer(self, )
+
+for node_pairs in nodes_of_same_layer: [(node_a, node_b), ]
+if 'machine' in node_pair[0].keys():
+	# object has only one child:
 
 
-	# add first protocool layer
 
-	MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-	anchor_nodes = [a.nodes[r[2]]['objectid'] for r in a.get_action_tree('objectid') if a.nodes[r[2]]['verb'] in MACHINE_VERBS]
-	a.layer_data = {} 
-	for verb in anchor_nodes:
-		a.layer_data[a.nodes[verb]['objectid']] = a.nodes[verb]['machine']['objectid'] 
+d = DictDiffer (nodepairs.child_of_each)
+trigger = len(d.added()) + len(d.removed()) + len(d.changed())
+if trigger > 0:
+	# create a compare object that will apear between the 2 base diagrams:
+	diff_object = a.nodes[nodepairs.child_of_each['objectid']]
+	e = agraph.add_edge(nodepairs[0],diff_object)
+	s = agraph.get_node(diff_object)
 
-	a.edges_list = [(i,j) for i,j in a.layer_data.items()]	
 
-	agraph.add_edges_from(a.edges_list)
 
-	for parent,child in a.edges_list:
-		
-		rank_list = (parent,child) 		
-		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-		e = agraph.get_edge(parent,child)
-		n = agraph.get_node(child) # get rank node that links to base node for each rank
-		n.attr['shape'] = 'record'
-		
-		if 'what' in a.nodes[parent]:
-			e.attr['label'] = a.nodes[parent]['what'] 
+	s.attr['label'] = 
+	
 
-		n.attr['label'] = a.nodes[child].label
+
+
+
+
+#____
+# Start:
+# get the node:
+s.attr = agraph.get_node()
+
+
+
+
+
+
+# add first protocool layer
+
+MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
+anchor_nodes = [a.nodes[r[2]]['objectid'] for r in a.get_action_tree('objectid') if a.nodes[r[2]]['verb'] in MACHINE_VERBS]
+a.layer_data = {} 
+for verb in anchor_nodes:
+	a.layer_data[a.nodes[verb]['objectid']] = a.nodes[verb]['machine']['objectid'] 
+
+a.edges_list = [(i,j) for i,j in a.layer_data.items()]	
+
+agraph.add_edges_from(a.edges_list)
+
+for parent,child in a.edges_list:
+	
+	rank_list = (parent,child) 		
+	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+	e = agraph.get_edge(parent,child)
+	n = agraph.get_node(child) # get rank node that links to base node for each rank
+	n.attr['shape'] = 'record'
+	
+	if 'what' in a.nodes[parent]:
+		e.attr['label'] = a.nodes[parent]['what'] 
+
+	n.attr['label'] = a.nodes[child].label
 
 
 	# Specify the second graph layer:
 
-	anchor_nodes_b = [b.nodes[r[2]]['objectid'] for r in b.get_action_tree('objectid') if b.nodes[r[2]]['verb'] in MACHINE_VERBS]
-	b.layer_data = {} 
-	for verb in anchor_nodes_b:
-		b.layer_data[b.nodes[verb]['objectid']] = b.nodes[verb]['machine']['objectid'] 
+anchor_nodes_b = [b.nodes[r[2]]['objectid'] for r in b.get_action_tree('objectid') if b.nodes[r[2]]['verb'] in MACHINE_VERBS]
+b.layer_data = {} 
+for verb in anchor_nodes_b:
+	b.layer_data[b.nodes[verb]['objectid']] = b.nodes[verb]['machine']['objectid'] 
 
-	b.edges_list = [(i,j) for i,j in b.layer_data.items()]	
+b.edges_list = [(i,j) for i,j in b.layer_data.items()]	
 
-	agraph.add_edges_from(b.edges_list)
+agraph.add_edges_from(b.edges_list)
 
-	for parent,child in b.edges_list:
-		
-		rank_list = (parent,child) 		
-		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-		e = agraph.get_edge(parent,child)
-		n = agraph.get_node(child) # get rank node that links to base node for each rank
-		n.attr['shape'] = 'record'
-		
-		if 'what' in b.nodes[parent]:
-			e.attr['label'] = b.nodes[parent]['what'] 
+for parent,child in b.edges_list:
+	
+	rank_list = (parent,child) 		
+	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+	e = agraph.get_edge(parent,child)
+	n = agraph.get_node(child) # get rank node that links to base node for each rank
+	n.attr['shape'] = 'record'
+	
+	if 'what' in b.nodes[parent]:
+		e.attr['label'] = b.nodes[parent]['what'] 
 
-		n.attr['label'] = b.nodes[child].label
-
-
-
-
-
+	n.attr['label'] = b.nodes[child].label
 	# ________________________________________________
 	
 def find_children_similarities(self, comparators):
@@ -128,7 +210,52 @@ for ref,options in uniq.items():
 
 # !!! ---------  > finish writing this wrpapper for the DictDiffer and diff methods < -------!!!!!!!!
 
-# make a data model that can accept the differnces and pass them on to the pygraphviz data model .
+
+
+# We have a list of edges with a difference score
+# figure out which nodes are real edges
+# remove canditates from a:b mapping:
+
+
+reff = matches[0][0]
+cand = matches[0][1]
+score = matches[0][2]
+out2 = []
+
+for i in matches:
+	if i[0] != reff: 
+		out2.append([reff, cand, score])		
+		reff = i[0]
+		score = i[2]
+		cand = i[1]
+
+	else:
+		if i[2] < score:
+			score = i[2]
+			cand = i[1]	
+
+	if i[0] == matches[-1][0]:
+		# out2.append([reff, cand, score])
+		continue
+				
+			
+
+for i in matches:
+	
+	if i[0] != reff: 
+		reff = i[0]
+		score = i[2]
+		cand = i[1]
+		tmp = ([reff, cand, score])		 
+
+	else:
+		if i[2] < score:
+			score = i[2]
+			cand = i[1]		
+
+
+
+
 
 
 
@@ -173,7 +300,7 @@ if len(set(a_uniq_in_comparator)-set(b_uniq_in_comparator)):
 
 
 
-
+# make a data model that can accept the differnces and pass them on to the pygraphviz data model .
 
 
 
@@ -232,5 +359,34 @@ class DictDiffer(object):
 		return delta
 	def unchanged(self):
 		return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
+
+
+
+
+
+
+
+
+def simplify_label(label):
+	''' takes a label as a list and turns it into a dict:
+		u'25 degrees Celsius', u'2 minutes' -> 
+		{temp: '25C', time: '2 min'}'''
+	import re
+	output = {}
+	for i in label:
+		if 'Celsius' in i or 'degre' in i:
+			output['temp'] = re.findall(r'\d+',i)
+		if 'minute' in i or 'second' in i or 'hour' in i:
+			output['time'] = re.findall(r'\d+',i)
+
+	return output
+
+
+
+
+
+
+
+
 
 

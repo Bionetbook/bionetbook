@@ -265,7 +265,23 @@ class Protocol(TimeStampedModel):
                             
 
         return result
-    
+
+    @propery    
+    def get_machines(self):
+         return [a.nodes[r]['objectid'] for r in a.actions if 'machine' in a.nodes[r].keys() ]
+
+    @property
+    def get_actions(self):
+        return [r[2] for r in a.get_action_tree('objectid')]    
+
+
+    @property    
+    def get_steps(self):
+        return [r['objectid'] for r in a.steps]
+
+    @property    
+    def get_components(self):
+        return
     ###########
     # delete node properties:
 
@@ -667,7 +683,7 @@ class Action(NodeBase):
         if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
 
             # if not 'machine' in data:
-            print "NO SUCH DATA"
+            # print "NO SUCH DATA"
             data['machine'] = {}
             MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
             for item in MACHINE_ATTRIBUTES:
