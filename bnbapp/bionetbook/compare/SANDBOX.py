@@ -32,43 +32,33 @@ def compare_protocols(self, protocol_B):
 	n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
 
 	# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
+
+	#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
 	a.actions = [r[2] for r in a.get_action_tree('objectid')]
 	b.actions = [r[2] for r in b.get_action_tree('objectid')]
 
-	matching_verbs= zip(a.actions, b.actions)
+	self.matching_verbs= zip(a.actions, b.actions)
 
-	matching_verbs.pop(-1)
-	matching_verbs.pop(-1)
-	matching_verbs.pop(-1)
-	matching_verbs.append((u'ya985z',u'lk1yt0'))
-	matching_verbs.append((u'bavsb0',u'i7w4wg'))
-	matching_verbs.append((u'adrmwt',u'8v7w7q'))
+	self.matching_verbs.pop(-1)
+	self.matching_verbs.pop(-1)
+	self.matching_verbs.pop(-1)
+	self.matching_verbs.append((u'ya985z',u'lk1yt0'))
+	self.matching_verbs.append((u'bavsb0',u'i7w4wg'))
+	self.matching_verbs.append((u'adrmwt',u'8v7w7q'))
 
-	return matching_verbs
+	for parent,child in self.matching_verbs:
+	
+		rank_list = (parent,child) 		
+		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+		N.edge_attr['color'] = 'white'
+
+	return agraph
 
 # ___________________________________
 
-def add_comparison_layer(self, protocol_B, matching_verbs, **kwargs):
+def add_comparison_layer(self, protocol_B, **kwargs):
 
-#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
 
-a.actions = [r[2] for r in a.get_action_tree('objectid')]
-b.actions = [r[2] for r in b.get_action_tree('objectid')]
-
-f= zip(a.actions, b.actions)
-
-f.pop(-1)
-f.pop(-1)
-f.pop(-1)
-f.append((u'ya985z',u'lk1yt0'))
-f.append((u'bavsb0',u'i7w4wg'))
-f.append((u'adrmwt',u'8v7w7q'))
-
-for parent,child in f:
-	
-	rank_list = (parent,child) 		
-	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-	N.edge_attr['color'] = 'white'
 	
 
 #_______Adding a compare layer _______
@@ -81,25 +71,28 @@ for parent,child in f:
 # this object is drawn between the 2 verbs that call it as a child
 
 # Find the nodes that have differences:
-def add_diff_layer(self, )
+def add_diff_layer(self, protocol_B):
 
-for node_pairs in nodes_of_same_layer: [(node_a, node_b), ]
-if 'machine' in node_pair[0].keys():
-	# object has only one child:
+for node_pairs in self.matching_verbs: #[(node_a, node_b), ]
 
-
-
-d = DictDiffer (nodepairs.child_of_each)
-trigger = len(d.added()) + len(d.removed()) + len(d.changed())
-if trigger > 0:
-	# create a compare object that will apear between the 2 base diagrams:
-	diff_object = a.nodes[nodepairs.child_of_each['objectid']]
-	e = agraph.add_edge(nodepairs[0],diff_object)
-	s = agraph.get_node(diff_object)
-
-
-
-	s.attr['label'] = 
+	if 'machine' in a.nodes[node_pair[0]].keys():  # object has only one child:
+		x = simplify_label(a.nodes[node_pair[0]]['machine'].label)
+		y = simplify_label(b.nodes[node_pair[1]]['machine'].label)
+		d = DictDiffer (x, y)
+		trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
+		if trigger > 0:
+			# create a compare object that will apear between the 2 base diagrams:
+			diff_object = a.nodes[node_pair[0]]['machine']['objectid'] 
+			e = agraph.add_edge(node_pair[0],diff_object)
+			s = agraph.get_node(diff_object)
+			# generate label:
+			''' label is an HTML object and for automation sake, created by concatenating a few peices:
+			table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
+			content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
+			merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. 
+			inject = merge.format(x['temp'],y['temp'], y['time'])  --> injects the data into the table
+			s.attr['label'] = inject  --> attatches the HTML code to the objects label'''
+			s.attr['label'] = 
 	
 
 
@@ -112,8 +105,10 @@ if trigger > 0:
 s.attr = agraph.get_node()
 
 
+labell = '<<TABLE BORDER="0" CELLBORDER="0.1" CELLSPACING="0"> <TR><TD>%s</TD><TD>%s</TD></TR><TR><TD colspan='2'>%s</TD></TR></TABLE>>' %('a','b','c')
+    
 
-
+   
 
 
 # add first protocool layer
@@ -375,17 +370,11 @@ def simplify_label(label):
 	output = {}
 	for i in label:
 		if 'Celsius' in i or 'degre' in i:
-			output['temp'] = re.findall(r'\d+',i)
+			output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
 		if 'minute' in i or 'second' in i or 'hour' in i:
-			output['time'] = re.findall(r'\d+',i)
+			output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
 
 	return output
-
-
-
-
-
-
 
 
 
