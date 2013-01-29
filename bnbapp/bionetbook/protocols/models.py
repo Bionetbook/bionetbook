@@ -282,12 +282,7 @@ class Protocol(TimeStampedModel):
     @property    
     def get_components(self):
         return a.get_reagents_by_action('objectid')
-
-    # @property    
-    #     def get_children(self):
-    #         if 'machine' in 
-
-
+ 
     ###########
     # delete node properties:
 
@@ -617,6 +612,9 @@ class NodeBase(dict):
         """ Removes a Child Node with the given name from the list of nodes """
         print "NOT YET IMPLETMENTED FOR %s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
 
+    # def childrn(self):
+    #     return     
+
 
 class Component(NodeBase):
 
@@ -789,11 +787,21 @@ class Step(NodeBase):
         #print "%s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
         self['actions'] = [ x for x in self['actions'] if not x['objectid'] == node_id ]
 
+
+    @property
+    def actions(self):
+        if 'actions' in self:
+            return self['actions']
+        else:
+            return None    
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''
     #    uid_list = []
     #    uid = ''.join(random.choice(chars) for x in range(size))
     #    return uid
+    # @property
+    # def actions(self):
+    #     return 
 
 
 
