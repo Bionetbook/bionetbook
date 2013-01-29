@@ -7,6 +7,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li class="active">{{object.name}}</li>
     </ul>
 {% endblock %}
@@ -18,6 +19,8 @@
     <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
+
+
 
 {% block content %}
 

@@ -8,6 +8,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li class="active">{{step.name}}</li>
     </ul>
@@ -17,7 +18,7 @@
 {% block page_title %}
 Action Verb List: {{ step.title }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url step_update object.slug step.slug %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 
@@ -33,7 +34,7 @@ Action Verb List: {{ step.title }}
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{% url action_verb_list object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_verb_list object.slug step.slug %}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{{ step.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ step.action_verb_list_url }}">Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}
@@ -63,7 +64,7 @@ Action Verb List: {{ step.title }}
           <div class="well">
             <ul>
               {% for slug,name in verbs %}
-              <li><a href="{% url action_create object.slug step.slug slug %}">{{name}}</a></li>
+              <li><a href="{% url action_create object.owner.slug object.slug step.slug slug %}">{{name}}</a></li>
               {% endfor %}
             </ul>
         </div>

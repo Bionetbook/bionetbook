@@ -5,6 +5,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
       <li class="active">{{action.name}}</li>
@@ -16,7 +17,7 @@
 {% block page_title %}
 Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{{ object.action_update_url }}"><i class="icon-edit"></i>edit </a></small>
+    <small><a href="{{ action.action_update_url }}"><i class="icon-edit"></i>edit </a></small>
 {% endif %}
 {% endblock %}
 

@@ -361,7 +361,7 @@ class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
     def get_url_args(self):
         protocol = self.get_protocol()
         context = self.get_context_data()
-        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
 
 
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):

@@ -8,6 +8,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li class="active">{{step.name}}</li>
     </ul>
@@ -33,7 +34,7 @@ Step: {{ step.title }}
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{{ object.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.action_verb_list_url }}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{{ step.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ step.action_verb_list_url }}">Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}

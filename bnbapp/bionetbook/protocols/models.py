@@ -667,11 +667,8 @@ class Action(NodeBase):
         print "ACTION ABSOLUTE URL"
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
-    def action_verb_list_url(self):
-        return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
-
     def action_update_url(self):
-        return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'], 'action_slug':self.slug })
+        return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
     @property
     def title(self):
@@ -734,13 +731,16 @@ class Step(NodeBase):
         self['duration'] = duration
 
     def get_absolute_url(self):
-        return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+        return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
     def step_update_url(self):
-        return reverse("step_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+        return reverse("step_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
     def add_action_url(self):
-        return reverse("step_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+        return reverse("action_create", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+    def action_verb_list_url(self):
+        return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
     @property
     def title(self):

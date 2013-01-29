@@ -11,6 +11,7 @@
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
       {% if object %}
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>
       <li class="active">Edit</li>
       {% else %}

@@ -6,6 +6,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li> {{ object.owner.name }} <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
       <li class="active">Add Action</li>
@@ -18,7 +19,7 @@
 {% block page_title %}
 Create Action => {{step.title}}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 
@@ -33,7 +34,7 @@ Create Action => {{step.title}}
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{% url action_verb_list object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_verb_list object.slug step.slug %}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{{ step.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ step.action_verb_list_url }}">Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}
@@ -49,7 +50,7 @@ Create Action => {{step.title}}
             <tbody>
                 {% for item in step.actions %}
                 <tr>
-                    <td><a href="{{ item.get_absolute_url }}">{{ item.objectid }}</a></td>
+                    <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
                     <td>{{ item.duration_in_seconds|default:"0" }}</td>
                     <td>{{ item.verb }}</td>
                     <td>{{ item.modified }}</td>
