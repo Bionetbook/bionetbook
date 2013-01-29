@@ -33,7 +33,6 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 class ProtocolListView(ListView):
 
     model = Organization
-    #template_name = "protocols/protocol_list.html"
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
@@ -63,7 +62,6 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         return super(ProtocolCreateView, self).form_valid(form)
 
     def get_success_url(self):
-
         return self.object.get_absolute_url()
 
     def get_form(self, form_class):
@@ -82,10 +80,19 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     form_class = ProtocolForm
     slug_url_kwarg = "protocol_slug"
 
+    # NEED TO ONLY RETURN A PROTOCOL WHO'S PUBLISH IS SET TO False
+
     def get_context_data(self, **kwargs):
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
         return context
+
+    #def form_valid(self, form):
+    #    protocol = self.get_protocol()
+    #    protocol.status = Protocol.STATUS_PUBLISHED
+    #    protocol.save()
+    #    messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
+    #    return super(ProtocolPublishView, self).form_valid(form)
 
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):

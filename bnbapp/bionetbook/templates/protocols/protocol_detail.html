@@ -13,29 +13,29 @@
 {% endblock %}
 
 
-
 {% block page_title %}Protocol: {{ object.name }}
-{% if protocol_edit_authorization %}
+{% if not protocol.published %}
+  {% if protocol_edit_authorization %}
     <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
+  {% endif %}
 {% endif %}
 {% endblock %}
 
 
-
 {% block content %}
-
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
-        {% if object.owner == request.user and object.status == object.STATUS_DRAFT %}      
-            <p><a class="btn btn-success" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a> <a data-toggle="modal" href="#publish-confirmation"> Publish</a></p>
+        {% if not protocol.published %}      
+            <p>
+              <a class="btn btn-success" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a>
+              <a data-toggle="modal" href="#publish-confirmation"> Publish</a>
+            </p>
         {% endif %}
         
         {% object_data_table object %}
     </div>
-
-
-<!-- secondary form div -->
+    <!-- secondary form div -->
     <div class="span6">
       <h2>Steps</h2>
       {% if protocol_edit_authorization %}      
@@ -68,10 +68,8 @@
             </tbody>
         </table>                    
       {% endif %}
-
-    </div>    
-  </div>    
-  </div>
+    </div><!-- secondary form div close -->
+</div>    
 
 {% if object.owner == request.user %}
     <div class="modal hide fade" id="publish-confirmation">
@@ -85,7 +83,7 @@
     </div>
     <div class="modal-footer">
       
-      <form action="{% url protocol_publish object.slug %}" method="post">
+      <form action="{{ object.publish_protocol_url }}" method="post">
         {% csrf_token %}
         <a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
         <button class="btn btn-danger" id="publish">Publish</button>

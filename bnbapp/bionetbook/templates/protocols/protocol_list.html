@@ -54,9 +54,7 @@
                     <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
                     <td>{{ object.step_set.count }}</td>
                     <td>{{ object.actions.count }}</td>
-                    {% if request.user.is_authenticated %}
-                        <td>{{ object.status }}</td>
-                    {% endif %}                    
+                    <td>{{ object.status }}</td>
                     <td>{{ object.modified }}</td>
                 </tr>
                 {% endwith %}

@@ -128,6 +128,9 @@ class Protocol(TimeStampedModel):
     def step_create_url(self):
         return reverse("step_create", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
+    def publish_protocol_url(self):
+        return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
+
     ##########
     # Generators
 
@@ -140,8 +143,6 @@ class Protocol(TimeStampedModel):
 
         try:
             Protocol.objects.get(name=new_name)
-            #new_count = count + 1
-            #print new_count
             return self.generate_name(name, count=count + 1)
         except ObjectDoesNotExist:
             return new_name
@@ -231,6 +232,18 @@ class Protocol(TimeStampedModel):
         # return self.steps_data
         return self.data['steps']
 
+
+    @property
+    def status(self):
+        if self.public:
+            prefix = "Public - "
+        else:
+            prefix = "Private - "
+
+        if self.published:
+            return prefix + "Published"
+        else:
+            return prefix + "Draft"
 
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property

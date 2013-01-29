@@ -49,12 +49,7 @@
                     <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
                     <td>{{ protocol.steps|length }}</td>
                     <td>{{ protocol.actions.count }}</td>
-                    <td>{% if protocol.published %}
-                        Published
-                        {% else %}
-                        Draft
-                        {% endif %}
-                    </td>
+                    <td>{{ protocol.status }}</td>
                     <td>{{ protocol.modified }}</td>
                 </tr>
                 {% endfor %}
