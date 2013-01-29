@@ -117,6 +117,18 @@ class Protocol(TimeStampedModel):
             self.save()
 
     ##########
+    # URLs
+
+    def get_absolute_url(self):
+        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
+
+    def protocol_update_url(self):
+        return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
+
+    def step_create_url(self):
+        return reverse("step_create", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
+
+    ##########
     # Generators
 
     def generate_name(self, name, count=0):
@@ -141,9 +153,6 @@ class Protocol(TimeStampedModel):
             return "%s-%d" % (slug, self.pk)
         except ObjectDoesNotExist:
             return slug
-
-    def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
@@ -656,7 +665,13 @@ class Action(NodeBase):
 
     def get_absolute_url(self):
         print "ACTION ABSOLUTE URL"
-        return reverse("action_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
+        return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
+
+    def action_verb_list_url(self):
+        return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+
+    def action_update_url(self):
+        return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'], 'action_slug':self.slug })
 
     @property
     def title(self):
@@ -719,8 +734,13 @@ class Step(NodeBase):
         self['duration'] = duration
 
     def get_absolute_url(self):
-        #return "serious_URL_STUFF"
-        return reverse("step_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+        return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+
+    def step_update_url(self):
+        return reverse("step_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
+
+    def add_action_url(self):
+        return reverse("step_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self['objectid'] })
 
     @property
     def title(self):

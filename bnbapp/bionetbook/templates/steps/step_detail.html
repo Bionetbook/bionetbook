@@ -17,7 +17,7 @@
 {% block page_title %}
 Step: {{ step.title }}
 {% if protocol_edit_authorization %} 
-    <small><a href="{% url step_update object.slug step.slug %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 
@@ -33,7 +33,7 @@ Step: {{ step.title }}
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{% url action_verb_list object.slug step.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url action_verb_list object.slug step.slug %}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{{ object.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.action_verb_list_url }}">Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}

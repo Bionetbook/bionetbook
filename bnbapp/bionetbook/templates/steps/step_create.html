@@ -12,11 +12,11 @@
 {% endblock %}
 
 
-{% block title %}Create Step: {{ object.name }}{% endblock %}
+{% block title %}{{ object.name }}: Add Step{% endblock %}
 
-{% block page_title %}Create Step: {{ object.name }}
+{% block page_title %}{{ object.name }}: Add Step
 {% if protocol_edit_authorization %}
-    <small><a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endif %}
 {% endblock %}
 
@@ -37,7 +37,7 @@
     <div class="span6">
       <h2>Steps</h2>
       {% if protocol_edit_authorization %}      
-          <p><a class="btn btn-success" href="{% url step_create object.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create object.slug %}">Add step</a></p>
+          <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.step_create_url }}">Add step</a></p>
       {% endif %}
 
       {% if object.steps|length %}
