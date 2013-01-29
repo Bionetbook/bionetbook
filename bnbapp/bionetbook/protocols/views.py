@@ -1,11 +1,14 @@
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django import forms
+from django.http import Http404
 from django.contrib import messages
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
 
 
 from braces.views import LoginRequiredMixin
@@ -93,6 +96,62 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #    protocol.save()
     #    messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
     #    return super(ProtocolPublishView, self).form_valid(form)
+
+
+    def get_object(self, queryset=None):
+        """
+        Returns the object the view is displaying.
+
+        By default this requires `self.queryset` and a `pk` or `slug` argument
+        in the URLconf, but subclasses can override this to return any object.
+        """
+        # Use a custom queryset if provided; this is required for subclasses
+        # like DateDetailView
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        # Next, try looking up by primary key.
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if pk is not None:
+            queryset = queryset.filter(pk=pk)
+
+        # Next, try looking up by slug.
+        elif slug is not None:
+            slug_field = self.get_slug_field()
+            queryset = queryset.filter(**{slug_field: slug})
+
+        # If none of those are defined, it's an error.
+        else:
+            raise AttributeError("Generic detail view %s must be called with "
+                                 "either an object pk or a slug."
+                                 % self.__class__.__name__)
+
+        queryset = queryset.filter(published=False)
+
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except ObjectDoesNotExist:
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
+
+    # def get_queryset(self):
+    #     """
+    #     Get the queryset to look an object up against. May not be called if
+    #     `get_object` is overridden.
+    #     """
+    #     if self.queryset is None:
+    #         if self.model:
+    #             return self.model._default_manager.all()
+    #         else:
+    #             raise ImproperlyConfigured("%(cls)s is missing a queryset. Define "
+    #                                        "%(cls)s.model, %(cls)s.queryset, or override "
+    #                                        "%(cls)s.get_queryset()." % {
+    #                                             'cls': self.__class__.__name__
+    #                                     })
+    #     return self.queryset._clone().filter(published=False)
 
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
