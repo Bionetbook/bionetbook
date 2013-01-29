@@ -35,20 +35,27 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 class ProtocolListView(ListView):
 
     model = Organization
+    template_name = "organization/organization_list.html"
+    slug_url_kwarg = "owner_slug"
 
     def get_queryset(self):
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            return Organization.objects.all()    # GET ALL THE PROTOCOLS
-        if self.request.user.is_authenticated():
-            #return self.request.user.organizations.protocols
-            # return Protocol.objects.filter(
-            #         Q(status=Protocol.STATUS_PUBLISHED) |
-            #         Q(owner=self.request.user)
-            #         )
-            return self.request.user.organization_set.all()
-        #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
-        #return Protocol.objects.filter(published=True)
-        return []
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+
+        if slug:
+            return Organization.objects.filter(slug=slug)
+        else:
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                return Organization.objects.all()    # GET ALL THE PROTOCOLS
+            if self.request.user.is_authenticated():
+                #return self.request.user.organizations.protocols
+                # return Protocol.objects.filter(
+                #         Q(status=Protocol.STATUS_PUBLISHED) |
+                #         Q(owner=self.request.user)
+                #         )
+                return self.request.user.organization_set.all()
+            #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
+            #return Protocol.objects.filter(published=True)
+            return []
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):
