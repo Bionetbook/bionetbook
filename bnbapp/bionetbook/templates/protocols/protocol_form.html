@@ -46,7 +46,7 @@
               <tr>
                   <th nowrap></th>
                   <th>Step</th>
-                  <th>A</th>
+                  <th>Actions</th>
                   <th>Last Modified</th>
               </tr>
             </thead>
@@ -61,8 +61,8 @@
                         </div>
                     </td>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name|truncatewords:"3" }}</a></td>
-                    <td>{{ item.action_set.all|length }}</td>
-                    <td>{{ item.modified }}</td>
+                    <td>{{ item.actions|length }}</td>
+                    <td>{{ object.modified }}</td>
                 </tr>
                 {% endfor%}
             </tbody>
