@@ -4,7 +4,7 @@ from protocols import views
 
 urlpatterns = patterns("",
 
-    url(regex=r'^$', view=views.ProtocolListView.as_view(), name='protocol_list'),
+    url(regex=r'^protocols/$', view=views.ProtocolListView.as_view(), name='protocol_list'),
 
     # PROTOCOL URLS
     url(regex=r'^(?P<owner_slug>[-\w]+)/create/$', view=views.ProtocolCreateView.as_view(), name='protocol_create'),

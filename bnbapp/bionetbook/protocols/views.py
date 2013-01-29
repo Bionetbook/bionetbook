@@ -10,7 +10,6 @@ from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
-
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
