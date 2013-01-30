@@ -276,6 +276,37 @@ class ProtocolPlot(Protocol):
 
 
 
+def draw_two_protocols(protocol_A, protocol_B):
+	import pygraphviz as pgv
+	A = [protocol_A.nodes[r].pk for r in protocol_A.get_actions]
+	B = [protocol_B.nodes[r].pk for r in protocol_B.get_actions]
+	# add base of first protocol:
+
+	# set node couter:
+	node_counter = len(protocol_A.get_actions)
+	agraph = pgv.AGraph()
+		# add thicl colored line
+	for i in range(1, len(A)):
+		agraph.add_edge(A[i-1], A[i])
+		n=agraph.get_node(A[i])
+		n.attr['shape']='box'
+		n.attr['label']= protocol_A.nodes[protocol_A.get_actions[i]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[i]].pk
+
+	n = agraph.get_node(agraph.nodes()[0])
+	n.attr['shape']='box'
+	n.attr['label']=protocol_A.nodes[protocol_A.get_actions[0]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[0]].pk
+
+			# add base of second protocol:
+	for i in range(1, len(B)):
+		agraph.add_edge(B[i-1], B[i])
+		n=agraph.get_node(B[i])
+		n.attr['shape']='box'
+		n.attr['label']= protocol_B.nodes[protocol_B.get_actions[i]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[i]].pk
+
+	n = agraph.get_node(agraph.nodes()[node_counter])
+	n.attr['shape']='box'
+	n.attr['label']=protocol_B.nodes[protocol_B.get_actions[0]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[0]].pk
+	return agraph
 
 
 
