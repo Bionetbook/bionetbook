@@ -270,6 +270,14 @@ class Compare(object):
 		self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
 		self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
+		# Draw out some control elements:
+		# self.agraph.add_nodes_from(['add_common_actions_details',  )
+		# cntrl = 
+
+
+
+
+
 		# line up matching verbs in the same rank
 		# we will add to this function more sophisticated things in the future.
 
@@ -348,24 +356,26 @@ class Compare(object):
 				x = self.protocol_A.nodes[a]['machine'].summary
 				y = self.protocol_B.nodes[b]['machine'].summary
 				d = DictDiffer (x, y)
-				trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
-				if trigger > 0:
-					# create a compare object that will apear between the 2 base diagrams:
-					diff_object = self.protocol_A.nodes[a]['machine'].pk
-					ea = self.agraph.add_edge(self.protocol_A.nodes[a].pk,diff_object)
-					eb = self.agraph.add_edge(self.protocol_B.nodes[b].pk,diff_object)
-
-					# set all diff objects on same rank:
-					N = self.agraph.add_subgraph([self.protocol_A.nodes[a].pk, diff_object, self.protocol_B.nodes[b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+				# trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
+				# if trigger > 0:
 					
-					# set layout and colors
-					s = self.agraph.get_node(diff_object)
-					s.attr['shape'] = 'box'
-					s.attr['style'] = 'rounded'
+				# --->  create a compare object that will apear between the 2 base diagrams:
+				diff_object = self.protocol_A.nodes[a]['machine'].pk
+				ea = self.agraph.add_edge(self.protocol_A.nodes[a].pk,diff_object)
+				eb = self.agraph.add_edge(self.protocol_B.nodes[b].pk,diff_object)
 
-					# set label:
-					s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+				# set all diff objects on same rank:
+				N = self.agraph.add_subgraph([self.protocol_A.nodes[a].pk, diff_object, self.protocol_B.nodes[b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+				
+				# set layout and colors
+				s = self.agraph.get_node(diff_object)
+				s.attr['shape'] = 'box'
+				s.attr['style'] = 'rounded'
 
+				# set label:
+				s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+
+				# <---
 		return self.agraph			
 
 
