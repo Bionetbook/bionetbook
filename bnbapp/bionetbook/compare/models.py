@@ -290,10 +290,12 @@ def draw_two_protocols(protocol_A, protocol_B):
 		agraph.add_edge(A[i-1], A[i])
 		n=agraph.get_node(A[i])
 		n.attr['shape']='box'
+		n.attr['style']='rounded'
 		n.attr['label']= protocol_A.nodes[protocol_A.get_actions[i]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[i]].pk
 
 	n = agraph.get_node(agraph.nodes()[0])
 	n.attr['shape']='box'
+	n.attr['style']='rounded'
 	n.attr['label']=protocol_A.nodes[protocol_A.get_actions[0]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[0]].pk
 
 			# add base of second protocol:
@@ -301,11 +303,22 @@ def draw_two_protocols(protocol_A, protocol_B):
 		agraph.add_edge(B[i-1], B[i])
 		n=agraph.get_node(B[i])
 		n.attr['shape']='box'
+		n.attr['style']='rounded'
 		n.attr['label']= protocol_B.nodes[protocol_B.get_actions[i]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[i]].pk
 
 	n = agraph.get_node(agraph.nodes()[node_counter])
 	n.attr['shape']='box'
+	n.attr['style']='rounded'
 	n.attr['label']=protocol_B.nodes[protocol_B.get_actions[0]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[0]].pk
+	
+	matching_verbs= zip(A, B)
+
+	for parent,child in matching_verbs:
+	
+		rank_list = (parent,child) 		
+		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+		N.edge_attr['color'] = 'white'
+
 	return agraph
 
 
@@ -313,6 +326,8 @@ def draw_two_protocols(protocol_A, protocol_B):
 
 
 	
+
+
 
 
 
