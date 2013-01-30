@@ -290,12 +290,13 @@ class Compare(object):
 			n=self.agraph.get_node(self.A_pk[i])
 			n.attr['shape']='box'
 			n.attr['style'] = 'rounded'
-			n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
+			n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
 		# Set the 0'th node in  protocol_A	
 		n = self.agraph.get_node(self.matching_verbs_pk[0][0])
 		n.attr['shape']='box'
-		n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
+		n.attr['style'] = 'rounded'
+		n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
 
 				# add base of second protocol:
 		for i in range(1, len(self.B_pk)):
@@ -306,13 +307,13 @@ class Compare(object):
 			e.attr['color'] = '#015666' 
 			n.attr['shape']='box'
 			n.attr['style'] = 'rounded'
-			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
+			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
 
 		# Set the 0'th node in  protocol_A	
 		n = self.agraph.get_node(self.matching_verbs_pk[0][1])
 		n.attr['shape']='box'
 		n.attr['style'] = 'rounded'
-		n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
+		n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
 		
 
 		# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
