@@ -276,51 +276,71 @@ class ProtocolPlot(Protocol):
 
 
 
-def draw_two_protocols(protocol_A, protocol_B):
-	import pygraphviz as pgv
-	A = [protocol_A.nodes[r].pk for r in protocol_A.get_actions]
-	B = [protocol_B.nodes[r].pk for r in protocol_B.get_actions]
-	# add base of first protocol:
+class Compare(object):
+	def __init__(self,protocol_a, protocol_b, **kwargs):
+		import pygraphviz as pgv
+		self.agraph = pgv.AGraph()
+		self.protocol_A = protocol_a
+		self.protocol_B = protocol_b
+		self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
+		self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
-	# set node couter:
-	node_counter = len(protocol_A.get_actions)
-	agraph = pgv.AGraph()
-		# add thicl colored line
-	for i in range(1, len(A)):
-		agraph.add_edge(A[i-1], A[i])
-		n=agraph.get_node(A[i])
+		# line up matching verbs in the same rank
+		# we will add to this function more sophisticated things in the future.
+
+		self.matching_verbs = zip(self.A_pk,self.B_pk)
+
+	def draw_two_protocols(self):
+		
+		# set node couter:
+		node_counter = len(self.protocol_A.get_actions)
+		
+			# add thicl colored line
+		for i in range(1, len(self.A_pk)):
+			self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
+			n=self.agraph.get_node(self.A_pk[i])
+			n.attr['shape']='box'
+			n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
+
+		n = self.agraph.get_node(self.agraph.nodes()[0])
 		n.attr['shape']='box'
-		n.attr['style']='rounded'
-		n.attr['label']= protocol_A.nodes[protocol_A.get_actions[i]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[i]].pk
+		n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
 
-	n = agraph.get_node(agraph.nodes()[0])
-	n.attr['shape']='box'
-	n.attr['style']='rounded'
-	n.attr['label']=protocol_A.nodes[protocol_A.get_actions[0]]['verb'] + '_' + protocol_A.nodes[protocol_A.get_actions[0]].pk
+				# add base of second protocol:
+		for i in range(1, len(self.B_pk)):
+			self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
+			n=self.agraph.get_node(self.B_pk[i])
+			n.attr['shape']='box'
+			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
 
-			# add base of second protocol:
-	for i in range(1, len(B)):
-		agraph.add_edge(B[i-1], B[i])
-		n=agraph.get_node(B[i])
+		n = self.agraph.get_node(self.agraph.nodes()[node_counter])
 		n.attr['shape']='box'
-		n.attr['style']='rounded'
-		n.attr['label']= protocol_B.nodes[protocol_B.get_actions[i]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[i]].pk
+		n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
+		
 
-	n = agraph.get_node(agraph.nodes()[node_counter])
-	n.attr['shape']='box'
-	n.attr['style']='rounded'
-	n.attr['label']=protocol_B.nodes[protocol_B.get_actions[0]]['verb'] + '_' + protocol_B.nodes[protocol_B.get_actions[0]].pk
-	
-	matching_verbs= zip(A, B)
+		# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
 
-	for parent,child in matching_verbs:
-	
-		rank_list = (parent,child) 		
-		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-		N.edge_attr['color'] = 'white'
+		#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
+		# turn this on for comapring oligo to hex
+		# a.actions = [r[2] for r in a.get_action_tree('objectid')]
+		# b.actions = [r[2] for r in b.get_action_tree('objectid')]
 
-	return agraph
+		# self.matching_verbs= zip(A, B)
 
+		# self.matching_verbs.pop(-1)
+		# self.matching_verbs.pop(-1)
+		# self.matching_verbs.pop(-1)
+		# self.matching_verbs.append((u'3-ya985z',u'19-lk1yt0'))
+		# self.matching_verbs.append((u'3-bavsb0',u'19-i7w4wg'))
+		# self.matching_verbs.append((u'3-adrmwt',u'19-8v7w7q'))
+
+		for parent,child in self.matching_verbs:
+		
+			rank_list = (parent,child) 		
+			N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+			N.edge_attr['color'] = 'white'
+
+		return self.agraph
 
 
 
