@@ -284,11 +284,16 @@ class Compare(object):
 			# add thicl colored line
 		for i in range(1, len(self.A_pk)):
 			self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
+			e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
+			e.attr['style'] = 'setlinewidth(6)' 
+			e.attr['color'] = '#B82F3' 
 			n=self.agraph.get_node(self.A_pk[i])
 			n.attr['shape']='box'
+			n.attr['style'] = 'rounded'
 			n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
-		n = self.agraph.get_node(self.agraph.nodes()[0])
+		# Set the 0'th node in  protocol_A	
+		n = self.agraph.get_node(self.matching_verbs_pk[0][0])
 		n.attr['shape']='box'
 		n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] + '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
 
@@ -296,11 +301,17 @@ class Compare(object):
 		for i in range(1, len(self.B_pk)):
 			self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
 			n=self.agraph.get_node(self.B_pk[i])
+			e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
+			e.attr['style'] = 'setlinewidth(6)' 
+			e.attr['color'] = '#015666' 
 			n.attr['shape']='box'
+			n.attr['style'] = 'rounded'
 			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
 
-		n = self.agraph.get_node(self.agraph.nodes()[node_counter])
+		# Set the 0'th node in  protocol_A	
+		n = self.agraph.get_node(self.matching_verbs_pk[0][1])
 		n.attr['shape']='box'
+		n.attr['style'] = 'rounded'
 		n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] + '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
 		
 
@@ -340,9 +351,17 @@ class Compare(object):
 				if trigger > 0:
 					# create a compare object that will apear between the 2 base diagrams:
 					diff_object = self.protocol_A.nodes[a]['machine'].pk
-					ea = self.agraph.add_edge(a,diff_object)
-					eb = self.agraph.add_edge(b,diff_object)
+					ea = self.agraph.add_edge(self.protocol_A.nodes[a].pk,diff_object)
+					eb = self.agraph.add_edge(self.protocol_B.nodes[b].pk,diff_object)
+
+					# set all diff objects on same rank:
+					N = self.agraph.add_subgraph([self.protocol_A.nodes[a].pk, diff_object, self.protocol_B.nodes[b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+					
+					# set layout and colors
 					s = self.agraph.get_node(diff_object)
+					s.attr['shape'] = 'box'
+					s.attr['style'] = 'rounded'
+
 					# set label:
 					s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
 

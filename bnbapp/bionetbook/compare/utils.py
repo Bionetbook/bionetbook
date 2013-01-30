@@ -14,7 +14,7 @@ def set_html_label(x,y,changed, unchanged):
 	# format the HTML component:
 	content_tmp = []
 	for i in changed:
-		content_tmp.append('<TR><TD>%s</TD><TD>%s</TD></TR>'%(x[i], y[i]))
+		content_tmp.append('<TR><TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
 
 	for j in unchanged:
 		content_tmp.append('<TR><TD colspan="2">%s</TD></TR>'%(x[j]))	
