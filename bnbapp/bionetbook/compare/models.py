@@ -328,6 +328,26 @@ class Compare(object):
 
 		return self.agraph
 
+	def add_diff_layer(self):
+
+		for a,b in self.matching_verbs: #[(node_a, node_b), ]
+
+			if 'machine' in self.protocol_A.nodes[a].keys():  # object has only one child:
+				x = self.protocol_A.nodes[a]['machine'].summary
+				y = self.protocol_B.nodes[b]['machine'].summary
+				d = DictDiffer (x, y)
+				trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
+				if trigger > 0:
+					# create a compare object that will apear between the 2 base diagrams:
+					diff_object = self.protocol_A.nodes[a]['machine'].pk
+					ea = self.agraph.add_edge(a,diff_object)
+					eb = self.agraph.add_edge(b,diff_object)
+					s = self.agraph.get_node(diff_object)
+					# set label:
+					s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+
+		return self.agraph			
+
 
 
 
