@@ -24,7 +24,7 @@ def settify(settings_dict, shorthand = True):
                  units = temp['min_temp']  
         
         if 'temp_units' in temp:
-            units = units + ' ' + temp['temp_units']
+            units = str(units) + ' ' + str(temp['temp_units'])
             
         if 'temp_comment' in temp:
                 units = units + ', ' + 'Remark: ' + temp['temp_comment']    
