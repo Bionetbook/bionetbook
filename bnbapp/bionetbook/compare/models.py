@@ -288,7 +288,8 @@ class Compare(object):
 		# line up matching verbs in the same rank
 		# we will add to this function more sophisticated things in the future.
 
-		self.matching_verbs = zip(self.A_pk,self.B_pk)
+		self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
+		self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
 
 	def draw_two_protocols(self):
 		
@@ -334,7 +335,7 @@ class Compare(object):
 		# self.matching_verbs.append((u'3-bavsb0',u'19-i7w4wg'))
 		# self.matching_verbs.append((u'3-adrmwt',u'19-8v7w7q'))
 
-		for parent,child in self.matching_verbs:
+		for parent,child in self.matching_verbs_pk:
 		
 			rank_list = (parent,child) 		
 			N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
