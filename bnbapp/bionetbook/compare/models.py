@@ -157,22 +157,6 @@ class ProtocolPlot(Protocol):
 		agraph.layout('dot')
 		return agraph	
 
-	def simplify_label(label):
-		''' takes a label as a list and turns it into a dict:
-			u'25 degrees Celsius', u'2 minutes' -> 
-			{temp: '25C', time: '2 min'}'''
-		import re
-		output = {}
-		for i in label:
-			if 'Celsius' in i or 'degre' in i:
-				output['temp'] = re.findall(r'\d+',i)
-			if 'minute' in i or 'second' in i or 'hour' in i:
-				output['time'] = re.findall(r'\d+',i)
-
-		return output	
-
-
-
 	def same_rank_objects_by_1st_degree_nbrs(self, protocol_B):
 
 
