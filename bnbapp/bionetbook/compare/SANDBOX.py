@@ -1,59 +1,30 @@
 	SANDBOX	
 
-def compare_protocols(self, protocol_B):
+def set_label_html(x,y,changed, unchanged):
 
-	A = self
-	B = protocol_B # instance of protocol_B
-	# add base of first protocol:
+	''' label is an HTML object and for automation sake, created by concatenating a few peices:
+				table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
+				content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
+				merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. '''
 
-	# set node couter:
-	node_counter = len(A)
-	agraph = pgv.AGraph()
-		# add thicl colored line
-	for i in range(1, len(A)):
-		agraph.add_edge(A[i-1], A[i])
-		n=agraph.get_node(A[i])
-		n.attr['shape']='box'
-		n.attr['label']= a.nodes[A[i]]['verb'] + '_' + a.nodes[A[i]]['objectid']
-
-	n = agraph.get_node(agraph.nodes()[0])
-	n.attr['shape']='box'
-	n.attr['label']=a.nodes[A[0]]['verb'] + '_' + a.nodes[A[0]]['objectid']
-
-		# add base of second protocol:
-	for i in range(1, len(B)):
-		agraph.add_edge(B[i-1], B[i])
-		n=agraph.get_node(B[i])
-		n.attr['shape']='box'
-		n.attr['label']= b.nodes[B[i]]['verb'] + '_' + b.nodes[B[i]]['objectid']
-
-	n = agraph.get_node(agraph.nodes()[node_counter])
-	n.attr['shape']='box'
-	n.attr['label']=b.nodes[B[0]]['verb'] + '_' + b.nodes[B[0]]['objectid']
-
-	# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
-
-	#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
-	a.actions = [r[2] for r in a.get_action_tree('objectid')]
-	b.actions = [r[2] for r in b.get_action_tree('objectid')]
-
-	self.matching_verbs= zip(a.actions, b.actions)
-
-	self.matching_verbs.pop(-1)
-	self.matching_verbs.pop(-1)
-	self.matching_verbs.pop(-1)
-	self.matching_verbs.append((u'ya985z',u'lk1yt0'))
-	self.matching_verbs.append((u'bavsb0',u'i7w4wg'))
-	self.matching_verbs.append((u'adrmwt',u'8v7w7q'))
-
-	for parent,child in self.matching_verbs:
+	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">'
+	content_tmp = []
+	content = []
 	
-		rank_list = (parent,child) 		
-		N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-		N.edge_attr['color'] = 'white'
 
-	return agraph
+	
+	# format the HTML component:
+	content_tmp = []
+	for i in changed:
+		content_tmp.append('<TR><TD>%s</TD><TD>%s</TD></TR>'%(x[i], y[i]))
 
+	for j in unchanged:
+		content_tmp.append('<TR><TD colspan="2">%s</TD></TR>'%(x[j]))	
+
+	content = ''.join(content_tmp)
+	merge = '<' + table + content + '</TABLE>>'	
+
+	return merge
 # ___________________________________
 
 def add_comparison_layer(self, protocol_B, **kwargs):
@@ -71,20 +42,21 @@ def add_comparison_layer(self, protocol_B, **kwargs):
 # this object is drawn between the 2 verbs that call it as a child
 
 # Find the nodes that have differences:
-def add_diff_layer(self, protocol_B):
+def add_diff_layer(self):
 
-for node_pairs in self.matching_verbs: #[(node_a, node_b), ]
+for a,b in self.matching_verbs: #[(node_a, node_b), ]
 
-	if 'machine' in a.nodes[node_pair[0]].keys():  # object has only one child:
-		x = simplify_label(a.nodes[node_pair[0]]['machine'].label)
-		y = simplify_label(b.nodes[node_pair[1]]['machine'].label)
+	if 'machine' in self.protocol_A.nodes[a].keys():  # object has only one child:
+		x = self.protocol_A.nodes[a]['machine'].summary
+		y = self.protocol_B.nodes[b]['machine'].summary
 		d = DictDiffer (x, y)
 		trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
 		if trigger > 0:
 			# create a compare object that will apear between the 2 base diagrams:
-			diff_object = a.nodes[node_pair[0]]['machine']['objectid'] 
-			e = agraph.add_edge(node_pair[0],diff_object)
-			s = agraph.get_node(diff_object)
+			diff_object = protocol_A.nodes[a]['machine'].pk
+			ea = self.agraph.add_edge(a,diff_object)
+			eb = self.agraph.add_edge(b,diff_object)
+			s = self.agraph.get_node(diff_object)
 			# generate label:
 			''' label is an HTML object and for automation sake, created by concatenating a few peices:
 			table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
@@ -92,10 +64,23 @@ for node_pairs in self.matching_verbs: #[(node_a, node_b), ]
 			merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. 
 			inject = merge.format(x['temp'],y['temp'], y['time'])  --> injects the data into the table
 			s.attr['label'] = inject  --> attatches the HTML code to the objects label'''
-			s.attr['label'] = 
+			s.attr['label'] = set_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
 	
 
 
+
+
+
+
+
+for e,f in G.matching_verbs:
+    if 'machine' in G.protocol_A.nodes[e].keys():
+        x = G.protocol_A.nodes[e]['machine'].summary
+        y = G.protocol_B.nodes[f]['machine'].summary
+        print x,y
+        d = DictDiffer(x,y)
+        print d.changed(name = True, objectid=True, slug =True)
+        print d.unchanged()
 
 
 
@@ -327,33 +312,6 @@ if len(set(a_uniq_in_comparator)-set(b_uniq_in_comparator)):
 
 
 
-class DictDiffer(object):
-	"""
-	Calculate the difference between two dictionaries as:
-	(1) items added
-	(2) items removed
-	(3) keys same in both but changed values
-	(4) keys same in both and unchanged values
-	"""
-	def __init__(self, current_dict, past_dict):
-		self.current_dict, self.past_dict = current_dict, past_dict
-		self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
-		self.intersect = self.set_current.intersection(self.set_past)
-	def added(self):
-		return list(self.set_current - self.intersect)
-	def removed(self):
-		return list(self.set_past - self.intersect)
-	def changed(self):
-		delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
-		if 'name' in delta:
-			delta.pop(delta.index('name'))
-		if 'objectid' in delta:
-			delta.pop(delta.index('objectid'))
-		if 'slug' in delta:
-			delta.pop(delta.index('slug'))
-		return delta
-	def unchanged(self):
-		return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 
 
@@ -362,19 +320,7 @@ class DictDiffer(object):
 
 
 
-def simplify_label(label):
-	''' takes a label as a list and turns it into a dict:
-		u'25 degrees Celsius', u'2 minutes' -> 
-		{temp: '25C', time: '2 min'}'''
-	import re
-	output = {}
-	for i in label:
-		if 'Celsius' in i or 'degre' in i:
-			output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-		if 'minute' in i or 'second' in i or 'hour' in i:
-			output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
 
-	return output
 
 
 
