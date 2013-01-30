@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
+from compare.utils import set_html_label
 
 class DictDiffer(object):
 	"""
