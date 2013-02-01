@@ -37,14 +37,18 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 			_conc = '<TD colspan="2">%s</TD><TD colspan="2">%s</TD>'%(str(x['conc'][0]), str(x['conc'][1]))
 		else:
 			_conc = ''
+		print 'concentrstion = '+ _conc	
 
 		if 'vol' in changed:
 			_vol = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(str(x['vol'][0]),str(x['vol'][1]), str(y['vol'][0]),str(y['vol'][1]))
+			
 		if 'vol' in unchanged:
 			_vol = '<TD colspan="2">%s</TD><TD colspan="2">%s</TD>'%(str(x['vol'][0]), str(x['vol'][1]))
 		
 		else:
 			_vol = ''
+
+		print 'volume is:' + _vol	
 
 
 		if 'mass' in changed:

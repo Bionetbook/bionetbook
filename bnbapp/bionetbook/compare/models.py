@@ -377,7 +377,7 @@ class Compare(object):
 
 				# set label:
 				s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
-				print set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+				
 				# --->
 
 			if 'components' in self.protocol_A.nodes[verb_a].keys(): # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
@@ -400,10 +400,12 @@ class Compare(object):
 						scores = [] # tracks the error rate of a matching components
 						content = [] # gets the html strings
 						for m,n in zip(components_a,components_b): 
-							d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_A.nodes[n].summary)
-							scores.append((len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))))
-							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_A.nodes[n].summary,d.changed(name = True, objectid = True, slug = True), d.unchanged(), components = True) 
-							_name = add_html_cell(m) 
+							d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+							scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+							print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
+							print tmp
+							_name = add_html_cell(self.protocol_A.nodes[m]['name']) 
 							content.append('<TR>' + _name + tmp)
 							
 
@@ -432,7 +434,7 @@ class Compare(object):
 					s.attr['shape'] = 'box'
 					s.attr['style'] = 'rounded'
 					s.attr['label'] = merge_table_pieces(content_sorted)
-					print merge_table_pieces(content_sorted)
+					
 
 
 		return self.agraph			
