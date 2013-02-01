@@ -54,21 +54,21 @@ class ProtocolPlot(Protocol):
 		# super(ProtocolPlot, self).__init__(**kwargs)
 		# self.prot = Protocol.objects.get(name__icontains=protocol_name)
 		
-		action_tree  = self.get_action_tree('objectid')
+		
 
 		# this goes to the view page:
 		self.agraph.node_attr['shape']='square'
 		self.agraph.edge_attr['dir']='forward'
 		self.agraph.edge_attr['arrowhead'] = 'normal'
-		for i in range(1, sum(self.get_num_actions())):
-		    self.agraph.add_edge(action_tree[i-1][2],action_tree[i][2])
-		    n=self.agraph.get_node(action_tree[i][2])
+		for i in range(1, sum(self.get_actions)):
+		    self.agraph.add_edge(self.get_actions[i-1],self.get_actions[i])
+		    n=self.agraph.get_node(self.get_actions[i])
 		    n.attr['shape']='box'
-		    n.attr['label']= "%s"%(self.get_action_tree()[i][2])
+		    n.attr['label']= "%s"%(self.get_actions[i])
 
-		n = self.agraph.get_node(self.agraph.nodes()[0])
+		n = self.agraph.get_node(self.agraph.nodes())
 		n.attr['shape']='box'
-		n.attr['label']=self.get_action_tree()[0][2]
+		n.attr['label']=self.get_actions[0]
 		
 		
 
@@ -444,7 +444,13 @@ class Compare(object):
 
 
 
-
+def test_compare():
+	a  = ProtocolPlot.objects.get(id='3')
+	b  = ProtocolPlot.objects.get(id='19')
+	G    = Compare(a,b)
+	ag  = G.draw_two_protocols()
+	af = G.add_diff_layer()
+	af.draw('compare/Figures/test.svg', prog = 'dot')
 	
 
 
