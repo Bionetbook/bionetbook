@@ -28,38 +28,34 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 
 	if 'components' in kwargs: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
 		''' assuming that the objectids of the reagents are the same'''
-		# print 'conponents on'
+
 		# count how many changes each reagent has, if 2 reagent names are different, write them last 
+		
+		_conc = ''
+		_vol = ''
+		_mass = ''
 
 		if 'conc' in changed:
-			_conc = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(str(x['conc'][0]),str(x['conc'][1]), str(y['conc'][0]),str(y['conc'][1]))
-		if 'conc' in unchanged:
-			_conc = '<TD colspan="2">%s</TD><TD colspan="2">%s</TD>'%(str(x['conc'][0]), str(x['conc'][1]))
-		else:
-			_conc = ''
-		print 'concentrstion = '+ _conc	
-
-		if 'vol' in changed:
-			_vol = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(str(x['vol'][0]),str(x['vol'][1]), str(y['vol'][0]),str(y['vol'][1]))
-			
-		if 'vol' in unchanged:
-			_vol = '<TD colspan="2">%s</TD><TD colspan="2">%s</TD>'%(str(x['vol'][0]), str(x['vol'][1]))
+			_conc = '<TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
+			# print 'CHANGED CONC'
+		if 'conc' in unchanged and 'conc' not in changed:
+			_conc = '<TD colspan="2">%s</TD>'%(str(x['conc'][0]) + str(x['conc'][1])) #<TD colspan="2">%s</TD> 
+			# print 'UNCHANGED CONC'
 		
-		else:
-			_vol = ''
 
-		print 'volume is:' + _vol	
+		if 'vol' in changed and 'vol' not in unchanged:
+			_vol = '<TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD>'%(str(x['vol'][0]) + str(x['vol'][1]), str(y['vol'][0]) + str(y['vol'][1])) #<TD>%s</TD><TD>%s</TD>
+		if 'vol' in unchanged and 'vol' not in changed:
+			_vol = '<TD colspan="2">%s</TD>'%(str(x['vol'][0]) + str(x['vol'][1]))	#<TD colspan="2">%s</TD>
 
 
-		if 'mass' in changed:
-			_mass = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(str(x['mass'][0]),str(x['mass'][1]), str(y['mass'][0]),str(y['mass'][1]))
-		if 'mass' in unchanged:
-			_mass = '<TD colspan="2">%s</TD><TD colspan="2">%s</TD>'%(str(x['mass'][0]), str(x['mass'][1]))
-		
-		else:
-			_mass = ''
+		if 'mass' in changed and 'mass' not in changed:
+			_mass = '<TD><font color="#B82F3">%s</font>%</TD><TD><font color="#015666">%s</font></TD>'%(str(x['mass'][0]) + str(x['mass'][1]), str(y['mass'][0]) + str(y['mass'][1])) # <TD>%s</TD><TD>%s</TD>
+		if 'mass' in unchanged and 'mass' not in unchanged:
+			_mass = '<TD colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
 
-	return  _conc + _vol + _mass + '</TR>'
+		return  _conc + _vol + _mass + '</TR>'
+
 
 def add_html_cell(m):
 	return '<TD>%s</TD>' %(m)
@@ -70,8 +66,3 @@ def merge_table_pieces(content_tmp):
 	content = ''.join(content_tmp)
 	merge = '<' + table + content + '</TABLE>>'
 	return merge
-
-
-# same = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>'% (kwargs['name'], x[])
-# only_one = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(kwargs['name'], x[])
-# both = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TD>%s</TD><TD>%s</TD>' %

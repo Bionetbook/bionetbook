@@ -402,10 +402,11 @@ class Compare(object):
 						for m,n in zip(components_a,components_b): 
 							d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
 							scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-							print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+							# print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
 							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
-							print tmp
-							_name = add_html_cell(self.protocol_A.nodes[m]['name']) 
+							# print tmp
+							# print '\n'
+							_name = add_html_cell(self.protocol_A.nodes[m]['objectid']) 
 							content.append('<TR>' + _name + tmp)
 							
 
