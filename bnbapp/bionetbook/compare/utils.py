@@ -15,10 +15,10 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 
 	# format the HTML component:
 		for i in changed:
-			content_tmp.append('<TR><TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+			content_tmp.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
 
 		for j in unchanged:
-			content_tmp.append('<TR><TD colspan="2">%s</TD></TR>'%(x[j]))	
+			content_tmp.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j]))	
 
 		content = ''.join(content_tmp)
 		merge = '<' + table + content + '</TABLE>>'	
@@ -36,23 +36,23 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 		_mass = ''
 
 		if 'conc' in changed:
-			_conc = '<TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
+			_conc = '<TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
 			# print 'CHANGED CONC'
 		if 'conc' in unchanged and 'conc' not in changed:
-			_conc = '<TD colspan="2">%s</TD>'%(str(x['conc'][0]) + str(x['conc'][1])) #<TD colspan="2">%s</TD> 
+			_conc = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['conc'][0]) + str(x['conc'][1])) #<TD colspan="2">%s</TD> 
 			# print 'UNCHANGED CONC'
 		
 
 		if 'vol' in changed and 'vol' not in unchanged:
-			_vol = '<TD><font color="#B82F3">%s</font></TD><TD><font color="#015666">%s</font></TD>'%(str(x['vol'][0]) + str(x['vol'][1]), str(y['vol'][0]) + str(y['vol'][1])) #<TD>%s</TD><TD>%s</TD>
+			_vol = '<TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD>'%(str(x['vol'][0]) + str(x['vol'][1]), str(y['vol'][0]) + str(y['vol'][1])) #<TD>%s</TD><TD>%s</TD>
 		if 'vol' in unchanged and 'vol' not in changed:
-			_vol = '<TD colspan="2">%s</TD>'%(str(x['vol'][0]) + str(x['vol'][1]))	#<TD colspan="2">%s</TD>
+			_vol = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['vol'][0]) + str(x['vol'][1]))	#<TD colspan="2">%s</TD>
 
 
 		if 'mass' in changed and 'mass' not in changed:
-			_mass = '<TD><font color="#B82F3">%s</font>%</TD><TD><font color="#015666">%s</font></TD>'%(str(x['mass'][0]) + str(x['mass'][1]), str(y['mass'][0]) + str(y['mass'][1])) # <TD>%s</TD><TD>%s</TD>
+			_mass = '<TD color="#C0C0C0"><font color="#B82F3">%s</font>%</TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD>'%(str(x['mass'][0]) + str(x['mass'][1]), str(y['mass'][0]) + str(y['mass'][1])) # <TD>%s</TD><TD>%s</TD>
 		if 'mass' in unchanged and 'mass' not in unchanged:
-			_mass = '<TD colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
+			_mass = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
 
 		return  _conc + _vol + _mass + '</TR>'
 

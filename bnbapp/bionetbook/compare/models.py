@@ -373,6 +373,7 @@ class Compare(object):
 				# set layout and colors
 				s = self.agraph.get_node(diff_object)
 				s.attr['shape'] = 'box'
+				s.attr['color'] = '#C0C0C0'
 				s.attr['style'] = 'rounded'
 
 				# set label:
@@ -406,7 +407,7 @@ class Compare(object):
 							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
 							# print tmp
 							# print '\n'
-							_name = add_html_cell(self.protocol_A.nodes[m]['objectid']) 
+							_name = add_html_cell(self.protocol_A.nodes[m]['name']) 
 							content.append('<TR>' + _name + tmp)
 							
 
@@ -433,6 +434,7 @@ class Compare(object):
 					# set layout and colors
 					s = self.agraph.get_node(diff_object)
 					s.attr['shape'] = 'box'
+					s.attr['color'] = '#C0C0C0'
 					s.attr['style'] = 'rounded'
 					s.attr['label'] = merge_table_pieces(content_sorted)
 					
