@@ -358,9 +358,9 @@
 <path fill="none" stroke="#c0c0c0" d="M544.25,-874C544.25,-880 538.25,-886 532.25,-886"/>
 <polygon fill="none" stroke="#c0c0c0" points="117,-856 117,-877 395,-877 395,-856 117,-856"/>
 <text text-anchor="start" x="120.5" y="-860.5" font-family="Times,serif" font-size="14.00">Buffer, First strand cDNA synthesis (Invitrogen)</text>
-<polygon fill="none" stroke="#c0c0c0" points="400,-856 400,-877 425,-877 425,-856 400,-856"/>
+<polygon fill="none" stroke="#b82f03" points="400,-856 400,-877 425,-877 425,-856 400,-856"/>
 <text text-anchor="start" x="404" y="-860.5" font-family="Times,serif" font-size="14.00" fill="#b82f03">5X</text>
-<polygon fill="none" stroke="#c0c0c0" points="430,-856 430,-877 455,-877 455,-856 430,-856"/>
+<polygon fill="none" stroke="#015666" points="430,-856 430,-877 455,-877 455,-856 430,-856"/>
 <text text-anchor="start" x="434" y="-860.5" font-family="Times,serif" font-size="14.00" fill="#015666">7X</text>
 <polygon fill="none" stroke="#c0c0c0" points="460,-856 460,-877 532,-877 532,-856 460,-856"/>
 <text text-anchor="start" x="484" y="-860.5" font-family="Times,serif" font-size="14.00">, 4ul</text>
@@ -368,9 +368,9 @@
 <text text-anchor="start" x="151" y="-835" font-family="Times,serif" font-size="14.00">Reducing agent, Dithiothreitol (DTT)</text>
 <polygon fill="none" stroke="#c0c0c0" points="400,-831 400,-851 455,-851 455,-831 400,-831"/>
 <text text-anchor="start" x="405.5" y="-835" font-family="Times,serif" font-size="14.00">100mM</text>
-<polygon fill="none" stroke="#c0c0c0" points="460,-831 460,-851 490,-851 490,-831 460,-831"/>
+<polygon fill="none" stroke="#b82f03" points="460,-831 460,-851 490,-851 490,-831 460,-831"/>
 <text text-anchor="start" x="463" y="-835" font-family="Times,serif" font-size="14.00" fill="#b82f03">, 2ul</text>
-<polygon fill="none" stroke="#c0c0c0" points="495,-831 495,-851 532,-851 532,-831 495,-831"/>
+<polygon fill="none" stroke="#015666" points="495,-831 495,-851 532,-851 532,-831 495,-831"/>
 <text text-anchor="start" x="498" y="-835" font-family="Times,serif" font-size="14.00" fill="#015666">, 10ul</text>
 <polygon fill="none" stroke="#c0c0c0" points="117,-806 117,-826 395,-826 395,-806 117,-806"/>
 <text text-anchor="start" x="178.5" y="-810" font-family="Times,serif" font-size="14.00">Water, nuclease&#45;free, sterile</text>
