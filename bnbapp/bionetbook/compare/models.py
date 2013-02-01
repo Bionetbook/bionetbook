@@ -90,7 +90,7 @@ class ProtocolPlot(Protocol):
 		if 'machine' in kwargs and kwargs['machine']==True:
 
 			MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-			anchor_nodes = [self.nodes[r[2]]['objectid'] for r in self.get_action_tree('objectid') if self.nodes[r[2]]['verb'] in MACHINE_VERBS]
+			anchor_nodes = [self.nodes[r]['objectid'] for r in self.get_actions if self.nodes[r]['verb'] in MACHINE_VERBS]
 			self.layer_data = {} 
 			for verb in anchor_nodes:
 				self.layer_data[self.nodes[verb]['objectid']] = self.nodes[verb]['machine']['objectid'] 
@@ -326,20 +326,6 @@ class Compare(object):
 
 		# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
 
-		#---> manually generate the verb-to-verb comparison of 2 protocols, manual<----:
-		# turn this on for comapring oligo to hex
-		# a.actions = [r[2] for r in a.get_action_tree('objectid')]
-		# b.actions = [r[2] for r in b.get_action_tree('objectid')]
-
-		# self.matching_verbs= zip(A, B)
-
-		# self.matching_verbs.pop(-1)
-		# self.matching_verbs.pop(-1)
-		# self.matching_verbs.pop(-1)
-		# self.matching_verbs.append((u'3-ya985z',u'19-lk1yt0'))
-		# self.matching_verbs.append((u'3-bavsb0',u'19-i7w4wg'))
-		# self.matching_verbs.append((u'3-adrmwt',u'19-8v7w7q'))
-
 		for parent,child in self.matching_verbs_pk:
 		
 			rank_list = (parent,child) 		
@@ -451,6 +437,7 @@ def test_compare():
 	ag  = G.draw_two_protocols()
 	af = G.add_diff_layer()
 	af.draw('compare/Figures/test.svg', prog = 'dot')
+	print 'no errors'
 	
 
 
