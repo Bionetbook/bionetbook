@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import set_html_label
+from compare.utils import set_html_label, add_html_cell, merge_table_pieces
 
 class DictDiffer(object):
 	"""
@@ -348,24 +348,27 @@ class Compare(object):
 
 		return self.agraph
 
-	def add_diff_layer(self):
+	def add_diff_layer(self, object_sorting = 'least_errors'):
+		''' this function assumes that the pairs of objects are equivalent in that both have validated:
+			'machines'
+			'components'
+			'''
+		for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
 
-		for a,b in self.matching_verbs: #[(node_a, node_b), ]
-
-			if 'machine' in self.protocol_A.nodes[a].keys():  # object has only one child:
-				x = self.protocol_A.nodes[a]['machine'].summary
-				y = self.protocol_B.nodes[b]['machine'].summary
+			if 'machine' in self.protocol_A.nodes[verb_a].keys():  # object has only one child:
+				x = self.protocol_A.nodes[verb_a]['machine'].summary
+				y = self.protocol_B.nodes[verb_b]['machine'].summary
 				d = DictDiffer (x, y)
 				# trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
 				# if trigger > 0:
 					
 				# --->  create a compare object that will apear between the 2 base diagrams:
-				diff_object = self.protocol_A.nodes[a]['machine'].pk
-				ea = self.agraph.add_edge(self.protocol_A.nodes[a].pk,diff_object)
-				eb = self.agraph.add_edge(self.protocol_B.nodes[b].pk,diff_object)
+				diff_object = self.protocol_A.nodes[verb_a]['machine'].pk
+				ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+				eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
 				# set all diff objects on same rank:
-				N = self.agraph.add_subgraph([self.protocol_A.nodes[a].pk, diff_object, self.protocol_B.nodes[b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+				N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
 				
 				# set layout and colors
 				s = self.agraph.get_node(diff_object)
@@ -373,9 +376,65 @@ class Compare(object):
 				s.attr['style'] = 'rounded'
 
 				# set label:
-				s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+				s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+				print set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+				# --->
 
-				# <---
+			if 'components' in self.protocol_A.nodes[verb_a].keys(): # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+				# Validate that reagent objectids are the same:
+
+
+				if len(self.protocol_A.nodes[verb_a]['components']) ==0:
+					continue
+
+				else:
+					components_a = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
+					components_b = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+					
+					components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[verb_a].children) - set(r['objectid'] for r in self.protocol_B.nodes[verb_b].children)
+
+					if components_list_diff:
+						pass
+					
+					else:
+						scores = [] # tracks the error rate of a matching components
+						content = [] # gets the html strings
+						for m,n in zip(components_a,components_b): 
+							d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_A.nodes[n].summary)
+							scores.append((len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))))
+							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_A.nodes[n].summary,d.changed(name = True, objectid = True, slug = True), d.unchanged(), components = True) 
+							_name = add_html_cell(m) 
+							content.append('<TR>' + _name + tmp)
+							
+
+					# if len(content) > 1:
+					# 	rows = zip(scores, content)	
+					# 	if 'object_sorting' == 'most errors':
+					# 		rows_sorted = rows.sort().reversed()
+					# 	else:
+					# 		rows_sorted = rows.sort()
+
+					# 	content_sorted = [r[1] for r in rows_sorted]	
+
+					# else:
+					# 	content_sorted = content	
+					content_sorted  = content
+
+						
+					# set the base_graph node:
+					diff_object = self.protocol_A.nodes[components_a[0]].pk	
+					ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+					eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)		
+					N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+					
+					# set layout and colors
+					s = self.agraph.get_node(diff_object)
+					s.attr['shape'] = 'box'
+					s.attr['style'] = 'rounded'
+					s.attr['label'] = merge_table_pieces(content_sorted)
+					print merge_table_pieces(content_sorted)
+
+
 		return self.agraph			
 
 
