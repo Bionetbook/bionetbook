@@ -641,7 +641,23 @@ class Component(NodeBase):
 
     @property
     def label(self):
-        return unify(self, shorthand = True)
+        return unify(self, summary = False)
+
+    @property
+    def summary(self):
+        ''' takes self.label as a list and turns it into a dict:
+            u'25 degrees Celsius', u'2 minutes' -> 
+            {temp: '25C', time: '2 min'}'''
+        # import re
+        # output = {}
+        
+        # for i in self.label:
+        #     if 'Celsius' in i or 'degre' in i: #  uL, mL, L, pM, nM, uM, mM, M, pm, nm, um, mm, m, ng, ug, mg, g, kg
+        #         output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
+        #     if 'minute' in i or 'second' in i or 'hour' in i:
+        #         output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+
+        return unify(self, summary = True)      
 
         
 
