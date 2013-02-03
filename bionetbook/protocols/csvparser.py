@@ -32,7 +32,7 @@ filename = sys.argv[1]
 if len(sys.argv) >2:
 	output_format = '.' + sys.argv[2]
 else:
-	output_format = '.json'
+	output_format = '.yaml'
 
 
 f=csv.reader(open(filename,'rU'))
@@ -283,3 +283,4 @@ if output_format == '.json':
 	stream.write(json.dumps(Protocol))
 	stream.close()
 
+print '%s'%(fname)
