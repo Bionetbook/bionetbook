@@ -547,6 +547,44 @@ class Machine(NodeBase):
                 output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
 
         return output   
+
+class Thermocycle(NodeBase):
+
+    def __init__(self, protocol, action=None, data=None, **kwargs):
+        self.action = action
+        super(Thermocycle, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        
+    def get_absolute_url(self):
+        return "#NDF"
+        #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
+
+    @property
+    def title(self):
+        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+
+    @property
+    def parent(self):
+        return self.action
+
+    # @property
+    # def label(self):
+    #     return settify(self, shorthand = True)
+
+    # @property
+    # def summary(self):
+    #     ''' takes self.label as a list and turns it into a dict:
+    #         u'25 degrees Celsius', u'2 minutes' -> 
+    #         {temp: '25C', time: '2 min'}'''
+    #     import re
+    #     output = {}
+        
+    #     for i in self.label:
+    #         if 'Celsius' in i or 'degre' in i:
+    #             output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
+    #         if 'minute' in i or 'second' in i or 'hour' in i:
+    #             output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+
+        return output           
     
 
 
