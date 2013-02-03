@@ -234,6 +234,10 @@ class Protocol(TimeStampedModel):
 
                 if 'machine' in action:
                     result[action['machine']['objectid']] = action['machine']
+
+                if 'thermocycle' in action:
+                    for thermocycle in action['thermocycle']:
+                        result[thermocycle['objectid']] = thermocycle    
                             
 
         return result
@@ -552,6 +556,7 @@ class Thermocycle(NodeBase):
 
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
+        print 'starting thermocycler object'
         super(Thermocycle, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
@@ -607,9 +612,9 @@ class Action(NodeBase):
         if 'components' in data:                                        # Convert dictionaries into Component Objects
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
-        if 'Thermocycle' in data:                                        # Convert dictionaries into Component Objects
-            self['Thermocycle'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]    
-#3 _-------->>>>>>  YOU LEFT OFF HERE <<<<<<<-----------
+        if 'thermocycle' in data:                                        # Convert dictionaries into Component Objects
+            self['thermocycle'] = [ Thermocycle(self.protocol, action=self, data=c) for c in data['thermocycle'] ] 
+            # print 'starting thermocycler object'   
 
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
