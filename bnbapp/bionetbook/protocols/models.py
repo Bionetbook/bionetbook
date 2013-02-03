@@ -707,6 +707,8 @@ class Action(NodeBase):
         #print "%s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
         if self['machine']['objectid'] == node_id:
             del( self['machine'] )
+        if node_id in [r['objectid'] for r in self['thermocycle']]:
+            self['thermocycle'] = [ x for x in self['thermocycle'] if x['objectid'] is not node_id ]
         else:
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
