@@ -1,0 +1,206 @@
+{
+  "Name": "PCR amplification of dsDNA", 
+  "components-location": [
+    [
+      11, 
+      0, 
+      0
+    ], 
+    [
+      59, 
+      2, 
+      0
+    ]
+  ], 
+  "protocol-reagents": {}, 
+  "Specific_tags": "", 
+  "Reference_URL": "http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb0411s89/abstract;jsessionid=953D32C841D4519C73A9F2BA29307410.d01t01", 
+  "steps": [
+    {
+      "stepnum": 0, 
+      "actions": [
+        {
+          "duration_comment": "Active; Per sample", 
+          "verb": "combine", 
+          "max_time": "2", 
+          "components": [
+            {
+              "max_vol": "23", 
+              "min_vol": "23", 
+              "vol_units": "microliter", 
+              "name": "Output from prior protocol (Illumina, Ligate Illumina Adapters)"
+            }, 
+            {
+              "max_vol": "1", 
+              "min_vol": "1", 
+              "vol_units": "microliter", 
+              "name": "Nucleic Acid, Primer, Illumina PCR primer 1.1"
+            }, 
+            {
+              "max_vol": "1", 
+              "min_vol": "1", 
+              "vol_units": "microliter", 
+              "name": "Nucleic Acid, Primer, Illumina PCR primer 2.1"
+            }, 
+            {
+              "conc_units": "X", 
+              "max_conc": "2", 
+              "name": "Enzyme Mix, Phusion DNA Polymerase Master Mix, 2X", 
+              "vol_units": "microliter", 
+              "max_vol": "25", 
+              "min_conc": "2", 
+              "min_vol": "25"
+            }, 
+            {
+              "max_vol": "50", 
+              "min_vol": "50", 
+              "vol_units": "microliter", 
+              "name": "Total Volume"
+            }
+          ], 
+          "min_time": "2", 
+          "time_units": "minutes"
+        }, 
+        {
+          "how": "gently by pipetting up and down", 
+          "duration_comment": "Active; Per sample", 
+          "verb": "mix", 
+          "max_time": "0.25", 
+          "min_time": "0.25", 
+          "remark": "try to avoid creation of bubbles.", 
+          "time_units": "minutes"
+        }, 
+        {
+          "duration_comment": "Passive", 
+          "time_units": "minutes", 
+          "speed_comment": "Pulse", 
+          "verb": "centrifuge", 
+          "max_time": "1", 
+          "min_time": "1", 
+          "time_comment": "Brief", 
+          "why": "to collect the solution in the bottom of the tube."
+        }
+      ]
+    }, 
+    {
+      "stepnum": 1, 
+      "actions": [
+        {
+          "remark": "The cycling conditions may need to be optimized, but these are reasonable starting conditions.", 
+          "verb": "thermocycle", 
+          "thermocycle": [
+            {
+              "duration_comment": "Passive", 
+              "name": "Initial Denaturation", 
+              "objectid": "", 
+              "settings": [
+                {
+                  "name": "denaturation", 
+                  "objectid": "", 
+                  "time_units": "seconds", 
+                  "min_time": "30", 
+                  "max_time": "30", 
+                  "temp_units": "degrees Celsius", 
+                  "min_temp": "98", 
+                  "slug": "", 
+                  "max_temp": "98"
+                }
+              ], 
+              "slug": "", 
+              "cylces": "1"
+            }, 
+            {
+              "duration_comment": "Passive", 
+              "name": "Elongation", 
+              "objectid": "", 
+              "settings": [
+                {
+                  "min_time": "10", 
+                  "name": "Denaturation", 
+                  "max_time": "10", 
+                  "temp_units": "degrees Celsius", 
+                  "min_temp": "98", 
+                  "time_units": "seconds", 
+                  "max_temp": "98"
+                }, 
+                {
+                  "min_time": "30", 
+                  "name": "Annealing", 
+                  "max_time": "30", 
+                  "temp_units": "degrees Celsius", 
+                  "min_temp": "65", 
+                  "time_units": "seconds", 
+                  "max_temp": "65"
+                }, 
+                {
+                  "min_time": "30", 
+                  "name": "Extension", 
+                  "max_time": "30", 
+                  "temp_units": "degrees Celsius", 
+                  "min_temp": "72", 
+                  "time_units": "seconds", 
+                  "max_temp": "72"
+                }
+              ], 
+              "cycles": "15", 
+              "slug": ""
+            }, 
+            {
+              "duration_comment": "Passive", 
+              "name": "Termination", 
+              "objectid": "", 
+              "settings": [
+                {
+                  "name": "Termination", 
+                  "objectid": "", 
+                  "time_units": "minutes", 
+                  "min_time": "5", 
+                  "max_time": "5", 
+                  "temp_units": "degrees Celsius", 
+                  "min_temp": "72", 
+                  "slug": "", 
+                  "max_temp": "72"
+                }
+              ], 
+              "slug": "", 
+              "cylces": "1"
+            }
+          ]
+        }
+      ]
+    }, 
+    {
+      "stepnum": 2, 
+      "actions": [
+        {
+          "remark": "follow the manufacturer's recommended protocol, but elute in a final \nvolume of 15 _l of buffer eb. note that this step again uses the \nminelute version of the kit.", 
+          "verb": "call_for_protocol", 
+          "components": [
+            {
+              "max_vol": "15", 
+              "min_vol": "15", 
+              "vol_units": "microliter", 
+              "name": "Nucleic Acid, DNA, purified"
+            }, 
+            {
+              "max_vol": "15", 
+              "min_vol": "15", 
+              "vol_units": "microliter", 
+              "name": "Total Volume"
+            }
+          ], 
+          "protocol_kit name": " QIAquick MinElute PCR Purification Kit", 
+          "protocol_output": " Nucleic Acid, DNA, purified", 
+          "duration_comment": "Unknown, Protocol", 
+          "protocol_type": " PCR Purification"
+        }
+      ]
+    }
+  ], 
+  "Reference_PMID": "20069539", 
+  "Input": "dsDNA with Illumina adapters", 
+  "Remarks": "", 
+  "Output": "PCR-amplified pool of cDNA", 
+  "Reference_DOI": "10.1002/0471142727.mb0411s89", 
+  "Category_tags": "PCR amplification of dsDNA"
+}
