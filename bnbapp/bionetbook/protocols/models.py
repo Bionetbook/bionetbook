@@ -674,6 +674,10 @@ class Action(NodeBase):
 
         if 'machine' in self:
             return self['machine']
+
+        if 'thermocycle' in self:
+            return self['thermocycle']   
+             
         else:
             return None
 
