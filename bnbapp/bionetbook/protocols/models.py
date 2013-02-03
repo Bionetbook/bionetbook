@@ -661,6 +661,15 @@ class Action(NodeBase):
             return None
 
     @property
+    def thermocycle(self):
+        if 'thermocycle' in self:
+            return self['thermocycle']
+        else:
+            return None
+
+
+
+    @property
     def children(self):
         
         if type(self.components) == 'list' or 'machine' in self:
@@ -677,7 +686,7 @@ class Action(NodeBase):
 
         if 'thermocycle' in self:
             return self['thermocycle']   
-             
+
         else:
             return None
 
