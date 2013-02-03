@@ -607,6 +607,10 @@ class Action(NodeBase):
         if 'components' in data:                                        # Convert dictionaries into Component Objects
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
+        if 'Thermocycle' in data:                                        # Convert dictionaries into Component Objects
+            self['Thermocycle'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]    
+#3 _-------->>>>>>  YOU LEFT OFF HERE <<<<<<<-----------
+
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
