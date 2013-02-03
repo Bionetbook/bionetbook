@@ -11,7 +11,7 @@ def init_prot(ind, fname, user, Protocol):
 
 	ind.data = ind.read_data(fname)
 	ind.name = ind.data['Name']
-	ind.owner = user
+	ind.owner = org
 	ind.description = ind.data['Remarks']
 	ind.duration_in_seconds = ind.get_duration()
 	ind.save()
@@ -29,5 +29,12 @@ def update_param(Protocol,i):
 	ind.protocol_input = ind.data['Input']
 	ind.protocol_output = ind.data['Output']
 	
+####___
+
+# or :
+json_data = open(PCR_ofdsDNA.json).read()
+data = json.loads(json_data)
+
+
 
 
