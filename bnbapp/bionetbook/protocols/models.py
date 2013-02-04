@@ -571,24 +571,45 @@ class Thermocycle(NodeBase):
     def parent(self):
         return self.action
 
-    # @property
-    # def label(self):
-    #     return settify(self, shorthand = True)
+    @property
+    def label(self):
+        return settify(self, shorthand = True)
 
-    # @property
-    # def summary(self):
-    #     ''' takes self.label as a list and turns it into a dict:
-    #         u'25 degrees Celsius', u'2 minutes' -> 
-    #         {temp: '25C', time: '2 min'}'''
-    #     import re
-    #     output = {}
-        
-    #     for i in self.label:
-    #         if 'Celsius' in i or 'degre' in i:
-    #             output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-    #         if 'minute' in i or 'second' in i or 'hour' in i:
-    #             output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+    @property
+    def summary(self):
+        ''' finds brothers by: self.parent.children and returns a dict with all the pcr stages :
+        {
+            'Initial denaturation': ['98 deg celsius', '30 seconds']    
+            'Denaturation': ['98 deg celsius', '30 seconds']    
+            'Annealing': ['98 deg celsius', '30 seconds']    
+            'extenssion': ['98 deg celsius', '30 seconds']    
+            'termination': ['98 deg celsius', '30 seconds']    
+            'Cycles': {'Initial denaturation':,1, 'Elongation':15, 'Termination': 1}
 
+        }    
+
+            '''
+        import re
+        parent = self.parent['objectid']
+
+        thermo_ids = [r['objectid'] for r in self.protocol.nodes[parent].children]
+        print thermo_ids
+        output = {}
+        tmp_output = {}
+        output['cycles'] = {}
+
+        for i in thermo_ids:
+            output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
+            for j in self.protocol.nodes[i]['settings']:
+                tmp_output[j['name']] = settify(j)
+                output[j['name']] = {}
+                for ii in tmp_output[j['name']]:     
+                    if 'Celsius' in ii or 'degre' in ii:
+                        output[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
+                    if 'minute' in ii or 'second' in ii or 'hour' in ii:
+                        output[j['name']]['time'] = str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+
+    
         return output           
     
 
