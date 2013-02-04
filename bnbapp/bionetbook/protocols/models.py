@@ -578,38 +578,68 @@ class Thermocycle(NodeBase):
     @property
     def summary(self):
         ''' finds brothers by: self.parent.children and returns a dict with all the pcr stages :
-        {
-            'Initial denaturation': ['98 deg celsius', '30 seconds']    
-            'Denaturation': ['98 deg celsius', '30 seconds']    
-            'Annealing': ['98 deg celsius', '30 seconds']    
-            'extenssion': ['98 deg celsius', '30 seconds']    
-            'termination': ['98 deg celsius', '30 seconds']    
-            'Cycles': {'Initial denaturation':,1, 'Elongation':15, 'Termination': 1}
-
-        }    
+        
+            {'Initial denaturation':
+                [
+                annealing: {temp = '98C', tmie = 30 seconds}
+                ], 
+                cycles : '1', before: 'kffgk', after'frrff'}    
+            {'Elongation': 
+                [
+                {'Denaturation': {'98 deg celsius', '30 seconds'}},     
+                {'Annealing': {'98 deg celsius', '30 seconds'}},    
+                {'extenssion': {'98 deg celsius', '30 seconds'}
+                ], 
+                cycles: '15', before: 'rrfffr', 'after': 'gffgg'},    
+            {'Termination': 
+                [
+                {'termination'{98 deg celsius', '30 seconds'},
+                ],
+                cycles: '1', before: 'rfrffr', 'after': 'gerrrg'}, }    
 
             '''
         import re
+        output = {}
+        tmp_output = {}
+        output[self['name']] = []
+        output['cycles'] = self['cycles']
         parent = self.parent['objectid']
 
         thermo_ids = [r['objectid'] for r in self.protocol.nodes[parent].children]
-        print thermo_ids
-        output = {}
-        tmp_output = {}
-        output['cycles'] = {}
+        current = thermo_ids.index(self['objectid'])
+        
+        if current == 0 and len(thermo_ids) == 1:
+            output['previous_substep'] = ''
+            output['next_substep'] = ''
 
-        for i in thermo_ids:
-            output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
-            for j in self.protocol.nodes[i]['settings']:
-                tmp_output[j['name']] = settify(j)
-                output[j['name']] = {}
-                for ii in tmp_output[j['name']]:     
-                    if 'Celsius' in ii or 'degre' in ii:
-                        output[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
-                    if 'minute' in ii or 'second' in ii or 'hour' in ii:
-                        output[j['name']]['time'] = str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+        if current == 0 and len(thermo_ids) >1:
+            output['previous_substep'] = ''
+            output['next_substep'] = thermo_ids[1]
 
-    
+        if current > 0 and current < len(thermo_ids) -1 :
+            output['previous_substep'] = thermo_ids[current - 1]
+            output['next_substep'] = thermo_ids[current + 1]
+
+        if current == len(thermo_ids):
+            output['previous_substep'] = thermo_ids[current-1]
+            output['next_substep'] = ''
+
+        
+
+        # for i in thermo_ids:
+        #     output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
+        for j in self['settings']:
+            tmp_output[j['name']] = settify(j)
+            stage = {}
+            stage[j['name']] = {}
+            for ii in tmp_output[j['name']]:     
+                if 'Celsius' in ii or 'degre' in ii:
+                    stage[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
+                if 'minute' in ii or 'second' in ii or 'hour' in ii:
+                    stage[j['name']]['time'] = str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+
+            output[self['name']].append(stage)        
+
         return output           
     
 

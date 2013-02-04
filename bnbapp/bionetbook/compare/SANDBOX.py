@@ -57,15 +57,35 @@ for a,b in self.matching_verbs: #[(node_a, node_b), ]
 			ea = self.agraph.add_edge(a,diff_object)
 			eb = self.agraph.add_edge(b,diff_object)
 			s = self.agraph.get_node(diff_object)
-			# generate label:
-			''' label is an HTML object and for automation sake, created by concatenating a few peices:
-			table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
-			content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
-			merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. 
-			inject = merge.format(x['temp'],y['temp'], y['time'])  --> injects the data into the table
-			s.attr['label'] = inject  --> attatches the HTML code to the objects label'''
-			s.attr['label'] = set_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+			# set label:
+			s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
+
+	return		
 	
+
+
+d ={'nanograms':'ng',
+    'micrograms':'ug',    
+    'milligrams':'mg',    
+    'grams':'g',  
+    'kilograms':'kg', 
+    'nanoLiter':'ng', 
+    'microLiter':'ul',    
+    'microliter':'ul',    
+    'milliLiter':'ml',    
+    'Liters':'L',
+    'nanoMolar':'nM', 
+    'microMolar':'uM',    
+    'milliMolar':'mM',    
+    'Molar':'M',
+    'nanomole':'nm', 
+    'micromole':'um',    
+    'millimole':'mm',    
+    'mole':'m'}
+
+
+
+
 
 
 
