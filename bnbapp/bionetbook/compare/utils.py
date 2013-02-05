@@ -67,19 +67,38 @@ def merge_table_pieces(content_tmp):
 	merge = '<' + table + content + '</TABLE>>'
 	return merge
 
-def add_thermo(x, y, **kwargs):
+def add_thermo(x, y=None, **kwargs):
+	import itertools
 	
 	stack = []
-	if len(x['phases']) >1:
-		print 'do something'
+	# if len(x['phases']) >1:
+	# 	print 'do something'
 
-	else:
-		for i in x['phases'].items():
-			row  = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(x['name'], k, v['temp'], v['time']) 
-			row_add_ends = '<TR>' + row + '</TR>'
-			stack.append(row_add_ends)
+	# else:
+	it = itertools.chain(x['phases'])
+	while True:
+		try:
+			elem=it.next()
+			row  = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(x['name'],elem.keys()[0], elem[elem.keys()[0]]['temp'], elem[elem.keys()[0]]['time']) 	
+			stack.append(row)
+		except StopIteration:
+			print 'appending cycle space'
+			stack.pop(-1)
+			row = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s cycles</TD></TR>'%(x['name'],elem.keys()[0], elem[elem.keys()[0]]['temp'], elem[elem.keys()[0]]['time'], x['cycles']) 	
+			stack.append(row)
+			
+			return stack
+			
 
-		table = merge_table_pieces(stack)	
+		# for k,v in x['phases'].items():
+		# 	row  = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(x['name'], k, v['temp'], v['time']) 
+		# 	if job_
+			
+			
+
+		# return stack	
+
+			
 		###### ----> YOU ENDED HERE!!! <------#####
 
 
