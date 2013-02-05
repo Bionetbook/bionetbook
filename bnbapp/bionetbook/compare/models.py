@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import set_html_label, add_html_cell, merge_table_pieces
+from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo
 
 class DictDiffer(object):
 	"""
@@ -269,15 +269,10 @@ class Compare(object):
 		self.protocol_B = protocol_b
 		self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
 		self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
-
+		
 		# Draw out some control elements:
 		# self.agraph.add_nodes_from(['add_common_actions_details',  )
 		# cntrl = 
-
-
-
-
-
 		# line up matching verbs in the same rank
 		# we will add to this function more sophisticated things in the future.
 
@@ -291,6 +286,7 @@ class Compare(object):
 		
 			# add thicl colored line
 		for i in range(1, len(self.A_pk)):
+			print '%s, %s'% (self.A_pk[i-1], self.A_pk[i])
 			self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
 			e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
 			e.attr['style'] = 'setlinewidth(6)' 
@@ -309,10 +305,11 @@ class Compare(object):
 				# add base of second protocol:
 		for i in range(1, len(self.B_pk)):
 			self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
-			n=self.agraph.get_node(self.B_pk[i])
+			print '%s, %s'% (self.B_pk[i-1], self.B_pk[i])
 			e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
 			e.attr['style'] = 'setlinewidth(6)' 
 			e.attr['color'] = '#015666' 
+			n=self.agraph.get_node(self.B_pk[i])
 			n.attr['shape']='box'
 			n.attr['style'] = 'rounded'
 			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
@@ -326,11 +323,11 @@ class Compare(object):
 
 		# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
 
-		for parent,child in self.matching_verbs_pk:
+		# for parent,child in self.matching_verbs_pk:
 		
-			rank_list = (parent,child) 		
-			N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-			N.edge_attr['color'] = 'white'
+		# 	rank_list = (parent,child) 		
+		# 	N = self.agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
+		# 	N.edge_attr['color'] = 'white'
 
 		return self.agraph
 
@@ -382,6 +379,7 @@ class Compare(object):
 
 					if components_list_diff:
 						pass
+						# add a function that can tell the difference between different names
 					
 					else:
 						scores = [] # tracks the error rate of a matching components
@@ -409,8 +407,6 @@ class Compare(object):
 					# else:
 					# 	content_sorted = content	
 					content_sorted  = content
-
-						
 					# set the base_graph node:
 					diff_object = self.protocol_A.nodes[components_a[0]].pk	
 					ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
@@ -423,6 +419,54 @@ class Compare(object):
 					s.attr['color'] = '#C0C0C0'
 					s.attr['style'] = 'rounded'
 					s.attr['label'] = merge_table_pieces(content_sorted)
+
+			if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
+				# get all thermo children:
+				thermo_children_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
+				thermo_children_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+
+				match = set(thermo_children_A) - set(thermo_children_B)
+				if len(match) == 0: 
+					print 'len match = 0'
+				# compare nested thermo objects:
+					table = []
+					for thermo in thermo_children_A:
+						job_A = self.protocol_A.nodes[thermo].summary
+						job_B = self.protocol_B.nodes[thermo].summary
+						print job_A['name']
+						d = DictDiffer(job_A, job_B)
+						if 'phases' in d.changed():
+							print 'phases changed'
+						if 'cycles' in d.changed():
+							print 'cycles changed'
+						if 'name' in d.changed():
+							print 'name changed'	
+
+						else: 
+							tmp = add_thermo(job_A, job_B =None)
+							[table.append(r) for r in tmp]
+							
+					table = merge_table_pieces(table)		
+							
+				diff_object = self.protocol_A.nodes[thermo_children_A[0]].pk	
+				ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+				eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)		
+				N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+				
+				# set layout and colors
+				s = self.agraph.get_node(diff_object)
+				s.attr['shape'] = 'box'
+				s.attr['color'] = '#C0C0C0'
+				s.attr['style'] = 'rounded'
+				s.attr['label'] = (table)
+	
+
+
+
+
+
+				# return table			
+					# need to append the cycles rows			
 					
 
 
