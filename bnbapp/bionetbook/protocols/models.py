@@ -601,7 +601,8 @@ class Thermocycle(NodeBase):
         import re
         output = {}
         tmp_output = {}
-        output[self['name']] = []
+        output['name'] = self['name']
+        output['phases'] = []
         output['cycles'] = self['cycles']
         parent = self.parent['objectid']
 
@@ -638,7 +639,7 @@ class Thermocycle(NodeBase):
                 if 'minute' in ii or 'second' in ii or 'hour' in ii:
                     stage[j['name']]['time'] = str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
 
-            output[self['name']].append(stage)        
+            output['phases'].append(stage)        
 
         return output           
     

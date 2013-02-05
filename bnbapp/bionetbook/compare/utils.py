@@ -66,3 +66,27 @@ def merge_table_pieces(content_tmp):
 	content = ''.join(content_tmp)
 	merge = '<' + table + content + '</TABLE>>'
 	return merge
+
+def add_thermo(x, y, **kwargs):
+	
+	stack = []
+	if len(x['phases']) >1:
+		print 'do something'
+
+	else:
+		for i in x['phases'].items():
+			row  = '<TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD>'%(x['name'], k, v['temp'], v['time']) 
+			row_add_ends = '<TR>' + row + '</TR>'
+			stack.append(row_add_ends)
+
+		table = merge_table_pieces(stack)	
+		###### ----> YOU ENDED HERE!!! <------#####
+
+
+
+
+
+
+
+
+
