@@ -637,7 +637,7 @@ class Thermocycle(NodeBase):
                 if 'Celsius' in ii or 'degre' in ii:
                     stage[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
                 if 'minute' in ii or 'second' in ii or 'hour' in ii:
-                    stage[j['name']]['time'] = str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+                    stage[j['name']]['time'] = str(ii) #str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
 
             output['phases'].append(stage)        
 
