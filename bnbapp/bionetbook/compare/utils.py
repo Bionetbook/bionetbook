@@ -68,72 +68,53 @@ def merge_table_pieces(content_tmp):
 	merge = '<' + table + content + '</TABLE>>'
 	return merge
 
-def add_thermo(job_A, job_B=None, changed=None, unchanged=None, **kwargs):
+def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
+	
 	import itertools
-	
-	if 'subphases' in kwargs:
-		subphases = kwargs['subphases']
 	stack = []
-	# if job_B:
+	it = itertools.izip(job_A['phases'], job_B['phases'])
 	
-	
-	# else:
-	# 	it = itertools.chain(job_A['phases'])
-	if changed:
-		# print 'changed: %s' % (changed)		
-		# print 'subphases: %s'% (subphases)
-		it = itertools.izip(job_A['phases'], job_B['phases'])
-		for i,j in it:
+	while True:
+		try:
+			i,j = it.next()
 			subphase_name = i.keys()[0]
 			temp_A = i[i.keys()[0]]['temp']
 			time_A = i[i.keys()[0]]['time']
 			temp_B = j[j.keys()[0]]['temp']
 			time_B = j[j.keys()[0]]['time']
-			if subphase_name in subphases:
+			if subphases and subphase_name in subphases:
 				if 'temp' in subphases[subphase_name] and 'time' not in subphases[subphase_name]:
-					
 					row  = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A) 	
-					print 'temp: %s'% row
+		
 				if 'time' in subphases[subphase_name] and 'temp' not in subphases[subphase_name]:
 					row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A, time_B) 	
-					print 'time: %s'% row
+					
 				if 'temp' in subphases[subphase_name] and time in subphases[subphase_name]:
 					row  = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A, time_B) 			
-					print 'both:%s'% row 
+					
 			else:
 				row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A) 			
-				# print 'no suphase_name'
-			stack.append(row)	
-		print 'this is a stack for diff %s'%stack
-	
-	else:
-		it = itertools.izip(job_A['phases'], job_B['phases'])
-		for i,j in it:
-			try:
-				# i=it.next()
-				# print 'i,j:', i,j
-				subphase_name = i.keys()[0]
-				temp_A = i[i.keys()[0]]['temp']
-				time_A = i[i.keys()[0]]['time']
-				temp_B = j[j.keys()[0]]['temp']
-				time_B = j[j.keys()[0]]['time']
-				row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A) 			
-				# print row		
-				stack.append(row)
-				# print 'stack:', stack
-			except StopIteration:
-				print 'appending cycle space'
-				stack.pop(-1)
-				# print 'i_keys:%s, i[temp]%s '%(i.keys()[0],i[i.keys()[0]]['temp'])
-				row = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s cycles</TD></TR>'%(job_A['name'],i.keys()[0], i[i.keys()[0]]['temp'], i[i.keys()[0]]['time'], job_A['cycles']) 	
-				stack.append(row)
-
-	
-
-	print 'stack from else: %s'% row	
-	return stack
+				
+			stack.append(row)
 			
-# def get_thermo_changes(job_A, job_B):
+		# Change the last row or every phase to add in a cycles column:	
+		except StopIteration:
+			last_row = stack[-1]
+			stack.pop(-1)
+			if job_A['cycles'] == job_B['cycles']: 
+				cycles = '</TD><TD>%s cycles</TD></TR>' %job_A['cycles'] 
+				fixed_last_row  = last_row.replace('</TD></TR>',cycles)
+				
+			else:
+				cycles = '</TD><TD>%s cycles</TD><TD>%s cycles</TD></TR>' %(job_A['cycles'], job_B['cycles'])
+			
+			fixed_last_row =last_row.replace('</TD></TR>',cycles)
+			stack.append(fixed_last_row)	
+			print 'after adding last row: %s' %stack
+			break
+	return stack
+
+
 
 
 
