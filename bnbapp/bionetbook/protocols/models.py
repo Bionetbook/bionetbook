@@ -257,7 +257,7 @@ class Protocol(TimeStampedModel):
 
     @property    
     def get_components(self):
-        return a.get_reagents_by_action('objectid')
+        return self.get_reagents_by_action('objectid')
  
     ###########
     # delete node properties:
