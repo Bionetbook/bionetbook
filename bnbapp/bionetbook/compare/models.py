@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo
+from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo 
 
 class DictDiffer(object):
 	"""
@@ -423,21 +423,20 @@ class Compare(object):
 			if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
 				import itertools
 				# get all thermo children:
-				thermo_children_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
-				thermo_children_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+				phases_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
+				phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
 
-				match = set(thermo_children_A) - set(thermo_children_B)
+				match = set(phases_A) - set(phases_B)
 				if len(match) == 0: 
 					print 'len match = 0'
 				# compare nested thermo objects:
 					table = []
-					for thermo in thermo_children_A:
+					for thermo in phases_A:
 						job_A = self.protocol_A.nodes[thermo].summary
 						job_B = self.protocol_B.nodes[thermo].summary
-						print 'A:' + job_A['name']
-						print 'B:' + job_B['name']
+						# print 'thermo is %s, \n A: %s + \n, B: %s'%(thermo, job_A['name'], job_B['name'])
 						d = DictDiffer(job_A, job_B)
-						if 'phases' in d.changed():
+						if 'phases' in d.changed() or 'cycles' in d.changed():
 							# go through all items in both phases
 							it = itertools.izip(job_A['phases'], job_B['phases']) 
 							
@@ -453,32 +452,22 @@ class Compare(object):
 										# subphases[each_subphase] = [] 
 										g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])	
 										subphases[each_subphase] = g.changed()
-										tmp = add_thermo(job_A, job_B, d.changed(), subphases = subphases)
+										
 							
+							tmp = add_thermo(job_A, job_B, d.changed(), subphases)
 							table.append(tmp)
-							print 'added by add_thermo for phases'				
-							print 'phases changed'
-						if 'cycles' in d.changed():
-							print 'cycles changed'
+							continue
+				
 						if 'name' in d.changed():
 							print 'name changed'	
 
 						else:
 							tmp = add_thermo(job_A, job_B)
 							table.append(tmp)
-							print 'added by main'
-							# print table		
-						# else: 
-							# tmp = add_thermo(job_A, job_B)
-							# print 'this is len tmp %s' %len(tmp)
-							# if len(tmp) == 1:
-							# 	table.append(tmp)
-						# else:
-						# 	[table.append(r) for r in tmp]
 							
 					table = merge_table_pieces(table)		
 							
-				diff_object = self.protocol_A.nodes[thermo_children_A[0]].pk	
+				diff_object = self.protocol_A.nodes[phases_A[0]].pk	
 				ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
 				eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)		
 				N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
@@ -490,16 +479,6 @@ class Compare(object):
 				s.attr['style'] = 'rounded'
 				s.attr['label'] = (table)
 	
-
-
-
-
-
-				# return table			
-					# need to append the cycles rows			
-					
-
-
 		return self.agraph			
 
 
