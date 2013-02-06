@@ -269,7 +269,7 @@ class Compare(object):
 		self.protocol_B = protocol_b
 		self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
 		self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
-		
+
 		# Draw out some control elements:
 		# self.agraph.add_nodes_from(['add_common_actions_details',  )
 		# cntrl = 
@@ -421,6 +421,7 @@ class Compare(object):
 					s.attr['label'] = merge_table_pieces(content_sorted)
 
 			if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
+				import itertools
 				# get all thermo children:
 				thermo_children_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
 				thermo_children_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
@@ -433,18 +434,47 @@ class Compare(object):
 					for thermo in thermo_children_A:
 						job_A = self.protocol_A.nodes[thermo].summary
 						job_B = self.protocol_B.nodes[thermo].summary
-						print job_A['name']
+						print 'A:' + job_A['name']
+						print 'B:' + job_B['name']
 						d = DictDiffer(job_A, job_B)
 						if 'phases' in d.changed():
+							# go through all items in both phases
+							it = itertools.izip(job_A['phases'], job_B['phases']) 
+							
+							for i,j in it: # getting the subphase name that is different
+								subphase_A = i
+								subphase_B = j
+								f = DictDiffer(subphase_A, subphase_B)
+								if f.changed():
+									L = f.changed() 
+									
+									subphases = {}
+									for each_subphase in L:
+										# subphases[each_subphase] = [] 
+										g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])	
+										subphases[each_subphase] = g.changed()
+										tmp = add_thermo(job_A, job_B, d.changed(), subphases = subphases)
+							
+							table.append(tmp)
+							print 'added by add_thermo for phases'				
 							print 'phases changed'
 						if 'cycles' in d.changed():
 							print 'cycles changed'
 						if 'name' in d.changed():
 							print 'name changed'	
 
-						else: 
-							tmp = add_thermo(job_A, job_B =None)
-							[table.append(r) for r in tmp]
+						else:
+							tmp = add_thermo(job_A, job_B)
+							table.append(tmp)
+							print 'added by main'
+							# print table		
+						# else: 
+							# tmp = add_thermo(job_A, job_B)
+							# print 'this is len tmp %s' %len(tmp)
+							# if len(tmp) == 1:
+							# 	table.append(tmp)
+						# else:
+						# 	[table.append(r) for r in tmp]
 							
 					table = merge_table_pieces(table)		
 							
