@@ -30,10 +30,12 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 		''' assuming that the objectids of the reagents are the same'''
 
 		# count how many changes each reagent has, if 2 reagent names are different, write them last 
-		
 		_conc = ''
 		_vol = ''
 		_mass = ''
+
+		if x['name'].lower() == 'total volume':
+			_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
 
 		if 'conc' in changed:
 			_conc = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
@@ -62,13 +64,24 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 def add_html_cell(m):
 	return '<TD>%s</TD>' %(m)
 
-def merge_table_pieces(content_tmp):
+def merge_table_pieces(content_tmp, layer = None):
 	import itertools
 
+	
 	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">'
 	content = ''.join(list(itertools.chain(*content_tmp)))
-	merge = '<' + table + content + '</TABLE>>'
+
+	if layer:
+		switch = {'components': '<TR><TD>Name</TD><TD>Volume</TD><TD>conc</TD></TR>',
+			  'thermocycle': '<TR><TD>Phase</TD><TD>Subpahse</TD><TD>temp</TD><TD>time</TD><TD>cycles</TD></TR>'}
+		header = switch[layer]		  	
+		merge = '<' + table + header + content + '</TABLE>>'
+
+	else:
+		merge = '<' + table + content + '</TABLE>>'
+
 	return merge
+
 
 def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 	

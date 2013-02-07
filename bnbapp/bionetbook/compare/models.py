@@ -335,7 +335,7 @@ class Compare(object):
 		''' this function assumes that the pairs of objects are equivalent in that both have validated:
 			'machines'
 			'components'
-			'thermocycler'
+			'thermocycle'
 			'''
 		for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
 
@@ -390,24 +390,8 @@ class Compare(object):
 							scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
 							# print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
 							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
-							# print tmp
-							# print '\n'
-							# _name = add_html_cell(self.protocol_A.nodes[m]['name']) 
 							content.append(tmp)
 							
-
-					# if len(content) > 1:
-					# 	rows = zip(scores, content)	
-					# 	if 'object_sorting' == 'most errors':
-					# 		rows_sorted = rows.sort().reversed()
-					# 	else:
-					# 		rows_sorted = rows.sort()
-
-					# 	content_sorted = [r[1] for r in rows_sorted]	
-
-					# else:
-					# 	content_sorted = content	
-					content_sorted  = content
 					# set the base_graph node:
 					diff_object = self.protocol_A.nodes[components_a[0]].pk	
 					ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
@@ -419,7 +403,7 @@ class Compare(object):
 					s.attr['shape'] = 'box'
 					s.attr['color'] = '#C0C0C0'
 					s.attr['style'] = 'rounded'
-					s.attr['label'] = merge_table_pieces(content_sorted)
+					s.attr['label'] = merge_table_pieces(content, 'components')
 
 			if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
 				import itertools
@@ -466,7 +450,7 @@ class Compare(object):
 							tmp = add_thermo(job_A, job_B)
 							table.append(tmp)
 							
-					table = merge_table_pieces(table)		
+					table = merge_table_pieces(table, 'thermocycle')		
 							
 				diff_object = self.protocol_A.nodes[phases_A[0]].pk	
 				ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
