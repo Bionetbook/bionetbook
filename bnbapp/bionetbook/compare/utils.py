@@ -72,8 +72,8 @@ def merge_table_pieces(content_tmp, layer = None):
 	content = ''.join(list(itertools.chain(*content_tmp)))
 
 	if layer:
-		switch = {'components': '<TR><TD>Name</TD><TD>Volume</TD><TD>conc</TD></TR>',
-			  'thermocycle': '<TR><TD>Phase</TD><TD>Subpahse</TD><TD>temp</TD><TD>time</TD><TD>cycles</TD></TR>'}
+		switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">conc</TD></TR>',
+			  'thermocycle': '<TR><TD>Phase</TD><TD>Subpahse</TD><TD colspan="2">temp</TD><TD colspan="2">time</TD><TD colspan="2">cycles</TD></TR>'}
 		header = switch[layer]		  	
 		merge = '<' + table + header + content + '</TABLE>>'
 
