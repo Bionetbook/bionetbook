@@ -1,29 +1,18 @@
 def set_html_label(x,y,changed, unchanged, **kwargs):
 
-	''' label is an HTML object and for automation sake, created by concatenating a few peices:
-				table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
-				content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
-				merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. '''
-
-	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">'
-	content_tmp = []
-	content = []
-	content_tmp = []
+	
+	stack = []
 
 
 	if 'machine' in kwargs:
 
-	# format the HTML component:
 		for i in changed:
-			content_tmp.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+			stack.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
 
 		for j in unchanged:
-			content_tmp.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j]))	
+			stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j]))	
 
-		content = ''.join(content_tmp)
-		merge = '<' + table + content + '</TABLE>>'	
-
-		return merge
+		return stack
 
 
 	if 'components' in kwargs: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
@@ -51,7 +40,7 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 			_vol = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['vol'][0]) + str(x['vol'][1]))	#<TD colspan="2">%s</TD>
 
 
-		if 'mass' in changed and 'mass' not in changed:
+		if 'mass' in changed and 'mass' not in unchaged:
 			_mass = '<TD color="#B82F3"><font color="#B82F3">%s</font>%</TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['mass'][0]) + str(x['mass'][1]), str(y['mass'][0]) + str(y['mass'][1])) # <TD>%s</TD><TD>%s</TD>
 		if 'mass' in unchanged and 'mass' not in unchanged:
 			_mass = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
@@ -62,9 +51,13 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 
 
 def add_html_cell(m):
-	return '<TD>%s</TD>' %(m)
+	return '<<font size = "20">%s</font>>'%(m)
 
 def merge_table_pieces(content_tmp, layer = None):
+	''' label is an HTML object and for automation sake, created by concatenating a few peices:
+		table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
+		content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
+		merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. '''
 	import itertools
 
 	
@@ -100,13 +93,13 @@ def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 			time_B = j[j.keys()[0]]['time']
 			if subphases and subphase_name in subphases:
 				if 'temp' in subphases[subphase_name] and 'time' not in subphases[subphase_name]:
-					row  = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A) 	
+					row  = '<TR><TD>%s</TD><TD>%s</TD><TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A) 	
 		
 				if 'time' in subphases[subphase_name] and 'temp' not in subphases[subphase_name]:
-					row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A, time_B) 	
+					row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A, time_B) 	
 					
 				if 'temp' in subphases[subphase_name] and time in subphases[subphase_name]:
-					row  = '<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A, time_B) 			
+					row  = '<TR><TD>%s</TD><TD>%s</TD><TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD>%s</TD><TD color="#015666"><font color="#015666">%s</font></TD><TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD></TR>'%(job_A['name'],subphase_name, temp_A, temp_B, time_A, time_B) 			
 					
 			else:
 				row  = '<TR><TD>%s</TD><TD>%s</TD><TD colspan="2">%s</TD><TD colspan="2">%s</TD></TR>'%(job_A['name'],subphase_name, temp_A, time_A) 			
@@ -126,10 +119,21 @@ def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 			
 			fixed_last_row =last_row.replace('</TD></TR>',cycles)
 			stack.append(fixed_last_row)	
-			print 'after adding last row: %s' %stack
 			break
 	return stack
 
+def set_title_label(title):
+
+	stack = []
+	name = '<TR><TD colspan="2">%s</TD></TR>'%(title.name)
+	owner = '<TR><TD>Author: %s</TD><TD>Organization: %s</TD></TR>'%('None', str(title.owner))
+	inheritance = '<TR><TD>Parent: %s</TD><TD>Children: %s</TD></TR>'%(str(title.parent), 'None')
+	links = '<TR><TD>link to author: %s</TD><TD>Pubmed: %s</TD></TR>'%('Link Here', str(title.data['Reference_PMID'])) # str(title.data['Reference_URL'])
+	timing = '<TR><TD>Date Created: %s</TD><TD>Duration: %s</TD></TR>'%(str(title.created), str(title.duration_in_seconds))
+	stack = [name, inheritance, links, timing]
+	return stack	
+
+# <TD>%s</TD><TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD><TD colspan="2">%s</TD></TR>'%(self.name, )
 
 
 

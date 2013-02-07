@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo 
+from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
 
 class DictDiffer(object):
 	"""
@@ -267,6 +267,7 @@ class Compare(object):
 		self.agraph = pgv.AGraph()
 		self.protocol_A = protocol_a
 		self.protocol_B = protocol_b
+		self.agraph.graph_attr['clusterrank'] = 'local'
 		self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
 		self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
@@ -280,46 +281,89 @@ class Compare(object):
 		self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
 
 	def draw_two_protocols(self):
+		''' this function draws out 2 protocols starting with the name of the protocol and then with the nodes 
+			add_layers adds the specified layers that a user wants to compare'''
+
+		# Add names of protocol
 		
-		# set node couter:
-		node_counter = len(self.protocol_A.get_actions)
+		# set labels of title nodes:
+		title_A = str(self.protocol_A.pk) + 'title_A'
+		title_B = str(self.protocol_B.pk) + 'title_B'
+		# add edges to first elements in each protocol:
+
+
+		self.agraph.add_nodes_from([title_A, title_B], shape = 'plaintext', fontsize = '20')
+		title_node_A = self.agraph.get_node(title_A)
+		title_node_B = self.agraph.get_node(title_B)
+		self.agraph.add_edge(title_node_A, title_node_B, color = 'white')
+		title = self.agraph.get_edge(title_node_A, title_node_B)
 		
-			# add thicl colored line
+		title_node_A.attr['color'] = '#B82F3'
+		# title_node_A.attr['shape'] = 'box'
+		title_node_A.attr['label'] = self.protocol_A.name
+		title_node_B.attr['color'] = '#015666'
+		# title_node_B.attr['shape'] = 'box'
+		content_A = set_title_label(self.protocol_A)
+		print content_A
+		title_node_A.attr['label'] = merge_table_pieces(content_A)
+		content_B = set_title_label(self.protocol_B)
+		print content_B
+		title_node_B.attr['label'] = merge_table_pieces(content_B)
+		# title.graph_attr['color'] = 'white'
+		# title.graph_attr['label'] = 'white'
+
+		N = self.agraph.add_subgraph([title_node_A, title_node_B], rank = 'same', rankdir='LR')
+		# add to outlines:
+		self.agraph.add_edges_from([(title_node_A, self.A_pk[0]), (title_node_B, self.B_pk[0])], color='white')
+		# title_plot_edge_A = self.agraph.get_edge(title_node_A, self.A_pk[0])
+		# title_plot_edge_A['color'] = 'white'
+		# title_plot_edge_B = self.agraph.get_edge(title_node_B, self.B_pk[0])
+		# title_plot_edge_B['color'] = 'white'
+			
 		for i in range(1, len(self.A_pk)):
-			print '%s, %s'% (self.A_pk[i-1], self.A_pk[i])
+			
 			self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
 			e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
 			e.attr['style'] = 'setlinewidth(9)' 
 			e.attr['color'] = '#B82F3' 
 			n=self.agraph.get_node(self.A_pk[i])
 			n.attr['shape']='box'
+			n.attr['fontsize'] = '20'
 			n.attr['style'] = 'rounded'
 			n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
-		# Set the 0'th node in  protocol_A	
+		# Set the 0'th node and title in protocol_A	
 		n = self.agraph.get_node(self.matching_verbs_pk[0][0])
 		n.attr['shape']='box'
+		n.attr['fontsize'] = '20'
 		n.attr['style'] = 'rounded'
 		n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
-
+		print 'Rendered protocol %s'% self.protocol_A.name
 				# add base of second protocol:
 		for i in range(1, len(self.B_pk)):
 			self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
-			print '%s, %s'% (self.B_pk[i-1], self.B_pk[i])
+			print 'drawing protocol %s'% self.protocol_B.name
 			e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
 			e.attr['style'] = 'setlinewidth(9)' 
 			e.attr['color'] = '#015666' 
 			n=self.agraph.get_node(self.B_pk[i])
 			n.attr['shape']='box'
+			n.attr['fontsize'] = '20'
 			n.attr['style'] = 'rounded'
 			n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
 
 		# Set the 0'th node in  protocol_A	
 		n = self.agraph.get_node(self.matching_verbs_pk[0][1])
 		n.attr['shape']='box'
+		n.attr['fontsize'] = '20'
 		n.attr['style'] = 'rounded'
 		n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
 		
+		######## # draw cluster around each protocol:#########
+		# graph_A = [r for r in self.agraph.nodes() if str(self.protocol_A.pk) in r]
+		# graph_B = [r for r in self.agraph.nodes() if str(self.protocol_B.pk) in r]
+		# print graph_A, graph_B
+		# subgraph_A = self.agraph.add_subgraph(graph_A, name = 'cluster_A', color = '#B82F3') #rank = 'same', rankdir='TD',
 
 		# create the pairwise - verb comparison and return a list of tuples for each verb_a: verb_b match. 
 
@@ -343,6 +387,8 @@ class Compare(object):
 				x = self.protocol_A.nodes[verb_a]['machine'].summary
 				y = self.protocol_B.nodes[verb_b]['machine'].summary
 				d = DictDiffer (x, y)
+				content = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+
 				# trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
 				# if trigger > 0:
 					
@@ -361,7 +407,7 @@ class Compare(object):
 				s.attr['style'] = 'rounded'
 
 				# set label:
-				s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+				s.attr['label'] = merge_table_pieces(content)
 				
 				# --->
 
@@ -413,7 +459,7 @@ class Compare(object):
 
 				match = set(phases_A) - set(phases_B)
 				if len(match) == 0: 
-					print 'len match = 0'
+					# print 'len match = 0'
 				# compare nested thermo objects:
 					table = []
 					for thermo in phases_A:
