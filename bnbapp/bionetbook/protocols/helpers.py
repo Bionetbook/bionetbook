@@ -151,18 +151,17 @@ def unify(units_dict, shorthand = True, summary = False):
             return 'enter concentration units for %s' % units_dict['name']    
 
         if 'max_conc' in conc and 'min_conc' in conc:
-
             if conc['max_conc'] == conc['min_conc']:
                 units_c = conc['max_conc']
             else:
-                units_c = units_c + conc['min_conc'] + '-' + conc['max_conc']
+                units_c = conc['min_conc'] + '-' + conc['max_conc']
+        
         else:
             if 'max_conc' in conc:
                  units_c = conc['max_conc']
             if 'min_conc' in conc:
                  units_c = conc['min_conc']   
 
-        # print units_c                              
         if summary:
             output['conc'] = [units_c, conc_units]
         else:    
@@ -183,17 +182,16 @@ def unify(units_dict, shorthand = True, summary = False):
         if 'max_vol' in vol and 'min_vol' in vol:
 
             if vol['max_vol'] == vol['min_vol']:
-                units_v = units_v + ', ' + vol['max_vol']
+                
+                units_v = vol['max_vol']
             else:
-                units_v = units_v + ', ' + vol['min_vol'] + '-' + vol['max_vol']
-
+                units_v = vol['min_vol'] + '-' + vol['max_vol']
         else:
             if 'max_vol' in vol:
                  units_v = vol['max_vol']
             if 'min_vol' in vol:
                  units_v = vol['min_vol']          
         
-        # print units_v
         if summary:
             output['vol'] = [units_v, vol_units]            
         else:
@@ -212,9 +210,9 @@ def unify(units_dict, shorthand = True, summary = False):
         if 'max_mass' in mass and 'min_mass' in mass:
 
             if mass['min_mass'] == mass['max_mass']:
-                units_m = units_m + ', ' + mass['max_mass']
+                units_m = mass['max_mass']
             else:
-                units_m = units_m + ', ' + mass['min_mass'] + '-' + mass['max_mass']
+                units_m = mass['min_mass'] + '-' + mass['max_mass']
 
         else:
             if 'max_mass' in mass:
@@ -222,40 +220,12 @@ def unify(units_dict, shorthand = True, summary = False):
             if 'min_mass' in mass:
                  units_m = mass['min_mass']
 
-        # print units_m         
         if summary:
             output['mass'] = [units_m, mass_units]
         else:    
             units_m = units_m + ' ' + mass_units
 
-        
-
-    
-
-
-
-
-        # units_m = units_m.replace('nanograms','ng') 
-        # units_m = units_m.replace('micrograms','ug')    
-        # units_m = units_m.replace('milligrams','mg')    
-        # units_m = units_m.replace('grams','g')  
-        # units_m = units_m.replace('kilograms','kg') 
-        # units_v = units_v.replace('nanoLiter','ng') 
-        # units_v = units_v.replace('microLiter','ul')    
-        # units_v = units_v.replace('microliter','ul')    
-        # units_v = units_v.replace('milliLiter','ml')    
-        # units_v = units_v.replace('Liters','L')
-        # units_c = units_c.replace('nanoMolar','nM') 
-        # units_c = units_c.replace('microMolar','uM')    
-        # units_c = units_c.replace('milliMolar','mM')    
-        # units_c = units_c.replace('Molar','M')
-        # units_c = units_c.replace('nanomole','nm') 
-        # units_c = units_c.replace('micromole','um')    
-        # units_c = units_c.replace('millimole','mm')    
-        # units_c = units_c.replace('mole','m')
-
     if summary:
-        # print '4th update'
         return output
     else:
         return units_c + units_v + units_m
