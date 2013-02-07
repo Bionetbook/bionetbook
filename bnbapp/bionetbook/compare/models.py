@@ -289,7 +289,7 @@ class Compare(object):
 			print '%s, %s'% (self.A_pk[i-1], self.A_pk[i])
 			self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
 			e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
-			e.attr['style'] = 'setlinewidth(6)' 
+			e.attr['style'] = 'setlinewidth(9)' 
 			e.attr['color'] = '#B82F3' 
 			n=self.agraph.get_node(self.A_pk[i])
 			n.attr['shape']='box'
@@ -307,7 +307,7 @@ class Compare(object):
 			self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
 			print '%s, %s'% (self.B_pk[i-1], self.B_pk[i])
 			e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
-			e.attr['style'] = 'setlinewidth(6)' 
+			e.attr['style'] = 'setlinewidth(9)' 
 			e.attr['color'] = '#015666' 
 			n=self.agraph.get_node(self.B_pk[i])
 			n.attr['shape']='box'
@@ -335,6 +335,7 @@ class Compare(object):
 		''' this function assumes that the pairs of objects are equivalent in that both have validated:
 			'machines'
 			'components'
+			'thermocycler'
 			'''
 		for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
 
@@ -391,8 +392,8 @@ class Compare(object):
 							tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
 							# print tmp
 							# print '\n'
-							_name = add_html_cell(self.protocol_A.nodes[m]['name']) 
-							content.append('<TR>' + _name + tmp)
+							# _name = add_html_cell(self.protocol_A.nodes[m]['name']) 
+							content.append(tmp)
 							
 
 					# if len(content) > 1:

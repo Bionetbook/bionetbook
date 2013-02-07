@@ -54,7 +54,9 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 		if 'mass' in unchanged and 'mass' not in unchanged:
 			_mass = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
 
-		return  _conc + _vol + _mass + '</TR>'
+		_name = '<TR><TD>%s</TD>' %x['name']
+
+		return  _name + _conc + _vol + _mass + '</TR>'
 
 
 def add_html_cell(m):
@@ -71,6 +73,7 @@ def merge_table_pieces(content_tmp):
 def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 	
 	import itertools
+	
 	stack = []
 	it = itertools.izip(job_A['phases'], job_B['phases'])
 	
