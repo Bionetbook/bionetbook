@@ -13,9 +13,8 @@
 {% endblock %}
 
 {% block content %}
-
-        {% for object in object_list %}
-        {% with profile=object.owner.get_profile %}
+{% for object in object_list %}
+{% with profile=object.owner.get_profile %}
 <div class="row">
     <div class="span3">
         <h2>{{ object.name }}</h2>
