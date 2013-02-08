@@ -38,8 +38,8 @@ class Protocol(TimeStampedModel):
     duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
     raw = models.TextField(blank=True, null=True)
     data = JSONField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
+    description = models.TextField(_("Description"), blank=True, null=True)
+    note = models.TextField(_("Notes"), blank=True, null=True)
     # protocol_input = models.CharField(_("Input"), max_length=255, unique=True)
     # protocol_output = models.CharField(_("Output"), max_length=255, unique=True)
 
