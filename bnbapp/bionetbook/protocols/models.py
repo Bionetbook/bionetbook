@@ -402,11 +402,14 @@ class NodeBase(dict):
             result.sort()
             return result
 
-    def __init__(self, protocol, data={}, **kwargs):
+    def __init__(self, protocol, parent=None, data={}, **kwargs):
         super(NodeBase, self).__init__(**kwargs)
         
         self.protocol = protocol
-        self.parent = self.protocol
+        if parent:
+            self.parent = parent
+        else:
+            self.parent = self.protocol
 
         data = self.clean_data(data)
 
@@ -466,7 +469,7 @@ class NodeBase(dict):
         if self.parent:
             return "%s - %s" % (self.parent.title, self['name'])
         else:
-            return self['name']
+            return "%s - %s" % (self.protocol.name, self['name'])
 
     # @property
     # def parent(self):
@@ -484,16 +487,15 @@ class NodeBase(dict):
 
 class Component(NodeBase):
 
-    def __init__(self, protocol, action=None, data=None, **kwargs):
-        self.action = action
-        self.parent = self.action
-        super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        #self.parent = parent
+        super(Component, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
         if 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
         
     def get_absolute_url(self):
-        return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
+        return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.parent.step.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
 
     # @property
     # def title(self):
@@ -523,16 +525,16 @@ class Machine(NodeBase):
 
     self.default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
 
-    def __init__(self, protocol, action=None, data=None, **kwargs):
-        self.action = action
-        self.parent = self.action
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        #self.action = action
+        #self.parent = self.action
 
         # MAKE SURE THESE ATTRIBUTES ARE IN THE MACHINE OBJECT
         for item in self.default_attrs:
             if item not in data:
                 data[item] = None
 
-        super(Machine, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        super(Machine, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
         return "#NDF"
@@ -568,10 +570,9 @@ class Machine(NodeBase):
 
 class Subphase(NodeBase):
 
-    def __init__(self, protocol, parent=None, data=None, **kwargs):
-        self.parent = parent
-        # print 'starting Subphase object'
-        super(Subphase, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     self.parent = parent
+    #     super(Subphase, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def get_absolute_url(self):
         return "#NDF"
@@ -579,10 +580,9 @@ class Subphase(NodeBase):
 
 class Phase(NodeBase):
 
-    def __init__(self, protocol, parent=None, data=None, **kwargs):
-        self.parent = parent
-        # print 'starting Phase object'
-        super(Phase, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     self.parent = parent
+    #     super(Phase, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def get_absolute_url(self):
         return "#NDF"
@@ -598,11 +598,11 @@ class Phase(NodeBase):
 
 class Thermocycle(NodeBase):
 
-    def __init__(self, protocol, action=None, data=None, **kwargs):
-        self.action = action
-        self.parent = self.action
-        print 'starting thermocycler object'
-        super(Thermocycle, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     #self.action = action
+    #     self.parent = parent
+    #     print 'starting thermocycler object'
+    #     super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
         return "#NDF"
@@ -652,7 +652,7 @@ class Thermocycle(NodeBase):
                 cycles: '1', before: 'rfrffr', 'after': 'gerrrg'}, }    
 
             '''
-        import re
+        #import re
         output = {}
         tmp_output = {}
         output['name'] = self['name']
@@ -699,10 +699,10 @@ class Thermocycle(NodeBase):
 
 class Action(NodeBase):
 
-    def __init__(self, protocol, step=None, data=None, **kwargs):
-        self.step = step
-        self.parent = self.step
-        super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     #self.step = step
+    #     self.parent = parent
+    #     super(Action, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
     
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
@@ -713,32 +713,23 @@ class Action(NodeBase):
             data['components'] = data.pop("component - list")
 
         if 'components' in data:                                        # Convert dictionaries into Component Objects
-            self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
+            self['components'] = [ Component(self.protocol, parent=self, data=c) for c in data['components'] ]
 
         if 'thermocycle' in data:                                        # Convert dictionaries into Thermocycle Objects
-            self['thermocycle'] = [ Thermocycle(self.protocol, action=self, data=c) for c in data['thermocycle'] ] 
+            self['thermocycle'] = [ Thermocycle(self.protocol, parent=self, data=c) for c in data['thermocycle'] ] 
+
+        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
+            self['machine'] = Machine(self.protocol, parent=self, data=data['machine'])
 
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
-        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
-
-            # if not 'machine' in data:
-            #     print "NO SUCH DATA"  
-            #     data['machine'] = {}
-            #     MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-            #     for item in MACHINE_ATTRIBUTES:
-            #         if item in data:
-            #             data['machine'][item] = data.pop(item)
-
-            self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
-
     def get_absolute_url(self):
         print "ACTION ABSOLUTE URL"
-        return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
+        return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
     def action_update_url(self):
-        return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
+        return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
     # @property
     # def title(self):
@@ -792,6 +783,10 @@ class Action(NodeBase):
             return None
 
 
+    @property
+    def machine(self):
+        return self['machine']
+
     @machine.setter
     def machine(self, value):
         if value.__class__ == Machine:
@@ -820,7 +815,7 @@ class Step(NodeBase):
         super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
         if 'actions' in data:
-            self['actions'] = [ Action(self.protocol, step=self, data=a) for a in data['actions'] ]
+            self['actions'] = [ Action(self.protocol, parent=self, data=a) for a in data['actions'] ]
         else:
             self['actions'] = []
 
