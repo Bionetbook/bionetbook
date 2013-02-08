@@ -2,6 +2,7 @@ import string
 import random
 import math
 import itertools
+import re
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -193,6 +194,10 @@ class Protocol(TimeStampedModel):
     ###########
     # Properties
 
+    @property
+    def title(self):
+        return self.name
+
 
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
@@ -379,12 +384,14 @@ class Protocol(TimeStampedModel):
         
         return self.verb_reagents  
 
+
 class NodeBase(dict):
     """Base class for the protocol components"""
 
     # keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
 
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
+    self.default_attrs = ['name', 'objectid']
 
     class Meta:
         def __init__(self, node):
@@ -399,6 +406,7 @@ class NodeBase(dict):
         super(NodeBase, self).__init__(**kwargs)
         
         self.protocol = protocol
+        self.parent = self.protocol
 
         data = self.clean_data(data)
 
@@ -455,11 +463,14 @@ class NodeBase(dict):
 
     @property
     def title(self):
-        return self.protocol.name
+        if self.parent:
+            return "%s - %s" % (self.parent.title, self['name'])
+        else:
+            return self['name']
 
-    @property
-    def parent(self):
-        return self.protocol
+    # @property
+    # def parent(self):
+    #     return self.protocol
 
     def delete_child_node(self, node_id):
         """ Removes a Child Node with the given name from the list of nodes """
@@ -469,13 +480,13 @@ class NodeBase(dict):
     def children(self):
         print 'object does not have children'    
 
-    
 
 
 class Component(NodeBase):
 
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
+        self.parent = self.action
         super(Component, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
         if 'reagent_name' in self:
@@ -484,13 +495,13 @@ class Component(NodeBase):
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'component_slug':self.slug  })
 
-    @property
-    def title(self):
-        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+    # @property
+    # def title(self):
+    #     return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
 
-    @property
-    def parent(self):
-        return self.action
+    # @property
+    # def parent(self):
+    #     return self.action
 
     @property
     def label(self):
@@ -507,25 +518,33 @@ class Component(NodeBase):
 
         return tmp
 
-        
 
 class Machine(NodeBase):
 
+    self.default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
+
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
+        self.parent = self.action
+
+        # MAKE SURE THESE ATTRIBUTES ARE IN THE MACHINE OBJECT
+        for item in self.default_attrs:
+            if item not in data:
+                data[item] = None
+
         super(Machine, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
         return "#NDF"
         #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
 
-    @property
-    def title(self):
-        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+    # @property
+    # def title(self):
+    #     return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
 
-    @property
-    def parent(self):
-        return self.action
+    # @property
+    # def parent(self):
+    #     return self.action
 
     @property
     def label(self):
@@ -536,7 +555,6 @@ class Machine(NodeBase):
         ''' takes self.label as a list and turns it into a dict:
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
-        import re
         output = {}
         
         for i in self.label:
@@ -547,10 +565,42 @@ class Machine(NodeBase):
 
         return output   
 
+
+class Subphase(NodeBase):
+
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        self.parent = parent
+        # print 'starting Subphase object'
+        super(Subphase, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    def get_absolute_url(self):
+        return "#NDF"
+
+
+class Phase(NodeBase):
+
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        self.parent = parent
+        # print 'starting Phase object'
+        super(Phase, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    def get_absolute_url(self):
+        return "#NDF"
+
+    def update_data(self, data={}, **kwargs):
+        super(Phase, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+        if 'subphases' in data:
+            self['subphases'] = [ Subphase(self.protocol, parent=self, data=a) for a in data['subphases'] ]
+        else:
+            self['subphases'] = []
+
+
 class Thermocycle(NodeBase):
 
     def __init__(self, protocol, action=None, data=None, **kwargs):
         self.action = action
+        self.parent = self.action
         print 'starting thermocycler object'
         super(Thermocycle, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -558,13 +608,22 @@ class Thermocycle(NodeBase):
         return "#NDF"
         #return reverse("thermocycle_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'thermocycler_slug':self.slug  })
 
-    @property
-    def title(self):
-        return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+    def update_data(self, data={}, **kwargs):
+        super(Thermocycle, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-    @property
-    def parent(self):
-        return self.action
+        if 'phases' in data:
+            self['phases'] = [ Phase(self.protocol, parent=self, data=a) for a in data['phases'] ]
+        else:
+            self['phases'] = []
+
+
+    # @property
+    # def title(self):
+    #     return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
+
+    # @property
+    # def parent(self):
+    #     return self.action
 
     @property
     def label(self):
@@ -620,8 +679,6 @@ class Thermocycle(NodeBase):
             output['previous_substep'] = thermo_ids[current-1]
             output['next_substep'] = ''
 
-        
-
         # for i in thermo_ids:
         #     output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
         for j in self['settings']:
@@ -640,12 +697,11 @@ class Thermocycle(NodeBase):
     
 
 
-
-
 class Action(NodeBase):
 
     def __init__(self, protocol, step=None, data=None, **kwargs):
         self.step = step
+        self.parent = self.step
         super(Action, self).__init__(protocol, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
     
     def update_data(self, data={}, **kwargs):
@@ -659,22 +715,21 @@ class Action(NodeBase):
         if 'components' in data:                                        # Convert dictionaries into Component Objects
             self['components'] = [ Component(self.protocol, action=self, data=c) for c in data['components'] ]
 
-        if 'thermocycle' in data:                                        # Convert dictionaries into Component Objects
+        if 'thermocycle' in data:                                        # Convert dictionaries into Thermocycle Objects
             self['thermocycle'] = [ Thermocycle(self.protocol, action=self, data=c) for c in data['thermocycle'] ] 
-            # print 'starting thermocycler object'   
 
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
         if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
 
-            if not 'machine' in data:
-                print "NO SUCH DATA"  
-                data['machine'] = {}
-                MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
-                for item in MACHINE_ATTRIBUTES:
-                    if item in data:
-                        data['machine'][item] = data.pop(item)
+            # if not 'machine' in data:
+            #     print "NO SUCH DATA"  
+            #     data['machine'] = {}
+            #     MACHINE_ATTRIBUTES = ['min_time', 'max_time', 'time_comment', 'time_units','min_temp', 'max_temp', 'temp_comment', 'temp_units','min_speed', 'max_speed', 'speed_comment', 'speed_units']
+            #     for item in MACHINE_ATTRIBUTES:
+            #         if item in data:
+            #             data['machine'][item] = data.pop(item)
 
             self['machine'] = Machine(self.protocol, action=self, data=data['machine'])
 
@@ -685,13 +740,13 @@ class Action(NodeBase):
     def action_update_url(self):
         return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.step.slug, 'action_slug':self.slug })
 
-    @property
-    def title(self):
-        return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
+    # @property
+    # def title(self):
+    #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
 
-    @property
-    def parent(self):
-        return self.step
+    # @property
+    # def parent(self):
+    #     return self.step
 
     @property
     def components(self):
@@ -713,7 +768,6 @@ class Action(NodeBase):
             return self['thermocycle']
         else:
             return None
-
 
 
     @property
@@ -790,9 +844,9 @@ class Step(NodeBase):
     def action_verb_list_url(self):
         return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
-    @property
-    def title(self):
-        return "%s - %s" % (self.protocol.name, self['name'])
+    # @property
+    # def title(self):
+    #     return "%s - %s" % (self.protocol.name, self['name'])
 
     def delete_child_node(self, node_id):
         """
@@ -815,10 +869,7 @@ class Step(NodeBase):
         if 'actions' in self:
             return self['actions']
         else:
-            return None            
-
-
-
+            return None
 
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''
