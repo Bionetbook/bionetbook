@@ -22,7 +22,14 @@ class Command(AppCommand):
             try:
                 root_path = settings.PROJECT_ROOT
             except:
+                project_name = settings.ROOT_URLCONF.split(".")[0]
+
                 print "You need to have either a PROJECT_PATH or PROJECT_ROOT settings variable."
+                print "Add the following to your settings.py:\n"
+                print "import os.path\n"
+                print "PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))"
+                print "if '%s/%s' in PROJECT_ROOT:" % (project_name, project_name)
+                print "    PROJECT_ROOT = PROJECT_ROOT.replace('%s/%s', '%s')" % (project_name, project_name, project_name)
                 return
 
 
