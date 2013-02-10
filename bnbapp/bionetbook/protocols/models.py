@@ -244,10 +244,9 @@ class Protocol(TimeStampedModel):
                     for thermocycle in action['thermocycle']:
                         result[thermocycle['objectid']] = thermocycle    
                             
-
         return result
 
-    @property    
+    @property
     def get_machines(self):
          return [self.nodes[r]['objectid'] for r in self.get_actions if 'machine' in self.nodes[r].keys() ]
 
@@ -255,12 +254,11 @@ class Protocol(TimeStampedModel):
     def get_actions(self):
         return [r[2] for r in self.get_action_tree('objectid')]    
 
-
-    @property    
+    @property
     def get_steps(self):
         return [r['objectid'] for r in self.steps]
 
-    @property    
+    @property
     def get_components(self):
         return self.get_reagents_by_action('objectid')
  
@@ -391,7 +389,7 @@ class NodeBase(dict):
     # keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
 
     # ADD _meta CLASS TO USE SOME EXTRA DB-LIKE FUNCTIONALITY
-    self.default_attrs = ['name', 'objectid']
+    default_attrs = ['name', 'objectid']
 
     class Meta:
         def __init__(self, node):
@@ -523,7 +521,7 @@ class Component(NodeBase):
 
 class Machine(NodeBase):
 
-    self.default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
+    default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
 
     def __init__(self, protocol, parent=None, data=None, **kwargs):
         #self.action = action
@@ -570,9 +568,7 @@ class Machine(NodeBase):
 
 class Subphase(NodeBase):
 
-    # def __init__(self, protocol, parent=None, data=None, **kwargs):
-    #     self.parent = parent
-    #     super(Subphase, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    default_attrs = ['name', 'objectid', 'time', 'temperature']
 
     def get_absolute_url(self):
         return "#NDF"
@@ -580,9 +576,7 @@ class Subphase(NodeBase):
 
 class Phase(NodeBase):
 
-    # def __init__(self, protocol, parent=None, data=None, **kwargs):
-    #     self.parent = parent
-    #     super(Phase, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    default_attrs = ['name', 'objectid', 'cycles', 'before', 'after']
 
     def get_absolute_url(self):
         return "#NDF"
@@ -597,12 +591,6 @@ class Phase(NodeBase):
 
 
 class Thermocycle(NodeBase):
-
-    # def __init__(self, protocol, parent=None, data=None, **kwargs):
-    #     #self.action = action
-    #     self.parent = parent
-    #     print 'starting thermocycler object'
-    #     super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
         return "#NDF"
@@ -615,15 +603,6 @@ class Thermocycle(NodeBase):
             self['phases'] = [ Phase(self.protocol, parent=self, data=a) for a in data['phases'] ]
         else:
             self['phases'] = []
-
-
-    # @property
-    # def title(self):
-    #     return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
-
-    # @property
-    # def parent(self):
-    #     return self.action
 
     @property
     def label(self):
@@ -652,7 +631,6 @@ class Thermocycle(NodeBase):
                 cycles: '1', before: 'rfrffr', 'after': 'gerrrg'}, }    
 
             '''
-        #import re
         output = {}
         tmp_output = {}
         output['name'] = self['name']
