@@ -731,6 +731,13 @@ class Action(NodeBase):
         else:
             return None
 
+    @machine.setter
+    def machine(self, value):
+        if value.__class__ == Machine:
+            self['machine'] = value
+        else:
+            raise ValueError("Action's machine attribute can only accept a Machine object")        
+
     @property
     def thermocycle(self):
         if 'thermocycle' in self:
@@ -761,16 +768,7 @@ class Action(NodeBase):
             return None
 
 
-    @property
-    def machine(self):
-        return self['machine']
-
-    @machine.setter
-    def machine(self, value):
-        if value.__class__ == Machine:
-            self['machine'] = value
-        else:
-            raise ValueError("Action's machine attribute can only accept a Machine object")
+   
 
 
     def delete_child_node(self, node_id):
