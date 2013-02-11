@@ -225,7 +225,7 @@ class ConfirmationMixin(object):
             return None
 
 
-class ConfirmationView(ConfirmationMixin, SingleObjectMixin, TemplateView):
+class ConfirmationObjectView(ConfirmationMixin, SingleObjectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -238,7 +238,7 @@ class ConfirmationView(ConfirmationMixin, SingleObjectMixin, TemplateView):
         return self.render_to_response(context)
 
 
-class ProtocolPublishView(ConfirmationView):
+class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -256,25 +256,6 @@ class ProtocolPublishView(ConfirmationView):
         messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
-
-# class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
-
-#     model = Protocol
-#     form_class = ProtocolPublishForm
-#     template_name = "protocols/protocol_publish_form.html"
-#     slug_url_kwarg = "protocol_slug"
-   #success_url = '/email-sent/'
-
-    # def get_success_url(self):
-    #     protocol = self.get_protocol()
-    #     return protocol.get_absolute_url()
-
-    # def form_valid(self, form):
-    #     protocol = self.get_protocol()
-    #     protocol.status = Protocol.STATUS_PUBLISHED
-    #     protocol.save()
-    #     messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
-    #     return super(ProtocolPublishView, self).form_valid(form)
 
 
 ####################
