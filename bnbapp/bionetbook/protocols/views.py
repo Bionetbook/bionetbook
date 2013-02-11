@@ -109,7 +109,6 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 
     def confirm(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.published = True
         #self.object.save()
         print "NODE DELETED"
         messages.add_message(self.request, messages.INFO, "Your node was deleted.")
@@ -482,6 +481,17 @@ class StepDeleteView(NodeDeleteView):
 
         return http.HttpResponseRedirect(url)
 
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        step_slug = self.kwargs['step_slug']
+        step = self.object.nodes[step_slug]
+        parent = step.parent
+        message = "The Step \"%s\" was deleted." % step['name']
+        #self.object.save()
+        messages.add_message(self.request, messages.INFO, message)
+        url = parent.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
 
 #####################
 # ACTIONS
@@ -734,6 +744,18 @@ class ActionDeleteView(NodeDeleteView):
             url = self.object.get_absolute_url()
 
         return http.HttpResponseRedirect(url)
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        action_slug = self.kwargs['action_slug']
+        action = self.object.nodes[action_slug]
+        parent = action.parent
+        message = "The Action \"%s\" was deleted." % action['name']
+        #self.object.save()
+        messages.add_message(self.request, messages.INFO, message)
+        url = parent.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
 
 
 #####################
