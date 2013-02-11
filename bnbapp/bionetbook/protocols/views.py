@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
+from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
 from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
@@ -20,6 +20,106 @@ from organization.models import Organization
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
+#####################
+# BASE CLASSES
+#####################
+
+class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+    '''This view needs to properly create a view, set a form and process the form'''
+
+    model = Protocol
+    template_name = "steps/step_create.html"
+    slug_url_kwarg = "protocol_slug"
+    form_class = StepForm
+    success_url = None
+    form_prefix = None
+
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        return {'protocol_slug': protocol.slug}
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_context_data(self, **kwargs):
+        print "GET CONTEXT DATA"
+        context = super(NodeCreateViewBase, self).get_context_data(**kwargs)
+
+        if self.object:
+            context['object'] = self.object
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
+
+        for key in ['step_slug', 'action_slug']:
+            if key in self.kwargs:
+                ctx_key = key.split('_')[0]
+                context[ctx_key] = self.object.nodes[self.kwargs[key]]
+
+        if 'verb_slug' in self.kwargs:
+            context['verb_slug'] = self.kwargs['verb_slug']
+
+        if not 'form' in context:
+            context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
+            
+        return context
+
+    def get(self, request, *args, **kwargs):
+        '''Gets the context data'''
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.form_prefix:
+            form_class = self.get_form_class(prefix=self.form_prefix)
+        else:
+            form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            print "FORM VALID"
+            # CHECK TO SEE IF THE NAME HAS CHANGED AND IF SO, UPDATE THE SLUG
+            return self.form_valid(form)
+        else:
+            print "FORM INVALID"
+            return self.form_invalid(form)
+
+
+class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    template_name = "protocols/node_delete.html"
+
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.published = True
+        #self.object.save()
+        print "NODE DELETED"
+        messages.add_message(self.request, messages.INFO, "Your node was deleted.")
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+
+#####################
+# PROTOCOLS
+#####################
 
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
@@ -103,6 +203,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #    messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
     #    return super(ProtocolPublishView, self).form_valid(form)
 
+    #Form.changed_data
 
     def get_object(self, queryset=None):
         """
@@ -160,84 +261,6 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #     return self.queryset._clone().filter(published=False)
 
 
-
-# class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-
-#     model = Protocol
-#     form_class = ProtocolPublishForm
-#     slug_url_kwarg = "protocol_slug"
-
-
-class ConfirmationMixin(object):
-    '''
-    Simple view that handles a basic confirmation dialogue.  It expects a 
-    form to have two buttons named "confirm" and "cancel".  If there is a 
-    POST request made, either of these two objects will be called.  The 
-    GET request simply presents the dialogue as a form.
-    '''
-
-    permanent = False
-    cancel_url = None
-    confirm_button_name = "confirm"
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        if self.confirm_button_name in request.POST:
-            return self.confirm(request, *args, **kwargs)
-        return self.cancel(request, *args, **kwargs)
-
-    def confirm(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return self.render_to_response(context)
-
-    def cancel(self, request, *args, **kwargs):
-        url = self.get_cancel_url(request, *args, **kwargs)
-        if url:
-            if self.permanent:
-                return http.HttpResponsePermanentRedirect(url)
-            else:
-                return http.HttpResponseRedirect(url)
-        else:
-            # logger.warning('Gone: %s', self.request.path,
-            #             extra={
-            #                 'status_code': 410,
-            #                 'request': self.request
-            #             })
-            return http.HttpResponseGone()
-
-
-    def get_cancel_url(self, request, *args, **kwargs):
-        """
-        Return the URL redirect to. Keyword arguments from the
-        URL pattern match generating the redirect request
-        are provided as kwargs to this method.
-        """
-        if self.cancel_url:
-            url = self.cancel_url % kwargs
-            args = self.request.META.get('QUERY_STRING', '')
-            if args and self.query_string:
-                url = "%s?%s" % (url, args)
-            return url
-        else:
-            return None
-
-
-class ConfirmationObjectView(ConfirmationMixin, SingleObjectMixin, TemplateView):
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
 
     model = Protocol
@@ -258,83 +281,9 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
         return http.HttpResponseRedirect(url)
 
 
-####################
-# Component Base Classes
-
-#class ComponentCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormMixin, DetailView):
-class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
-    '''This view needs to properly create a view, set a form and process the form'''
-
-    model = Protocol
-    template_name = "steps/step_create.html"
-    slug_url_kwarg = "protocol_slug"
-    form_class = StepForm
-    success_url = None
-    form_prefix = None
-
-    def get_url_args(self):
-        protocol = self.get_protocol()
-        return {'protocol_slug': protocol.slug}
-
-    def get_success_url(self):
-        """
-        Returns the supplied success URL.
-        """
-        if self.success_url:
-            url = reverse(self.success_url, kwargs=self.get_url_args())
-        else:
-            raise ImproperlyConfigured(
-                "No URL to redirect to. Provide a success_url.")
-        return url
-
-    def get_context_data(self, **kwargs):
-        print "GET CONTEXT DATA"
-        context = super(ComponentCreateViewBase, self).get_context_data(**kwargs)
-
-        if self.object:
-            context['object'] = self.object
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-
-        for key in ['step_slug', 'action_slug']:
-            if key in self.kwargs:
-                ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.nodes[self.kwargs[key]]
-
-        if 'verb_slug' in self.kwargs:
-            context['verb_slug'] = self.kwargs['verb_slug']
-
-        if not 'form' in context:
-            context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
-            
-        return context
-
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if self.form_prefix:
-            form_class = self.get_form_class(prefix=self.form_prefix)
-        else:
-            form_class = self.get_form_class()
-        form = self.get_form(form_class)
-
-        if form.is_valid():
-            print "FORM VALID"
-            return self.form_valid(form)
-        else:
-            print "FORM INVALID"
-            return self.form_invalid(form)
-
-
-####################
-# Step Tools
+#####################
+# STEPS
+#####################
 
 """
 class StepListView(AuthorizedForProtocolMixin, ListView):
@@ -374,7 +323,7 @@ class StepDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class StepCreateView(ComponentCreateViewBase):
+class StepCreateView(NodeCreateViewBase):
     '''Creates and appends a step to a protocol.'''
 
     template_name = "steps/step_create.html"
@@ -414,9 +363,6 @@ class StepCreateView(ComponentCreateViewBase):
         context.update(kwargs)
         return super(StepCreateView, self).get_context_data(**context)
 '''
-
-class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-    pass
 
 
 class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
@@ -516,6 +462,21 @@ class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
 
 
+class StepDeleteView(NodeDeleteView):
+    template_name = "steps/step_delete.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(StepDeleteView, self).get_context_data(**kwargs)
+        step_slug = self.kwargs['step_slug']
+        context['step'] = self.object.nodes[step_slug]
+        return context
+
+
+#####################
+# ACTIONS
+#####################
+
+
 class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
 
     model = Protocol
@@ -545,7 +506,7 @@ class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class ActionCreateView(ComponentCreateViewBase):
+class ActionCreateView(NodeCreateViewBase):
 
     form_class = ActionForm # THIS WILL ONLY COVER ONE OF TWO FORMS
     template_name = "actions/action_create.html"
@@ -629,6 +590,7 @@ class ActionCreateView(ComponentCreateViewBase):
     #    context['step'] = self.object.nodes[step_slug]
     #    context['form'] = ActionForm()
     #    return context
+
 
 class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
@@ -741,13 +703,44 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug, 'action_slug': context['action'].slug}
 
 
-class NodeDeleteView(DeleteView):
-    model = Protocol
-    slug_url_kwarg = "protocol_slug"
+class ActionDeleteView(NodeDeleteView):
+    template_name = "actions/action_delete.html"
 
-    def post(self):
-        print "I DID A POST"
+    def get_context_data(self, **kwargs):
+        context = super(ActionDeleteView, self).get_context_data(**kwargs)
+        action_slug = self.kwargs['action_slug']
+        context['action'] = self.object.nodes[action_slug]
+        context['step'] = context['action'].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
+        return context
 
-    def get(self):
-        print "I DID A GET"
 
+#####################
+# COMPONENTS
+#####################
+
+
+
+    # def form_valid(self, form):
+
+    #     if form.has_changed():
+
+    #     super(NodeCreateViewBase, self).form_valid(form)
+
+class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+    pass
+
+
+#####################
+# MACHINES
+#####################
+
+class MachineUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+    pass
+
+
+#####################
+# THEMOCYCLERS
+#####################
+
+class ThermocyclerUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+    pass

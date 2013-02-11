@@ -190,6 +190,11 @@ class Protocol(TimeStampedModel):
     ###########
     # Validators
 
+    # def has_changed(self, field):
+    #     if not self.pk:
+    #         return False
+    #     old_value = self.__class__._default_manager.filter(pk=self.pk).values(field).get()[field]
+    #     return not getattr(self, field) == old_value
   
     ###########
     # Properties
@@ -709,6 +714,9 @@ class Action(NodeBase):
     def action_update_url(self):
         return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
+    def action_delete_url(self):
+        return reverse("action_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
+
     # @property
     # def title(self):
     #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
@@ -815,6 +823,9 @@ class Step(NodeBase):
     def action_verb_list_url(self):
         return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
+    def step_delete_url(self):
+        return reverse("step_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
     # @property
     # def title(self):
     #     return "%s - %s" % (self.protocol.name, self['name'])
@@ -841,6 +852,16 @@ class Step(NodeBase):
             return self['actions']
         else:
             return None
+
+    # NEED TO UPDATE URLS TO USE THE BELOW METHOD
+    # def __getitem__(self, key):
+    #     val = dict.__getitem__(self, key)
+
+    #     if key == "slug":
+    #         val = slugify(dict.__getitem__(self, 'name'))
+
+    #     return val
+
 
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''
