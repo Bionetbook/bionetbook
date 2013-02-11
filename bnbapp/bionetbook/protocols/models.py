@@ -708,7 +708,6 @@ class Action(NodeBase):
             self['name'] = self['verb']
 
     def get_absolute_url(self):
-        #print "ACTION ABSOLUTE URL"
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
     def action_update_url(self):

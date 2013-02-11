@@ -471,6 +471,17 @@ class StepDeleteView(NodeDeleteView):
         context['step'] = self.object.nodes[step_slug]
         return context
 
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        step_slug = self.kwargs['step_slug']
+        
+        if step_slug in self.object.nodes:
+            url = self.object.nodes[step_slug].get_absolute_url()
+        else:
+            url = self.object.get_absolute_url()
+
+        return http.HttpResponseRedirect(url)
+
 
 #####################
 # ACTIONS
@@ -712,6 +723,17 @@ class ActionDeleteView(NodeDeleteView):
         context['action'] = self.object.nodes[action_slug]
         context['step'] = context['action'].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
+
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        action_slug = self.kwargs['action_slug']
+
+        if action_slug in self.object.nodes:
+            url = self.object.nodes[action_slug].get_absolute_url()
+        else:
+            url = self.object.get_absolute_url()
+
+        return http.HttpResponseRedirect(url)
 
 
 #####################
