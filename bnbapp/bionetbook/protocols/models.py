@@ -190,6 +190,11 @@ class Protocol(TimeStampedModel):
     ###########
     # Validators
 
+    # def has_changed(self, field):
+    #     if not self.pk:
+    #         return False
+    #     old_value = self.__class__._default_manager.filter(pk=self.pk).values(field).get()[field]
+    #     return not getattr(self, field) == old_value
   
     ###########
     # Properties
@@ -843,6 +848,16 @@ class Step(NodeBase):
             return self['actions']
         else:
             return None
+
+    # NEED TO UPDATE URLS TO USE THE BELOW METHOD
+    # def __getitem__(self, key):
+    #     val = dict.__getitem__(self, key)
+
+    #     if key == "slug":
+    #         val = slugify(dict.__getitem__(self, 'name'))
+
+    #     return val
+
 
     #def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
     #    '''Always returns a unique ID in the protocol'''

@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
+from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
 from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
@@ -103,6 +103,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #    messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
     #    return super(ProtocolPublishView, self).form_valid(form)
 
+    #Form.changed_data
 
     def get_object(self, queryset=None):
         """
@@ -158,84 +159,6 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #                                             'cls': self.__class__.__name__
     #                                     })
     #     return self.queryset._clone().filter(published=False)
-
-
-
-# class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-
-#     model = Protocol
-#     form_class = ProtocolPublishForm
-#     slug_url_kwarg = "protocol_slug"
-
-
-class ConfirmationMixin(object):
-    '''
-    Simple view that handles a basic confirmation dialogue.  It expects a 
-    form to have two buttons named "confirm" and "cancel".  If there is a 
-    POST request made, either of these two objects will be called.  The 
-    GET request simply presents the dialogue as a form.
-    '''
-
-    permanent = False
-    cancel_url = None
-    confirm_button_name = "confirm"
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        if self.confirm_button_name in request.POST:
-            return self.confirm(request, *args, **kwargs)
-        return self.cancel(request, *args, **kwargs)
-
-    def confirm(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return self.render_to_response(context)
-
-    def cancel(self, request, *args, **kwargs):
-        url = self.get_cancel_url(request, *args, **kwargs)
-        if url:
-            if self.permanent:
-                return http.HttpResponsePermanentRedirect(url)
-            else:
-                return http.HttpResponseRedirect(url)
-        else:
-            # logger.warning('Gone: %s', self.request.path,
-            #             extra={
-            #                 'status_code': 410,
-            #                 'request': self.request
-            #             })
-            return http.HttpResponseGone()
-
-
-    def get_cancel_url(self, request, *args, **kwargs):
-        """
-        Return the URL redirect to. Keyword arguments from the
-        URL pattern match generating the redirect request
-        are provided as kwargs to this method.
-        """
-        if self.cancel_url:
-            url = self.cancel_url % kwargs
-            args = self.request.META.get('QUERY_STRING', '')
-            if args and self.query_string:
-                url = "%s?%s" % (url, args)
-            return url
-        else:
-            return None
-
-
-class ConfirmationObjectView(ConfirmationMixin, SingleObjectMixin, TemplateView):
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
 
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
@@ -327,10 +250,18 @@ class ComponentCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, For
 
         if form.is_valid():
             print "FORM VALID"
+            # CHECK TO SEE IF THE NAME HAS CHANGED AND IF SO, UPDATE THE SLUG
             return self.form_valid(form)
         else:
             print "FORM INVALID"
             return self.form_invalid(form)
+
+    # def form_valid(self, form):
+
+    #     if form.has_changed():
+
+    #     super(ComponentCreateViewBase, self).form_valid(form)
+
 
 
 ####################
