@@ -17,8 +17,8 @@ class ProtocolForm(forms.ModelForm):
         self.fields['owner'].choices = choices
 
 
-class PublishForm(forms.Form):
-    pass
+class ProtocolPublishForm(forms.Form):
+    name = forms.BooleanField(label='Confirm')
 
 
 class StepForm(forms.Form):

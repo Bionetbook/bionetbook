@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block page_title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>
+      <li class="active">Publish</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- main form div -->
+    <div class="span6">
+      {% if object %}<h2>Confirm</h2>{% endif %}
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+        <div class="actions">
+          <p>Are you sure you wish to publish this Protocol?</p>
+          <input type="submit" class="btn btn-danger" name="cancel" value="Cancel">
+          <input type="submit" class="btn btn-success" name="confirm" value="Confirm">
+        </div>
+      </form>
+    </div>
+
+    <!-- secondary form div -->
+    {% if object %}
+    <div class="span6">
+    </div>    
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+    });
+</script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
+{% endblock extrajs %}

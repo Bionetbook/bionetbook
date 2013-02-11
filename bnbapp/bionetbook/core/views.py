@@ -1,11 +1,21 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.views.generic import View, TemplateView
 
 from braces.views import LoginRequiredMixin
 
 from core.utils import check_protocol_edit_authorization
 from protocols.models import Protocol
+
+
+class ConfirmView(View):
+
+    def get(self, request, *args, **kwargs):
+        print "GET CALLED"
+
+    def post(self, request, *args, **kwargs):
+        print "POST CALLED"
+
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

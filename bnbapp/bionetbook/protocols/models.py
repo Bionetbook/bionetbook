@@ -129,8 +129,8 @@ class Protocol(TimeStampedModel):
     def step_create_url(self):
         return reverse("step_create", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
-    def publish_protocol_url(self):
-        return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
+    def protocol_publish_url(self):
+        return reverse("protocol_publish", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
     ##########
     # Generators
@@ -696,7 +696,7 @@ class Action(NodeBase):
         if 'thermocycle' in data:                                        # Convert dictionaries into Thermocycle Objects
             self['thermocycle'] = [ Thermocycle(self.protocol, parent=self, data=c) for c in data['thermocycle'] ] 
 
-        if 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
+        if 'machine' in data and 'verb' in data and data['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
             self['machine'] = Machine(self.protocol, parent=self, data=data['machine'])
 
         if not self['name']:                                            # Action default name should be the same as the verb

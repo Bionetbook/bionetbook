@@ -1,10 +1,11 @@
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django import forms
+from django import forms, http
 from django.http import Http404
 from django.contrib import messages
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView, FormView
+from django.views.generic.base import TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
@@ -13,7 +14,7 @@ from django.utils.translation import ugettext as _
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 
-from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
+from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm
 from protocols.models import Protocol, Step, Action
 from organization.models import Organization
 
@@ -23,7 +24,6 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
 
     model = Protocol
-
     slug_url_kwarg = "protocol_slug"
 
     def get_context_data(self, **kwargs):
@@ -160,22 +160,129 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
     #     return self.queryset._clone().filter(published=False)
 
 
-class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
 
-    form_class = PublishForm
-    template_name = "myapp/email_form.html"
-    success_url = '/email-sent/'
+# class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
 
-    def get_success_url(self):
-        protocol = self.get_protocol()
-        return protocol.get_absolute_url()
+#     model = Protocol
+#     form_class = ProtocolPublishForm
+#     slug_url_kwarg = "protocol_slug"
 
-    def form_valid(self, form):
-        protocol = self.get_protocol()
-        protocol.status = Protocol.STATUS_PUBLISHED
-        protocol.save()
+
+class ConfirmationMixin(SingleObjectMixin):
+    '''
+    Simple view that handles a basic confirmation dialogue.  It expects a 
+    form to have two buttons named "confirm" and "cancel".  If there is a 
+    POST request made, either of these two objects will be called.  The 
+    GET request simply presents the dialogue as a form.
+    '''
+
+    permanent = False
+    cancel_url = None
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        if "confirm" in request.POST:
+            return self.confirm(request, *args, **kwargs)
+        return self.cancel(request, *args, **kwargs)
+
+    def confirm(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def cancel(self, request, *args, **kwargs):
+        url = self.get_cancel_url(request, *args, **kwargs)
+        if url:
+            if self.permanent:
+                return http.HttpResponsePermanentRedirect(url)
+            else:
+                return http.HttpResponseRedirect(url)
+        else:
+            # logger.warning('Gone: %s', self.request.path,
+            #             extra={
+            #                 'status_code': 410,
+            #                 'request': self.request
+            #             })
+            return http.HttpResponseGone()
+
+
+    def get_cancel_url(self, request, *args, **kwargs):
+        """
+        Return the URL redirect to. Keyword arguments from the
+        URL pattern match generating the redirect request
+        are provided as kwargs to this method.
+        """
+        if self.cancel_url:
+            url = self.cancel_url % kwargs
+            args = self.request.META.get('QUERY_STRING', '')
+            if args and self.query_string:
+                url = "%s?%s" % (url, args)
+            return url
+        else:
+            return None
+
+
+class ConfirmationView(ConfirmationMixin, SingleObjectMixin, TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        # print "GET CALLED"
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def confirm(self, request, *args, **kwargs):
+        # print "CONFIRMED"
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    # def cancel(self, request, *args, **kwargs):
+    #     # print "CANCELED"
+    #     self.object = self.get_object()
+    #     context = self.get_context_data(object=self.object)
+    #     return self.render_to_response(context)
+
+
+class ProtocolPublishView(ConfirmationView):
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    template_name = "protocols/protocol_publish_form.html"
+
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+    def confirm(self, request, *args, **kwargs):
+        # print "CONFIRMED"
+        self.object = self.get_object()
+        self.object.published = True
+        self.object.save()
         messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
-        return super(ProtocolPublishView, self).form_valid(form)
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+# class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, FormView):
+
+#     model = Protocol
+#     form_class = ProtocolPublishForm
+#     template_name = "protocols/protocol_publish_form.html"
+#     slug_url_kwarg = "protocol_slug"
+   #success_url = '/email-sent/'
+
+    # def get_success_url(self):
+    #     protocol = self.get_protocol()
+    #     return protocol.get_absolute_url()
+
+    # def form_valid(self, form):
+    #     protocol = self.get_protocol()
+    #     protocol.status = Protocol.STATUS_PUBLISHED
+    #     protocol.save()
+    #     messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
+    #     return super(ProtocolPublishView, self).form_valid(form)
 
 
 ####################
