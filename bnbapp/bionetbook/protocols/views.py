@@ -168,7 +168,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
 #     slug_url_kwarg = "protocol_slug"
 
 
-class ConfirmationMixin(SingleObjectMixin):
+class ConfirmationMixin(object):
     '''
     Simple view that handles a basic confirmation dialogue.  It expects a 
     form to have two buttons named "confirm" and "cancel".  If there is a 
@@ -178,13 +178,14 @@ class ConfirmationMixin(SingleObjectMixin):
 
     permanent = False
     cancel_url = None
+    confirm_button_name = "confirm"
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        if "confirm" in request.POST:
+        if self.confirm_button_name in request.POST:
             return self.confirm(request, *args, **kwargs)
         return self.cancel(request, *args, **kwargs)
 
@@ -227,22 +228,14 @@ class ConfirmationMixin(SingleObjectMixin):
 class ConfirmationView(ConfirmationMixin, SingleObjectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
-        # print "GET CALLED"
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
     def confirm(self, request, *args, **kwargs):
-        # print "CONFIRMED"
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
-
-    # def cancel(self, request, *args, **kwargs):
-    #     # print "CANCELED"
-    #     self.object = self.get_object()
-    #     context = self.get_context_data(object=self.object)
-    #     return self.render_to_response(context)
 
 
 class ProtocolPublishView(ConfirmationView):
@@ -257,7 +250,6 @@ class ProtocolPublishView(ConfirmationView):
         return http.HttpResponseRedirect(url)
 
     def confirm(self, request, *args, **kwargs):
-        # print "CONFIRMED"
         self.object = self.get_object()
         self.object.published = True
         self.object.save()
