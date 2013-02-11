@@ -487,6 +487,7 @@ class StepDeleteView(NodeDeleteView):
         step = self.object.nodes[step_slug]
         parent = step.parent
         message = "The Step \"%s\" was deleted." % step['name']
+        #self.object.delete_node(step['objectid'])
         #self.object.save()
         messages.add_message(self.request, messages.INFO, message)
         url = parent.get_absolute_url()
@@ -751,6 +752,7 @@ class ActionDeleteView(NodeDeleteView):
         action = self.object.nodes[action_slug]
         parent = action.parent
         message = "The Action \"%s\" was deleted." % action['name']
+        #self.object.delete_node(action['objectid'])
         #self.object.save()
         messages.add_message(self.request, messages.INFO, message)
         url = parent.get_absolute_url()
