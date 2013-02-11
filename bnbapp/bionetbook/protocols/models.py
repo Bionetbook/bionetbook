@@ -714,6 +714,9 @@ class Action(NodeBase):
     def action_update_url(self):
         return reverse("action_update", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
+    def action_delete_url(self):
+        return reverse("action_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
+
     # @property
     # def title(self):
     #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])
@@ -821,6 +824,9 @@ class Step(NodeBase):
 
     def action_verb_list_url(self):
         return reverse("action_verb_list", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
+
+    def step_delete_url(self):
+        return reverse("step_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
 
     # @property
     # def title(self):

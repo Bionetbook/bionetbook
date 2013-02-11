@@ -27,7 +27,7 @@
       {% if object %}<h2>Confirm</h2>{% endif %}
       <form action="." method="post" class="form-stacked well">{% csrf_token %}
         <div class="actions">
-          <p>Are you sure you wish to delete this Action?</p>
+          <p>Are you sure you wish to delete this Action, "{{action.name}}"?</p>
           <input type="submit" class="btn btn-danger" name="cancel" value="Cancel">
           <input type="submit" class="btn btn-success" name="confirm" value="Confirm">
         </div>

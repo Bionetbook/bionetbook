@@ -28,7 +28,8 @@ Step: {{ step.title }}
     <div class="span6">
         <h2>Detail</h2>
         {% object_data_table step %}
-
+        <a class="btn btn-warning" href="{{ step.step_delete_url }}">Delete Step</a>
+        <p></p>
     </div>
 
     <div class="span6">
