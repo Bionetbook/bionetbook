@@ -382,7 +382,7 @@ class Compare(object):
 			'thermocycle'
 			'''
 		for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
-
+			print verb_a, verb_b
 			if 'machine' in self.protocol_A.nodes[verb_a].keys():  # object has only one child:
 				x = self.protocol_A.nodes[verb_a]['machine'].summary
 				y = self.protocol_B.nodes[verb_b]['machine'].summary
@@ -398,7 +398,7 @@ class Compare(object):
 				eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
 				# set all diff objects on same rank:
-				N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+				N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same')#, rankdir='LR') #, name='%s'%(layer_names[nc])) 
 				
 				# set layout and colors
 				s = self.agraph.get_node(diff_object)

@@ -41,11 +41,10 @@ def settify(settings_dict, shorthand = True):
     settings = []
     units = ''
 
-    temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k)
-    time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k)
-    speed = dict((k, v) for k, v in settings_dict.iteritems() if 'speed' in k)
-    comment = dict((k, v) for k, v in settings_dict.iteritems() if 'comment' in k or 'why' in k)
-
+    temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k and v != None)
+    time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k and v != None)
+    speed = dict((k, v) for k, v in settings_dict.iteritems() if 'speed' in k and v != None)
+    comment = dict((k, v) for k, v in settings_dict.iteritems() if 'comment' in k or 'why' in k and v != None )
     if temp: 
         
         if 'max_temp' in temp and 'min_temp' in temp:
@@ -65,7 +64,7 @@ def settify(settings_dict, shorthand = True):
             units = str(units) + ' ' + str(temp['temp_units'])
             
         if 'temp_comment' in temp:
-                units = units + ', ' + 'Remark: ' + temp['temp_comment']    
+                units = str(units) + ', ' + 'Remark: ' + temp['temp_comment']    
         
         settings.append(units) 
 
@@ -83,12 +82,13 @@ def settify(settings_dict, shorthand = True):
 
             if 'min_time' in time:
                  units = time['min_time']  
+
         
-        if 'time_units' in time:
-            units = units + ' ' + time['time_units']
-            
-        if 'time_comment' in time:
-                units = units + ', ' + 'Remark: ' + time['time_comment']    
+        if 'time_units' in time and time['time_units'] != None:
+            units = str(units) + ' ' + time['time_units']
+        
+        if 'time_comment' in time and time['time_comment'] != None:
+                units = str(units) + ', ' + 'Remark: ' + time['time_comment']    
         
         settings.append(units) 
 
@@ -107,15 +107,15 @@ def settify(settings_dict, shorthand = True):
             if 'min_speed' in speed:
                  units = speed['min_speed']  
         
-        if 'speed_units' in speed:
-            units = units + ' ' + speed['speed_units']
+        if 'speed_units' in speed and speed['speed_units'] != None:
+            units = str(units) + ' ' + speed['speed_units']
             
-        if 'speed_comment' in speed:
-                units = units + ', ' + 'Remark: ' + speed['speed_comment']    
+        if 'speed_comment' in speed and speed['speed_comment'] != None:
+                units = str(units) + ', ' + 'Remark: ' + speed['speed_comment']    
         
         settings.append(units)    
 
-    if shorthand == True:
+    if shorthand == True and units != None:
         for units in settings:
 
             units = units.replace('minutes','min') 
