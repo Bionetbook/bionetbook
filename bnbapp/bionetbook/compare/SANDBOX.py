@@ -1,214 +1,149 @@
 	SANDBOX	
 
-def set_label_html(x,y,changed, unchanged):
-
-	''' label is an HTML object and for automation sake, created by concatenating a few peices:
-				table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
-				content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
-				merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. '''
-
-	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">'
-	content_tmp = []
-	content = []
-	
-
-	
-	# format the HTML component:
-	content_tmp = []
-	for i in changed:
-		content_tmp.append('<TR><TD>%s</TD><TD>%s</TD></TR>'%(x[i], y[i]))
-
-	for j in unchanged:
-		content_tmp.append('<TR><TD colspan="2">%s</TD></TR>'%(x[j]))	
-
-	content = ''.join(content_tmp)
-	merge = '<' + table + content + '</TABLE>>'	
-
-	return merge
-# ___________________________________
-
-def add_comparison_layer(self, protocol_B, **kwargs):
+import itertools
+class CopmareNodeBase(protocol_A, protocol_B, object_A, object_B, **kwargs):
+    """ Version - 1 : inherit from the Base class of protocol components, machines and thermocycle 
+    and return a Protocol object that has a new diff attribute with an pk-objectid reference. 
+    this class will have a to_json, to_dot, to_svg, to_html etc methods that draw out the 
+    CompareNodeBase in each of those callers formats. 
 
 
-	
+    Version 2:
+    the diff works recursively throught the actions and finds all the diffs along the way. 
+    a diff line is created 
+     """
 
-#_______Adding a compare layer _______
+    # protocol_A and protocol_B are both ProtocolPlot objects>
 
-# this layer is a group of objects that are different between the 2 protocols. e
-# each object has an object id with the following layout:
-# 			diff_1 | diff_2
-# 			______both_____
-# 			______both_____
-# this object is drawn between the 2 verbs that call it as a child
-
-# Find the nodes that have differences:
-def add_diff_layer(self):
-
-for a,b in self.matching_verbs: #[(node_a, node_b), ]
-
-	if 'machine' in self.protocol_A.nodes[a].keys():  # object has only one child:
-		x = self.protocol_A.nodes[a]['machine'].summary
-		y = self.protocol_B.nodes[b]['machine'].summary
-		d = DictDiffer (x, y)
-		trigger = len(d.added()) + len(d.removed()) + len(d.changed(name = True, objectid = True, slug = True))
-		if trigger > 0:
-			# create a compare object that will apear between the 2 base diagrams:
-			diff_object = protocol_A.nodes[a]['machine'].pk
-			ea = self.agraph.add_edge(a,diff_object)
-			eb = self.agraph.add_edge(b,diff_object)
-			s = self.agraph.get_node(diff_object)
-			# set label:
-			s.attr['label'] = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged())
-
-	return		
-	
-
-
-d ={'nanograms':'ng',
-    'micrograms':'ug',    
-    'milligrams':'mg',    
-    'grams':'g',  
-    'kilograms':'kg', 
-    'nanoLiter':'ng', 
-    'microLiter':'ul',    
-    'microliter':'ul',    
-    'milliLiter':'ml',    
-    'Liters':'L',
-    'nanoMolar':'nM', 
-    'microMolar':'uM',    
-    'milliMolar':'mM',    
-    'Molar':'M',
-    'nanomole':'nm', 
-    'micromole':'um',    
-    'millimole':'mm',    
-    'mole':'m'}
-
-
-
-
-
-
-
-
-
-
-
-for e,f in G.matching_verbs:
-    if 'machine' in G.protocol_A.nodes[e].keys():
-        x = G.protocol_A.nodes[e]['machine'].summary
-        y = G.protocol_B.nodes[f]['machine'].summary
-        print x,y
-        d = DictDiffer(x,y)
-        print d.changed(name = True, objectid=True, slug =True)
-        print d.unchanged()
-
-
-
-#____
-# Start:
-# get the node:
-s.attr = agraph.get_node()
-
-
-labell = '<<TABLE BORDER="0" CELLBORDER="0.1" CELLSPACING="0"> <TR><TD>%s</TD><TD>%s</TD></TR><TR><TD colspan='2'>%s</TD></TR></TABLE>>' %('a','b','c')
+    # if pk_A and pk_b are defined, then look in those protocols,
+    # else, look in this protocol only. 
+     
+    # determine what type the object is (step, action, machine, thermo, component)
     
+    
+    layer_A = protocol_A.nodes[object_A].__class__
+    layer_B = protocol_B.nodes[object_B].__class__
+    if layer_A != layer_B:
+        return 'these objects are from different layers and cannot be compared'
+
+    parent_layer = layer_A.parent.__class__
+
+    rank_list = [] # this is the list fo ranked objects
+
+    D = DDiffer( object_A, object_B )
+    
+    line = []
+
+    if len(D.changed) > 0 :
+        line = ()
+        DDiffer(object_A, object_B, rank_list) 
+
+    else: 
+        line = [
+        ( protocol_A.nodes[object_A].pk, protocol_A.nodes[object_A]['name'] ),
+        ( protocol_B.nodes[object_B].pk, protocol_B.nodes[object_B]['name'] )
+        ]
+
+        rank_list.append(line)
+
+        
 
    
 
 
-# add first protocool layer
-
-MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-anchor_nodes = [a.nodes[r[2]]['objectid'] for r in a.get_action_tree('objectid') if a.nodes[r[2]]['verb'] in MACHINE_VERBS]
-a.layer_data = {} 
-for verb in anchor_nodes:
-	a.layer_data[a.nodes[verb]['objectid']] = a.nodes[verb]['machine']['objectid'] 
-
-a.edges_list = [(i,j) for i,j in a.layer_data.items()]	
-
-agraph.add_edges_from(a.edges_list)
-
-for parent,child in a.edges_list:
-	
-	rank_list = (parent,child) 		
-	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-	e = agraph.get_edge(parent,child)
-	n = agraph.get_node(child) # get rank node that links to base node for each rank
-	n.attr['shape'] = 'record'
-	
-	if 'what' in a.nodes[parent]:
-		e.attr['label'] = a.nodes[parent]['what'] 
-
-	n.attr['label'] = a.nodes[child].label
+    
 
 
-	# Specify the second graph layer:
 
-anchor_nodes_b = [b.nodes[r[2]]['objectid'] for r in b.get_action_tree('objectid') if b.nodes[r[2]]['verb'] in MACHINE_VERBS]
-b.layer_data = {} 
-for verb in anchor_nodes_b:
-	b.layer_data[b.nodes[verb]['objectid']] = b.nodes[verb]['machine']['objectid'] 
 
-b.edges_list = [(i,j) for i,j in b.layer_data.items()]	
 
-agraph.add_edges_from(b.edges_list)
 
-for parent,child in b.edges_list:
-	
-	rank_list = (parent,child) 		
-	N = agraph.add_subgraph(rank_list, rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc]))
-	e = agraph.get_edge(parent,child)
-	n = agraph.get_node(child) # get rank node that links to base node for each rank
-	n.attr['shape'] = 'record'
-	
-	if 'what' in b.nodes[parent]:
-		e.attr['label'] = b.nodes[parent]['what'] 
 
-	n.attr['label'] = b.nodes[child].label
-	# ________________________________________________
-	
-def find_children_similarities(self, comparators):
+class DDiffer(object):
+    """
+    Calculate the difference between two dictionaries as:
+    (1) items added
+    (2) items removed
+    (3) keys same in both but changed values
+    (4) keys same in both and unchanged values
+    """
 
-# filtering the first list of lists:
 
-# find the objects that appear more than once
+    def __init__(self, current_dict, past_dict):
+        self.current_dict, self.past_dict = current_dict, past_dict
+        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+        self.intersect = self.set_current.intersection(self.set_past)
+        self.querry = (self.current_dict, self.past_dict)
+        # self.added = self.new
+        # self.removed = self.deleted
+        # self.changed = self.modified
+        # self.unchanged = self.same
+        # self.layer = 0
+    
+    @property
+    def A_added(self):
+        return list(self.set_current - self.intersect)
+    
+    @property
+    def B_added(self):
+        return list(self.set_past - self.intersect)
+    
+    @property   
+    def changed(self, name = False, objectid = False, slug = False):
+        delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+        if name:
+            delta.pop(delta.index('name'))
+        if objectid:
+            delta.pop(delta.index('objectid'))
+        if slug:
+            delta.pop(delta.index('slug'))
+        return delta
+    
+    @property
+    def same(self):
+        return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
-mappings = {}
-for i in out1:
-    if i[0] not in mappings:
-        mappings[i[0]] = []
-        mappings[i[0]].append(i[1])
+    @property
+    def inheritance(self):
+        if self.changed > 0:
+            if type(self.changed) in not str:
+
+
+
+    
+
+
+
+def copmare_two_ordered_lists(lst1, lst2):
+
+    if len(lst1) > len(lst2):
+        longer = lst1
+        shorter = lst2
     else:
-        mappings[i[0]].append(i[1])
-
-uniq = dict((k,v) for k,v in mappings.items() if len(v)>1)
-
+        longer = lst2 
+        shorter = lst1 
 
 
-# content filter:
-matches = []
-
-for ref,options in uniq.items():
-	if 'machine' in a.nodes[ref].keys():
-		for candidate in options:
-			if 'machine' in b.nodes[candidate].keys():
-				d = DictDiffer(a.nodes[ref]['machine'],b.nodes[candidate]['machine'])
-				# print [ref, candidate, d.added(), d.removed(), d.changed()]
-				tmp = [ref,candidate, len(d.added()) + len(d.removed()) + len(d.changed())]
-				matches.append(tmp)
+    start = 0
+    try:
+        for item in shorter:
+            start = longer.index(item, start) + 1
+    except ValueError:
+        return False
+    return True     
+                    
 
 
 
-	# there are 3 loops here on purpose, machines and components have different children issues		
 
-for ref,options in uniq.items():
-	if 'components' in a.nodes[ref].keys():
-		for candidate in options:
-			if 'components' in b.nodes[candidate].keys():
-				d = DictDiffer(a.nodes[ref]['components'],b.nodes[candidate]['components'])
-				print [ref, candidate, d.added(), d.removed(), d.changed()]
 
-# !!! ---------  > finish writing this wrpapper for the DictDiffer and diff methods < -------!!!!!!!!
+
+
+
+
+
+
+
 
 
 

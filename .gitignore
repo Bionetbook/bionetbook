@@ -9,6 +9,7 @@ build
 
 bnbapp/bionetbook/database.sqlite
 bionetbook/protocols/csvparser.py
+bionetbook/compare/SANDBOX.py
 bnbapp/data/
 
 bnbapp copy/
