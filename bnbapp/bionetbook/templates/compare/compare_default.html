@@ -7,7 +7,7 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
       <li class="active">{{object.name}}</li>
     </ul>
 {% endblock %}
@@ -26,8 +26,9 @@
 <div class="row">
     <div class="span6">
         <h2>Compare</h2>
-        <div>{{protocol_a}}</div>
-        <div>{{protocol_b}}</div>
+        <div>{{ protocol_a }}</div>
+        <div>{{ protocol_b }}</div>
+        <div><img src="{% url compare_protocol_graphic protocol_a.slug protocol_b.slug 'svg' %}"></div>
     </div>
 </div>    
 {% endblock %}
