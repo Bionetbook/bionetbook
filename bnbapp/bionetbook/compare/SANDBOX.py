@@ -29,9 +29,16 @@ class CopmareNodeBase(protocol_A, protocol_B, object_A, object_B, **kwargs):
     parent_layer = layer_A.parent.__class__
 
     rank_list = [] # this is the list fo ranked objects
-
-    D = DDiffer( object_A, object_B )
+    actions_A = protocol_A.get_actions
+    actions_B = protocol_B.get_actions
+    # determine that there are no verbs out of order:
     
+
+    it = itertools.izip(verbs_A, verbs_B)
+    for i,j in it:
+
+        D = DDiffer( object_A, object_B )
+
     line = []
 
     if len(D.changed) > 0 :
@@ -114,7 +121,7 @@ class DDiffer(object):
 
 
 
-def copmare_two_ordered_lists(lst1, lst2):
+def compare_two_ordered_lists(lst1, lst2):
 
     if len(lst1) > len(lst2):
         longer = lst1
@@ -131,23 +138,64 @@ def copmare_two_ordered_lists(lst1, lst2):
     except ValueError:
         return False
     return True     
-                    
+
+
+def align_two_lists(ls1, ls2):
+    ''' aligns the objectids between two lists:
+    Checks that both list objects are in the same order
+    Aligns the objectids, padds None if there are no matches'''
+
+    ordered = compare_two_ordered_lists(ls1, ls2)
+
+    if not ordered:
+        print 'do something with lists that arent ordered properly.'
+
+    alignment = []
+    
+    # Find the objects that are not aligned:
+    no_partner = set(ls1).symmetric_difference(set(ls2))
+
+    partners = set(ls1).intersection(set(ls2))  
+
+    combined_list = set(ls1).union(set(ls2))
+
+    # add the verbs that are in both lists:
+
+    for i in combined:
+        if i in partners:
+            # add it to the alignment
+            alignment.append((i,i))
+        else:
+            if i in ls1 and i not in ls2:
+                alignment.append((i, None))   
+            else:
+                alignment.append((None, i))
+
+    # trial 2:
+    
+    F = itertools.izip_longest(ls1, ls2)
+
+    F = list(F) 
+
+    for i,j in F:
+        if i == j:
+            alignment.append((i,j))
+        else:
+             # both objects are in the lists and not aligned:
+             if i in ls2 and j not in ls1:
+                alignment.append((None,j))
+             if i in ls2 and j not in ls1:   
+
+    
 
 
 
+                   
+
+    
 
 
-
-
-
-
-
-
-
-
-
-
-# We have a list of edges with a difference score
+                    # We have a list of edges with a difference score
 # figure out which nodes are real edges
 # remove canditates from a:b mapping:
 
@@ -186,12 +234,7 @@ for i in matches:
 	else:
 		if i[2] < score:
 			score = i[2]
-			cand = i[1]		
-
-
-
-
-
+			cand = i[1]	
 
 
 # Find the rows where matching 1 neighbor isnt enough:
@@ -230,51 +273,90 @@ if len(set(a_uniq_in_comparator)-set(b_uniq_in_comparator)):
 
 
 
+# Trail 3: 
+# working: gap = 1,2  
+# not working: order switch, more than 2 lists, if there are some gaps and then an index rematch (first[i] == second[i]) are not being re aligned properly 
+
+def align_lists ( actions_A, actions_B):
+    import itertools
+    first = list(actions_A)
+    second = list(actions_B)     
+    len_1 = len(actions_A)
+    len_2 = len(actions_B)
+    if len_1 > len_2:
+        longer = len_1
+    else:
+        longer = len_2
+
+    for i in range(longer):
+        if first[i] == second[i]:
+            # check that there current sequnce aligns:
+            continue
+        else:
+            # ls2 has an extra action
+            if first[i] in actions_B and second[i] not in actions_A:
+                first.insert(i, None) 
+            if second[i] in actions_A and first[i] not in actions_B:
+                second.insert(i, None) 
+            if first[i] in actions_A and first[i] in actions_B:
+                idx_a = 
+                idx_b = second.index(first[i])
+                while idx_b >     
 
 
 
+    F  = itertools.izip_longest(first,second)
+    for i, j in F:
+        print i,j  
+
+    return itertools.izip_longest(first,second)             
 
 
-# make a data model that can accept the differnces and pass them on to the pygraphviz data model .
+        # if first[i] not in ls2:
+        #     second.insert(i,None)
+def align_lists ( actions_A, actions_B):
+    import itertools
+
+    first = list(actions_A)
+    second = list(actions_B)     
+    len_1 = len(actions_A)
+    len_2 = len(actions_B)
+    input_cnt_a = 0
+    output_cnt_a = 0
+    input_cnt_b = 0
+    output_cnt_b = 0
+    if len_1 > len_2:
+        longer = len_1
+    else:
+        longer = len_2
+
+    output = {}
+
+    for i in range(longer):
+        if first[i] == second[i]:
+            # check that there current sequnce aligns:
+            result.append((first[output_cnt_a], second[output_cnt_b]))
+            # output_cnt_a +=1
+            # output_cnt_b +=1
+        else:
+            # ls2 has an extra action
+            if first[i] in actions_B and second[i] not in actions_A:
+                output.append((i, None) 
+            if second[i] in actions_A and first[i] not in actions_B:
+                output.append((i, None) 
+            if first[i] in actions_A and first[i] in actions_B:
+                idx_a = first.index(i)
+                idx_b = second.index(first[i])
+                if idx_b > idx_a:
+                    output.append((None, i) 
 
 
 
-
-
-
-
-
-
-				else:
-					# they are the same length, 
-					# send to compare machine / component function, 
-					# score 10 for perfect match
-					# score 9 for one mismach
-					# score 8 for 2 mismatches
-					# etc. 
-					# return the labels that have to be colored differntly. 
-
-
-
-
-# determine if they have the same number of children
-# determine thier children keys match. 
-# determine if the valuse of the children match. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # F  = itertools.izip_longest(first,second)
+    # for i, j in F:
+    #     print i,j          
+    
+    return output
 
 
 
