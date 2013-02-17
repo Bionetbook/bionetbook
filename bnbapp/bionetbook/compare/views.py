@@ -38,8 +38,11 @@ class CompareGraphicView(View):
         A.add_edge(2,3)
         A.add_edge(1,3)
         A.layout() # layout with default (neato)
-        img=A.draw(format='png') # draw png
+        img=A.draw(format=format) # draw png
 
-        response = HttpResponse(img, mimetype='image/svg')
+        if format in ['svg']:
+            format = format + "+xml"
+
+        response = HttpResponse(img, mimetype='image/%s' % format)
         return response
 
