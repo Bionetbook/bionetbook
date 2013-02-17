@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from compare.models import ProtocolPlot
 from django.views.generic import TemplateView, View
 
@@ -22,13 +23,23 @@ class CompareGraphicView(View):
 
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
-        context = self.get_context_data()
+        import pygraphviz as P
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
         format = kwargs['format']
 
+        A=P.AGraph() # init empty graph
+        # set some default node attributes
+        A.node_attr['style']='filled'
+        A.node_attr['shape']='circle'
+        # Add edges (and nodes)
+        A.add_edge(1,2)
+        A.add_edge(2,3)
+        A.add_edge(1,3)
+        A.layout() # layout with default (neato)
+        img=A.draw(format='png') # draw png
 
-        # NEED TO REPLACE THE BELOW RESPONSE WITH ONE USING STRINGIO
-        return self.render_to_response(context)
+        response = HttpResponse(img, mimetype='image/svg')
+        return response
 
