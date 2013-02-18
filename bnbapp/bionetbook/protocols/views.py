@@ -109,8 +109,11 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 
     def confirm(self, request, *args, **kwargs):
         self.object = self.get_object()
-        #self.object.save()
         print "NODE DELETED"
+
+        # self.object.delete_node()
+        # self.object.save()
+
         messages.add_message(self.request, messages.INFO, "Your node was deleted.")
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
