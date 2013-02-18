@@ -347,6 +347,11 @@ class StepCreateView(NodeCreateViewBase):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get_url_args(self):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug}
+
 '''
     def get_context_data(self, **kwargs):
         """
