@@ -7,7 +7,7 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 	if 'machine' in kwargs:
 
 		for i in changed:
-			stack.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+			stack.append('<TR><TD color="#C0C0C0"><font size = "14" color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
 
 		for j in unchanged:
 			stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j]))	

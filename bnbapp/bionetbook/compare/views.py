@@ -152,12 +152,12 @@ class Grapher(object):
         else:
             machines = False 
         
-        if 'component' in kwargs:
+        if 'component' in kwargs['layers']:
             components = True
         else:
             components = False 
         
-        if 'thermo' in kwargs:
+        if 'thermo' in kwargs['layers']:
             thermocycle = True
         else:
             thermocycle = False     
@@ -193,7 +193,7 @@ class Grapher(object):
                     s.attr['shape'] = 'box'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
-
+                    s.attr['fontsize'] = '10'
                     # set label:
                     s.attr['label'] = merge_table_pieces(content)
                 
@@ -242,6 +242,7 @@ class Grapher(object):
                         s.attr['shape'] = 'box'
                         s.attr['color'] = '#C0C0C0'
                         s.attr['style'] = 'rounded'
+                        s.attr['fontsize'] = '10'
                         s.attr['label'] = merge_table_pieces(content, 'components')
 
             if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
@@ -306,6 +307,7 @@ class Grapher(object):
                     s.attr['shape'] = 'box'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
+                    s.attr['fontsize'] = '10'
                     s.attr['label'] = (table)
     
         return self     
