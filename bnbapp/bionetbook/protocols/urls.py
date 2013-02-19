@@ -27,13 +27,22 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/delete/$', view=views.ActionDeleteView.as_view(), name='action_delete'),
 
     # COMPONENT
-    #url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-component/$', view=views.MachineCreateView.as_view(), name='component_create'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-component/$', view=views.MachineCreateView.as_view(), name='component_create'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/components/$', view=views.ComponentListView.as_view(), name='component_list'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c-(?P<component_slug>[-\w]+)/$', view=views.ComponentDetailView.as_view(), name='component_detail'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c-(?P<component_slug>[-\w]+)/edit/$', view=views.ComponentUpdateView.as_view(), name='component_edit'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c-(?P<component_slug>[-\w]+)/delete/$', view=views.ComponentDeleteView.as_view(), name='component_delete'),
 
     # MACHINE
-    #url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-machine/$', view=views.MachineCreateView.as_view(), name='machine_create'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/m-(?P<machine_slug>[-\w]+)/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-machine/$', view=views.MachineCreateView.as_view(), name='machine_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/edit/$', view=views.MachineUpdateView.as_view(), name='machine_edit'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/delete/$', view=views.MachineDeleteView.as_view(), name='machine_delete'),
 
     # THERMOCYCLER
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-termocycler/$', view=views.ThermocyclerCreateView.as_view(), name='thermocycler_create'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/termocyclers/$', view=views.ThermocyclerListView.as_view(), name='thermocycler_list'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t-(?P<thermocycler_slug>[-\w]+)/$', view=views.ThermocyclerDetailView.as_view(), name='thermocycler_detail'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t-(?P<thermocycler_slug>[-\w]+)/edit/$', view=views.ThermocyclerUpdateView.as_view(), name='thermocycler_update'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t-(?P<thermocycler_slug>[-\w]+)/delete/$', view=views.ThermocyclerDeleteView.as_view(), name='thermocycler_delete'),
 )
