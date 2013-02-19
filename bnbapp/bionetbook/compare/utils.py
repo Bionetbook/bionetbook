@@ -1,4 +1,54 @@
-def set_html_label(x,y,changed, unchanged, **kwargs):
+def html_label_one_protocol(x, **kwargs):
+
+	
+	stack = []
+
+
+	if 'machine' in kwargs:
+
+		for i in x.keys():
+			stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[i]))	
+
+		return stack
+
+
+	if 'components' in kwargs: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+		''' assuming that the objectids of the reagents are the same'''
+
+		# count how many changes each reagent has, if 2 reagent names are different, write them last 
+		_conc = ''
+		_vol = ''
+		_mass = ''
+
+		if x['name'].lower() == 'total volume':
+			_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
+
+		# if 'conc' in changed:
+		# 	_conc = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
+		# 	# print 'CHANGED CONC'
+		if 'conc' in x.keys():
+			_conc = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['conc'][0]) + str(x['conc'][1])) #<TD colspan="2">%s</TD> 
+			# print 'UNCHANGED CONC'
+		
+
+		# if 'vol' in changed and 'vol' not in unchanged:
+		# 	_vol = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['vol'][0]) + str(x['vol'][1]), str(y['vol'][0]) + str(y['vol'][1])) #<TD>%s</TD><TD>%s</TD>
+		if 'vol' in x.keys():
+			_vol = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['vol'][0]) + str(x['vol'][1]))	#<TD colspan="2">%s</TD>
+
+
+		# if 'mass' in changed and 'mass' not in unchaged:
+		# 	_mass = '<TD color="#B82F3"><font color="#B82F3">%s</font>%</TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['mass'][0]) + str(x['mass'][1]), str(y['mass'][0]) + str(y['mass'][1])) # <TD>%s</TD><TD>%s</TD>
+		if 'mass' in x.keys():
+			_mass = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['mass'][0]) + str(x['mass'][1])) # <TD colspan="2">%s</TD>
+
+		_name = '<TR><TD>%s</TD>' %x['name']
+
+		return  _name + _conc + _vol + _mass + '</TR>'
+
+
+
+def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
 	
 	stack = []
@@ -7,7 +57,7 @@ def set_html_label(x,y,changed, unchanged, **kwargs):
 	if 'machine' in kwargs:
 
 		for i in changed:
-			stack.append('<TR><TD color="#C0C0C0"><font size = "14" color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+			stack.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
 
 		for j in unchanged:
 			stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j]))	
