@@ -24,15 +24,34 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 # BASE CLASSES
 #####################
 
+class NodeDetailView(AuthorizedForProtocolMixin, DetailView):
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    slugs = []
+
+    def get_context_data(self, **kwargs):
+
+        context = super(NodeDetailView, self).get_context_data(**kwargs)
+
+        for slug in self.slugs:
+            objectid = self.kwargs[slug]
+            if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
+                slug = slug[:-5]
+            context[slug] = self.object.nodes[objectid]
+
+        return context
+
+
 class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
     model = Protocol
-    template_name = "steps/step_create.html"
     slug_url_kwarg = "protocol_slug"
     form_class = StepForm
     success_url = None
     form_prefix = None
+    slugs = []
 
     def get_url_args(self):
         protocol = self.get_protocol()
@@ -67,6 +86,12 @@ class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView
         if 'verb_slug' in self.kwargs:
             context['verb_slug'] = self.kwargs['verb_slug']
 
+        for slug in self.slugs:
+            label = self.kwargs[slug]
+            if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
+                slug = slug[:-5]
+            context[slug] = self.object.nodes[label]
+
         if not 'form' in context:
             context['form'] = self.form_class(prefix=self.form_prefix)  #Set the prefix on the form
             
@@ -96,11 +121,110 @@ class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView
             return self.form_invalid(form)
 
 
+class NodeUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+
+    slugs = []
+    node_type = None
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instanciating the form.
+        """
+        kwargs = {'initial': self.get_initial()}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        '''Gets the context data'''
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            url = reverse(self.success_url, kwargs=self.get_url_args())
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_context_data(self, **kwargs):
+        context = super(NodeUpdateView, self).get_context_data(**kwargs)
+
+        if self.object:
+            context_object_name = self.get_context_object_name(self.object)
+            if context_object_name:
+                context[context_object_name] = self.object
+        
+        for slug in self.slugs:
+            label = self.kwargs[slug]
+            if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF FOR THE context OBJECT
+                slug = slug[:-5]
+            context[slug] = self.object.nodes[label]
+
+        if 'form' in kwargs:
+            context['form'] = kwargs['form']
+        else:
+            context['form'] = self.form_class( initial=context[self.node_type] )
+
+        return context
+
+    def get_url_args(self):
+        args = {}
+
+        args['protocol_slug'] = self.object.slug
+        args['owner_slug'] = self.object.owner.slug
+
+        context = self.get_context_data()
+
+        for slug in self.slugs:
+            objectid = slug
+            if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
+                objectid = slug[:-5]
+
+            args[slug] = context[objectid].slug
+
+        return args
+
+    def post(self, request, *args, **kwargs):
+        '''This is done to handle the two forms'''
+        self.object = self.get_object()
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        node = context[self.node_type]
+
+        data = form.cleaned_data.items()
+        node.update(data)   # THIS KEEPS IT FROM DESTROYING THE ACTIONS ATTACHED TO THE STEP
+
+        self.object.save()
+
+        messages.add_message(self.request, messages.INFO, "Your %s, \"%s\", was updated." % ( self.node_type, node.title ))
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+
 class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
     template_name = "protocols/node_delete.html"
+    slugs = []
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -152,8 +276,6 @@ class ProtocolListView(ListView):
                 #         Q(owner=self.request.user)
                 #         )
                 return self.request.user.organization_set.all()
-            #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
-            #return Protocol.objects.filter(published=True)
             return []
 
 
@@ -195,15 +317,6 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
         context['steps'] = self.object.steps
         return context
 
-    #def form_valid(self, form):
-    #    protocol = self.get_protocol()
-    #    protocol.status = Protocol.STATUS_PUBLISHED
-    #    protocol.save()
-    #    messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
-    #    return super(ProtocolPublishView, self).form_valid(form)
-
-    #Form.changed_data
-
     def get_object(self, queryset=None):
         """
         Returns the object the view is displaying.
@@ -243,22 +356,6 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-    # def get_queryset(self):
-    #     """
-    #     Get the queryset to look an object up against. May not be called if
-    #     `get_object` is overridden.
-    #     """
-    #     if self.queryset is None:
-    #         if self.model:
-    #             return self.model._default_manager.all()
-    #         else:
-    #             raise ImproperlyConfigured("%(cls)s is missing a queryset. Define "
-    #                                        "%(cls)s.model, %(cls)s.queryset, or override "
-    #                                        "%(cls)s.get_queryset()." % {
-    #                                             'cls': self.__class__.__name__
-    #                                     })
-    #     return self.queryset._clone().filter(published=False)
-
 
 class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
 
@@ -284,42 +381,13 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
 # STEPS
 #####################
 
-"""
-class StepListView(AuthorizedForProtocolMixin, ListView):
 
-    model = Protocol
-    slug_url_kwarg = "protocol_slug"
-    template_name = "steps/step_list.html"
-
-    def get_queryset(self):     # NEEDS TO GET THIS FROM THE SLUG PASSED IN
-
-        slug = self.kwargs.get('slug')
-
-        #if self.request.user.is_superuser or self.request.user.is_staff:
-        return Protocol.objects.filter(slug="first-strand-cdna-synthesis-oligodt")
-        #if self.request.user.is_authenticated():
-        #    return Protocol.objects.filter(
-        #            Q(status=Protocol.STATUS_PUBLISHED) |
-        #            Q(owner=self.request.user)
-        #            )
-        #return Protocol.objects.filter(status=Protocol.STATUS_PUBLISHED)
-
-        #return []
-        #return slug
-"""
-
-
-class StepDetailView(AuthorizedForProtocolMixin, DetailView):
+class StepDetailView(NodeDetailView):
 
     model = Protocol
     template_name = "steps/step_detail.html"
     slug_url_kwarg = "protocol_slug"
-
-    def get_context_data(self, **kwargs):
-        context = super(StepDetailView, self).get_context_data(**kwargs)
-        step_slug = self.kwargs['step_slug']
-        context['step'] = self.object.nodes[step_slug]
-        return context
+    slugs = ['step_slug']
 
 
 class StepCreateView(NodeCreateViewBase):
@@ -334,10 +402,8 @@ class StepCreateView(NodeCreateViewBase):
         new_step = Step(protocol, data=form.cleaned_data)
 
         if 'steps' in protocol.data:
-            print "HAS DATA"
             protocol.data['steps'].append(new_step)
         else:
-            print "CREATING DATA"
             protocol.data['steps'] = [new_step]
         protocol.save()
 
@@ -347,119 +413,15 @@ class StepCreateView(NodeCreateViewBase):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-'''
-    def get_context_data(self, **kwargs):
-        """
-        If an object has been supplied, inject it into the context with the
-        supplied context_object_name name.
-        """
-        context = {}
-        if self.object:
-            context['object'] = self.object
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-        context.update(kwargs)
-        return super(StepCreateView, self).get_context_data(**context)
-'''
 
-
-class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+class StepUpdateView(NodeUpdateView):
     model = Protocol
     form_class = StepForm
     slug_url_kwarg = "protocol_slug"
     template_name = "steps/step_form.html"
     success_url = 'step_detail'
-
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instanciating the form.
-        """
-        kwargs = {'initial': self.get_initial()}
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super(StepUpdateView, self).get_context_data(**kwargs)
-
-        if self.object:
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-
-        for key in ['step_slug', 'action_slug']:
-            if key in self.kwargs:
-                ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.nodes[self.kwargs[key]]
-        
-        context['form'] = self.form_class(initial=context['step'])
-
-        if 'form' in kwargs:
-            print "FORM IN KWARGS"
-            context['form'] = kwargs['form']
-
-        #if not 'form' in kwargs:
-        #context['form'] = self.form_class(initial=context['step'])
-        #else:
-        #    context['form'] = kwargs['form']
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-        '''This is done to handle the two forms'''
-        self.object = self.get_object()
-        #context = self.get_context_data(**kwargs)
-        #args = self.get_form_kwargs()
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-            print "FORM VALID"
-            return self.form_valid(form)
-        else:
-            print "FORM INVALID"
-            return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        step = context['step']
-
-        data = form.cleaned_data.items()
-        step.update(data)   # THIS KEEPS IT FROM DESTROYING THE ACTIONS ATTACHED TO THE STEP
-
-        self.object.save()
-
-        messages.add_message(self.request, messages.INFO, "Your step was updated.")
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        """
-        Returns the supplied success URL.
-        """
-        if self.success_url:
-            url = reverse(self.success_url, kwargs=self.get_url_args())
-        else:
-            raise ImproperlyConfigured(
-                "No URL to redirect to. Provide a success_url.")
-        return url
-
-    def get_url_args(self):
-        args = super(StepUpdateView, self).get_url_args()
-        context = self.get_context_data()
-        args['step_slug'] = context['step'].slug
-        return args
+    slugs = ['step_slug']
+    node_type = "step"
 
 
 class StepDeleteView(NodeDeleteView):
@@ -500,18 +462,11 @@ class StepDeleteView(NodeDeleteView):
 #####################
 
 
-class ActionDetailView(AuthorizedForProtocolMixin, DetailView):
+class ActionDetailView(NodeDetailView):
 
-    model = Protocol
+    #model = Protocol
     template_name = "actions/action_detail.html"
-    slug_url_kwarg = "protocol_slug"
-
-    def get_context_data(self, **kwargs):
-        context = super(ActionDetailView, self).get_context_data(**kwargs)
-        action_slug = self.kwargs['action_slug']
-        context['action'] = self.object.nodes[action_slug]
-        context['step'] = context['action'].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
-        return context
+    slugs = ['step_slug', 'action_slug']
 
 
 class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
@@ -607,43 +562,32 @@ class ActionCreateView(NodeCreateViewBase):
         return super(ActionCreateView, self).form_valid(form)
 
 
-class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+
+
+# class StepUpdateView(NodeUpdateView):
+#     model = Protocol
+#     form_class = StepForm
+#     slug_url_kwarg = "protocol_slug"
+#     template_name = "steps/step_form.html"
+#     success_url = 'step_detail'
+#     slugs = ['step_slug']
+#     node_type = "step"
+
+class ActionUpdateView(NodeUpdateView):
 
     model = Protocol
     form_class = ActionForm
     slug_url_kwarg = "protocol_slug"
     template_name = "actions/action_form.html"
     success_url = 'action_detail'
-
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instanciating the form.
-        """
-        kwargs = {'initial': self.get_initial()}
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
-        return kwargs
+    slugs = ['step_slug', 'action_slug']
+    node_type = "action"
 
     def get_context_data(self, **kwargs):
         context = super(ActionUpdateView, self).get_context_data(**kwargs)
-
-        if self.object:
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-
-        for key in ['step_slug', 'action_slug']:
-            if key in self.kwargs:
-                ctx_key = key.split('_')[0]
-                context[ctx_key] = self.object.nodes[self.kwargs[key]]
-        
-        context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
+        context['verb_form'] = VERB_FORM_DICT[context[self.node_type]['verb']](initial=context[self.node_type], prefix='verb')
         context['verb_name'] = context['verb_form'].name
-        context['form'] = self.form_class(initial=context['action'], prefix='action')
-
+        context['form'] = self.form_class(initial=context[self.node_type], prefix=self.node_type)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -652,12 +596,10 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         context = self.get_context_data(**kwargs)
 
         args = self.get_form_kwargs()
-
         form = self.form_class(request.POST, prefix='action')
-
         verb_key = context['action']['verb']
-        print context['action']
-        print verb_key
+        # print context['action']
+        # print verb_key
         verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
 
         if form.is_valid() and verb_form.is_valid():
@@ -688,7 +630,6 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         messages.add_message(self.request, messages.INFO, "Your action was updated.")
         return HttpResponseRedirect(self.get_success_url())
 
-
     def form_invalid(self, form, verb_form):
         """
         If the form is invalid, re-render the context data with the
@@ -700,24 +641,6 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         ctx['verb_form'] = verb_form
         # FORMS NOT PASSING POPULATED
         return self.render_to_response(ctx)
-
-    def get_success_url(self):
-        """
-        Returns the supplied success URL.
-        """
-        if self.success_url:
-            url = reverse(self.success_url, kwargs=self.get_url_args())
-        else:
-            raise ImproperlyConfigured(
-                "No URL to redirect to. Provide a success_url.")
-        return url
-
-    def get_url_args(self):
-        args = super(ActionUpdateView, self).get_url_args()
-        context = self.get_context_data()
-        args['step_slug'] = context['step'].slug
-        args['action_slug'] = context['action'].slug
-        return args
 
 
 class ActionDeleteView(NodeDeleteView):
@@ -766,6 +689,9 @@ class ActionDeleteView(NodeDeleteView):
     #     if form.has_changed():
 
     #     super(NodeCreateViewBase, self).form_valid(form)
+class ComponentDetailView(NodeDetailView):
+    slugs = ['step_slug', 'action_slug', 'componenet_slug']
+
 
 class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
     pass
@@ -775,6 +701,10 @@ class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Au
 # MACHINES
 #####################
 
+class MachineDetailView(NodeDetailView):
+    slugs = ['step_slug', 'action_slug', 'machine_slug']
+
+
 class MachineUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
     pass
 
@@ -782,6 +712,12 @@ class MachineUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Auth
 #####################
 # THEMOCYCLERS
 #####################
+
+
+class ThermocyclerDetailView(NodeDetailView):
+    slugs = ['step_slug', 'action_slug', 'thermocycler_slug']
+
+
 
 class ThermocyclerUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
     pass
