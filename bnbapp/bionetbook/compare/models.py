@@ -280,6 +280,35 @@ class Compare(object):
 		self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
 		self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
 
+	def align_lists ( actions_A, actions_B):
+	    first = list(actions_A)
+	    second = list(actions_B)     
+	    len_1 = len(actions_A)
+	    len_2 = len(actions_B)
+	    if len_1 > len_2:
+	        longer = len_1
+	    else:
+	        longer = len_2
+
+	    for i in range(longer):
+	        if first[i] == second[i]:
+	            # check that there current sequnce aligns:
+
+	            continue
+	        else:
+	            # ls2 has an extra action
+	            if first[i] in ls2 and second[i] not in ls1:
+	                first.insert(i, None) 
+	            if second[i] in ls1 and first[i] not in ls2:
+	                second.insert(i, None) 
+
+	    F  = itertools.izip_longest(first,second)
+	    for i, j in F:
+	        print i,j  
+
+	    return itertools.izip_longest(first,second)	
+
+
 	def draw_two_protocols(self):
 		''' this function draws out 2 protocols starting with the name of the protocol and then with the nodes 
 			add_layers adds the specified layers that a user wants to compare'''
