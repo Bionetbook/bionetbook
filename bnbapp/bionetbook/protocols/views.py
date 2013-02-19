@@ -36,7 +36,7 @@ class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView
 
     def get_url_args(self):
         protocol = self.get_protocol()
-        return {'protocol_slug': protocol.slug}
+        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug}
 
     def get_success_url(self):
         """
@@ -347,11 +347,6 @@ class StepCreateView(NodeCreateViewBase):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-    def get_url_args(self):
-        protocol = self.get_protocol()
-        context = self.get_context_data()
-        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug}
-
 '''
     def get_context_data(self, **kwargs):
         """
@@ -461,9 +456,10 @@ class StepUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         return url
 
     def get_url_args(self):
-        protocol = self.get_protocol()
+        args = super(StepUpdateView, self).get_url_args()
         context = self.get_context_data()
-        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+        args['step_slug'] = context['step'].slug
+        return args
 
 
 class StepDeleteView(NodeDeleteView):
@@ -541,9 +537,10 @@ class ActionCreateView(NodeCreateViewBase):
     form_prefix = 'action'
 
     def get_url_args(self):
-        protocol = self.get_protocol()
+        args = super(ActionCreateView, self).get_url_args()
         context = self.get_context_data()
-        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug}
+        args['step_slug'] = context['step'].slug
+        return args
 
 
     def get_context_data(self, **kwargs):
@@ -594,13 +591,11 @@ class ActionCreateView(NodeCreateViewBase):
         context = self.get_context_data()
         step = context['step']
 
-        # COMBINE THE DATA FROM THE TWO FORMS
-        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
-        #ADD THE VERB
-        verb_slug = self.kwargs.get('verb_slug', None)
+        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())     # COMBINE THE DATA FROM THE TWO FORMS
+        verb_slug = self.kwargs.get('verb_slug', None)                              # ADD THE VERB
         data['verb'] = verb_slug
 
-        action = Action(protocol, step=step, data=data)
+        action = Action(protocol, data=data)
 
         if 'actions' in step:
             step['actions'].append(action)
@@ -610,13 +605,6 @@ class ActionCreateView(NodeCreateViewBase):
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")
         return super(ActionCreateView, self).form_valid(form)
-
-    #def get_context_data(self, **kwargs):
-    #    context = super(ActionCreateView, self).get_context_data(**kwargs)
-    #    step_slug = self.kwargs['step_slug']
-    #    context['step'] = self.object.nodes[step_slug]
-    #    context['form'] = ActionForm()
-    #    return context
 
 
 class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
@@ -725,9 +713,11 @@ class ActionUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorize
         return url
 
     def get_url_args(self):
-        protocol = self.get_protocol()
+        args = super(ActionUpdateView, self).get_url_args()
         context = self.get_context_data()
-        return {'protocol_slug': protocol.slug, 'step_slug':context['step'].slug, 'action_slug': context['action'].slug}
+        args['step_slug'] = context['step'].slug
+        args['action_slug'] = context['action'].slug
+        return args
 
 
 class ActionDeleteView(NodeDeleteView):
