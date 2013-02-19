@@ -1,10 +1,10 @@
 from django.http import HttpResponse
 from compare.models import ProtocolPlot, DictDiffer
 from django.views.generic import TemplateView, View
-from compare.utils import set_html_label, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
+from compare.utils import html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
 
 
-class CompareView(TemplateView):
+class CompareBaseView(TemplateView):
     template_name = "compare/compare_default.html"
 
     def get(self, request, *args, **kwargs):
@@ -13,11 +13,23 @@ class CompareView(TemplateView):
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-
+        print 'returning CompareBaseView'
         return self.render_to_response(context)
 
+class CompareLayersView(TemplateView):
+    template_name = "compare/compare_layer.html"
 
-class CompareGraphicView(View):
+    def get(self, request, *args, **kwargs):
+        '''Gets the context data'''
+        context = self.get_context_data()
+
+        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        print 'returning CompareLayersView'
+        return self.render_to_response(context)        
+
+
+class CompareBaseGraphicView(View):
     '''
     Returns a graphic representaion of a comparison in either a SVG or PNG format.
     '''
@@ -37,13 +49,15 @@ class CompareGraphicView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
+        print 'returning CompareBaseGraphicView'
         return response
 
-class CompareLayerView(View):
+class CompareLayersGraphicView(TemplateView):
+    template_name = "compare/comapare_layer.html"
     '''
-    Adds a compare layer to Returns a graphic representaion of a comparison in either a SVG or PNG format.
+        Adds a compare layer to Returns a graphic representaion of a comparison in either a SVG or PNG format.
     '''
-    template_name = "compare/compare_default.html"
+    
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
 
@@ -62,6 +76,7 @@ class CompareLayerView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
+        print 'returning ComparelayersGraphicView'
         return response
 
 
@@ -126,7 +141,7 @@ class Grapher(object):
         # add base of second protocol:
         for i in range(1, len(self.B_pk)):
             self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
-            print 'drawing protocol %s'% self.protocol_B.name
+            # print 'drawing protocol %s'% self.protocol_B.name
             e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
             e.attr['style'] = 'setlinewidth(9)' 
             e.attr['color'] = '#015666' 
@@ -175,7 +190,7 @@ class Grapher(object):
                 x = self.protocol_A.nodes[verb_a]['machine'].summary
                 y = self.protocol_B.nodes[verb_b]['machine'].summary
                 d = DictDiffer (x, y)
-                content = set_html_label(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
 
     
                 # --->  create a compare-graph-object that will apear between the 2 base diagrams:
@@ -226,7 +241,7 @@ class Grapher(object):
                             d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
                             scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
                             # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                            tmp = set_html_label(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
+                            tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), components = True) 
                             content.append(tmp)
                             
                     # --->  create a compare-graph-object that will apear between the 2 base diagrams:
