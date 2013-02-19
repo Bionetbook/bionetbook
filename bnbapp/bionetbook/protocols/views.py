@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
-from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm
+from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm
 from protocols.models import Protocol, Step, Action
 from organization.models import Organization
 
@@ -113,11 +113,8 @@ class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView
         form = self.get_form(form_class)
 
         if form.is_valid():
-            print "FORM VALID"
-            # CHECK TO SEE IF THE NAME HAS CHANGED AND IF SO, UPDATE THE SLUG
             return self.form_valid(form)
         else:
-            print "FORM INVALID"
             return self.form_invalid(form)
 
 
@@ -596,38 +593,30 @@ class ActionUpdateView(NodeUpdateView):
         context = self.get_context_data(**kwargs)
 
         args = self.get_form_kwargs()
-        form = self.form_class(request.POST, prefix='action')
-        verb_key = context['action']['verb']
-        # print context['action']
-        # print verb_key
+        form = self.form_class(request.POST, prefix=self.node_type)
+        verb_key = context[self.node_type]['verb']
         verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
 
         if form.is_valid() and verb_form.is_valid():
-            print "FORM VALID"
             return self.form_valid(form, verb_form)
         else:
-            print "FORM INVALID"
             return self.form_invalid(form, verb_form)
 
     def form_valid(self, form, verb_form):
         '''Takes in two forms for processing'''
         protocol = self.get_protocol()
         context = self.get_context_data()
-        step = context['step']
-        action = context['action']
+        node = context[self.node_type]
 
         # COMBINE THE DATA FROM THE TWO FORMS
         data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
-        #ADD THE VERB
-        #verb_slug = self.kwargs.get('verb_slug', None)
-        data['verb'] = action['verb']
+        data['verb'] = node['verb']
 
         # UPDATE THE ACTION VALUES WITH THE CLEANED DATA
-        action.update(data)
-
+        node.update(data)
         protocol.save()
 
-        messages.add_message(self.request, messages.INFO, "Your action was updated.")
+        messages.add_message(self.request, messages.INFO, "Your %s, \"%s\", was updated." % ( self.node_type, node.title ))
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, verb_form):
@@ -635,11 +624,7 @@ class ActionUpdateView(NodeUpdateView):
         If the form is invalid, re-render the context data with the
         data-filled form and errors.
         """
-        #ctx = self.get_context_data(object=self.object, form=form, verb_form=verb_form)
-        ctx = self.get_context_data(object=self.object)
-        ctx['form'] = form
-        ctx['verb_form'] = verb_form
-        # FORMS NOT PASSING POPULATED
+        ctx = self.get_context_data(object=self.object, form=form, verb_form=verb_form)
         return self.render_to_response(ctx)
 
 
@@ -689,12 +674,17 @@ class ActionDeleteView(NodeDeleteView):
     #     if form.has_changed():
 
     #     super(NodeCreateViewBase, self).form_valid(form)
+
+
 class ComponentDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug', 'componenet_slug']
 
-
-class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-    pass
+# class ComponentUpdateView(NodeDetailView):
+#     form_class = ComponentForm
+#     template_name = "component/component_form.html"
+#     success_url = "component_detail"
+#     node_type = "component"
+#     slugs = ['step_slug', 'action_slug', 'componenet_slug']
 
 
 #####################
@@ -704,9 +694,12 @@ class ComponentUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Au
 class MachineDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug', 'machine_slug']
 
-
-class MachineUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-    pass
+# class MachineUpdateView(NodeDetailView):
+#     form_class = MachineForm
+#     template_name = "machine/machine_form.html"
+#     success_url = "machine_detail"
+#     node_type = "machine"
+#     slugs = ['step_slug', 'action_slug', 'machine_slug']
 
 
 #####################
@@ -718,6 +711,9 @@ class ThermocyclerDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug', 'thermocycler_slug']
 
 
-
-class ThermocyclerUpdateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
-    pass
+# class ThermocyclerUpdateView(NodeDetailView):
+#     form_class = ThermocyclerForm
+#     template_name = "thermocycler/thermocycler_form.html"
+#     success_url = "thermocycler_detail"
+#     node_type = "thermocycler"
+#     slugs = ['step_slug', 'action_slug', 'thermocycler_slug']

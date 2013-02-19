@@ -27,5 +27,13 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/delete/$', view=views.ActionDeleteView.as_view(), name='action_delete'),
 
     # COMPONENT
-    url(regex=r'^(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<component_slug>[-\w]+)/$', view=views.ActionDetailView.as_view(), name='component_detail'),
+    #url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-component/$', view=views.MachineCreateView.as_view(), name='component_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c-(?P<component_slug>[-\w]+)/$', view=views.ComponentDetailView.as_view(), name='component_detail'),
+
+    # MACHINE
+    #url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-machine/$', view=views.MachineCreateView.as_view(), name='machine_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/m-(?P<machine_slug>[-\w]+)/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
+
+    # THERMOCYCLER
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t-(?P<thermocycler_slug>[-\w]+)/$', view=views.ThermocyclerDetailView.as_view(), name='thermocycler_detail'),
 )

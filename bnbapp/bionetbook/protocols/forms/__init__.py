@@ -38,10 +38,21 @@ class ActionForm(forms.Form):
 class VerbForm(forms.Form):
     has_components = False
     has_machines = False
+    has_thermocycler = False
 
 forms.VerbForm = VerbForm
 
 
-# class ComponentForm(forms.Form):
-#     name = forms.CharField(max_length=100, required=False)
-#     remark = forms.CharField(required=False)
+class ComponentForm(forms.Form):
+    name = forms.CharField(max_length=100, required=False)
+    remark = forms.CharField(required=False)
+
+
+class MachineForm(forms.Form):
+    name = forms.CharField(max_length=100, required=False)
+    remark = forms.CharField(required=False)
+
+
+class ThermocyclerForm(forms.Form):
+    name = forms.CharField(max_length=100, required=False)
+    remark = forms.CharField(required=False)
