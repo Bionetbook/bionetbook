@@ -25,6 +25,7 @@ class CompareLayersView(TemplateView):
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        context['layer'] = kwargs['layers']
         print 'returning CompareLayersView'
         return self.render_to_response(context)        
 

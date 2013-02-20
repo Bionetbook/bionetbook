@@ -774,10 +774,6 @@ class Action(NodeBase):
         else:
             return None
 
-
-   
-
-
     def delete_child_node(self, node_id):
         """
         Removes a Child Node with the given name from the list of nodes
