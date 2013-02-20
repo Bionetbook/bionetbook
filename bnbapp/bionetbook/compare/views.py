@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, View
 from compare.utils import html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
 
 
+
 class CompareBaseView(TemplateView):
     template_name = "compare/compare_default.html"
 
@@ -13,21 +14,16 @@ class CompareBaseView(TemplateView):
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+
+        if 'layers' in kwargs:
+            context['layer'] = kwargs['layers']
+
         print 'returning CompareBaseView'
         return self.render_to_response(context)
 
-class CompareLayersView(TemplateView):
+
+class CompareLayersView(CompareBaseView):
     template_name = "compare/compare_layer.html"
-
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-        context = self.get_context_data()
-
-        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-        context['layer'] = kwargs['layers']
-        print 'returning CompareLayersView'
-        return self.render_to_response(context)        
 
 
 class CompareBaseGraphicView(View):
@@ -53,8 +49,9 @@ class CompareBaseGraphicView(View):
         print 'returning CompareBaseGraphicView'
         return response
 
-class CompareLayersGraphicView(TemplateView):
-    template_name = "compare/comapare_layer.html"
+
+class CompareLayersGraphicView(View):
+    #template_name = "compare/comapare_layer.html"
     '''
         Adds a compare layer to Returns a graphic representaion of a comparison in either a SVG or PNG format.
     '''
@@ -66,7 +63,6 @@ class CompareLayersGraphicView(TemplateView):
         protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
         layers = kwargs['layers']
         format = "svg"
-
 
         grapher = Grapher(protocol_a, protocol_b, "svg")
         base = grapher.draw_two_protocols()
