@@ -57,9 +57,11 @@
     </div> 
 </div>    
 <div class="row">
-    <div class="span12" style="text-align:center;"> 
-        <embed src="{% url add_layers_graphic protocol_a.slug protocol_b.slug 'machine' 'svg' %}" type="image/svg+xml" />
-        <!-- <div><img src="{% url compare_protocol_graphic protocol_a.slug protocol_b.slug 'png' %}"></div> -->
+    <div class="span12" style="text-align:center;">
+        <div>
+            <embed src="{% url compare_protocol_graphic protocol_a.slug protocol_b.slug 'svg' %}" type="image/svg+xml" />
+            <!-- <div><img src="{% url compare_protocol_graphic protocol_a.slug protocol_b.slug 'png' %}"></div> -->
+        </div>
     </div>
 </div>
 {% endblock %}
