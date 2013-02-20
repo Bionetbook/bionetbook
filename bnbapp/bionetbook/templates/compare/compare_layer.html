@@ -26,36 +26,43 @@
 
 {% block content %}
 <div class="row">
-    <div class="span6"> 
-        Name: {{ protocol_a }}  
-            <div class="row">
-                <div class="span4">Parent: {{protocol_a.parent }} </div>
-                <div class="span2">Children: {{protocol_a.children }} </div>
-            </div>
-            <div class="row">
-                <div class="span4">Author: {{protocol_a.data.Reference_PMID }} </div>
-                <div class="span2">PubMed: {{protocol_a.data.Reference_PMID }} </div>
-            </div>
-            <div class="row">                
-                <div class="span4">Created: {{protocol_a.data.created }} </div>
-                <div class="span2">Duration: {{protocol_a.data.duration_in_seconds }} </div>
-            </div>
+    <div class="span6">
+        <div class="well">
+            <h3>{{ protocol_a }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    <td>Parent: {{protocol_a.parent }}</td>
+                    <td>Children: {{protocol_a.children }} </td>
+                </tr>
+                <tr>
+                    <td>Author: {{protocol_a.owner.name }}</td>
+                    <td>PubMed: {{protocol_a.data.Reference_PMID }} </td>
+                </tr>
+                 <tr>
+                    <td>Created: {{protocol_a.created|date:"M d, Y H:i" }}</td>
+                    <td>Duration: {{protocol_a.duration_in_seconds }}</td>
+                </tr>
+            </table>
+        </div>
     </div> 
-    <div class="span6">        
-        Name: {{ protocol_b }}  
-            <div class="row">
-                <div class="span4">Parent: {{protocol_b.parent }} </div>
-                <div class="span2">Children: {{protocol_b.children }} </div>
-            </div>
-            <div class="row">
-                <div class="span4">Author: {{protocol_b.data.Reference_PMID }} </div>
-                <div class="span2">PubMed: {{protocol_b.data.Reference_PMID }} </div>
-            </div>
-            <div class="row">                
-                <div class="span4">Created: {{protocol_b.data.created }} </div>
-                <div class="span2">Duration: {{protocol_b.data.duration_in_seconds }} </div>
-            </div>
-
+    <div class="span6">
+        <div class="well">
+            <h3>{{ protocol_b }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    <td>Parent: {{protocol_b.parent }}</td>
+                    <td>Children: {{protocol_b.children }} </td>
+                </tr>
+                <tr>
+                    <td>Author: {{protocol_b.owner.name }}</td>
+                    <td>PubMed: {{protocol_b.data.Reference_PMID }} </td>
+                </tr>
+                 <tr>
+                    <td>Created: {{protocol_b.created|date:"M d, Y H:i" }}</td>
+                    <td>Duration: {{protocol_b.duration_in_seconds }}</td>
+                </tr>
+            </table>
+        </div>
     </div> 
 </div>    
 <div class="row">
