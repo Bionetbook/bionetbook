@@ -1,3 +1,4 @@
+import sys
 from base import *
 
 # EMAIL_HOST = 'localhost'
@@ -14,6 +15,11 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+# ATTEMPT TO FORCE AN IN-MEMORY DB CREATION
+# if 'test' in sys.argv:
+#     DATABASES['default']['NAME'] = ':memory:'
+
 
 REGISTRATION_ENABLED = True
 
