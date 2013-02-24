@@ -2,3 +2,20 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 height: 25px;
 
 }
+
+/* BnB Main Color:  #798b9a  */
+
+.navbar-inner {
+	background-color: #798b9a;
+	background-image: -webkit-linear-gradient(top,#8A9CAA,#798B9A);
+}
+
+.navbar .nav > li > a {
+	color:white;
+}
+
+.navbar .nav .active > a, .navbar .nav .active > a:hover
+{
+	background-color: #798b9a;
+	background-image: -webkit-linear-gradient(top,#8A9CAA,#798B9A);
+}
