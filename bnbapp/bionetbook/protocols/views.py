@@ -24,7 +24,7 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 # BASE CLASSES
 #####################
 
-class NodeDetailView(AuthorizedForProtocolMixin, DetailView):
+class NodeDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -43,7 +43,7 @@ class NodeDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class NodeCreateViewBase(AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+class NodeCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
     model = Protocol
@@ -241,7 +241,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 # PROTOCOLS
 #####################
 
-class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
+class ProtocolDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -252,7 +252,7 @@ class ProtocolDetailView(AuthorizedForProtocolMixin, DetailView):
         return context
 
 
-class ProtocolListView(ListView):
+class ProtocolListView(LoginRequiredMixin, ListView):
 
     model = Organization
     template_name = "organization/organization_list.html"
