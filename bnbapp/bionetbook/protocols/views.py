@@ -392,6 +392,7 @@ class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Auth
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
+        messages.add_message(self.request, messages.INFO, "Your protocol duplication was canceled.")
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
 
