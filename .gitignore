@@ -15,3 +15,7 @@ bnbapp/data/
 bnbapp copy/
 
 *.svg
+
+bnbapp/bionetbook/compare/Figures/test.svg
+
+bnbapp/bionetbook/compare/SANDBOX.py
