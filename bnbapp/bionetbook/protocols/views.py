@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
-from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm
+from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
 from protocols.models import Protocol, Step, Action
 from organization.models import Organization
 
@@ -230,7 +230,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 
     def confirm(self, request, *args, **kwargs):
         self.object = self.get_object()
-        print "NODE DELETED"
+        #print "NODE DELETED"
 
         messages.add_message(self.request, messages.INFO, "Your node was deleted.")
         url = self.object.get_absolute_url()
@@ -272,7 +272,7 @@ class ProtocolListView(LoginRequiredMixin, ListView):
                 #         Q(status=Protocol.STATUS_PUBLISHED) |
                 #         Q(owner=self.request.user)
                 #         )
-                return self.request.user.organization_set.all()
+                return self.request.user.organization_set.all() # GET ALL THE ORGANIZATIONS THE USER IS A MEMEBER OF
             return []
 
 
@@ -370,6 +370,36 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
         self.object.published = True
         self.object.save()
         messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+
+class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+
+    # NEED TO VALIDATE THE FORM TO GET THE OWNER
+    # NEED TO CONFIRM THE PROTOCOL IS PUBLISHED BEFORE DUPLICATING
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    template_name = "protocols/protocol_duplicate_form.html"
+    form_class = OrganizationListForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolDuplicateView, self).get_context_data(**kwargs)
+        context['form'] = self.form_class()
+        context['form'].fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()] 
+        return context
+
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # new_owner = 
+        # self.object.clone(owner=new_owner)
+        messages.add_message(self.request, messages.INFO, "Your protocol has been duplicated.")
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
 

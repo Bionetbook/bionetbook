@@ -26,7 +26,12 @@
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
-        {% if not protocol.published %}      
+        {% if protocol.published %}
+            <p>
+              <a class="btn btn-warning" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a>
+              <a data-toggle="modal" href="{{ object.protocol_duplicate_url }}"> Duplicate</a>
+            </p>
+        {% else %}
             <p>
               <a class="btn btn-success" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a>
               <a data-toggle="modal" href="{{ object.protocol_publish_url }}"> Publish</a>

@@ -17,6 +17,10 @@ class NodeForm(forms.Form):
     remark = forms.CharField(label='Comment', required=False)
 
 
+class OrganizationListForm(forms.Form):
+    owner = forms.ChoiceField(required=True)#forms.CharField(max_length=100, required=False)
+
+
 class ProtocolForm(forms.ModelForm):
 
     class Meta:
