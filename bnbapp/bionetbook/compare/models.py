@@ -262,6 +262,7 @@ class ProtocolPlot(Protocol):
 class Compare(object):
     def __init__(self,protocol_a, protocol_b, **kwargs):
         import pygraphviz as pgv
+        import itertools
         self.agraph = pgv.AGraph()
         self.protocol_A = protocol_a
         self.protocol_B = protocol_b
@@ -278,33 +279,79 @@ class Compare(object):
         self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
         self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
 
-    def align_lists ( actions_A, actions_B):
-        first = list(actions_A)
-        second = list(actions_B)     
-        len_1 = len(actions_A)
-        len_2 = len(actions_B)
-        if len_1 > len_2:
-            longer = len_1
-        else:
-            longer = len_2
+    
+    def uniqify_order_preserving(self, seq, idfun=None): 
+       # order preserving
+       if idfun is None:
+           def idfun(x): return x
+       seen = {}
+       result = []
+       for item in seq:
+           marker = idfun(item)
+           if marker in seen: continue
+           seen[marker] = 1
+           result.append(item)
+       return result
+            
 
-        for i in range(longer):
-            if first[i] == second[i]:
-                # check that there current sequnce aligns:
 
-                continue
+    def align_lists(self,x,y):
+        import itertools
+
+        # x = self.protocol_A.get_actions
+        # y = self.protocol_B.get_actions
+        
+        u = list(itertools.chain(*itertools.izip_longest(x,y)))
+
+        if None in u:
+            u.pop(u.index(None))
+
+        U = self.uniqify_order_preserving(u)
+
+        out_1 = []
+
+        for i in U:
+            if i in x:
+                tmpx = i
             else:
-                # ls2 has an extra action
-                if first[i] in ls2 and second[i] not in ls1:
-                    first.insert(i, None) 
-                if second[i] in ls1 and first[i] not in ls2:
-                    second.insert(i, None) 
+                tmpx = None
 
-        F  = itertools.izip_longest(first,second)
-        for i, j in F:
-            print i,j  
+            if i in y:
+                tmpy = i
+            else:
+                tmpy = None
 
-        return itertools.izip_longest(first,second) 
+            out_1.append((tmpx,tmpy))  
+        return out_1       
+
+    # def align_lists (self):
+    #     import
+    #     first = list(self.protocol_A.get_actions)
+    #     second = list(self.protocol_B.get_actions)     
+    #     len_1 = len(self.protocol_A.get_actions)
+    #     len_2 = len(self.protocol_B.get_actions)
+    #     if len_1 > len_2:
+    #         longer = len_1
+    #     else:
+    #         longer = len_2
+
+    #     for i in range(longer):
+    #         if first[i] == second[i]:
+    #             # check that there current sequnce aligns:
+
+    #             continue
+    #         else:
+    #             # ls2 has an extra action
+    #             if first[i] in ls2 and second[i] not in ls1:
+    #                 first.insert(i, None) 
+    #             if second[i] in ls1 and first[i] not in ls2:
+    #                 second.insert(i, None) 
+
+    #     F  = itertools.izip_longest(first,second)
+    #     for i, j in F:
+    #         print i,j  
+
+    #     return itertools.izip_longest(first,second) 
 
 
     def draw_two_protocols(self):

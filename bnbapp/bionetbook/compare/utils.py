@@ -97,7 +97,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
 		_name = '<TR><TD>%s</TD>' %x['name']
 
-		return  _name + _conc + _vol + _mass + '</TR>'
+		return  _name + _vol + _conc + _mass + '</TR>'
 
 
 def add_html_cell(m):
@@ -115,7 +115,7 @@ def merge_table_pieces(content_tmp, layer = None):
 	content = ''.join(list(itertools.chain(*content_tmp)))
 
 	if layer:
-		switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">conc</TD></TR>',
+		switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD></TR>',
 			  'thermocycle': '<TR><TD>Phase</TD><TD>Subpahse</TD><TD colspan="2">temp</TD><TD colspan="2">time</TD><TD colspan="2">cycles</TD></TR>'}
 		header = switch[layer]		  	
 		merge = '<' + table + header + content + '</TABLE>>'

@@ -49,7 +49,7 @@
                     <td>{{ protocol.steps|length }}</td>
                     <td>{{ protocol.actions.count }}</td>
                     <td>{{ protocol.status }}</td>
-                    <td>{{ protocol.modified }}</td>
+                    <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
