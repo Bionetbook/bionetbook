@@ -6,45 +6,7 @@ from compare.utils import html_label_two_protocols, add_html_cell, merge_table_p
 
 
 
-class SingleBaseView(TemplateView):
-    template_name = "compare/single_base_default.html"
 
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-        context = self.get_context_data()
-
-        context['protocol'] = ProtocolPlot.objects.get(slug=kwargs['protocol_slug'])
-        # context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-
-        if 'layers' in kwargs:
-            context['layer'] = kwargs['layers']
-
-        print 'returning CompareBaseView'
-        return self.render_to_response(context)
-
-class SingleBaseGraphicView(View):
-    '''
-    Returns a graphic representaion of a single protocol in SVG or PNG format.
-    '''
-
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-
-        protocol = ProtocolPlot.objects.get(slug=kwargs['protocol_slug'])
-        format = "svg"
-
-        # grapher = Grapher(protocol_a, protocol_b, format)
-        base = protocol.plot()
-        layers = protocol.add_layer(layers = kwargs['layers'])
-        # print kwargs['layers']
-        img = protocol.agraph.draw(prog='dot', format=format)    
-
-        if format in ['svg']:
-            format = format + "+xml"
-
-        response = HttpResponse(img, mimetype='image/%s' % format)
-        print 'returning SingleBaseGraphicView'
-        return response        
 
 
 class CompareBaseView(TemplateView):
@@ -55,17 +17,16 @@ class CompareBaseView(TemplateView):
         context = self.get_context_data()
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        if 'protocol_b_slug' in kwargs:
+            context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        # else:
+        #     context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
 
         if 'layers' in kwargs:
             context['layer'] = kwargs['layers']
 
         print 'returning CompareBaseView'
         return self.render_to_response(context)
-
-
-class CompareLayersView(CompareBaseView):
-    template_name = "compare/compare_layer.html"
 
 
 class CompareBaseGraphicView(View):
@@ -77,7 +38,11 @@ class CompareBaseGraphicView(View):
         '''Gets the context data'''
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        if 'protocol_b_slug' in kwargs:
+            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        else:
+            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])    
+        
         format = kwargs['format']
 
         grapher = Grapher(protocol_a, protocol_b, format)
@@ -92,6 +57,10 @@ class CompareBaseGraphicView(View):
         return response
 
 
+class CompareLayersView(CompareBaseView):
+    template_name = "compare/compare_layer.html"        
+
+
 class CompareLayersGraphicView(View):
     #template_name = "compare/comapare_layer.html"
     '''
@@ -102,7 +71,10 @@ class CompareLayersGraphicView(View):
         '''Gets the context data'''
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        if 'protocol_b_slug' in kwargs:
+            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        else:
+            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])    
         layers = kwargs['layers']
         format = "svg"
 
@@ -118,17 +90,52 @@ class CompareLayersGraphicView(View):
         print 'returning ComparelayersGraphicView'
         return response
 
+class SingleLayersView(CompareBaseView):
+    template_name = "compare/single_base_default.html"
+
+class SingleLayersGraphicView(View):
+    '''
+    Returns a graphic representaion of a single protocol in SVG or PNG format.
+    '''
+
+    def get(self, request, *args, **kwargs):
+        '''Gets the context data'''
+
+        protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        format = kwargs['format']
+        layers = kwargs['layers']
+        # grapher = Grapher(protocol_a, protocol_b, format)
+        grapher = Grapher(protocol_a, format=format)
+        base = grapher.draw_two_protocols()
+        layer = base.add_diff_layer(layers = layers)# print kwargs['layers']
+        img = layer.agraph.draw(prog='dot', format="svg")    
+
+        if format in ['svg']:
+            format = format + "+xml"
+
+        response = HttpResponse(img, mimetype='image/%s' % format)
+        print 'returning SingleLayersGraphicView'
+        return response                
+
 
 class Grapher(object):
-    def __init__(self, protocol_a, protocol_b, format="svg", **kwargs):
+    def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
         import pygraphviz as pgv
 
         self.agraph = pgv.AGraph()
         self.protocol_A = protocol_a
-        self.protocol_B = protocol_b
+        self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+        
+        if protocol_b == None:
+            self.protocol_B = protocol_a
+            self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+        else:
+            self.protocol_B = protocol_b    
+            print protocol_b
+            self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
+         # list of actions in pk-objectid format
+        # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
         self.agraph.graph_attr['clusterrank'] = 'local'
-        self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
-        self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
         self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
         self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
         self.format = format
@@ -246,7 +253,7 @@ class Grapher(object):
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
                 # set all diff objects on same rank:
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk)#, rankdir='LR') #, name='%s'%(layer_names[nc])) 
+                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR' , name = self.protocol_A.nodes[verb_a].pk)#) #, name='%s'%(layer_names[nc])) 
                 
                 # set layout and colors
                     s = self.agraph.get_node(diff_object)
@@ -295,7 +302,7 @@ class Grapher(object):
                         diff_object = self.protocol_A.nodes[components_a[0]].pk 
                         ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                         eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                        N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
+                        N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) , rankdir='LR', 
                         
                         # set layout and colors
                         s = self.agraph.get_node(diff_object)
@@ -360,7 +367,7 @@ class Grapher(object):
                     diff_object = self.protocol_A.nodes[phases_A[0]].pk 
                     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
+                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) rankdir='LR',
                     
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
