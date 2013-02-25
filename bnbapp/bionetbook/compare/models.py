@@ -48,7 +48,8 @@ class ProtocolPlot(Protocol):
     def __init__(self, *args, **kwargs):
         super(ProtocolPlot, self).__init__(*args, **kwargs)
     
-        self.agraph = pgv.AGraph()  # change all the Plot.G. to agraph.     
+        self.agraph = pgv.AGraph(ranksep = '0.2')  
+
         self.pks = [self.nodes[r].pk for r in self.get_actions] # list of actions in pk-objectid format
     def plot(self, **kwargs):
         # super(ProtocolPlot, self).__init__(**kwargs)
@@ -63,19 +64,21 @@ class ProtocolPlot(Protocol):
             n.attr['shape']='box'
             n.attr['fontsize'] = '10'
             n.attr['style'] = 'rounded'
+            n.attr['height'] = '0.2'
             n.attr['label']= self.nodes[self.get_actions[i]]['verb']
 
         n = self.agraph.get_node(self.pks[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
         n.attr['style'] = 'rounded'
+        n.attr['height'] = '0.2'
         n.attr['label']=self.nodes[self.get_actions[0]]['verb']
         
         
     def add_layer(self, **kwargs):
         print kwargs['layers']
         if 'machine' in kwargs['layers']:
-            machine_layer = True
+            machines_layer = True
         else:
             machines_layer = False 
         
@@ -95,7 +98,7 @@ class ProtocolPlot(Protocol):
                 content = html_label_one_protocol(x, machine = True) 
 
                 # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                if machine_layer:
+                if machines_layer:
                     print 'adding machine layer'
                     diff_object = self.nodes[verb]['machine'].pk
                     ea = self.agraph.add_edge(self.nodes[verb].pk,diff_object)
@@ -106,7 +109,7 @@ class ProtocolPlot(Protocol):
                 
                 # set layout and colors
                     s = self.agraph.get_node(diff_object)
-                    s.attr['shape'] = 'box'
+                    s.attr['shape'] = 'plaintext'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
@@ -136,10 +139,10 @@ class ProtocolPlot(Protocol):
                         
                         # set layout and colors
                         s = self.agraph.get_node(diff_object)
-                        s.attr['shape'] = 'box'
+                        s.attr['shape'] = 'plaintext'
                         s.attr['color'] = '#C0C0C0'
                         s.attr['style'] = 'rounded'
-                        s.attr['fontsize'] = '10'
+                        s.attr['fontsize'] = '8'
                         s.attr['label'] = merge_table_pieces(content, 'components')
 
     def remove_layer(self): #, layer_names):
@@ -266,7 +269,7 @@ class Compare(object):
         self.agraph = pgv.AGraph()
         self.protocol_A = protocol_a
         self.protocol_B = protocol_b
-        self.agraph.graph_attr['clusterrank'] = 'local'
+        # self.agraph.graph_attr['clusterrank'] = 'local'
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
         self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
@@ -358,41 +361,7 @@ class Compare(object):
         ''' this function draws out 2 protocols starting with the name of the protocol and then with the nodes 
             add_layers adds the specified layers that a user wants to compare'''
 
-        # Add names of protocol
         
-        # set labels of title nodes:
-        title_A = str(self.protocol_A.pk) + 'title_A'
-        title_B = str(self.protocol_B.pk) + 'title_B'
-        # add edges to first elements in each protocol:
-
-
-        self.agraph.add_nodes_from([title_A, title_B], shape = 'plaintext', fontsize = '20')
-        title_node_A = self.agraph.get_node(title_A)
-        title_node_B = self.agraph.get_node(title_B)
-        self.agraph.add_edge(title_node_A, title_node_B, color = 'white')
-        title = self.agraph.get_edge(title_node_A, title_node_B)
-        
-        title_node_A.attr['color'] = '#B82F3'
-        # title_node_A.attr['shape'] = 'box'
-        title_node_A.attr['label'] = self.protocol_A.name
-        title_node_B.attr['color'] = '#015666'
-        # title_node_B.attr['shape'] = 'box'
-        content_A = set_title_label(self.protocol_A)
-        print content_A
-        title_node_A.attr['label'] = merge_table_pieces(content_A)
-        content_B = set_title_label(self.protocol_B)
-        print content_B
-        title_node_B.attr['label'] = merge_table_pieces(content_B)
-        # title.graph_attr['color'] = 'white'
-        # title.graph_attr['label'] = 'white'
-
-        N = self.agraph.add_subgraph([title_node_A, title_node_B], rank = 'same', rankdir='LR')
-        # add to outlines:
-        self.agraph.add_edges_from([(title_node_A, self.A_pk[0]), (title_node_B, self.B_pk[0])], color='white')
-        # title_plot_edge_A = self.agraph.get_edge(title_node_A, self.A_pk[0])
-        # title_plot_edge_A['color'] = 'white'
-        # title_plot_edge_B = self.agraph.get_edge(title_node_B, self.B_pk[0])
-        # title_plot_edge_B['color'] = 'white'
             
         for i in range(1, len(self.A_pk)):
             
@@ -449,7 +418,7 @@ class Compare(object):
 
         return self.agraph
 
-    def add_diff_layer(self, object_sorting = 'least_errors'):
+    def add_diff_layer(self, object_sorting = 'least_errors', **kwargs):
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
             'machines'
             'components'
@@ -472,7 +441,11 @@ class Compare(object):
                 eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
                 # set all diff objects on same rank:
-                N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same')#, rankdir='LR') #, name='%s'%(layer_names[nc])) 
+                # if MACHINE_LAYER:
+                #     # add the relevant step layers to the action layers. 
+                #     new_rank = 
+                #     N = self.agraph.add_subgraph([new_rank], rank = 'same', rankdir = 'LR', name = self.protocol_A.nodes[self.protocol_A.nodes[verb_a].parent['objectid']].pk)#, rankdir='LR')     
+                N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk)#, rankdir='LR') 
                 
                 # set layout and colors
                 s = self.agraph.get_node(diff_object)
@@ -516,7 +489,7 @@ class Compare(object):
                     diff_object = self.protocol_A.nodes[components_a[0]].pk 
                     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
                     
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
@@ -570,19 +543,17 @@ class Compare(object):
                             tmp = add_thermo(job_A, job_B)
                             table.append(tmp)
                             
-                    table = merge_table_pieces(table, 'thermocycle')        
-                            
                 diff_object = self.protocol_A.nodes[phases_A[0]].pk 
                 ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                 eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+                N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
                 
                 # set layout and colors
                 s = self.agraph.get_node(diff_object)
                 s.attr['shape'] = 'box'
                 s.attr['color'] = '#C0C0C0'
                 s.attr['style'] = 'rounded'
-                s.attr['label'] = (table)
+                s.attr['label'] = merge_table_pieces(table, 'thermocycle')     
     
         return self.agraph          
 

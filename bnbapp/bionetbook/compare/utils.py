@@ -44,7 +44,7 @@ def html_label_one_protocol(x, **kwargs):
 
 		_name = '<TR><TD>%s</TD>' %x['name']
 
-		return  _name + _conc + _vol + _mass + '</TR>'
+		return  _name + _vol + _conc + _mass + '</TR>'
 
 
 
@@ -111,7 +111,7 @@ def merge_table_pieces(content_tmp, layer = None):
 	import itertools
 
 	
-	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">'
+	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="1">'
 	content = ''.join(list(itertools.chain(*content_tmp)))
 
 	if layer:

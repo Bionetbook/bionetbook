@@ -8,5 +8,7 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+).(?P<format>[-\w]+)$', view=views.CompareBaseGraphicView.as_view(), name='compare_protocol_graphic'),
     url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/layer/(?P<layers>[-\w]+)/$', view=views.CompareLayersView.as_view(), name='add_layers'),
     url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/layer/(?P<layers>[-\w]+).(?P<format>[-\w]+)$', view=views.CompareLayersGraphicView.as_view(), name='add_layers_graphic'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/base/single/(?P<layers>[-\w]+)/$', view=views.SingleBaseView.as_view(), name='draw_single_base'),
+    url(regex=r'^(?P<protocol_slug>[-\w]+)/base/single/(?P<layers>[-\w]+).(?P<format>[-\w]+)$', view=views.SingleBaseGraphicView.as_view(), name='draw_single_base_graphic')
 
 )

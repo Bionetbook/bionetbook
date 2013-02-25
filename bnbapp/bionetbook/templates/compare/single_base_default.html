@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Compare: {{ object.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol.owner.organization_protocol_list }}">{{ protocol.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a> </li>
+      <!-- <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li> -->
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
+
+
+{% block page_title %}Protocol outline: {{ object.name }}
+{% if not protocol.published %}
+  {% if protocol_edit_authorization %}
+    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="span5">
+        <div class="well">
+            <h3>{{ protocol }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    <td>Parent: {{protocol.parent }}</td>
+                    <td>Children: {{protocol.children }} </td>
+                </tr>
+                <tr>
+                    <td>Author: {{protocol.owner.name }}</td>
+                    <td>PubMed: {{protocol.data.Reference_PMID }} </td>
+                </tr>
+                 <tr>
+                    <td>Created: {{protocol.created|date:"M d, Y H:i" }}</td>
+                    <td>Duration: {{protocol.duration_in_seconds }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>    
+    <div class="span4">
+        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button>
+        <button class="btn" style="width:100%;margin-bottom:10px;">Machine</button>
+        <button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+
+    </div> 
+</div >    
+
+<div class="row">   
+    <div class="span4" >
+        <div>
+            <embed src="{% url draw_single_base_graphic protocol.slug layer 'svg' %}" type="image/svg+xml" />
+        </div>
+    </div>
+</div>
+
+{% endblock %}
