@@ -3,12 +3,6 @@ from compare.models import ProtocolPlot, DictDiffer
 from django.views.generic import TemplateView, View
 from compare.utils import html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
 
-
-
-
-
-
-
 class CompareBaseView(TemplateView):
     template_name = "compare/compare_default.html"
 
@@ -21,9 +15,9 @@ class CompareBaseView(TemplateView):
             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
         # else:
         #     context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-
+        print context
         if 'layers' in kwargs:
-            context['layer'] = kwargs['layers']
+            context['layers'] = kwargs['layers']
 
         print 'returning CompareBaseView'
         return self.render_to_response(context)
@@ -69,6 +63,7 @@ class CompareLayersGraphicView(View):
     
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
+        print kwargs
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         if 'protocol_b_slug' in kwargs:
@@ -122,7 +117,8 @@ class Grapher(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
         import pygraphviz as pgv
 
-        self.agraph = pgv.AGraph()
+        self.agraph = pgv.AGraph(ranksep = '0.2')
+        # self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
         self.protocol_A = protocol_a
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
         
@@ -135,7 +131,6 @@ class Grapher(object):
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
          # list of actions in pk-objectid format
         # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
-        self.agraph.graph_attr['clusterrank'] = 'local'
         self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
         self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
         self.format = format
@@ -174,6 +169,7 @@ class Grapher(object):
             n.attr['shape']='box'
             n.attr['fontsize'] = '10'
             n.attr['style'] = 'rounded'
+            n.attr['height'] = '0.2'
             n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
         # Set the 0'th node and title in protocol_A 
@@ -181,6 +177,7 @@ class Grapher(object):
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
         n.attr['style'] = 'rounded'
+        n.attr['height'] = '0.2'
         n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
         # print 'Rendered protocol %s'% self.protocol_A.name
         
@@ -195,6 +192,7 @@ class Grapher(object):
             n.attr['shape']='box'
             n.attr['fontsize'] = '10'
             n.attr['style'] = 'rounded'
+            n.attr['height'] = '0.2'
             n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
 
         # Set the 0'th node in  protocol_A  
@@ -202,6 +200,7 @@ class Grapher(object):
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
         n.attr['style'] = 'rounded'
+        n.attr['height'] = '0.2'
         n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
 
         return self
@@ -237,8 +236,7 @@ class Grapher(object):
             '''
         for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
             # print verb_a, verb_b
-            if 'machine' in self.protocol_A.nodes[verb_a].keys():  # object has only one child:
-                # Generate the diff content:
+            if 'machine' in self.protocol_A.nodes[verb_a].keys() and machines:
                 x = self.protocol_A.nodes[verb_a]['machine'].summary
                 y = self.protocol_B.nodes[verb_b]['machine'].summary
                 d = DictDiffer (x, y)
@@ -246,35 +244,32 @@ class Grapher(object):
 
     
                 # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                if machines:
-                    print 'adding machine layer'
-                    diff_object = self.protocol_A.nodes[verb_a]['machine'].pk
-                    ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-                    eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
+                
+                print 'adding machine layer'
+                diff_object = self.protocol_A.nodes[verb_a]['machine'].pk
+                ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+                eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
-                # set all diff objects on same rank:
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR' , name = self.protocol_A.nodes[verb_a].pk)#) #, name='%s'%(layer_names[nc])) 
-                
-                # set layout and colors
-                    s = self.agraph.get_node(diff_object)
-                    s.attr['shape'] = 'box'
-                    s.attr['color'] = '#C0C0C0'
-                    s.attr['style'] = 'rounded'
-                    s.attr['fontsize'] = '10'
-                    # set label:
-                    s.attr['label'] = merge_table_pieces(content)
-                
+            # set all diff objects on same rank:
+                N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+                print self.protocol_A.nodes[verb_a].pk
+            # set layout and colors
+                s = self.agraph.get_node(diff_object)
+                s.attr['shape'] = 'box'
+                s.attr['color'] = '#C0C0C0'
+                s.attr['style'] = 'rounded'
+                s.attr['fontsize'] = '10'
+                # set label:
+                s.attr['label'] = merge_table_pieces(content)
+            
                 # <---
 
-            if 'components' in self.protocol_A.nodes[verb_a].keys(): # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+            if 'components' in self.protocol_A.nodes[verb_a].keys() and components: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
                 # Validate that reagent objectids are the same:
 
 
-                if len(self.protocol_A.nodes[verb_a]['components']) ==0:
+                if len(self.protocol_A.nodes[verb_a]['components']) == 0:
                     continue
-
-                
-
                 else:
                     # generate the diff content:   
                     components_a = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
@@ -297,22 +292,21 @@ class Grapher(object):
                             content.append(tmp)
                             
                     # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                    if components:
-                        print 'adding components layer'
-                        diff_object = self.protocol_A.nodes[components_a[0]].pk 
-                        ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-                        eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                        N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) , rankdir='LR', 
-                        
-                        # set layout and colors
-                        s = self.agraph.get_node(diff_object)
-                        s.attr['shape'] = 'box'
-                        s.attr['color'] = '#C0C0C0'
-                        s.attr['style'] = 'rounded'
-                        s.attr['fontsize'] = '10'
-                        s.attr['label'] = merge_table_pieces(content, 'components')
+                    
+                    diff_object = self.protocol_A.nodes[components_a[0]].pk 
+                    ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+                    eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
+                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR') #, name='%s'%(layer_names[nc])) , rankdir='LR', 
+                    
+                    # set layout and colors
+                    s = self.agraph.get_node(diff_object)
+                    s.attr['shape'] = 'box'
+                    s.attr['color'] = '#C0C0C0'
+                    s.attr['style'] = 'rounded'
+                    s.attr['fontsize'] = '10'
+                    s.attr['label'] = merge_table_pieces(content, 'components')
 
-            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys():
+            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and thermocycle:
                 import itertools
                 # generate the diff content:  
 
@@ -322,13 +316,11 @@ class Grapher(object):
 
                 match = set(phases_A) - set(phases_B)
                 if len(match) == 0: 
-                    # print 'len match = 0'
                 # compare nested thermo objects:
                     table = []
                     for thermo in phases_A:
                         job_A = self.protocol_A.nodes[thermo].summary
                         job_B = self.protocol_B.nodes[thermo].summary
-                        # print 'thermo is %s, \n A: %s + \n, B: %s'%(thermo, job_A['name'], job_B['name'])
                         d = DictDiffer(job_A, job_B)
                         if 'phases' in d.changed() or 'cycles' in d.changed():
                             # go through all items in both phases
@@ -362,13 +354,11 @@ class Grapher(object):
                     table = merge_table_pieces(table, 'thermocycle')        
                             
                  # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                if thermocycle: 
-                    print 'addinf thermo layer'
+                
                     diff_object = self.protocol_A.nodes[phases_A[0]].pk 
                     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', rankdir='LR', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) rankdir='LR',
-                    
+                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR') #, name='%s'%(layer_names[nc])) rankdir='LR',
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'

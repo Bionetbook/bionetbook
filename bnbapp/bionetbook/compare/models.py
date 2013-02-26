@@ -321,14 +321,19 @@ class Compare(object):
         import itertools
         self.agraph = pgv.AGraph()
         self.protocol_A = protocol_a
-        self.protocol_B = protocol_b
-        # self.agraph.graph_attr['clusterrank'] = 'local'
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions] # list of actions in pk-objectid format
+
+        self.protocol_B = protocol_b
+        self.agraph.graph_attr['clusterrank'] = 'local'
+        
         self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
-        # Draw out some control elements:
-        # self.agraph.add_nodes_from(['add_common_actions_details',  )
-        # cntrl = 
+        if protocol_b == None:
+            self.protocol_B = protocol_a
+            self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+        else:
+            self.protocol_B = protocol_b    
+            self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
         # line up matching verbs in the same rank
         # we will add to this function more sophisticated things in the future.
 
