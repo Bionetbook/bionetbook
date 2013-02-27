@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import html_label_one_protocol, html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label 
+from compare.utils import html_label_one_protocol, html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label, add_step_label 
 
 class DictDiffer(object):
     """
@@ -482,9 +482,25 @@ class Compare(object):
             'components'
             'thermocycle'
             '''
+
+        if 'machine' in kwargs['layers']:
+            machines = True
+        else:
+            machines = False 
+        
+        if 'component' in kwargs['layers']:
+            components = True
+        else:
+            components = False 
+        
+        if 'thermo' in kwargs['layers']:
+            thermocycle = True
+        else:
+            thermocycle = False 
+                
         for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
             print verb_a, verb_b
-            if 'machine' in self.protocol_A.nodes[verb_a].keys():  # object has only one child:
+            if 'machine' in self.protocol_A.nodes[verb_a].keys() and machines:  # object has only one child:
                 x = self.protocol_A.nodes[verb_a]['machine'].summary
                 y = self.protocol_B.nodes[verb_b]['machine'].summary
                 d = DictDiffer (x, y)
@@ -516,7 +532,7 @@ class Compare(object):
                 
                 # --->
 
-            if 'components' in self.protocol_A.nodes[verb_a].keys(): # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+            if 'components' in self.protocol_A.nodes[verb_a].keys() and components: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
                 # Validate that reagent objectids are the same:
 
 

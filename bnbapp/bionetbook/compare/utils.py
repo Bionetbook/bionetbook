@@ -109,7 +109,6 @@ def merge_table_pieces(content_tmp, layer = None):
 		content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
 		merge = '<' + table + content + '</TABLE>>'	--> merges the pieces into one line of text. '''
 	import itertools
-
 	
 	table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="1">'
 	content = ''.join(list(itertools.chain(*content_tmp)))
@@ -171,6 +170,21 @@ def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 			stack.append(fixed_last_row)	
 			break
 	return stack
+
+
+def add_step_label(step, step_layer = False): 
+	import textwrap
+	wrapped = textwrap.wrap(step, 40)
+	stack = []
+	for w in wrapped:
+		stack.append('<TR><TD>%s</TD></TR>'%w)
+
+	merge = merge_table_pieces(stack)
+	# if step_layer: 
+	# merge.replace('CELLBORDER', 'RRRRRR') 
+	
+	
+	return merge
 
 def set_title_label(title):
 
