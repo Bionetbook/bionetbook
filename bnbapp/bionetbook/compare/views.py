@@ -233,7 +233,7 @@ class Grapher(object):
                 sa.attr['shape'] = 'box'
                 sa.attr['color'] = '#C0C0C0'
                 sa.attr['style'] = 'rounded'
-                # sa.attr['fontsize'] = '10'
+                sa.attr['fontsize'] = '10'
                 VERBATIM_A = self.protocol_A.data['verbatim'] 
                 PARENT_A = self.protocol_A.nodes[verb_a].parent['objectid'] 
                 sa.attr['label'] = add_step_label(VERBATIM_A[self.protocol_A.get_steps.index(PARENT_A)])
@@ -251,13 +251,7 @@ class Grapher(object):
             else: 
                 
                 N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc]))     
-    # set all diff objects on same rank:
-        
-
-
-
-# def add_step_layer(self): 
-
+    
 
 
     
@@ -354,12 +348,20 @@ class Grapher(object):
                             content.append(tmp)
                             
                     # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                    
+                    self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+                    self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+                    verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+                    verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+
                     diff_object = self.protocol_A.nodes[components_a[0]].pk 
-                    ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-                    eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR') #, name='%s'%(layer_names[nc])) , rankdir='LR', 
+                    ea = self.agraph.add_edge(verb_object_b, diff_object)
+                    eb = self.agraph.add_edge(verb_object_a, diff_object)     
                     
+
+                    if steps:
+                        self.add_step_layer(diff_object, verb_a, verb_b, verb_object_a, verb_object_b)
+                    else:    
+                        N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'
@@ -416,11 +418,21 @@ class Grapher(object):
                     table = merge_table_pieces(table, 'thermocycle')        
                             
                  # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                
+                    self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+                    self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+                    verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+                    verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+
                     diff_object = self.protocol_A.nodes[phases_A[0]].pk 
                     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR') #, name='%s'%(layer_names[nc])) rankdir='LR',
+                    
+                    if steps:
+                        self.add_step_layer(diff_object, verb_a, verb_b, verb_object_a, verb_object_b)
+                    else:    
+                        N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+
+                    
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'

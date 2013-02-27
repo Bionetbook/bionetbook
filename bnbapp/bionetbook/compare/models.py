@@ -75,142 +75,142 @@ class ProtocolPlot(Protocol):
         n.attr['label']=self.nodes[self.get_actions[0]]['verb']
         
         
-    def add_layer(self, **kwargs):
-        print kwargs['layers']
-        if 'machine' in kwargs['layers']:
-            machines_layer = True
-        else:
-            machines_layer = False 
+    # def add_layer(self, **kwargs):
+    #     print kwargs['layers']
+    #     if 'machine' in kwargs['layers']:
+    #         machines_layer = True
+    #     else:
+    #         machines_layer = False 
         
-        if 'component' in kwargs['layers']:
-            components_layer = True
-        else:
-            components_layer = False 
+    #     if 'component' in kwargs['layers']:
+    #         components_layer = True
+    #     else:
+    #         components_layer = False 
         
-        if 'thermo' in kwargs['layers']:
-            thermocycle_layer = True
-        else:
-            thermocycle_layer = False
+    #     if 'thermo' in kwargs['layers']:
+    #         thermocycle_layer = True
+    #     else:
+    #         thermocycle_layer = False
 
-        for verb in self.get_actions:
-            if 'machine' in self.nodes[verb].keys():  # object has only one child:
-                x = self.nodes[verb]['machine'].summary
-                content = html_label_one_protocol(x, machine = True) 
+    #     for verb in self.get_actions:
+    #         if 'machine' in self.nodes[verb].keys():  # object has only one child:
+    #             x = self.nodes[verb]['machine'].summary
+    #             content = html_label_one_protocol(x, machine = True) 
 
-                # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-                if machines_layer:
-                    print 'adding machine layer'
-                    diff_object = self.nodes[verb]['machine'].pk
-                    ea = self.agraph.add_edge(self.nodes[verb].pk,diff_object)
-                    # eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
+    #             # --->  create a compare-graph-object that will apear between the 2 base diagrams:
+    #             if machines_layer:
+    #                 print 'adding machine layer'
+    #                 diff_object = self.nodes[verb]['machine'].pk
+    #                 ea = self.agraph.add_edge(self.nodes[verb].pk,diff_object)
+    #                 # eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)
 
-                # set all diff objects on same rank:
-                    N = self.agraph.add_subgraph([self.nodes[verb].pk, diff_object], rank = 'same')#, rankdir='LR') #, name='%s'%(layer_names[nc])) 
+    #             # set all diff objects on same rank:
+    #                 N = self.agraph.add_subgraph([self.nodes[verb].pk, diff_object], rank = 'same')#, rankdir='LR') #, name='%s'%(layer_names[nc])) 
                 
-                # set layout and colors
-                    s = self.agraph.get_node(diff_object)
-                    s.attr['shape'] = 'plaintext'
-                    s.attr['color'] = '#C0C0C0'
-                    s.attr['style'] = 'rounded'
-                    s.attr['fontsize'] = '10'
-                    # set label:
-                    s.attr['label'] = merge_table_pieces(content)
+    #             # set layout and colors
+    #                 s = self.agraph.get_node(diff_object)
+    #                 s.attr['shape'] = 'plaintext'
+    #                 s.attr['color'] = '#C0C0C0'
+    #                 s.attr['style'] = 'rounded'
+    #                 s.attr['fontsize'] = '10'
+    #                 # set label:
+    #                 s.attr['label'] = merge_table_pieces(content)
                 
-                # <---
-            if 'components' in self.nodes[verb].keys(): 
+    #             # <---
+    #         if 'components' in self.nodes[verb].keys(): 
 
 
-                if len(self.nodes[verb]['components']) ==0:
-                    continue
+    #             if len(self.nodes[verb]['components']) ==0:
+    #                 continue
 
-                else:
-                    components_a = [r['objectid'] for r in self.nodes[verb].children]
-                    scores = [] # tracks the error rate of a matching components
-                    content = [] # gets the html strings
-                    for m in components_a: 
-                        tmp = html_label_one_protocol(self.nodes[m].summary, components = True) 
-                        content.append(tmp)
+    #             else:
+    #                 components_a = [r['objectid'] for r in self.nodes[verb].children]
+    #                 scores = [] # tracks the error rate of a matching components
+    #                 content = [] # gets the html strings
+    #                 for m in components_a: 
+    #                     tmp = html_label_one_protocol(self.nodes[m].summary, components = True) 
+    #                     content.append(tmp)
                             
-                    if components_layer:
-                        print 'adding components layer'
-                        diff_object = self.nodes[components_a[0]].pk 
-                        ea = self.agraph.add_edge(self.nodes[verb].pk,diff_object)
-                        N = self.agraph.add_subgraph([self.nodes[verb].pk, diff_object], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
+    #                 if components_layer:
+    #                     print 'adding components layer'
+    #                     diff_object = self.nodes[components_a[0]].pk 
+    #                     ea = self.agraph.add_edge(self.nodes[verb].pk,diff_object)
+    #                     N = self.agraph.add_subgraph([self.nodes[verb].pk, diff_object], rank = 'same', rankdir='LR') #, name='%s'%(layer_names[nc])) 
                         
-                        # set layout and colors
-                        s = self.agraph.get_node(diff_object)
-                        s.attr['shape'] = 'plaintext'
-                        s.attr['color'] = '#C0C0C0'
-                        s.attr['style'] = 'rounded'
-                        s.attr['fontsize'] = '8'
-                        s.attr['label'] = merge_table_pieces(content, 'components')
+    #                     # set layout and colors
+    #                     s = self.agraph.get_node(diff_object)
+    #                     s.attr['shape'] = 'plaintext'
+    #                     s.attr['color'] = '#C0C0C0'
+    #                     s.attr['style'] = 'rounded'
+    #                     s.attr['fontsize'] = '8'
+    #                     s.attr['label'] = merge_table_pieces(content, 'components')
 
-            # if 'thermocycle' in self.nodes[verb].keys():
-            #     import itertools
-            #     # get all thermo children:
-            #     phases = [r['objectid'] for r in self.nodes[verb_a].children]
-            #     # phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+    #         # if 'thermocycle' in self.nodes[verb].keys():
+    #         #     import itertools
+    #         #     # get all thermo children:
+    #         #     phases = [r['objectid'] for r in self.nodes[verb_a].children]
+    #         #     # phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
                 
-            #     table = []
-            #     for thermo in phases:
-            #         job = self.nodes[thermo].summary
-            #         # job_B = self.protocol_B.nodes[thermo].summary
-            #         # print 'thermo is %s, \n A: %s + \n, B: %s'%(thermo, job_A['name'], job_B['name'])
-            #         # d = DictDiffer(job_A, job_B)
-            #         # if 'phases' in d.changed() or 'cycles' in d.changed():
-            #             # go through all items in both phases
-            #         # it = itertools.izip(job_A['phases'], job_B['phases']) 
+    #         #     table = []
+    #         #     for thermo in phases:
+    #         #         job = self.nodes[thermo].summary
+    #         #         # job_B = self.protocol_B.nodes[thermo].summary
+    #         #         # print 'thermo is %s, \n A: %s + \n, B: %s'%(thermo, job_A['name'], job_B['name'])
+    #         #         # d = DictDiffer(job_A, job_B)
+    #         #         # if 'phases' in d.changed() or 'cycles' in d.changed():
+    #         #             # go through all items in both phases
+    #         #         # it = itertools.izip(job_A['phases'], job_B['phases']) 
                     
-            #         for i in phases: # getting the subphase name that is different
-            #             subphase_A = i
+    #         #         for i in phases: # getting the subphase name that is different
+    #         #             subphase_A = i
                         
-            #             # f = DictDiffer(subphase_A, subphase_B)
-            #             if f.changed():
-            #                 L = f.changed() 
+    #         #             # f = DictDiffer(subphase_A, subphase_B)
+    #         #             if f.changed():
+    #         #                 L = f.changed() 
                             
-            #                 subphases = {}
-            #                 for each_subphase in L:
-            #                     # subphases[each_subphase] = [] 
-            #                     g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])    
-            #                     subphases[each_subphase] = g.changed()
+    #         #                 subphases = {}
+    #         #                 for each_subphase in L:
+    #         #                     # subphases[each_subphase] = [] 
+    #         #                     g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])    
+    #         #                     subphases[each_subphase] = g.changed()
                                 
                     
-            #         tmp = add_thermo(job_A, job_B, d.changed(), subphases)
-            #         table.append(tmp)
-            #         continue
+    #         #         tmp = add_thermo(job_A, job_B, d.changed(), subphases)
+    #         #         table.append(tmp)
+    #         #         continue
         
-            #         if 'name' in d.changed():
-            #             print 'name changed'    
+    #         #         if 'name' in d.changed():
+    #         #             print 'name changed'    
 
-            #         else:
-            #             tmp = add_thermo(job_A, job_B)
-            #             table.append(tmp)
+    #         #         else:
+    #         #             tmp = add_thermo(job_A, job_B)
+    #         #             table.append(tmp)
                             
-            #     diff_object = self.protocol_A.nodes[phases[0]].pk 
-            #     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-            #     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-            #     N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
+    #         #     diff_object = self.protocol_A.nodes[phases[0]].pk 
+    #         #     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+    #         #     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
+    #         #     N = self.agraph.add_subgraph([self.protocol_A.nodes[verb_a].pk, diff_object, self.protocol_B.nodes[verb_b].pk], rank = 'same', name = self.protocol_A.nodes[verb_a].pk) #, name='%s'%(layer_names[nc])) 
                 
-            #     # set layout and colors
-            #     s = self.agraph.get_node(diff_object)
-            #     s.attr['shape'] = 'box'
-            #     s.attr['color'] = '#C0C0C0'
-            #     s.attr['style'] = 'rounded'
-            #     s.attr['label'] = merge_table_pieces(table, 'thermocycle')                
+    #         #     # set layout and colors
+    #         #     s = self.agraph.get_node(diff_object)
+    #         #     s.attr['shape'] = 'box'
+    #         #     s.attr['color'] = '#C0C0C0'
+    #         #     s.attr['style'] = 'rounded'
+    #         #     s.attr['label'] = merge_table_pieces(table, 'thermocycle')                
 
-    def remove_layer(self): #, layer_names):
-        self.agraph.remove_nodes_from([(v) for k,v in self.edges_list])
+    # def remove_layer(self): #, layer_names):
+    #     self.agraph.remove_nodes_from([(v) for k,v in self.edges_list])
         # [self.agraph.remove_subgraph(name=r) for r in layer_names]
 
 
-    def get_svg(self):
-        self.agraph.layout('dot')
-        return self.agraph
+    # def get_svg(self):
+    #     self.agraph.layout('dot')
+    #     return self.agraph
 
-    def get_graph(self, agraph):
-        agraph = self.agraph
-        agraph.layout('dot')
-        return agraph   
+    # def get_graph(self, agraph):
+    #     agraph = self.agraph
+    #     agraph.layout('dot')
+    #     return agraph   
 
     def same_rank_objects_by_1st_degree_nbrs(self, protocol_B):
 

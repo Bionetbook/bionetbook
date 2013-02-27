@@ -174,7 +174,7 @@ def add_thermo(job_A, job_B=None, changed=None, subphases=None, **kwargs):
 
 def add_step_label(step, step_layer = False): 
 	import textwrap
-	wrapped = textwrap.wrap(step, 40)
+	wrapped = textwrap.wrap(step, 60)
 	stack = []
 	for w in wrapped:
 		stack.append('<TR><TD>%s</TD></TR>'%w)
