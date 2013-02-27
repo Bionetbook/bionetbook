@@ -206,7 +206,7 @@ class Grapher(object):
         n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
 
         return self
-    def add_step_layer(self, diff_object, verb_a, verb_b, verb_object_a, verb_object_b): 
+    def add_step_layer(self, verb_a, verb_b, verb_object_a, verb_object_b, diff_object = None): 
             first_actions_a = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_A.get_steps]
             first_actions_b = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_B.get_steps]
             steps_a = [r for r in self.protocol_A.data['verbatim']]
@@ -226,8 +226,10 @@ class Grapher(object):
                 ebs = self.agraph.get_edge(step_object_b, verb_object_b)
 
                 
-
-                N = self.agraph.add_subgraph([step_object_a, verb_object_a, diff_object, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk,
+                if diff_object == None:
+                    N = self.agraph.add_subgraph([step_object_a, verb_object_a, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk, 
+                else:
+                    N = self.agraph.add_subgraph([step_object_a, verb_object_a, diff_object, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk,
                 
                 sa = self.agraph.get_node(step_object_a)
                 sa.attr['shape'] = 'box'
@@ -248,9 +250,9 @@ class Grapher(object):
                 PARENT_B = self.protocol_B.nodes[verb_b].parent['objectid'] 
                 sb.attr['label'] = add_step_label(VERBATIM_B[self.protocol_B.get_steps.index(PARENT_B)], step_layer = True)
 
-            else: 
+            # else: 
                 
-                N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc]))     
+            #     N = self.agraph.add_subgraph([verb_object_a, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc]))     
     
 
 
@@ -306,7 +308,7 @@ class Grapher(object):
                 self.agraph.add_edge(verb_object_b,diff_object)
 
                 if steps:
-                    self.add_step_layer(diff_object, verb_a, verb_b, verb_object_a, verb_object_b)
+                    self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                 else:    
                     N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                            # set layout and colors
@@ -359,7 +361,7 @@ class Grapher(object):
                     
 
                     if steps:
-                        self.add_step_layer(diff_object, verb_a, verb_b, verb_object_a, verb_object_b)
+                        self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                     else:    
                         N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                     # set layout and colors
@@ -428,7 +430,7 @@ class Grapher(object):
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
                     
                     if steps:
-                        self.add_step_layer(diff_object, verb_a, verb_b, verb_object_a, verb_object_b)
+                        self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                     else:    
                         N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
 
@@ -441,7 +443,13 @@ class Grapher(object):
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = (table)
 
-
+            else:
+                if steps:
+                    self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+                    self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+                    verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+                    verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+                    self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b)
         
     
         return self 
