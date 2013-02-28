@@ -281,32 +281,9 @@ class Grapher(object):
     
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
-        print kwargs['layers']
-        layers = kwargs['layers'].split('-')
-
-
-
-        # if 'machine' in kwargs['layers']:
-        #     machines = True
-        # else:
-        #     machines = False 
-        
-        # if 'component' in kwargs['layers']:
-        #     components = True
-        # else:
-        #     components = False 
-        
-        # if 'thermo' in kwargs['layers']:
-        #     thermocycle = True
-        # else:
-        #     thermocycle = False     
-
-        # if 'steps' in kwargs['layers']:
-        #     steps = True
-            
-        # else:
-        #     steps = False         
-
+        # print kwargs['layers']
+        if 'layers' in kwargs.keys():
+            layers = kwargs['layers'].split('-')
 
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
             'machines'
@@ -398,7 +375,7 @@ class Grapher(object):
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
 
-            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermocycle' in layers:
+            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers:
                 import itertools
                 # generate the diff content:  
 
