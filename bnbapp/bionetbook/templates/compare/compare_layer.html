@@ -47,22 +47,22 @@
     </div> 
     <div class="span2">
 
-        {% if 'component' in layers %}
-        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button>
+        {% if component_layer %}
+        <a href="{{component_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button></a>
         {% else %}
-        <button class="btn" style="width:100%;margin-bottom:10px;">Component</button>
+        <a href="{{component_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Component</button></a>
         {% endif %}
 
-        {% if 'machine' in layers %}
-        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Machine</button>
+        {% if machine_layer %}
+        <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Machine</button></a>
         {% else %}
-        <button class="btn" style="width:100%;margin-bottom:10px;">Machine</button>
+        <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Machine</button></a>
         {% endif %}
 
-        {% if 'thermo' in layers %}
-        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+        {% if thermo_layer %}
+        <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Thermocycle</button></a>
         {% else %}
-        <button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+        <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button></a>
         {% endif %}
 
     </div>

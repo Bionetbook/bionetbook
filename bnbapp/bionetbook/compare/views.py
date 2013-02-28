@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from compare.models import ProtocolPlot, DictDiffer
 from django.views.generic import TemplateView, View
 from compare.utils import html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label, add_step_label  
+from django.core.urlresolvers import reverse
 
 class CompareBaseView(TemplateView):
     template_name = "compare/compare_default.html"
@@ -9,15 +10,36 @@ class CompareBaseView(TemplateView):
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
         context = self.get_context_data()
+        nodes = ['thermo', 'machine', 'component', 'steps']
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+
         if 'protocol_b_slug' in kwargs:
             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
         # else:
         #     context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         print context
         if 'layers' in kwargs:
-            context['layers'] = kwargs['layers']
+            context['layers'] = kwargs['layers']        # CHECK IN THE TEMPLATE
+            layers = context['layers'].split('-')
+
+            for node in nodes:
+                context['%s_layer' % node] = node in layers
+
+                if node in layers:
+                    node_list = [x for x in layers if x != node]
+                else:
+                    node_list = layers + [node]
+
+                if node_list:
+                    node_list.sort()
+                    context['%s_link' % node] = reverse('add_layers', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug, 'layers':"-".join( node_list )} )
+                else:
+                    context['%s_link' % node] = reverse('compare_protocols', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug } )
+        else:
+            for node in nodes:
+                context['%s_layer' % node] = False
+                context['%s_link' % node] = reverse('add_layers', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug, 'layers':node} )
 
         print 'returning CompareBaseView'
         return self.render_to_response(context)
@@ -32,13 +54,13 @@ class CompareBaseGraphicView(View):
         '''Gets the context data'''
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+
         if 'protocol_b_slug' in kwargs:
             protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
         else:
             protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])    
         
         format = kwargs['format']
-
         grapher = Grapher(protocol_a, protocol_b, format)
         base = grapher.draw_two_protocols()
         img = base.agraph.draw(prog='dot', format=format)    
@@ -47,7 +69,7 @@ class CompareBaseGraphicView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
-        print 'returning CompareBaseGraphicView'
+        # print 'returning CompareBaseGraphicView'
         return response
 
 
@@ -260,6 +282,10 @@ class Grapher(object):
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
         print kwargs['layers']
+
+
+
+
         if 'machine' in kwargs['layers']:
             machines = True
         else:
