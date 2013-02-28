@@ -46,9 +46,25 @@
         </div>
     </div> 
     <div class="span2">
+
+        {% if 'component' in layers %}
         <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button>
+        {% else %}
+        <button class="btn" style="width:100%;margin-bottom:10px;">Component</button>
+        {% endif %}
+
+        {% if 'machine' in layers %}
+        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Machine</button>
+        {% else %}
         <button class="btn" style="width:100%;margin-bottom:10px;">Machine</button>
+        {% endif %}
+
+        {% if 'thermo' in layers %}
+        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+        {% else %}
         <button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+        {% endif %}
+
     </div>
     <div class="span5">
         <div class="well">
