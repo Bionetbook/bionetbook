@@ -3,21 +3,18 @@
 import os.path
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-#PROJECT_PATH = PROJECT_ROOT
-#PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 if 'bionetbook/bionetbook' in PROJECT_ROOT:
-    #PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/', '')
     PROJECT_ROOT = PROJECT_ROOT.replace('bionetbook/bionetbook', 'bionetbook')
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Grant Viklund', 'gviklund@backcode.com'),
 )
 
 MANAGERS = ADMINS
-
 
 TIME_ZONE = 'America/Los_Angeles'
 
@@ -97,7 +94,7 @@ BASE_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'gunicorn',
+    #'gunicorn',
     'django_extensions',
     #'south',
     'crispy_forms',
@@ -111,9 +108,6 @@ BASE_APPS = (
 PROJECT_APPS = (
     'core',
     'protocols',
-    #'verbs',
-    #'steps',
-    #'actions',
     'profiles',
     'schedule',
     'interest',
@@ -154,15 +148,15 @@ LOGGING = {
 }
 
 FIXTURE_DIRS = (
-   '/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/fixtures/',
+   #'/Users/Oren/Coding/bionetbook/bnbapp/bionetbook/fixtures/',
 )
 
 EMAIL_SUBJECT_PREFIX = '[bionetbook]'
 
 # DO MEMCACHE
-from memcacheify import memcacheify
-CACHES = memcacheify()
-CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
+# from memcacheify import memcacheify
+# CACHES = memcacheify()
+# CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
 REGISTRATION_ENABLED = False
 
