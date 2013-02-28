@@ -85,6 +85,9 @@ class Protocol(TimeStampedModel):
 
         self.slug = self.generate_slug()
 
+        self.published = False
+        self.private = True
+
         # NEED TO SET THE ORGANIZATION
         if owner:
             self.owner = owner

@@ -398,8 +398,13 @@ class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Auth
 
     def confirm(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # new_owner = 
-        # self.object.clone(owner=new_owner)
+
+        form = self.form_class(request.POST)
+        new_owner = request.user.organization_set.get(pk=request.POST['owner'])
+
+        #print new_owner
+        self.object.clone(owner=new_owner)
+        self.object.save()
         messages.add_message(self.request, messages.INFO, "Your protocol has been duplicated.")
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
