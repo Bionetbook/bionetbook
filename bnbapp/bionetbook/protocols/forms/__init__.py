@@ -4,12 +4,7 @@ import floppyforms as forms
 
 from protocols.models import Protocol
 from organization.models import Organization
-
-CONCENTRATION_UNITS = (("l","Liter"),("ml","Microliter"),)
-VOLUME_UNITS = (("l","Liter"),("ml","Microliter"),)
-TIME_UNITS = (("m","Minutes"),("s","Seconds"),)
-SPEED_UNITS = (("rpm","Revolutions Per Minutes"),("rps","Revolutions Per Seconds"),)
-TEMPERATURE_UNITS = (("c","Celsius"),("k","Kelvin"),("f","Ferinheit"),)
+from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNITS, TEMPERATURE_UNITS
 
 
 class NodeForm(forms.Form):
@@ -85,5 +80,6 @@ class MachineForm(NodeForm):
 
 
 class ThermocyclerForm(NodeForm):
+
     min_time = forms.FloatField()
     max_time = forms.FloatField()
