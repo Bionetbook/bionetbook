@@ -65,6 +65,12 @@
         <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button></a>
         {% endif %}
 
+        {% if steps_layer %}
+        <a href="{{steps_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Step</button></a>
+        {% else %}
+        <a href="{{steps_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Step</button></a>
+        {% endif %}
+
     </div>
     <div class="span5">
         <div class="well">
