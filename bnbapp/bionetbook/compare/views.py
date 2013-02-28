@@ -282,30 +282,30 @@ class Grapher(object):
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
         print kwargs['layers']
+        layers = kwargs['layers'].split('-')
 
 
 
-
-        if 'machine' in kwargs['layers']:
-            machines = True
-        else:
-            machines = False 
+        # if 'machine' in kwargs['layers']:
+        #     machines = True
+        # else:
+        #     machines = False 
         
-        if 'component' in kwargs['layers']:
-            components = True
-        else:
-            components = False 
+        # if 'component' in kwargs['layers']:
+        #     components = True
+        # else:
+        #     components = False 
         
-        if 'thermo' in kwargs['layers']:
-            thermocycle = True
-        else:
-            thermocycle = False     
+        # if 'thermo' in kwargs['layers']:
+        #     thermocycle = True
+        # else:
+        #     thermocycle = False     
 
-        if 'steps' in kwargs['layers']:
-            steps = True
+        # if 'steps' in kwargs['layers']:
+        #     steps = True
             
-        else:
-            steps = False         
+        # else:
+        #     steps = False         
 
 
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
@@ -316,7 +316,7 @@ class Grapher(object):
             '''
         for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
             # print verb_a, verb_b
-            if 'machine' in self.protocol_A.nodes[verb_a].keys() and machines:
+            if 'machine' in self.protocol_A.nodes[verb_a].keys() and 'machine' in layers:
                 x = self.protocol_A.nodes[verb_a]['machine'].summary
                 y = self.protocol_B.nodes[verb_b]['machine'].summary
                 d = DictDiffer (x, y)
@@ -333,7 +333,7 @@ class Grapher(object):
                 self.agraph.add_edge(verb_object_a,diff_object)
                 self.agraph.add_edge(verb_object_b,diff_object)
 
-                if steps:
+                if 'steps' in layers:
                     self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                 else:    
                     N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
@@ -348,7 +348,7 @@ class Grapher(object):
             
                 # <---
 
-            if 'components' in self.protocol_A.nodes[verb_a].keys() and components: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+            if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
                 # Validate that reagent objectids are the same:
 
 
@@ -386,7 +386,7 @@ class Grapher(object):
                     eb = self.agraph.add_edge(verb_object_a, diff_object)     
                     
 
-                    if steps:
+                    if 'steps' in layers:
                         self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                     else:    
                         N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
@@ -398,7 +398,7 @@ class Grapher(object):
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
 
-            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and thermocycle:
+            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermocycle' in layers:
                 import itertools
                 # generate the diff content:  
 
@@ -455,7 +455,7 @@ class Grapher(object):
                     ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
                     eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
                     
-                    if steps:
+                    if 'steps' in layers:
                         self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                     else:    
                         N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
@@ -470,7 +470,7 @@ class Grapher(object):
                     s.attr['label'] = (table)
 
             else:
-                if steps:
+                if 'steps' in layers:
                     self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
                     self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
                     verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
