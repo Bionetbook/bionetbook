@@ -714,6 +714,9 @@ class Action(NodeBase):
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
+        if self['name'] == self['objectid']:
+            self['name'] = self['verb']
+
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
