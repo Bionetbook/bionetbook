@@ -714,7 +714,7 @@ class Action(NodeBase):
         if not self['name']:                                            # Action default name should be the same as the verb
             self['name'] = self['verb']
 
-        if self['name'] == self['objectid']:
+        if self['name'] == self['objectid']:        # CORRECT THIS DATA
             self['name'] = self['verb']
 
     def get_absolute_url(self):
