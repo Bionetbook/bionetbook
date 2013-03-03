@@ -616,15 +616,26 @@ class ActionUpdateView(NodeUpdateView):
     slugs = ['step_slug', 'action_slug']
     node_type = "action"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, form=None, verb_form=None, **kwargs):
         context = super(ActionUpdateView, self).get_context_data(**kwargs)
-        context['verb_form'] = VERB_FORM_DICT[context[self.node_type]['verb']](initial=context[self.node_type], prefix='verb')
+
+        if form:
+            context['verb_form'] = verb_form
+        else:
+            context['verb_form'] = VERB_FORM_DICT[context[self.node_type]['verb']](initial=context[self.node_type], prefix='verb')
+
         context['verb_name'] = context['verb_form'].name
-        context['form'] = self.form_class(initial=context[self.node_type], prefix=self.node_type)
+
+        if form:
+            context['form'] = form
+        else:
+            context['form'] = self.form_class(initial=context[self.node_type], prefix=self.node_type)
+    
         return context
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
+        print "POST"
         self.object = self.get_object()
         context = self.get_context_data(**kwargs)
 
@@ -640,6 +651,7 @@ class ActionUpdateView(NodeUpdateView):
 
     def form_valid(self, form, verb_form):
         '''Takes in two forms for processing'''
+        print "FORM VALID"
         protocol = self.get_protocol()
         context = self.get_context_data()
         node = context[self.node_type]
@@ -660,6 +672,10 @@ class ActionUpdateView(NodeUpdateView):
         If the form is invalid, re-render the context data with the
         data-filled form and errors.
         """
+        print "FORM INVALID"
+
+        print form.errors
+        print verb_form.errors
         ctx = self.get_context_data(object=self.object, form=form, verb_form=verb_form)
         return self.render_to_response(ctx)
 
