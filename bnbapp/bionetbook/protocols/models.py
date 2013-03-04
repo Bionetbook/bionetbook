@@ -879,19 +879,19 @@ class Step(NodeBase):
 
 
 
-class ProtocolIngest(Protocol):
-    '''Used for loading protocols from JSON formatted text files.'''
+# class ProtocolIngest(Protocol):
+#     '''Used for loading protocols from JSON formatted text files.'''
 
-    class Meta:
-        db_table = 'protocols_protocol'
+#     class Meta:
+#         db_table = 'protocols_protocol'
 
-    def read_data(self, *args):
-        filename = str(args[0])
-        self.data = open(filename, 'r').read()
-        if self.data:
-            return self.data
-        else:
-            print 'no data loaded'
+#     def read_data(self, *args):
+#         filename = str(args[0])
+#         self.data = open(filename, 'r').read()
+#         if self.data:
+#             return self.data
+#         else:
+#             print 'no data loaded'
 
 
 
