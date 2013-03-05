@@ -13,9 +13,17 @@ class CompareBaseView(TemplateView):
         nodes = ['thermo', 'machine', 'component', 'steps']
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        template_name = "compare/single_base_default.html"
+        render = 'compare_single_layers'
+        arguments={'protocol_a_slug':context['protocol_a'].slug}              
+        print render
 
         if 'protocol_b_slug' in kwargs:
             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+            template_name = "compare/compare_default.html" 
+            render = 'compare_add_layers' 
+            arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}            
         # else:
         #     context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         print context
@@ -33,13 +41,15 @@ class CompareBaseView(TemplateView):
 
                 if node_list:
                     node_list.sort()
-                    context['%s_link' % node] = reverse('add_layers', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug, 'layers':"-".join( node_list )} )
+                    arguments['layers']  = "-".join( node_list )
+                    context['%s_link' % node] = reverse(render,  kwargs = arguments)
                 else:
-                    context['%s_link' % node] = reverse('compare_protocols', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug } )
+                    context['%s_link' % node] = reverse('compare_protocols', kwargs = {'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug})
         else:
             for node in nodes:
                 context['%s_layer' % node] = False
-                context['%s_link' % node] = reverse('add_layers', kwargs={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug, 'layers':node} )
+                arguments['layers']  = node
+                context['%s_link' % node] = reverse(render, kwargs=arguments )
 
         print 'returning CompareBaseView'
         return self.render_to_response(context)
@@ -107,10 +117,10 @@ class CompareLayersGraphicView(View):
         print 'returning ComparelayersGraphicView'
         return response
 
-class SingleLayersView(CompareBaseView):
+class CompareSingleLayersView(CompareBaseView):
     template_name = "compare/single_base_default.html"
 
-class SingleLayersGraphicView(View):
+class CompareSingleLayersGraphicView(View):
     '''
     Returns a graphic representaion of a single protocol in SVG or PNG format.
     '''
@@ -192,7 +202,13 @@ class Grapher(object):
             n.attr['fontsize'] = '10'
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
-            n.attr['label']= self.protocol_A.nodes[self.protocol_A.get_actions[i]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
+            node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
+            n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
+
+            # if 'call_for_protocol' in node_object:
+            n.attr['URL'] = node_object.get_absolute_url()
+            n.attr['target'] = '_top'
+                
 
         # Set the 0'th node and title in protocol_A 
         n = self.agraph.get_node(self.matching_verbs_pk[0][0])
@@ -201,9 +217,13 @@ class Grapher(object):
         n.attr['fontsize'] = '10'
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
-        n.attr['label']=self.protocol_A.nodes[self.protocol_A.get_actions[0]]['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
+        node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
+        n.attr['label']=node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
         
-        # print 'Rendered protocol %s'% self.protocol_A.name
+        # if 'call_for_protocol' in node_object['verb']:
+        # n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug': node_object['link_to_protocol'] , 'layers': 'machine'})
+        n.attr['URL'] = node_object.get_absolute_url()
+        n.attr['target'] = '_top'
         
         # add base of second protocol:
         for i in range(1, len(self.B_pk)):
@@ -217,16 +237,26 @@ class Grapher(object):
             n.attr['fontsize'] = '10'
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
-            n.attr['label']= self.protocol_B.nodes[self.protocol_B.get_actions[i]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[i]].pk
+            node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
+            n.attr['label']= node_object['verb'] 
 
+            # if 'call_for_protocol' in node_object['verb']:
+                # n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug': node_object['link_to_protocol'] , 'layers': 'machine'})
+            n.attr['URL'] = node_object.get_absolute_url()    
+            n.attr['target'] = '_top'
         # Set the 0'th node in  protocol_A  
         n = self.agraph.get_node(self.matching_verbs_pk[0][1])
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
-        n.attr['label']=self.protocol_B.nodes[self.protocol_B.get_actions[0]]['verb'] #+ '_' + self.protocol_B.nodes[self.protocol_B.get_actions[0]].pk
+        node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
+        n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
+        # if 'call_for_protocol' in node_object:
+        #     n.attr['URL'] = n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug':node_object['link_to_protocol'] , 'layers': 'machine'})
+        n.attr['URL'] = node_object.get_absolute_url()
+        n.attr['target'] = '_top'
         return self
     def add_step_layer(self, verb_a, verb_b, verb_object_a, verb_object_b, diff_object = None): 
             first_actions_a = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_A.get_steps]
@@ -281,16 +311,16 @@ class Grapher(object):
     
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
-        # print kwargs['layers']
-        if 'layers' in kwargs.keys():
-            layers = kwargs['layers'].split('-')
-
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
             'machines'
             'components'
             'thermocycle'
-            'steps' - displays verbatim text. 
-            '''
+            'steps' - displays verbatim text. '''
+        
+        if 'layers' in kwargs.keys():
+            layers = kwargs['layers'].split('-')
+
+            
         for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
             # print verb_a, verb_b
             if 'machine' in self.protocol_A.nodes[verb_a].keys() and 'machine' in layers:

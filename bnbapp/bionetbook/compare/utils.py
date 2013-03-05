@@ -178,15 +178,8 @@ def add_step_label(step, step_layer = False):
 	stack = []
 	for w in wrapped:
 		stack.append('<font>%s</font><br/>'%w)
-
-	merge = '<' + ''.join(stack) +'>'
-	print merge	
-
-
-	# merge = merge_table_pieces(stack)
-	# if step_layer: 
-	# merge.replace('CELLBORDER', 'RRRRRR') 
 	
+	merge = '<' + ''.join(stack) +'>'	
 	
 	return merge
 

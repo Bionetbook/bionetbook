@@ -45,18 +45,39 @@
             </table>
         </div>
     </div>    
-    <div class="span4">
-        <button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button>
-        <button class="btn" style="width:100%;margin-bottom:10px;">Machine</button>
-        <button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button>
+    <div class="span2">
 
-    </div> 
+        {% if component_layer %}
+        <a href="{{component_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button></a>
+        {% else %}
+        <a href="{{component_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Component</button></a>
+        {% endif %}
+
+        {% if machine_layer %}
+        <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Machine</button></a>
+        {% else %}
+        <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Machine</button></a>
+        {% endif %}
+
+        {% if steps_layer %}
+        <a href="{{steps_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Step</button></a>
+        {% else %}
+        <a href="{{steps_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Step</button></a>
+        {% endif %}
+
+        {% if thermo_layer %}
+        <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Thermocycle</button></a>
+        {% else %}
+        <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Thermocycle</button></a>
+        {% endif %}
+
+    </div>
 </div >    
 
 <div class="row">   
     <div class="span4" >
         <div>
-            <embed src="{% url add_single_layers_graphic protocol_a.slug layers 'svg' %}" type="image/svg+xml" />
+            <embed src="{% url compare_single_layers_graphic protocol_a.slug layers 'svg' %}" type="image/svg+xml" />
         </div>
     </div>
 </div>
