@@ -3,7 +3,7 @@
 # COMMON UNIT LISTS
 CONCENTRATION_UNITS = (("l","Liter"),("ml","Microliter"),)
 VOLUME_UNITS = (("l","Liter"),("ml","Microliter"),)
-TIME_UNITS = (("m","Minutes"),("s","Seconds"),)
+TIME_UNITS = (("h","Hours"),("m","Minutes"),("s","Seconds"),)
 SPEED_UNITS = (("rpm","Revolutions Per Minutes"),("rps","Revolutions Per Seconds"),)
 TEMPERATURE_UNITS = (("c","Celsius"),("k","Kelvin"),("f","Ferinheit"),)
 

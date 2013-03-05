@@ -9,7 +9,7 @@ from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNIT
 
 class NodeForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
-    remark = forms.CharField(label='Comment', required=False)
+    remark = forms.CharField(label='Comment', required=False, help_text ='phase of protocol')
 
 
 class OrganizationListForm(forms.Form):
@@ -38,9 +38,11 @@ class StepForm(NodeForm):
 
 class ActionForm(NodeForm):
 
-    time_units = forms.CharField(required=False)
+    name = forms.CharField(max_length=100, required=False, help_text = 'Do not fill this in')
     duration = forms.IntegerField()
+    time_units = forms.CharField(required=False)
     duration_comment = forms.CharField(required=False)
+    tube = forms.CharField(required = False)
 
 
 class VerbForm(forms.Form):
