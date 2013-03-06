@@ -194,6 +194,15 @@ class Protocol(TimeStampedModel):
             self.data['steps'] = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
             #self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
+    def add_step(self, step):
+        if not step['objectid'] in [ s['objectid'] for s in self.data['steps'] ]:
+
+            if not 'steps' in self.data or not self.data['steps']:
+                self.data['steps'] = []
+
+            self.data['steps'].append(step)
+            self.rebuild_steps()
+
     ###########
     # Validators
 
@@ -800,6 +809,9 @@ class Action(NodeBase):
 
 class Step(NodeBase):
 
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     super(Step, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
     def update_data(self, data={}, **kwargs):
         super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
@@ -815,6 +827,16 @@ class Step(NodeBase):
                 duration += int(action['duration'])
 
         self['duration'] = duration
+
+
+        print self.protocol.nodes
+
+        if not data['objectid'] in self.protocol.nodes:
+            print "STEP NOT THERE, ADDING"
+            self.protocol.add_step(self)
+
+
+
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
