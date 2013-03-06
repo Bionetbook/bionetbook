@@ -5,86 +5,105 @@ from compare.utils import html_label_two_protocols, add_html_cell, merge_table_p
 from django.core.urlresolvers import reverse
 
 class CompareBaseView(TemplateView):
-    template_name = "compare/compare_default.html"
+    # template_name = "compare/compare_default.html"
 
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
+        arguments={}
         context = self.get_context_data()
         nodes = ['thermo', 'machine', 'component', 'steps']
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        template_name = "compare/single_base_default.html"
-        render = 'compare_single_layers'
+        display = 'single'
         arguments={'protocol_a_slug':context['protocol_a'].slug}              
-        print render
+        # template_name = "compare/single_base_default.html"
+        # render = 'compare_single'
+        
+        
 
-        if 'protocol_b_slug' in kwargs:
+        if 'protocol_b_slug' in kwargs and kwargs['protocol_b_slug'] != 'layers':
+            # print 'WRONG!!!!!!!!!'
             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-            template_name = "compare/compare_default.html" 
-            render = 'compare_add_layers' 
+            display = 'double'
             arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}            
+            # template_name = "compare/compare_default.html" 
+            # render = 'compare_protocols' 
+            
         # else:
         #     context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        print context
-        if 'layers' in kwargs:
-            context['layers'] = kwargs['layers']        # CHECK IN THE TEMPLATE
-            layers = context['layers'].split('-')
+        
+        # if 'layers' in kwargs:
+        context['layers'] = kwargs['layers']        # CHECK IN THE TEMPLATE
+        layers = context['layers'].split('-')
+        render_layers = 'compare_layers'
+        # template_name = "compare/compare_layer.html" 
+        # render_base = 'compare_protocols'
+        
+        
+        if display == 'single':
+            render_layers = 'compare_single_layers'      
+            # template_name = "compare/single_base_default.html"
+            # render_base = 'compare_single'  
+            
+        for node in nodes:
+            context['%s_layer' % node] = node in layers
 
-            for node in nodes:
-                context['%s_layer' % node] = node in layers
+            if node in layers:
+                node_list = [x for x in layers if x != node]
+            else:
+                node_list = layers + [node]
 
-                if node in layers:
-                    node_list = [x for x in layers if x != node]
-                else:
-                    node_list = layers + [node]
-
-                if node_list:
-                    node_list.sort()
-                    arguments['layers']  = "-".join( node_list )
-                    context['%s_link' % node] = reverse(render,  kwargs = arguments)
-                else:
-                    context['%s_link' % node] = reverse('compare_protocols', kwargs = {'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug})
-        else:
-            for node in nodes:
-                context['%s_layer' % node] = False
-                arguments['layers']  = node
-                context['%s_link' % node] = reverse(render, kwargs=arguments )
+            if node_list:
+                node_list.sort()
+                arguments['layers']  = "-".join( node_list )
+                context['%s_link' % node] = reverse(render_layers,  kwargs = arguments)
+                # else:
+                #     context['%s_link' % node] = reverse(render_base, kwargs = arguments)
+        # else:
+        #     for node in nodes:
+        #         context['%s_layer' % node] = False
+        #         arguments['layers']  = node
+        #         render_layers = 'compare_add_layers'
+        #         if display == 'single':
+        #             render_layers = 'compare_single_layers' 
+        #         context['%s_link' % node] = reverse(render_layers, kwargs=arguments )
 
         print 'returning CompareBaseView'
         return self.render_to_response(context)
 
 
-class CompareBaseGraphicView(View):
-    '''
-    Returns a graphic representaion of a comparison in either a SVG or PNG format.
-    '''
+# class CompareBaseGraphicView(View):
+#     '''
+#     Returns a graphic representaion of a comparison in either a SVG or PNG format.
+#     '''
 
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
+#     def get(self, request, *args, **kwargs):
+#         '''Gets the context data'''
 
-        protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+#         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
 
-        if 'protocol_b_slug' in kwargs:
-            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-        else:
-            protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])    
+#         if 'protocol_b_slug' in kwargs:
+#             protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+#         else:
+#             protocol_b = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])    
         
-        format = kwargs['format']
-        grapher = Grapher(protocol_a, protocol_b, format)
-        base = grapher.draw_two_protocols()
-        img = base.agraph.draw(prog='dot', format=format)    
+#         format = kwargs['format']
+#         grapher = Grapher(protocol_a, protocol_b, format)
+#         base = grapher.draw_two_protocols()
+#         img = base.agraph.draw(prog='dot', format=format)    
 
-        if format in ['svg']:
-            format = format + "+xml"
+#         if format in ['svg']:
+#             format = format + "+xml"
 
-        response = HttpResponse(img, mimetype='image/%s' % format)
-        # print 'returning CompareBaseGraphicView'
-        return response
+#         response = HttpResponse(img, mimetype='image/%s' % format)
+#         print 'returning CompareBaseGraphicView'
+#         return response
 
 
 class CompareLayersView(CompareBaseView):
-    template_name = "compare/compare_layer.html"        
+    template_name = "compare/compare_layers.html"
+    print template_name        
 
 
 class CompareLayersGraphicView(View):
@@ -117,8 +136,13 @@ class CompareLayersGraphicView(View):
         print 'returning ComparelayersGraphicView'
         return response
 
+# class CompareSingleBaseView(CompareBaseView):
+#     print 'CompareSingleBaseView'
+#     template_name = "compare/single_base_default.html"
+
 class CompareSingleLayersView(CompareBaseView):
-    template_name = "compare/single_base_default.html"
+    template_name = "compare/compare_single_layers.html"
+    print template_name
 
 class CompareSingleLayersGraphicView(View):
     '''
@@ -130,7 +154,10 @@ class CompareSingleLayersGraphicView(View):
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         format = kwargs['format']
-        layers = kwargs['layers']
+        layers = None
+
+        if 'layers' in kwargs:
+            layers = kwargs['layers']
         # grapher = Grapher(protocol_a, protocol_b, format)
         grapher = Grapher(protocol_a, format=format)
         base = grapher.draw_two_protocols()
@@ -258,6 +285,8 @@ class Grapher(object):
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = '_top'
         return self
+    
+
     def add_step_layer(self, verb_a, verb_b, verb_object_a, verb_object_b, diff_object = None): 
             first_actions_a = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_A.get_steps]
             first_actions_b = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_B.get_steps]
