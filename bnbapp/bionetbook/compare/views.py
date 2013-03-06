@@ -141,6 +141,7 @@ class CompareLayersGraphicView(View):
 #     template_name = "compare/single_base_default.html"
 
 class CompareSingleLayersView(CompareBaseView):
+    
     template_name = "compare/compare_single_layers.html"
     print template_name
 
