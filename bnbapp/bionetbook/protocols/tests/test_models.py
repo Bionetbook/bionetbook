@@ -4,7 +4,7 @@ from django.test import TestCase
 # from actions.models import Action
 from protocols.models import Protocol, Action, Step, Component
 # from steps.models import Step
-from organization.models import Organization
+from organization.models import Organization, Membership
 
 class ProtocolModelTests(TestCase):
 
