@@ -35,12 +35,13 @@ class ProtocolModelTests(TestCase):
 
     def test_step_add(self):
         protocol = Protocol.objects.create( name="Test Protocol", owner=self.org, raw="what?" )
-        step1 = Step(protocol, name="step1")
+        step1 = Step(protocol, data={"name":"step1"})
+
         self.assertEquals(len(protocol.steps), 1)   # STEP SHOULD REGEISTER IT'S SELF WITH THE PROTOCOL
         self.assertTrue('objectid' in step1)        # STEP SHOULD GET OBJECT ID AFTER REGISTERED
         self.assertEquals(step1['slug'], step1['objectid'])
 
-        step2 = Step(protocol, name="step2")
+        step2 = Step(protocol, data={"name":"step2"})
         self.assertEquals(len(protocol.steps), 2)   # STEP SHOULD REGEISTER IT'S SELF WITH THE PROTOCOL
         self.assertTrue('objectid' in step2)        # STEP SHOULD GET OBJECT ID AFTER REGISTERED
         self.assertEquals(step2['slug'], step2['objectid'])
