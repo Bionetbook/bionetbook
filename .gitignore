@@ -22,4 +22,6 @@ bnbapp/bionetbook/compare/SANDBOX.py
 
 bnbapp/bionetbook/mud
 
+*.bak
+
 testsuite
