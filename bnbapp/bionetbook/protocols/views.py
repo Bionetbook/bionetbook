@@ -433,14 +433,9 @@ class StepCreateView(NodeCreateViewBase):
     def form_valid(self, form):
         protocol = self.get_protocol()
         new_step = Step(protocol, data=form.cleaned_data)
-
-        if 'steps' in protocol.data:
-            protocol.data['steps'].append(new_step)
-        else:
-            protocol.data['steps'] = [new_step]
         protocol.save()
 
-        messages.add_message(self.request, messages.INFO, "Your step was added.")
+        messages.add_message(self.request, messages.INFO, "Your step \'%s\'' was added." % new_step.title)
         return super(StepCreateView, self).form_valid(form)
 
     def form_invalid(self, form):
