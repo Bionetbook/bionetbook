@@ -855,13 +855,6 @@ class Step(NodeBase):
         # self['duration'] = duration
 
 
-<<<<<<< HEAD
-        # print self.protocol.nodes
-
-        # if not data['objectid'] in self.protocol.nodes:
-        #     print "STEP NOT THERE, ADDING"
-        #     self.protocol.add_step(self)
-=======
         #print self.protocol.nodes
 
         # if not data['objectid'] in self.protocol.nodes:
@@ -869,7 +862,7 @@ class Step(NodeBase):
         self.protocol.add_node(self)
         # else:
         #     print "ALREADY THERE"
->>>>>>> Updating Protocols to use an "add_node" method for adding steps, actions and other nodes
+
 
 
 
