@@ -21,6 +21,7 @@ from protocols.helpers import settify, unify
 # from protocols.utils import VERB_FORM_DICT
 
 COMPONENT_KEY = "components"
+MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 
 class Protocol(TimeStampedModel):
 
@@ -194,14 +195,35 @@ class Protocol(TimeStampedModel):
             self.data['steps'] = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
             #self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
 
-    def add_step(self, step):
-        if not step['objectid'] in [ s['objectid'] for s in self.data['steps'] ]:
+    # def add_step(self, step):
+    #     if not step['objectid'] in [ s['objectid'] for s in self.data['steps'] ]:
+    #         print "STEP NOT THERE, ADDING"
+    #         #print type(step)
+    #         print "IS STEP: %s" % isinstance(step, Step)
+    #         self.data['steps'].append(step)
+    #         self.rebuild_steps()
+    #     else:
+    #         print "ALREADY THERE"
 
-            if not 'steps' in self.data or not self.data['steps']:
-                self.data['steps'] = []
 
-            self.data['steps'].append(step)
-            self.rebuild_steps()
+    def add_node(self, node):
+        '''
+        Every node needs to register it's self with a protocol here.
+        '''
+        if not node['objectid'] in self.nodes:
+            if isinstance(node, Step):              # IF IT IS A STEP GIVE IT THIS EXTRA STEP
+                print "STEP NOT THERE, ADDING"
+                self.data['steps'].append(node)
+                self.rebuild_steps()
+            else:
+                print "NODE NOT THERE, ADDING"
+                # IN THIS CASE JUST REGISTER IS WITH THE NODE DICTIONARY
+        else:
+            print "ALREADY THERE"
+
+
+        # NEED TO ADD ACTIONS TO THE PROTOCOL
+
 
     ###########
     # Validators
@@ -254,16 +276,13 @@ class Protocol(TimeStampedModel):
             for action in step['actions']:
                 result[action['objectid']] = action
 
-                if COMPONENT_KEY in action:
-                    for component in action[COMPONENT_KEY]:
-                        result[component['objectid']] = component
+                for key in ['thermocycle', 'component']:
+                    if key in action:
+                        for item in action[key]:
+                            result[item['objectid']] = item
 
                 if 'machine' in action:
                     result[action['machine']['objectid']] = action['machine']
-
-                if 'thermocycle' in action:
-                    for thermocycle in action['thermocycle']:
-                        result[thermocycle['objectid']] = thermocycle    
                             
         return result
 
@@ -706,8 +725,6 @@ class Action(NodeBase):
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-
         if 'component - list' in data:                                  # rename "componet - list" to "components"
             data['components'] = data.pop("component - list")
 
@@ -725,6 +742,15 @@ class Action(NodeBase):
 
         if self['name'] == self['objectid']:        # CORRECT THIS DATA
             self['name'] = self['verb']
+
+        if not self['objectid'] in self.protocol.nodes:
+            print "NOT THERE"
+
+        # if 'actions' in self.parent:
+        #     self.parent['actions'].append(self)
+        # else:
+        #     self.parent['actions'] = [self]
+
 
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
@@ -829,11 +855,21 @@ class Step(NodeBase):
         # self['duration'] = duration
 
 
+<<<<<<< HEAD
         # print self.protocol.nodes
 
         # if not data['objectid'] in self.protocol.nodes:
         #     print "STEP NOT THERE, ADDING"
         #     self.protocol.add_step(self)
+=======
+        #print self.protocol.nodes
+
+        # if not data['objectid'] in self.protocol.nodes:
+        #     print "STEP NOT THERE, ADDING"
+        self.protocol.add_node(self)
+        # else:
+        #     print "ALREADY THERE"
+>>>>>>> Updating Protocols to use an "add_node" method for adding steps, actions and other nodes
 
 
 
