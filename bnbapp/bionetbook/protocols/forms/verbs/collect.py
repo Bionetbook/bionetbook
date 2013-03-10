@@ -5,6 +5,6 @@ class CollectForm(forms.VerbForm):
 
     name = "Collect"
     slug = "collect"
-    has_machines = True
+    has_machine = True
 
     duration_in_seconds = forms.IntegerField()

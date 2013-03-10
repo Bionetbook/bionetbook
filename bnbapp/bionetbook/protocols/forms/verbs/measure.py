@@ -3,8 +3,8 @@ from protocols.forms import forms
 
 class MeasureForm(forms.VerbForm):
 
-    name = "measure"
+    name = "Measure"
     slug = "measure"
-    has_machines = True
+    has_machine = True
 
     duration_in_seconds = forms.IntegerField()

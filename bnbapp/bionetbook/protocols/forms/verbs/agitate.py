@@ -5,7 +5,7 @@ class AgitateForm(forms.VerbForm):
 
     name = "Agitate"
     slug = "agitate"
-    has_machines = True
+    has_machine = True
 
 
     duration_min_time = forms.IntegerField()

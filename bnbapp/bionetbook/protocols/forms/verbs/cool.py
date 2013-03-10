@@ -5,7 +5,7 @@ class CoolForm(forms.VerbForm):
 
     name = "Cool"
     slug = "cool"
-    has_machines = True
+    has_machine = True
 
     edit_remarks = forms.CharField()
     edit_what_remark = forms.CharField()

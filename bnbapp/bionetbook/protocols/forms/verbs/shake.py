@@ -5,7 +5,7 @@ class ShakeForm(forms.VerbForm):
 
     name = "Shake"
     slug = "shake"
-    has_machines = True
+    has_machine = True
 
     edit_remarks = forms.CharField()
     add_conditional_statement = forms.CharField()

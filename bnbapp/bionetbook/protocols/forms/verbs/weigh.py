@@ -5,7 +5,7 @@ class WeighForm(forms.VerbForm):
 
     name = "Weigh"
     slug = "weigh"
-    has_machines = True
+    has_machine = True
 
     edit_what_remark = forms.CharField()
     edit_vessel_type = forms.CharField()

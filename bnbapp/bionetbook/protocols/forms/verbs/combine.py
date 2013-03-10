@@ -5,7 +5,7 @@ class CombineForm(forms.VerbForm):
 
     name = "Combine"
     slug = "combine"
-    has_components = True
+    has_component = True
 
 
     min_temp = forms.IntegerField()

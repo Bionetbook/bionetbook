@@ -3,7 +3,7 @@ from protocols.forms import forms
 
 class InsertForm(forms.VerbForm):
 
-    name = "insert"
+    name = "Insert"
     slug = "insert"
 
 

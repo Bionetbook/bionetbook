@@ -3,9 +3,9 @@ from protocols.forms import forms
 
 class HeatForm(forms.VerbForm):
 
-    name = "heat"
+    name = "Heat"
     slug = "heat"
-    has_machines = True
+    has_machine = True
 
     
     edit_what_remark = forms.CharField(required = False, help_text='sample name, default is tube')

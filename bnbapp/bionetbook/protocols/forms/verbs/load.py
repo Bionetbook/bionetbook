@@ -3,7 +3,7 @@ from protocols.forms import forms
 
 class LoadForm(forms.VerbForm):
 
-    name = "load"
+    name = "Load"
     slug = "load"
 
 

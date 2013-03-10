@@ -5,7 +5,7 @@ class CentrifugeForm(forms.VerbForm):
 
     name = "Centrifuge"
     slug = "centrifuge"
-    has_machines = True
+    has_machine = True
 
     edit_what_remark = forms.CharField()
     min_spin_speed = forms.IntegerField()

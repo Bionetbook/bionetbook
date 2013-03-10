@@ -1,11 +1,6 @@
 import floppyforms as forms
-
-#from protocols.forms.baseforms import ProtocolForm
-
-from protocols.models import Protocol
 from organization.models import Organization
 from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNITS, TEMPERATURE_UNITS
-
 
 class NodeForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
@@ -14,18 +9,6 @@ class NodeForm(forms.Form):
 
 class OrganizationListForm(forms.Form):
     owner = forms.ChoiceField(required=True)#forms.CharField(max_length=100, required=False)
-
-
-class ProtocolForm(forms.ModelForm):
-
-    class Meta:
-        model = Protocol
-        exclude = ('parent', 'slug', 'duration_in_seconds', 'status', 'version','raw')
-
-    def __init__(self, *args, **kwargs):
-        super(ProtocolForm, self).__init__(*args, **kwargs)
-        choices = [(pt.id, unicode(pt.name)) for pt in Organization.objects.all()]
-        self.fields['owner'].choices = choices
 
 
 class ProtocolPublishForm(forms.Form):
@@ -46,8 +29,8 @@ class ActionForm(NodeForm):
 
 
 class VerbForm(forms.Form):
-    has_components = False
-    has_machines = False
+    has_component = False
+    has_machine = False
     has_thermocycler = False
 
 forms.VerbForm = VerbForm

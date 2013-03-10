@@ -3,9 +3,9 @@ from protocols.forms import forms
 
 class PhotographForm(forms.VerbForm):
 
-    name = "photograph"
+    name = "Photograph"
     slug = "photograph"
-    has_machines = True
+    has_machine = True
 
     edit_what_remark = forms.CharField()
     edit_remarks = forms.CharField()

@@ -5,6 +5,6 @@ class SpinForm(forms.VerbForm):
 
     name = "Spin"
     slug = "spin"
-    has_machines = True
+    has_machine = True
 
     duration_in_seconds = forms.IntegerField()

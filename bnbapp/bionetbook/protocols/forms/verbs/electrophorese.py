@@ -5,7 +5,7 @@ class ElectrophoreseForm(forms.VerbForm):
 
     name = "Electrophorese"
     slug = "electrophorese"
-    has_machines = True
+    has_machine = True
 
     edit_remarks = forms.CharField()
     duration_min_time = forms.IntegerField()
