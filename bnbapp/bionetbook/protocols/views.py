@@ -578,7 +578,7 @@ class ActionCreateView(NodeCreateViewBase):
         verb_slug = self.kwargs.get('verb_slug', None)                              # ADD THE VERB
         data['verb'] = verb_slug
 
-        action = Action(protocol, data=data)
+        action = Action(protocol, parent=step, data=data)
 
         if 'actions' in step:
             step['actions'].append(action)
