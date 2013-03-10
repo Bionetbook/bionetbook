@@ -114,7 +114,7 @@ class CompareLayersGraphicView(View):
     
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
-        print kwargs
+        # print kwargs
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         if 'protocol_b_slug' in kwargs:
@@ -133,7 +133,7 @@ class CompareLayersGraphicView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
-        print 'returning ComparelayersGraphicView'
+        # print 'returning ComparelayersGraphicView'
         return response
 
 # class CompareSingleBaseView(CompareBaseView):
@@ -143,7 +143,7 @@ class CompareLayersGraphicView(View):
 class CompareSingleLayersView(CompareBaseView):
     
     template_name = "compare/compare_single_layers.html"
-    print template_name
+    # print template_name
 
 class CompareSingleLayersGraphicView(View):
     '''
@@ -169,7 +169,7 @@ class CompareSingleLayersGraphicView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
-        print 'returning SingleLayersGraphicView'
+        # print 'returning SingleLayersGraphicView'
         return response                
 
 
@@ -187,7 +187,7 @@ class Grapher(object):
             self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
         else:
             self.protocol_B = protocol_b    
-            print protocol_b
+            # print protocol_b
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
          # list of actions in pk-objectid format
         # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
@@ -231,6 +231,7 @@ class Grapher(object):
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
+            # print node_object
             n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
             # if 'call_for_protocol' in node_object:
