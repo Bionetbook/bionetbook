@@ -14,7 +14,8 @@ from django.utils.translation import ugettext as _
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
-from protocols.forms import ProtocolForm, ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
+from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
+from protocols.forms.baseforms import ProtocolForm
 from protocols.models import Protocol, Step, Action
 from organization.models import Organization
 
