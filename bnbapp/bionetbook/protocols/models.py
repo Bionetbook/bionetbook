@@ -33,7 +33,7 @@ class Protocol(TimeStampedModel):
     # )
 
     parent = models.ForeignKey("self", blank=True, null=True)
-    #author = models.ForeignKey(User)
+    author = models.ForeignKey(User, blank=True, null=True)
     owner = models.ForeignKey(Organization)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
@@ -208,18 +208,20 @@ class Protocol(TimeStampedModel):
 
     def add_node(self, node):
         '''
-        Every node needs to register it's self with a protocol here.
+        Every node needs to register it's self with a protocol here.  If it's a step it get_steps
+        added to the list of steps.  It's written this way to handle other types of Nodes being 
+        added with special needs.
         '''
         if not node['objectid'] in self.nodes:
             if isinstance(node, Step):              # IF IT IS A STEP GIVE IT THIS EXTRA STEP
-                print "STEP NOT THERE, ADDING"
+                #print "STEP NOT THERE, ADDING"
                 self.data['steps'].append(node)
                 self.rebuild_steps()
-            else:
-                print "NODE NOT THERE, ADDING"
-                # IN THIS CASE JUST REGISTER IS WITH THE NODE DICTIONARY
-        else:
-            print "ALREADY THERE"
+        #     else:
+        #         print "NODE NOT THERE, ADDING"
+        #         # IN THIS CASE JUST REGISTER IS WITH THE NODE DICTIONARY
+        # else:
+        #     print "ALREADY THERE"
 
 
         # NEED TO ADD ACTIONS TO THE PROTOCOL
@@ -862,7 +864,10 @@ class Step(NodeBase):
         self.protocol.add_node(self)
         # else:
         #     print "ALREADY THERE"
+<<<<<<< HEAD
 
+=======
+>>>>>>> resolved conflict
 
 
 
