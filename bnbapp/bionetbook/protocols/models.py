@@ -19,9 +19,10 @@ from organization.models import Organization
 from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
+from protocols.utils import MACHINE_VERBS
 
 COMPONENT_KEY = "components"
-MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
+#MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 
 class Protocol(TimeStampedModel):
 
@@ -834,6 +835,16 @@ class Action(NodeBase):
         else:
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
+    def has_components(self):
+        return True
+
+    def has_machine(self):
+        return True
+
+    def has_thermocycler(self):
+        return True
+
+
 
 class Step(NodeBase):
 
@@ -864,13 +875,6 @@ class Step(NodeBase):
         self.protocol.add_node(self)
         # else:
         #     print "ALREADY THERE"
-<<<<<<< HEAD
-
-=======
->>>>>>> resolved conflict
-
-
-
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
