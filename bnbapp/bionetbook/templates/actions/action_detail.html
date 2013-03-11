@@ -37,7 +37,7 @@ Action: {{ action.title }}
         {% endif %}
         {% if action.has_machine %}
         <h2>Machine</h2>
-        MACHINE
+        {% object_data_table action.machine %}
         <a class="btn btn-warning" href="#">Add Machine</a>
         {% endif %}
         {% if action.has_thermocycler %}
