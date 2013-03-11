@@ -13,37 +13,18 @@ class CompareSelectView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(CompareSelectView, self).get_context_data(**kwargs)
-
-        context['protocols'] = Protocol.objects.all()
-
+        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY CAN EDIT
         return context
-
-
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
-        #self.object = self.get_object()
-        #context = self.get_context_data(**kwargs)
-
-        # args = self.get_form_kwargs()
-        # form = self.form_class(request.POST, prefix=self.node_type)
-        # verb_key = context[self.node_type]['verb']
-        # verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
-
-        print request.POST
-
         protocol_a = Protocol.objects.get(pk=request.POST['protocol_a'][0])
         protocol_b = Protocol.objects.get(pk=request.POST['protocol_b'][0])
 
-        # url = reverse(self.success_url, kwargs=self.get_url_args())
+        # NEED TO ADD CHECK TO MAKE SURE USER CAN SEE THESE PROTOCOLS
+
         url = reverse("compare_layers", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug, 'layers':'none'})
-
         return HttpResponseRedirect(url)
-
-    # FORM TWO LISTS
-
-    # REDIRECT FORM SUBMIT TO URL
-
 
 
 
