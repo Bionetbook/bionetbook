@@ -13,7 +13,7 @@ class CompareSelectView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(CompareSelectView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY CAN EDIT
+        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO SEE
         return context
 
     def post(self, request, *args, **kwargs):
