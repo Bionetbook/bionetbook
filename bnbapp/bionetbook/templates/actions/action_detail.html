@@ -32,7 +32,9 @@ Action: {{ action.title }}
     <div class="span6">
         {% if action.has_components %}
         <h2>Components</h2>
-        TABLE
+        {% for component in action.components %}
+          {% object_data_table component %}
+        {% endfor %}
         <a class="btn btn-warning" href="#">Add Component</a>
         {% endif %}
         {% if action.has_machine %}
@@ -42,7 +44,9 @@ Action: {{ action.title }}
         {% endif %}
         {% if action.has_thermocycler %}
         <h2>Thermocycler</h2>
-        TABLE
+        {% for thermocycler in action.thermocycler %}
+          {% object_data_table thermocycler %}
+        {% endfor %}
         <a class="btn btn-warning" href="#">Add Thermocycler</a>
         {% endif %}
     </div>
