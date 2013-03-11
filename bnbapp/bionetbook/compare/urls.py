@@ -3,6 +3,8 @@ from compare import views
 # from protocols import views
 
 urlpatterns = patterns("",
+    url(regex=r'^select/$', view=views.CompareSelectView.as_view(), name='compare_select'),
+
     #url(regex=r'^(?P<protocol_slug>[-\w]+).svg$', view=protocol_plot, name='compare_protocol_plot'),
     # url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.CompareBaseView.as_view(), name='compare_protocols'),
     # url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+).(?P<format>[-\w]+)$', view=views.CompareBaseGraphicView.as_view(), name='compare_protocol_graphic'),
@@ -17,3 +19,5 @@ urlpatterns = patterns("",
     # url(regex=r'^(?P<protocol_a_slug>[-\w]+)/base/single/(?P<layers>[-\w]+).(?P<format>[-\w]+)$', view=views.SingleBaseGraphicView.as_view(), name='draw_single_base_graphic')
 
 )
+
+
