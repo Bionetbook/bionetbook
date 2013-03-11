@@ -836,13 +836,13 @@ class Action(NodeBase):
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
     def has_components(self):
-        return self.verb in COMPONENT_VERBS
+        return self['verb'] in COMPONENT_VERBS
 
     def has_machine(self):
-        return self.verb in MACHINE_VERBS
+        return self['verb'] in MACHINE_VERBS
 
     def has_thermocycler(self):
-        return self.verb in THERMOCYCLER_VERBS
+        return self['verb'] in THERMOCYCLER_VERBS
 
 
 class Step(NodeBase):
