@@ -439,7 +439,7 @@ class NodeBase(dict):
             self.node = node
 
         def get_all_field_names(self):
-            result = self.node.keys()
+            result = self.node.keys()   #[x for x in self.node.keys() if x not in ['components', 'machine', 'termocycler'] ]
             result.sort()
             return result
 
@@ -836,13 +836,19 @@ class Action(NodeBase):
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
     def has_components(self):
-        return self['verb'] in COMPONENT_VERBS
+        if 'verb' in self:
+            return self['verb'] in COMPONENT_VERBS
+        return False
 
     def has_machine(self):
-        return self['verb'] in MACHINE_VERBS
+        if 'verb' in self:
+            return self['verb'] in MACHINE_VERBS
+        return False
 
     def has_thermocycler(self):
-        return self['verb'] in THERMOCYCLER_VERBS
+        if 'verb' in self:
+            return self['verb'] in THERMOCYCLER_VERBS
+        return False
 
 
 class Step(NodeBase):
