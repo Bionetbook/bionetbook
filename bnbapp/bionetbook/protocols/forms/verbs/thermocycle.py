@@ -1,11 +1,11 @@
 from protocols.forms import forms
 
 
-class ThermalCycleForm(forms.VerbForm):
+class ThermocycleForm(forms.VerbForm):
 
-    name = "Thermal Cycle"
-    slug = "thermal-cycle"
-    has_machine = True
+    name = "Thermmocycle"
+    slug = "thermocycle"
+    has_thermocycler = True
 
     min_temp = forms.IntegerField()
     max_temp = forms.IntegerField()
