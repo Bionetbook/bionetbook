@@ -9,10 +9,16 @@
     </ul>
 {% endblock %}
 
-{% block page_title %}Protocol List 
+{% block page_title %}Protocol List
 {% endblock %}
 
 {% block content %}
+<div class=row>
+    <div class="span12" style="text-align: right">
+        <a class="btn btn-success" href="{% url compare_select %}">Compare Protocols</a>
+        <hr>
+    </div>
+</div>
 {% for object in object_list %}
 {% with profile=object.owner.get_profile %}
 <div class="row">
