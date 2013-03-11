@@ -19,7 +19,7 @@ from organization.models import Organization
 from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -836,14 +836,13 @@ class Action(NodeBase):
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
     def has_components(self):
-        return True
+        return self.verb in COMPONENT_VERBS
 
     def has_machine(self):
-        return True
+        return self.verb in MACHINE_VERBS
 
     def has_thermocycler(self):
-        return True
-
+        return self.verb in THERMOCYCLER_VERBS
 
 
 class Step(NodeBase):

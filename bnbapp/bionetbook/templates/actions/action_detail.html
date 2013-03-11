@@ -30,7 +30,21 @@ Action: {{ action.title }}
         <p></p>
     </div>
     <div class="span6">
-        
+        {% if action.has_components %}
+        <h2>Components</h2>
+        TABLE
+        <a class="btn btn-warning" href="#">Add Component</a>
+        {% endif %}
+        {% if action.has_machine %}
+        <h2>Machine</h2>
+        MACHINE
+        <a class="btn btn-warning" href="#">Add Machine</a>
+        {% endif %}
+        {% if action.has_thermocycler %}
+        <h2>Thermocycler</h2>
+        TABLE
+        <a class="btn btn-warning" href="#">Add Thermocycler</a>
+        {% endif %}
     </div>
   </div>
 {% endblock %}
