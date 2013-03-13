@@ -279,9 +279,11 @@ class Protocol(TimeStampedModel):
             for action in step['actions']:
                 result[action['objectid']] = action
 
-                for key in ['thermocycle', 'component']:
+                for key in ['thermocycle', 'components']:
                     if key in action:
+                        print key
                         for item in action[key]:
+                            # print item
                             result[item['objectid']] = item
 
                 if 'machine' in action:
@@ -635,17 +637,30 @@ class Phase(NodeBase):
 
 class Thermocycle(NodeBase):
         
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        #self.parent = parent
+        super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+        # if 'reagent_name' in self:
+        #     self['name'] = self.pop("reagent_name")
+        
     def get_absolute_url(self):
-        return "#NDF"
-        #return reverse("thermocycle_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'thermocycler_slug':self.slug  })
+        return reverse("thermo_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.parent.step.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
 
-    def update_data(self, data={}, **kwargs):
-        super(Thermocycle, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        if 'phases' in data:
-            self['phases'] = [ Phase(self.protocol, parent=self, data=a) for a in data['phases'] ]
-        else:
-            self['phases'] = []
+
+
+    # def get_absolute_url(self):
+    #     return "#NDF"
+    #     #return reverse("thermocycle_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'thermocycler_slug':self.slug  })
+
+    # def update_data(self, data={}, **kwargs):
+    #     super(Thermocycle, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    #     if 'phases' in data:
+    #         self['phases'] = [ Phase(self.protocol, parent=self, data=a) for a in data['settings'] ]
+    #     else:
+    #         self['phases'] = []
 
     @property
     def label(self):
@@ -675,44 +690,57 @@ class Thermocycle(NodeBase):
 
             '''
         output = {}
-        tmp_output = {}
-        output['name'] = self['name']
-        output['phases'] = []
-        output['cycles'] = self['cycles']
-        parent = self.parent['objectid']
-
-        thermo_ids = [r['objectid'] for r in self.protocol.nodes[parent].children]
-        current = thermo_ids.index(self['objectid'])
         
-        if current == 0 and len(thermo_ids) == 1:
-            output['previous_substep'] = ''
-            output['next_substep'] = ''
+        for i in self.label:
+            if 'Celsius' in i or 'degre' in i or 'C' in i:
+                output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
+            if 'minute' in i or 'second' in i or 'hour' in i:
+                output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+            if 'cycle' in i or 'cycles' in i :
+                output['cycle'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])    
 
-        if current == 0 and len(thermo_ids) >1:
-            output['previous_substep'] = ''
-            output['next_substep'] = thermo_ids[1]
+        return output     
 
-        if current > 0 and current < len(thermo_ids) -1 :
-            output['previous_substep'] = thermo_ids[current - 1]
-            output['next_substep'] = thermo_ids[current + 1]
+        # output = {}
+        # tmp_output = {}
+        # output['name'] = self['name']
+        # output['phases'] = []
+        # output['cycles'] = self['cycles']
+        # parent = self.parent['objectid']
 
-        if current == len(thermo_ids):
-            output['previous_substep'] = thermo_ids[current-1]
-            output['next_substep'] = ''
 
-        # for i in thermo_ids:
-        #     output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
-        for j in self['settings']:
-            tmp_output[j['name']] = settify(j)
-            stage = {}
-            stage[j['name']] = {}
-            for ii in tmp_output[j['name']]:     
-                if 'Celsius' in ii or 'degre' in ii:
-                    stage[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
-                if 'minute' in ii or 'second' in ii or 'hour' in ii:
-                    stage[j['name']]['time'] = str(ii) #str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+        # thermo_ids = [r['objectid'] for r in self.protocol.nodes[parent].children]
+        # current = thermo_ids.index(self['objectid'])
+        
+        # if current == 0 and len(thermo_ids) == 1:
+        #     output['previous_substep'] = ''
+        #     output['next_substep'] = ''
 
-            output['phases'].append(stage)        
+        # if current == 0 and len(thermo_ids) >1:
+        #     output['previous_substep'] = ''
+        #     output['next_substep'] = thermo_ids[1]
+
+        # if current > 0 and current < len(thermo_ids) -1 :
+        #     output['previous_substep'] = thermo_ids[current - 1]
+        #     output['next_substep'] = thermo_ids[current + 1]
+
+        # if current == len(thermo_ids):
+        #     output['previous_substep'] = thermo_ids[current-1]
+        #     output['next_substep'] = ''
+
+        # # for i in thermo_ids:
+        # #     output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
+        # for j in self['settings']:
+        #     tmp_output[j['name']] = settify(j)
+        #     stage = {}
+        #     stage[j['name']] = {}
+        #     for ii in tmp_output[j['name']]:     
+        #         if 'Celsius' in ii or 'degre' in ii:
+        #             stage[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
+        #         if 'minute' in ii or 'second' in ii or 'hour' in ii:
+        #             stage[j['name']]['time'] = str(ii) #str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
+
+        #     output['phases'].append(stage)        
 
         return output           
     
