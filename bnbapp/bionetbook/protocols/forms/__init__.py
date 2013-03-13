@@ -23,9 +23,9 @@ class ActionForm(NodeForm):
 
     name = forms.CharField(max_length=100, required=False, help_text = 'Do not fill this in')
     duration = forms.IntegerField()
-    time_units = forms.CharField(required=False)
+    time_units = forms.CharField(initial='seconds', required=False)
     duration_comment = forms.CharField(required=False)
-    tube = forms.CharField(required = False)
+    tube = forms.CharField(initial ='Name for tube: Sample | Mix | Buffer', required = False)
 
 
 class VerbForm(forms.Form):
