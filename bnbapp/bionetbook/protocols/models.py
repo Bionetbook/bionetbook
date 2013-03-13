@@ -697,7 +697,13 @@ class Thermocycle(NodeBase):
             if 'minute' in i or 'second' in i or 'hour' in i:
                 output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
             if 'cycle' in i or 'cycles' in i :
-                output['cycle'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])    
+                w = re.search(r'\d+', i)
+                q = re.search(r'\w+(?<=_)\w+', i)
+                out = w.group()
+                if q:
+                    out = out + ' ' +  q.group()
+
+                output['cycle'] =  out#str(re.findall(r'\d+',i)) #+ str(re.findall(r'\D+',i)[0])    
 
         return output     
 
