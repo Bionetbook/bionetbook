@@ -119,14 +119,14 @@ def settify(settings_dict, shorthand = True):
     if cycle:
         
         plural = ' cycles'
-        
+
         if 'cycle_to' in cycle and 'cycles' in cycle:
             if cycle['cycles'] == '1':
                 plural = ' cycle'
+            
+            units = cycle['cycles'] + plural + ' ' + cycle['cycle_to'] 
 
-            units = cycle['cycle_to'] + cycle['cycles'] + plural
-
-        if 'cycles' in cycle:
+        if 'cycles' in cycle and 'cycle_to' not in cycle:
             if cycle['cycles'] == '1':
                 plural = ' cycle'
             
