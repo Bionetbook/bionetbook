@@ -44,6 +44,7 @@ def settify(settings_dict, shorthand = True):
     temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k and v != None)
     time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k and v != None)
     speed = dict((k, v) for k, v in settings_dict.iteritems() if 'speed' in k and v != None)
+    cycle = dict((k, v) for k, v in settings_dict.iteritems() if 'cycle' in k and v != None)
     comment = dict((k, v) for k, v in settings_dict.iteritems() if 'comment' in k or 'why' in k and v != None )
     if temp: 
         
@@ -114,6 +115,26 @@ def settify(settings_dict, shorthand = True):
                 units = str(units) + ', ' + 'Remark: ' + speed['speed_comment']    
         
         settings.append(units)    
+
+    if cycle:
+        
+        plural = ' cycles'
+        
+        if 'cycle_to' in cycle and 'cycles' in cycle:
+            if cycle['cycles'] == '1':
+                plural = ' cycle'
+
+            units = cycle['cycle_to'] + cycle['cycles'] + plural
+
+        if 'cycles' in cycle:
+            if cycle['cycles'] == '1':
+                plural = ' cycle'
+            
+            units = cycle['cycles'] + plural
+
+        settings.append(units)        
+
+
 
     if shorthand == True and units != None:
         for units in settings:
