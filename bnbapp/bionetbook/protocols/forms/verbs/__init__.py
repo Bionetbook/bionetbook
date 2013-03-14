@@ -39,7 +39,7 @@ from let_sit_stand import LetSitStandForm
 from load import LoadForm
 from measure import MeasureForm
 from melt import MeltForm
-from microcentrifuge import MicrocentrifugeForm
+# from microcentrifuge import MicrocentrifugeForm
 from mix import MixForm
 from open_ import OpenForm
 from pass_ import PassForm
