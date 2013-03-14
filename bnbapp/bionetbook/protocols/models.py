@@ -281,9 +281,7 @@ class Protocol(TimeStampedModel):
 
                 for key in ['thermocycle', 'components']:
                     if key in action:
-                        print key
                         for item in action[key]:
-                            # print item
                             result[item['objectid']] = item
 
                 if 'machine' in action:
@@ -689,23 +687,26 @@ class Thermocycle(NodeBase):
                 cycles: '1', before: 'rfrffr', 'after': 'gerrrg'}, }    
 
             '''
-        output = {}
         
-        for i in self.label:
-            if 'Celsius' in i or 'degre' in i or 'C' in i:
-                output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-            if 'minute' in i or 'second' in i or 'hour' in i:
-                output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
-            if 'cycle' in i or 'cycles' in i :
-                w = re.search(r'\d+', i)
-                q = re.search(r'\w+(?<=_)\w+', i)
-                out = w.group()
-                if q:
-                    out = out + ' ' +  q.group()
+        tmp = settify(self, summary = True)
+        tmp['name'] = self['name']          
+        # output = {}
+        
+        # for i in self.label:
+        #     if 'Celsius' in i or 'degre' in i or 'C' in i:
+        #         output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
+        #     if 'minute' in i or 'second' in i or 'hour' in i:
+        #         output['time'] = str(re.findall(r'\d+',i)[0]) +'s'#+ str(re.findall(r'\D+',i)[0])
+        #     if 'cycle' in i or 'cycles' in i :
+        #         w = re.search(r'\d+', i)
+        #         q = re.search(r'\w+(?<=_)\w+', i)
+        #         out = w.group()
+        #         if q:
+        #             out = out + ' ' +  q.group()
 
-                output['cycle'] =  out#str(re.findall(r'\d+',i)) #+ str(re.findall(r'\D+',i)[0])    
+        #         output['cycle'] =  out#str(re.findall(r'\d+',i)) #+ str(re.findall(r'\D+',i)[0])    
 
-        return output     
+        return tmp     
 
         # output = {}
         # tmp_output = {}
