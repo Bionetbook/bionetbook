@@ -609,28 +609,28 @@ class Machine(NodeBase):
         return output   
 
 
-class Subphase(NodeBase):
+# class Subphase(NodeBase):
 
-    default_attrs = ['name', 'objectid', 'time', 'temperature']
+#     default_attrs = ['name', 'objectid', 'time', 'temperature']
 
-    def get_absolute_url(self):
-        return "#NDF"
+#     def get_absolute_url(self):
+#         return "#NDF"
 
 
-class Phase(NodeBase):
+# class Phase(NodeBase):
 
-    default_attrs = ['name', 'objectid', 'cycles', 'before', 'after']
+#     default_attrs = ['name', 'objectid', 'cycles', 'before', 'after']
 
-    def get_absolute_url(self):
-        return "#NDF"
+#     def get_absolute_url(self):
+#         return "#NDF"
 
-    def update_data(self, data={}, **kwargs):
-        super(Phase, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+#     def update_data(self, data={}, **kwargs):
+#         super(Phase, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        if 'subphases' in data:
-            self['subphases'] = [ Subphase(self.protocol, parent=self, data=a) for a in data['subphases'] ]
-        else:
-            self['subphases'] = []
+#         if 'subphases' in data:
+#             self['subphases'] = [ Subphase(self.protocol, parent=self, data=a) for a in data['subphases'] ]
+#         else:
+#             self['subphases'] = []
 
 
 class Thermocycle(NodeBase):
@@ -749,7 +749,7 @@ class Thermocycle(NodeBase):
 
         #     output['phases'].append(stage)        
 
-        return output           
+        # return output           
     
 
 

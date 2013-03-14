@@ -470,21 +470,21 @@ class Grapher(object):
                     thermo_a = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
                     thermo_b = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
                     
-                    components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[verb_a].children) - set(r['objectid'] for r in self.protocol_B.nodes[verb_b].children)
+                    # components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[verb_a].children) - set(r['objectid'] for r in self.protocol_B.nodes[verb_b].children)
 
-                    if components_list_diff:
-                        pass
+                    # if components_list_diff:
+                    #     pass
                         # add a function that can tell the difference between different names
                     
-                    else:
-                        scores = [] # tracks the error rate of a matching components
-                        content = [] # gets the html strings
-                        for m,n in zip(thermo_a,thermo_b): 
-                            d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
-                            scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-                            # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                            tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), thermocycle = True) 
-                            content.append(tmp)
+                    # else:
+                    scores = [] # tracks the error rate of a matching components
+                    content = [] # gets the html strings
+                    for m,n in zip(thermo_a,thermo_b): 
+                        d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+                        scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+                        # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+                        tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), thermocycle = True) 
+                        content.append(tmp)
                             
                     # --->  create a compare-graph-object that will apear between the 2 base diagrams:
                     self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)

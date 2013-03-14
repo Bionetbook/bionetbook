@@ -22,10 +22,17 @@ def shorten(units, reverse = False):
             'Units/microliter': 'U/ul',
             'Units': 'U',
             'X':'X',
-            'minutes':'min', 
-            'seconds':'sec',    
+            'minutes':'m', 
+            'minute':'m', 
+            'mins':'m', 
+            'minu':'m', 
+            'seconds':'s',    
+            'second':'s',    
+            'sec':'s',    
             'hour':'hr',    
+            'hours':'hr',    
             'day':'d',  
+            'days':'d',  
             'celsius':'C', 
             'farenheit':'F', 
             'kelvin':'K', 
@@ -34,7 +41,12 @@ def shorten(units, reverse = False):
         if reverse:
             pass
         else:
-            return d[units]
+            try:
+                short_units = d[units]
+            except KeyError:
+                short_units = units
+
+            return short_units
 
 def settify(settings_dict, shorthand = True, summary = False):
 
@@ -77,7 +89,9 @@ def settify(settings_dict, shorthand = True, summary = False):
         if 'temp_comment' in temp:
                 out = str(out) + ', ' + 'Remark: ' + temp['temp_comment']    
 
-
+        if shorthand:
+            units = shorten(units)
+        
         if summary:
             output['temp'] = [numbers, units]
 
@@ -113,7 +127,9 @@ def settify(settings_dict, shorthand = True, summary = False):
         if 'time_comment' in time:
                 out = str(out) + ', ' + 'Remark: ' + time['time_comment']    
 
-
+        if shorthand:
+            units = shorten(units)        
+        
         if summary:
             output['time'] = [numbers, units]
 
@@ -148,7 +164,9 @@ def settify(settings_dict, shorthand = True, summary = False):
         if 'speed_comment' in speed:
                 out = str(out) + ', ' + 'Remark: ' + speed['speed_comment']    
 
-
+        if shorthand:
+            units = shorten(units)        
+                
         if summary:
             output['speed'] = [numbers, units]
 
@@ -178,7 +196,7 @@ def settify(settings_dict, shorthand = True, summary = False):
             units = plural
 
         if summary:
-            output['cycle'] = [numbers, cycle.get('cycle_to', None)]
+            output['cycle'] = [numbers, cycle.get('cycle_to', '')]
 
         else:    
             settings.append(out)    
