@@ -36,87 +36,129 @@ def shorten(units, reverse = False):
         else:
             return d[units]
 
-def settify(settings_dict, shorthand = True):
+def settify(settings_dict, shorthand = True, summary = False):
 
     settings = []
     units = ''
+    output = {}
 
     temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k and v != None)
     time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k and v != None)
     speed = dict((k, v) for k, v in settings_dict.iteritems() if 'speed' in k and v != None)
     cycle = dict((k, v) for k, v in settings_dict.iteritems() if 'cycle' in k and v != None)
     comment = dict((k, v) for k, v in settings_dict.iteritems() if 'comment' in k or 'why' in k and v != None )
+    
+
     if temp: 
-        
+        units = None
+        numbers = None
+        out = None
+
+        if 'temp_units' in temp:
+            units = str(temp['temp_units'])
+        # else: 
+        #     units = 'Celsius'
+
         if 'max_temp' in temp and 'min_temp' in temp:
             
             if temp['min_temp'] == temp['max_temp']:
-                units =  temp['max_temp']
+                numbers =  temp['max_temp']
             else:
-                units =  temp['min_temp'] + '-' + temp['max_temp']        
+                numbers =  temp['min_temp'] + '-' + temp['max_temp']        
         else:
             if 'max_temp' in temp:
-                 units = temp['max_temp']
+                 numbers = temp['max_temp']
 
             if 'min_temp' in temp:
-                 units = temp['min_temp']  
-        
-        if 'temp_units' in temp:
-            units = str(units) + ' ' + str(temp['temp_units'])
+                 numbers = temp['min_temp']  
+
+        out = str(numbers) + ' ' + units
             
         if 'temp_comment' in temp:
-                units = str(units) + ', ' + 'Remark: ' + temp['temp_comment']    
-        
-        settings.append(units) 
+                out = str(out) + ', ' + 'Remark: ' + temp['temp_comment']    
+
+
+        if summary:
+            output['temp'] = [numbers, units]
+
+        else:    
+            settings.append(out)
+
 
     if time: 
+        units = None
+        numbers = None
+        out = None
         
+        if 'time_units' in time:
+            units = str(time['time_units'])
+        # else: 
+        #     units = 'Celsius'
+
         if 'max_time' in time and 'min_time' in time:
             
             if time['min_time'] == time['max_time']:
-                units =  time['max_time']
+                numbers =  time['max_time']
             else:
-                units =  time['min_time'] + '-' + time['max_time']        
+                numbers =  time['min_time'] + '-' + time['max_time']        
         else:
             if 'max_time' in time:
-                 units = time['max_time']
+                 numbers = time['max_time']
 
             if 'min_time' in time:
-                 units = time['min_time']  
+                 numbers = time['min_time']  
 
-        
-        if 'time_units' in time and time['time_units'] != None:
-            units = str(units) + ' ' + time['time_units']
-        
-        if 'time_comment' in time and time['time_comment'] != None:
-                units = str(units) + ', ' + 'Remark: ' + time['time_comment']    
-        
-        settings.append(units) 
+        out = str(numbers) + ' ' + units
+            
+        if 'time_comment' in time:
+                out = str(out) + ', ' + 'Remark: ' + time['time_comment']    
+
+
+        if summary:
+            output['time'] = [numbers, units]
+
+        else:    
+            settings.append(out) 
 
     if speed: 
+        units = None
+        numbers = None
+        out = None
         
+        if 'speed_units' in speed:
+            units = str(speed['speed_units'])
+        else: 
+            units = 'RPM'
+
         if 'max_speed' in speed and 'min_speed' in speed:
             
             if speed['min_speed'] == speed['max_speed']:
-                units =  speed['max_speed']
+                numbers =  speed['max_speed']
             else:
-                units =  speed['min_speed'] + '-' + speed['max_speed']        
+                numbers =  speed['min_speed'] + '-' + speed['max_speed']        
         else:
             if 'max_speed' in speed:
-                 units = speed['max_speed']
+                 numbers = speed['max_speed']
 
             if 'min_speed' in speed:
-                 units = speed['min_speed']  
-        
-        if 'speed_units' in speed and speed['speed_units'] != None:
-            units = str(units) + ' ' + speed['speed_units']
+                 numbers = speed['min_speed']  
+
+        out = str(numbers) + ' ' + units
             
-        if 'speed_comment' in speed and speed['speed_comment'] != None:
-                units = str(units) + ', ' + 'Remark: ' + speed['speed_comment']    
-        
-        settings.append(units)    
+        if 'speed_comment' in speed:
+                out = str(out) + ', ' + 'Remark: ' + speed['speed_comment']    
+
+
+        if summary:
+            output['speed'] = [numbers, units]
+
+        else:    
+            settings.append(out)    
 
     if cycle:
+        units = None
+        numbers = None
+        out = None
         
         plural = ' cycles'
 
@@ -124,30 +166,40 @@ def settify(settings_dict, shorthand = True):
             if cycle['cycles'] == '1':
                 plural = ' cycle'
             
-            units = cycle['cycles'] + plural + ' ' + cycle['cycle_to'] 
+            numbers = str(cycle['cycles']) 
+            units = plural
+            cycle_to = cycle['cycle_to'] 
 
         if 'cycles' in cycle and 'cycle_to' not in cycle:
             if cycle['cycles'] == '1':
                 plural = ' cycle'
             
-            units = cycle['cycles'] + plural
+            numbers = str(cycle['cycles']) 
+            units = plural
 
-        settings.append(units)        
+        if summary:
+            output['cycle'] = [numbers, cycle.get('cycle_to', None)]
+
+        else:    
+            settings.append(out)    
 
 
 
-    if shorthand == True and units != None:
-        for units in settings:
+    if shorthand == True and out != None:
+        for out in settings:
 
-            units = units.replace('minutes','min') 
-            units = units.replace('seconds','sec')    
-            units = units.replace('hour','hr')    
-            units = units.replace('day','d')  
-            units = units.replace('celsius','C') 
-            units = units.replace('farenheit','F') 
-            units = units.replace('kelvin','K')  
+            out = out.replace('minutes','min') 
+            out = out.replace('seconds','sec')    
+            out = out.replace('hour','hr')    
+            out = out.replace('day','d')  
+            out = out.replace('celsius','C') 
+            out = out.replace('farenheit','F') 
+            out = out.replace('kelvin','K')  
        
-    return settings
+    if summary:
+        return output
+    else:
+        return settings
 
 
 def unify(units_dict, shorthand = True, summary = False):

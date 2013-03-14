@@ -73,8 +73,8 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 		_vol = ''
 		_mass = ''
 
-		if x['name'].lower() == 'total volume':
-			_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
+		# if x['name'].lower() == 'total volume':
+		# 	_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
 
 		if 'conc' in changed:
 			_conc = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['conc'][0]) + str(x['conc'][1]), str(y['conc'][0]) + str(y['conc'][1]))  #<TD>%s</TD><TD>%s</TD>
@@ -98,6 +98,41 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 		_name = '<TR><TD>%s</TD>' %x['name']
 
 		return  _name + _vol + _conc + _mass + '</TR>'
+
+	if 'thermocycle' in kwargs: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+		''' assuming that the objectids of the reagents are the same'''
+
+		# count how many changes each reagent has, if 2 reagent names are different, write them last 
+		_temp = ''
+		_time = ''
+		_cycles = ''
+
+		# if x['name'].lower() == 'total volume':
+		# 	_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
+
+		if 'temp' in changed:
+			_temp = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['temp'][0]) + str(x['temp'][1]), str(y['temp'][0]) + str(y['temp'][1]))  #<TD>%s</TD><TD>%s</TD>
+			# print 'CHANGED CONC'
+		if 'temp' in unchanged and 'temp' not in changed:
+			_temp = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['temp'][0]) + str(x['temp'][1])) #<TD colspan="2">%s</TD> 
+			# print 'UNCHANGED CONC'
+		
+
+		if 'time' in changed and 'time' not in unchanged:
+			_time = '<TD color="#B82F3"><font color="#B82F3">%s</font></TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(str(x['time'][0]) + str(x['time'][1]), str(y['time'][0]) + str(y['time'][1])) #<TD>%s</TD><TD>%s</TD>
+		if 'time' in unchanged and 'time' not in changed:
+			_time = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(str(x['time'][0]) + str(x['time'][1]))	#<TD colspan="2">%s</TD>
+
+
+		if 'cycle' in changed and 'cycle' not in unchaged:
+			_cycle = '<TD color="#B82F3"><font color="#B82F3">%s</font>%</TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(' '.join(x['cycle']) , ' '.join(y['cycle']) ) # <TD>%s</TD><TD>%s</TD>
+		if 'cycle' in unchanged and 'cycle' not in unchanged:
+			_cycle = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(' '.join(x['cycle'])) # <TD colspan="2">%s</TD>
+
+		_name = '<TR><TD>%s</TD>' %x['name']
+
+		return  _name + _temp + _time + _cycle + '</TR>'
+	
 
 
 def add_html_cell(m):
