@@ -460,7 +460,7 @@ class Grapher(object):
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
 
-            if 'thermo' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
+            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
 
 
                 if len(self.protocol_A.nodes[verb_a]['thermocycle']) == 0:

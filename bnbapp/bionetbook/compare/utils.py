@@ -105,7 +105,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 		# count how many changes each reagent has, if 2 reagent names are different, write them last 
 		_temp = ''
 		_time = ''
-		_cycles = ''
+		_cycle = ''
 
 		# if x['name'].lower() == 'total volume':
 		# 	_name = '<HR><TR><TD>%s</TD><TD>%s</TD></TR>'%(x['name'], str(x['vol'][0]) ) # + str(['vol'][1])
@@ -125,9 +125,9 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
 
 		if 'cycle' in changed and 'cycle' not in unchaged:
-			_cycle = '<TD color="#B82F3"><font color="#B82F3">%s</font>%</TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(' '.join(x['cycle']) , ' '.join(y['cycle']) ) # <TD>%s</TD><TD>%s</TD>
-		if 'cycle' in unchanged and 'cycle' not in unchanged:
-			_cycle = '<TD color="#C0C0C0" colspan="2">%s</TD>'%(' '.join(x['cycle'])) # <TD colspan="2">%s</TD>
+			_cycle = '<TD color="#B82F3"><font color="#B82F3">%s</font>%</TD><TD color="#015666"><font color="#015666">%s</font></TD>'%(' '.join( filter( None, x['cycle']) ), ' '.join(filter(None, y['cycle'])) ) # <TD>%s</TD><TD>%s</TD>
+		if 'cycle' in unchanged and 'cycle' not in changed:
+			_cycle = '<TD color="#C0C0C0" colspan="2">%s</TD>'%( ' '.join(filter(None, x['cycle'])) ) # <TD colspan="2">%s</TD>
 
 		_name = '<TR><TD>%s</TD>' %x['name']
 
