@@ -4,6 +4,7 @@ from base import *
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 1025
 
+# git push git@heroku.com:bnbapp.git master
 
 DATABASES = {
     'default': {
