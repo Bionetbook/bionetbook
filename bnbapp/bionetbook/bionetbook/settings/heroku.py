@@ -1,6 +1,6 @@
 from base import *
-import os
-import dj_database_url
+#import os
+#import dj_database_url
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -26,7 +26,18 @@ MANAGERS = ADMINS
 
 # DATABASES = postgresify()
 
-DATABASES['default'] =  dj_database_url.config()
+#DATABASES['default'] =  dj_database_url.config()
+
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': 'df7giq33m92l95',
+    'HOST': 'ec2-54-243-228-241.compute-1.amazonaws.com',
+    'PORT': 5432,
+    'USER': 'dukfffcckafiag',
+    'PASSWORD': '3XEgDlP1SebdJen-p59kSNSnbP'
+  }
+}
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
