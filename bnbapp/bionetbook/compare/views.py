@@ -460,84 +460,133 @@ class Grapher(object):
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
 
-            if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers:
-                import itertools
-                # generate the diff content:  
+            if 'thermo' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
 
-                # get all thermo children:
-                phases_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
-                phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
 
-                match = set(phases_A) - set(phases_B)
-                if len(match) == 0: 
-                # compare nested thermo objects:
-                    table = []
-                    for thermo in phases_A:
-                        job_A = self.protocol_A.nodes[thermo].summary
-                        job_B = self.protocol_B.nodes[thermo].summary
-                        d = DictDiffer(job_A, job_B)
-                        if 'phases' in d.changed() or 'cycles' in d.changed():
-                            # go through all items in both phases
-                            it = itertools.izip(job_A['phases'], job_B['phases']) 
-                            
-                            for i,j in it: # getting the subphase name that is different
-                                subphase_A = i
-                                subphase_B = j
-                                f = DictDiffer(subphase_A, subphase_B)
-                                if f.changed():
-                                    L = f.changed() 
-                                    
-                                    subphases = {}
-                                    for each_subphase in L:
-                                        # subphases[each_subphase] = [] 
-                                        g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])    
-                                        subphases[each_subphase] = g.changed()
-                                        
-                            
-                            tmp = add_thermo(job_A, job_B, d.changed(), subphases)
-                            table.append(tmp)
-                            continue
-                
-                        if 'name' in d.changed():
-                            print 'name changed'    
+                if len(self.protocol_A.nodes[verb_a]['thermocycle']) == 0:
+                    continue
+                else:
+                    # generate the diff content:   
+                    thermo_a = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
+                    thermo_b = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+                    
+                    components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[verb_a].children) - set(r['objectid'] for r in self.protocol_B.nodes[verb_b].children)
 
-                        else:
-                            tmp = add_thermo(job_A, job_B)
-                            table.append(tmp)
+                    if components_list_diff:
+                        pass
+                        # add a function that can tell the difference between different names
+                    
+                    else:
+                        scores = [] # tracks the error rate of a matching components
+                        content = [] # gets the html strings
+                        for m,n in zip(thermo_a,thermo_b): 
+                            d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+                            scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+                            # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+                            tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), thermocycle = True) 
+                            content.append(tmp)
                             
-                    table = merge_table_pieces(table, 'thermocycle')        
-                            
-                 # --->  create a compare-graph-object that will apear between the 2 base diagrams:
+                    # --->  create a compare-graph-object that will apear between the 2 base diagrams:
                     self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
                     self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
                     verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
                     verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
 
-                    diff_object = self.protocol_A.nodes[phases_A[0]].pk 
-                    ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-                    eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
+                    diff_object = self.protocol_A.nodes[thermo_a[0]].pk 
+                    ea = self.agraph.add_edge(verb_object_b, diff_object)
+                    eb = self.agraph.add_edge(verb_object_a, diff_object)     
                     
+
                     if 'steps' in layers:
                         self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
                     else:    
                         N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
-
-                    
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
-                    s.attr['label'] = (table)
+                    s.attr['label'] = merge_table_pieces(content, 'thermocycle')
 
-            else:
-                if 'steps' in layers:
-                    self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
-                    self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
-                    verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
-                    verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
-                    self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b)
+            # if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers:
+            #     import itertools
+            #     # generate the diff content:  
+
+            #     # get all thermo children:
+            #     phases_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
+            #     phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
+
+            #     match = set(phases_A) - set(phases_B)
+            #     if len(match) == 0: 
+            #     # compare nested thermo objects:
+            #         table = []
+            #         for thermo in phases_A:
+            #             job_A = self.protocol_A.nodes[thermo].summary
+            #             job_B = self.protocol_B.nodes[thermo].summary
+            #             d = DictDiffer(job_A, job_B)
+            #             if 'phases' in d.changed() or 'cycles' in d.changed():
+            #                 # go through all items in both phases
+            #                 it = itertools.izip(job_A['phases'], job_B['phases']) 
+                            
+            #                 for i,j in it: # getting the subphase name that is different
+            #                     subphase_A = i
+            #                     subphase_B = j
+            #                     f = DictDiffer(subphase_A, subphase_B)
+            #                     if f.changed():
+            #                         L = f.changed() 
+                                    
+            #                         subphases = {}
+            #                         for each_subphase in L:
+            #                             # subphases[each_subphase] = [] 
+            #                             g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])    
+            #                             subphases[each_subphase] = g.changed()
+                                        
+                            
+            #                 tmp = add_thermo(job_A, job_B, d.changed(), subphases)
+            #                 table.append(tmp)
+            #                 continue
+                
+            #             if 'name' in d.changed():
+            #                 print 'name changed'    
+
+            #             else:
+            #                 tmp = add_thermo(job_A, job_B)
+            #                 table.append(tmp)
+                            
+            #         table = merge_table_pieces(table, 'thermocycle')        
+                            
+            #      # --->  create a compare-graph-object that will apear between the 2 base diagrams:
+            #         self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+            #         self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+            #         verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+            #         verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+
+            #         diff_object = self.protocol_A.nodes[phases_A[0]].pk 
+            #         ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
+            #         eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
+                    
+            #         if 'steps' in layers:
+            #             self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
+            #         else:    
+            #             N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+
+                    
+            #         # set layout and colors
+            #         s = self.agraph.get_node(diff_object)
+            #         s.attr['shape'] = 'box'
+            #         s.attr['color'] = '#C0C0C0'
+            #         s.attr['style'] = 'rounded'
+            #         s.attr['fontsize'] = '10'
+            #         s.attr['label'] = (table)
+
+            # else:
+            #     if 'steps' in layers:
+            #         self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+            #         self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+            #         verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+            #         verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+            #         self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b)
         
     
         return self 
