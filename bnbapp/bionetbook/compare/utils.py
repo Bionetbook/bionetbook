@@ -189,7 +189,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             _cycle = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-                str(x['cycle'][0]), 
+                str(x['cycle'][0]),
                 str(x['cycle'][1])) 
 
         _name = '<TR><TD>%s</TD>' % x['name'].replace('_',' ')
