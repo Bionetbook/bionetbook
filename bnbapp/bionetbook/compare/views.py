@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from compare.models import ProtocolPlot, DictDiffer
 from django.views.generic import TemplateView, View
-from compare.utils import html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label, add_step_label  
+from compare.utils import html_label_two_protocols, merge_table_pieces, set_title_label, add_step_label  
 from django.core.urlresolvers import reverse
 from protocols.models import Protocol
 
@@ -47,7 +47,7 @@ class CompareBaseView(TemplateView):
         
 
         if 'protocol_b_slug' in kwargs and kwargs['protocol_b_slug'] != 'layers':
-            # print 'WRONG!!!!!!!!!'
+            
             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
             display = 'double'
             arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}            
@@ -127,7 +127,6 @@ class CompareBaseView(TemplateView):
 
 class CompareLayersView(CompareBaseView):
     template_name = "compare/compare_layers.html"
-    print template_name        
 
 
 class CompareLayersGraphicView(View):
@@ -138,7 +137,6 @@ class CompareLayersGraphicView(View):
     
     def get(self, request, *args, **kwargs):
         '''Gets the context data'''
-        # print kwargs
 
         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         if 'protocol_b_slug' in kwargs:
@@ -159,10 +157,6 @@ class CompareLayersGraphicView(View):
         response = HttpResponse(img, mimetype='image/%s' % format)
         # print 'returning ComparelayersGraphicView'
         return response
-
-# class CompareSingleBaseView(CompareBaseView):
-#     print 'CompareSingleBaseView'
-#     template_name = "compare/single_base_default.html"
 
 class CompareSingleLayersView(CompareBaseView):
     
@@ -186,7 +180,7 @@ class CompareSingleLayersGraphicView(View):
         # grapher = Grapher(protocol_a, protocol_b, format)
         grapher = Grapher(protocol_a, format=format)
         base = grapher.draw_two_protocols()
-        layer = base.add_diff_layer(layers = layers)# print kwargs['layers']
+        layer = base.add_diff_layer(layers = layers)
         img = layer.agraph.draw(prog='dot', format="svg")    
 
         if format in ['svg']:
@@ -211,31 +205,12 @@ class Grapher(object):
             self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
         else:
             self.protocol_B = protocol_b    
-            # print protocol_b
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
          # list of actions in pk-objectid format
         # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
         self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
         self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
         self.format = format
-
-    def draw(self):
-
-        # set some default node attributes
-        self.agraph.node_attr['style']='filled'
-        self.agraph.node_attr['shape']='circle'
-        # Define base graph
-
-        # Add edges (and nodes)
-        self.agraph.add_edge(1,2)
-        self.agraph.add_edge(2,3)
-        self.agraph.add_edge(1,3)
-        self.agraph.layout() 
-
-
-
-        return self.agraph.draw(format=self.format) # draw png
-
 
     def draw_two_protocols(self, **kwargs):
         ''' this function draws out 2 base protocols as a sequence of actions. 
@@ -255,7 +230,6 @@ class Grapher(object):
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
-            # print node_object
             n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
 
             # if 'call_for_protocol' in node_object:
@@ -271,10 +245,7 @@ class Grapher(object):
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
         node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
-        n.attr['label']=node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[0]].pk
-        
-        # if 'call_for_protocol' in node_object['verb']:
-        # n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug': node_object['link_to_protocol'] , 'layers': 'machine'})
+        n.attr['label']=node_object['verb'] 
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = '_top'
         
@@ -292,9 +263,6 @@ class Grapher(object):
             n.attr['height'] = '0.2'
             node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
             n.attr['label']= node_object['verb'] 
-
-            # if 'call_for_protocol' in node_object['verb']:
-                # n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug': node_object['link_to_protocol'] , 'layers': 'machine'})
             n.attr['URL'] = node_object.get_absolute_url()    
             n.attr['target'] = '_top'
         # Set the 0'th node in  protocol_A  
@@ -304,10 +272,7 @@ class Grapher(object):
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
         node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
-        n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
-
-        # if 'call_for_protocol' in node_object:
-        #     n.attr['URL'] = n.attr['URL'] = reverse('compare_single_layers', kwargs={'protocol_a_slug':node_object['link_to_protocol'] , 'layers': 'machine'})
+        n.attr['label']= node_object['verb'] 
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = '_top'
         return self
@@ -357,14 +322,6 @@ class Grapher(object):
                 PARENT_B = self.protocol_B.nodes[verb_b].parent['objectid'] 
                 sb.attr['label'] = add_step_label(VERBATIM_B[self.protocol_B.get_steps.index(PARENT_B)], step_layer = True)
 
-            # else: 
-                
-            #     N = self.agraph.add_subgraph([verb_object_a, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc]))     
-    
-
-
-    
-
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
             'machines'
@@ -384,8 +341,7 @@ class Grapher(object):
                 d = DictDiffer (x, y)
                 content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
 
-    
-                # --->  create a compare-graph-object that will apear between the 2 base diagrams:
+
                 self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
                 self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
                 verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
@@ -407,8 +363,6 @@ class Grapher(object):
                 s.attr['fontsize'] = '10'
                 # set label:
                 s.attr['label'] = merge_table_pieces(content)
-            
-                # <---
 
             if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
                 # Validate that reagent objectids are the same:
@@ -508,86 +462,6 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'thermocycle')
-
-            # if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers:
-            #     import itertools
-            #     # generate the diff content:  
-
-            #     # get all thermo children:
-            #     phases_A = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
-            #     phases_B = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
-
-            #     match = set(phases_A) - set(phases_B)
-            #     if len(match) == 0: 
-            #     # compare nested thermo objects:
-            #         table = []
-            #         for thermo in phases_A:
-            #             job_A = self.protocol_A.nodes[thermo].summary
-            #             job_B = self.protocol_B.nodes[thermo].summary
-            #             d = DictDiffer(job_A, job_B)
-            #             if 'phases' in d.changed() or 'cycles' in d.changed():
-            #                 # go through all items in both phases
-            #                 it = itertools.izip(job_A['phases'], job_B['phases']) 
-                            
-            #                 for i,j in it: # getting the subphase name that is different
-            #                     subphase_A = i
-            #                     subphase_B = j
-            #                     f = DictDiffer(subphase_A, subphase_B)
-            #                     if f.changed():
-            #                         L = f.changed() 
-                                    
-            #                         subphases = {}
-            #                         for each_subphase in L:
-            #                             # subphases[each_subphase] = [] 
-            #                             g = DictDiffer(subphase_A[each_subphase], subphase_B[each_subphase])    
-            #                             subphases[each_subphase] = g.changed()
-                                        
-                            
-            #                 tmp = add_thermo(job_A, job_B, d.changed(), subphases)
-            #                 table.append(tmp)
-            #                 continue
-                
-            #             if 'name' in d.changed():
-            #                 print 'name changed'    
-
-            #             else:
-            #                 tmp = add_thermo(job_A, job_B)
-            #                 table.append(tmp)
-                            
-            #         table = merge_table_pieces(table, 'thermocycle')        
-                            
-            #      # --->  create a compare-graph-object that will apear between the 2 base diagrams:
-            #         self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
-            #         self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
-            #         verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
-            #         verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
-
-            #         diff_object = self.protocol_A.nodes[phases_A[0]].pk 
-            #         ea = self.agraph.add_edge(self.protocol_A.nodes[verb_a].pk,diff_object)
-            #         eb = self.agraph.add_edge(self.protocol_B.nodes[verb_b].pk,diff_object)     
-                    
-            #         if 'steps' in layers:
-            #             self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
-            #         else:    
-            #             N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
-
-                    
-            #         # set layout and colors
-            #         s = self.agraph.get_node(diff_object)
-            #         s.attr['shape'] = 'box'
-            #         s.attr['color'] = '#C0C0C0'
-            #         s.attr['style'] = 'rounded'
-            #         s.attr['fontsize'] = '10'
-            #         s.attr['label'] = (table)
-
-            # else:
-            #     if 'steps' in layers:
-            #         self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
-            #         self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
-            #         verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
-            #         verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
-            #         self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b)
-        
     
         return self 
 
