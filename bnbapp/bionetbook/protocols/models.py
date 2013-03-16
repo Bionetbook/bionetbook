@@ -16,10 +16,10 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
-from protocols.helpers import settify, unify
+# from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, settify, unify
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -666,91 +666,10 @@ class Thermocycle(NodeBase):
 
     @property
     def summary(self):
-        ''' finds brothers by: self.parent.children and returns a dict with all the pcr stages :
         
-            {'Initial denaturation':
-                [
-                annealing: {temp = '98C', tmie = 30 seconds}
-                ], 
-                cycles : '1', before: 'kffgk', after'frrff'}    
-            {'Elongation': 
-                [
-                {'Denaturation': {'98 deg celsius', '30 seconds'}},     
-                {'Annealing': {'98 deg celsius', '30 seconds'}},    
-                {'extenssion': {'98 deg celsius', '30 seconds'}
-                ], 
-                cycles: '15', before: 'rrfffr', 'after': 'gffgg'},    
-            {'Termination': 
-                [
-                {'termination'{98 deg celsius', '30 seconds'},
-                ],
-                cycles: '1', before: 'rfrffr', 'after': 'gerrrg'}, }    
-
-            '''
-        
-        tmp = settify(self, summary = True)
+        tmp = settify(self, shorthand = True, summary = True)
         tmp['name'] = self['name']          
-        # output = {}
-        
-        # for i in self.label:
-        #     if 'Celsius' in i or 'degre' in i or 'C' in i:
-        #         output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-        #     if 'minute' in i or 'second' in i or 'hour' in i:
-        #         output['time'] = str(re.findall(r'\d+',i)[0]) +'s'#+ str(re.findall(r'\D+',i)[0])
-        #     if 'cycle' in i or 'cycles' in i :
-        #         w = re.search(r'\d+', i)
-        #         q = re.search(r'\w+(?<=_)\w+', i)
-        #         out = w.group()
-        #         if q:
-        #             out = out + ' ' +  q.group()
-
-        #         output['cycle'] =  out#str(re.findall(r'\d+',i)) #+ str(re.findall(r'\D+',i)[0])    
-
-        return tmp     
-
-        # output = {}
-        # tmp_output = {}
-        # output['name'] = self['name']
-        # output['phases'] = []
-        # output['cycles'] = self['cycles']
-        # parent = self.parent['objectid']
-
-
-        # thermo_ids = [r['objectid'] for r in self.protocol.nodes[parent].children]
-        # current = thermo_ids.index(self['objectid'])
-        
-        # if current == 0 and len(thermo_ids) == 1:
-        #     output['previous_substep'] = ''
-        #     output['next_substep'] = ''
-
-        # if current == 0 and len(thermo_ids) >1:
-        #     output['previous_substep'] = ''
-        #     output['next_substep'] = thermo_ids[1]
-
-        # if current > 0 and current < len(thermo_ids) -1 :
-        #     output['previous_substep'] = thermo_ids[current - 1]
-        #     output['next_substep'] = thermo_ids[current + 1]
-
-        # if current == len(thermo_ids):
-        #     output['previous_substep'] = thermo_ids[current-1]
-        #     output['next_substep'] = ''
-
-        # # for i in thermo_ids:
-        # #     output['cycles'][self.protocol.nodes[i]['name']] = self.protocol.nodes[i]['cycles'] 
-        # for j in self['settings']:
-        #     tmp_output[j['name']] = settify(j)
-        #     stage = {}
-        #     stage[j['name']] = {}
-        #     for ii in tmp_output[j['name']]:     
-        #         if 'Celsius' in ii or 'degre' in ii:
-        #             stage[j['name']]['temp'] = str(re.findall(r'\d+',ii)[0]) + 'C'
-        #         if 'minute' in ii or 'second' in ii or 'hour' in ii:
-        #             stage[j['name']]['time'] = str(ii) #str(re.findall(r'\d+',ii)[0]) + str(re.findall(r'\D+',ii)[0])
-
-        #     output['phases'].append(stage)        
-
-        # return output           
-    
+        return tmp    
 
 
 class Action(NodeBase):
