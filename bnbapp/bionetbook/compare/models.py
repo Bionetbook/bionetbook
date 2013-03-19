@@ -499,6 +499,22 @@ class Compare(object):
             out_1.append((tmpx,tmpy))  
         return out_1       
 
+    def check_aligned(lst1, lst2):
+        it = iter(lst1)
+        try:
+            i = next(it)
+            for x in lst2:
+                if x == i:
+                    i = next(it)
+        except StopIteration:
+            return True
+        return False    
+# http://stackoverflow.com/questions/8024052/comparing-element-order-in-python-lists?answertab=oldest#tab-top
+# http://www.avatar.se/molbioinfo2001/dynprog/dynamic.html
+# http://www.dzone.com/snippets/needleman-wunsch-back-track
+
+
+
     # def align_lists (self):
     #     import
     #     first = list(self.protocol_A.get_actions)
