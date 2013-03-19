@@ -67,7 +67,7 @@ from store import StoreForm
 from swirl import SwirlForm
 from switch_off import SwitchOffForm
 from thaw import ThawForm
-from thermal_cycle import ThermalCycleForm
+from thermocycle import ThermocycleForm
 from transfer import TransferForm
 from visualize import VisualizeForm
 from vortex import VortexForm

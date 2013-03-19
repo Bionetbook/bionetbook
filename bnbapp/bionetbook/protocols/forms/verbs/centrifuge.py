@@ -7,10 +7,17 @@ class CentrifugeForm(forms.VerbForm):
     slug = "centrifuge"
     has_machine = True
 
-    edit_what_remark = forms.CharField()
-    min_spin_speed = forms.IntegerField()
-    max_spin_speed = forms.IntegerField()
-    comment_why = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    handled_object = forms.CharField(required = False, initial = 'Name for tube: Sample | Mix | Buffer')
+    min_speed = forms.IntegerField()
+    max_speed = forms.IntegerField(required = False)
+    # comment_why = forms.CharField()
+    min_time = forms.IntegerField()
+    max_time = forms.IntegerField(required = False)
     min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
+    max_temp = forms.IntegerField(required = False)
+    time_units = forms.CharField(required=False, initial = 'Seconds' )
+    temp_units = forms.CharField(required=False, initial = "Celcius" )
+    speed_units = forms.CharField(required=False, initial = 'RPM' )
+    speed_comment = forms.CharField(required=False)
+    temp_comment = forms.CharField(required=False)
+    time_comment = forms.CharField(required=False)

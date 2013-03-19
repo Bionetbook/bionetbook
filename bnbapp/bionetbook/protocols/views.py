@@ -619,13 +619,15 @@ class ActionUpdateView(NodeUpdateView):
             context['verb_form'] = verb_form
         else:
             context['verb_form'] = VERB_FORM_DICT[context[self.node_type]['verb']](initial=context[self.node_type], prefix='verb')
-
         context['verb_name'] = context['verb_form'].name
 
         if form:
             context['form'] = form
         else:
             context['form'] = self.form_class(initial=context[self.node_type], prefix=self.node_type)
+        
+        if 'machine' in context[self.node_type].keys():
+            context['machine_form'] = self.form_class(initial = context[self.node_type]['machine'], prefix = 'machine')
     
         return context
 
@@ -734,14 +736,20 @@ class ComponentDetailView(NodeDetailView):
 #####################
 
 class MachineDetailView(NodeDetailView):
-    slugs = ['step_slug', 'action_slug', 'machine_slug']
+    slugs = ['step_slug', 'action_slug']#, 'machine_slug']
+    template_name = "actions/actionsd_detail.html"
 
-# class MachineUpdateView(NodeDetailView):
-#     form_class = MachineForm
-#     template_name = "machine/machine_form.html"
-#     success_url = "machine_detail"
-#     node_type = "machine"
-#     slugs = ['step_slug', 'action_slug', 'machine_slug']
+    def get_context_data(self, **kwargs):
+        context = super(MachineDetailView, self).get_context_data(**kwargs)
+        context['machine'] = context['action']['machine']
+        return context
+
+class MachineUpdateView(NodeUpdateView):
+    form_class = MachineForm
+    template_name = "machine/machine_form.html"
+    success_url = "machine_detail"
+    node_type = "machine"
+    slugs = ['step_slug', 'action_slug'] #, 'machine_slug']
 
 
 #####################

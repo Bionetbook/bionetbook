@@ -7,9 +7,10 @@ class ThermocycleForm(forms.VerbForm):
     slug = "thermocycle"
     has_thermocycler = True
 
-    min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
-    duration_min_time = forms.IntegerField()
-    edit_kit_name = forms.CharField()
-    edit_protocol_output = forms.CharField()
-    edit_remarks = forms.CharField()
+    phase_name = forms.CharField(required = False, initial = 'Initiaion denaturation')
+    min_temp = forms.FloatField()
+    max_temp = forms.FloatField(required = False)
+    min_time = forms.FloatField()
+    max_time = forms.FloatField(required = False)
+    cycles = forms.IntegerField(required = False)
+    cycle_back_to = forms.ChoiceField(required = False, choices = (('1', 'first'),('2', 'second'),('3', 'third'),('4', 'fourth'),('5', 'fifth')))
