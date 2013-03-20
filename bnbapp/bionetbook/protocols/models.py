@@ -24,6 +24,7 @@ from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 
+
 class Protocol(TimeStampedModel):
 
     # STATUS_DRAFT = "draft"
@@ -578,8 +579,12 @@ class Machine(NodeBase):
         super(Machine, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
-        return "#NDF"
+        return reverse('machine_detail', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
         #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
+
+    def machine_update_url(self):
+        return reverse('machine_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
+
 
     # @property
     # def title(self):
@@ -718,6 +723,8 @@ class Action(NodeBase):
     def action_delete_url(self):
         return reverse("action_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
+    # def machine_update_url(self):
+    #     return reverse('machine_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug, 'machine_slug':self.machine.slug  })    
     # @property
     # def title(self):
     #     return "%s - %s - %s" % (self.protocol.name, self.step['name'], self['name'])

@@ -30,8 +30,8 @@ urlpatterns = patterns("",
 
     # MACHINE
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-machine/$', view=views.MachineCreateView.as_view(), name='machine_create'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/edit/$', view=views.MachineUpdateView.as_view(), name='machine_edit'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/edit/$', view=views.MachineUpdateView.as_view(), name='machine_edit'),
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/delete/$', view=views.MachineDeleteView.as_view(), name='machine_delete'),
 
     # COMPONENT

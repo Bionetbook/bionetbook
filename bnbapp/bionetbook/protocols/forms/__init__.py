@@ -51,18 +51,21 @@ class ComponentForm(NodeForm):
 
 class MachineForm(NodeForm):
 
-    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS )
+    name = forms.CharField(required = False)
+    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, initial = 's' )
     min_time = forms.FloatField()
     max_time = forms.FloatField()
+    time_comment = forms.CharField(required=False)
     # min_speed = forms.FloatField()
     # max_speed = forms.FloatField()
     min_temp = forms.FloatField()
     max_temp = forms.FloatField()
-    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS )
-    speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
-    speed_comment = forms.CharField(required=False)
+    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, initial = 'c')
     temp_comment = forms.CharField(required=False)
-    time_comment = forms.CharField(required=False)
+    # speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
+    # speed_comment = forms.CharField(required=False)
+    
+    
 
 
 class ThermocyclerForm(NodeForm):

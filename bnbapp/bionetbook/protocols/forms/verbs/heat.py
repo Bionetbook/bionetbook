@@ -8,12 +8,11 @@ class HeatForm(forms.VerbForm):
     has_machine = True
 
     
-    edit_what_remark = forms.CharField(required = False, help_text='sample name, default is tube')
-    # machine = forms.CharField(required = False, help_text='enter machine name')
-    min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
-    duration_min_time = forms.IntegerField()
+    sample_name = forms.CharField(required = False, help_text='sample name, default is tube')
+    # min_temp = forms.IntegerField()
+    # max_temp = forms.IntegerField()
+    # duration_min_time = forms.IntegerField()
     # other_settings = forms.CharField(required = False)
-    edit_remarks = forms.CharField(required = False)
+    remarks = forms.CharField(required = False, initial = 'open or closed container, etc')
 	
     

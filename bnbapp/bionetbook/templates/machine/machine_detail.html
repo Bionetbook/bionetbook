@@ -15,9 +15,9 @@
 {% block title %}Action: {{ action.title }}{% endblock %}
 
 {% block page_title %}
-Action: {{ action.title }}
+Machine: {{ action.machine.name }}
 {% if protocol_edit_authorization %} 
-    <div><small><a href="{{ action.action_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
+    <div><small><a href="{{ action.machine.machine_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
 {% endif %}
 {% endblock %}
 
@@ -40,7 +40,7 @@ Action: {{ action.title }}
         {% if action.has_machine %}
         <h2>Machine</h2>
         {% object_data_table action.machine %}
-        <a class="btn btn-warning" href="{{ action.machine.get_absolute_url }}">View Machine</a>
+        <a class="btn btn-warning" href="{{ action.machine.machine_update_url }}">Edit Machine</a>
         {% endif %}
         {% if action.has_thermocycler %}
         <h2>Thermocycler</h2>
