@@ -31,10 +31,11 @@ Action: {{ action.title }}
     </div>
     <div class="span4">
         {% if action.has_components %}
-        <h2>Components</h2>
+        <h2>Components</h2> 
         {% for component in action.components %}
+          <h3>{{component.name}}</h3><a href="{{component.get_update_url}}">edit</a>
           {% object_data_table component %}
-          <a href="{{component.get_update_url}}">edit</a>
+
         {% endfor %}
         <a class="btn btn-warning" href="#">Add Component</a>
         {% endif %}
