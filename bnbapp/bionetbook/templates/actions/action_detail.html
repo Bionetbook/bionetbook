@@ -47,6 +47,7 @@ Action: {{ action.title }}
         {% if action.has_thermocycler %}
         <h2>Thermocycler</h2>
         {% for thermocycler in action.thermocycler %}
+          <h3>{{thermocycler.name}}</h3><a href="{{thermocycler.get_update_url}}">edit</a>
           {% object_data_table thermocycler %}
         {% endfor %}
         <a class="btn btn-warning" href="#">Add Thermocycler</a>
