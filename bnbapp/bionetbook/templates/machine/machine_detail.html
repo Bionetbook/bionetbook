@@ -8,14 +8,15 @@
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
-      <li class="active">{{action.name}}</li>
+      <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
+      <li class="active">machine</li>
     </ul>
 {% endblock %}
 
 {% block title %}Action: {{ action.title }}{% endblock %}
 
 {% block page_title %}
-Machine: {{ action.machine.name }}
+<p>{{action.protocol.name}} {{action.parent.name}} {{action.name}}</p> Machine: {{ action.machine.name }}
 {% if protocol_edit_authorization %} 
     <div><small><a href="{{ action.machine.machine_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
 {% endif %}
@@ -24,11 +25,6 @@ Machine: {{ action.machine.name }}
 {% block content %}
 
 <div class="row">
-    <div class="span4">
-        {% object_data_table action %}
-        <a class="btn btn-warning" href="{{ action.action_delete_url }}">Delete Action</a>
-        <p></p>
-    </div>
     <div class="span4">
         {% if action.has_components %}
         <h2>Components</h2>

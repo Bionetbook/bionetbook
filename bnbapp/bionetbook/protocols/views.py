@@ -742,6 +742,7 @@ class MachineDetailView(NodeDetailView):
         context['machine'] = context['action']['machine']
         return context
 
+
 class MachineUpdateView(NodeUpdateView):
     model = Protocol
     form_class = MachineForm
@@ -755,14 +756,16 @@ class MachineUpdateView(NodeUpdateView):
         context = super(MachineUpdateView, self).get_context_data(**kwargs)
         context['machine'] = context['action']['machine']
 
-        if form:
-            context['verb_form'] = verb_form
-        else:
-            context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
-        context['verb_name'] = context['verb_form'].name
+        #if form:
+        #    context['verb_form'] = verb_form
+        #else:
+        #    context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
+        #context['verb_name'] = context['verb_form'].name
         
         # if 'machine' in context.keys():
         #     context['machine_form'] = self.form_class(initial = context['machine'], prefix = 'machine')
+
+        context['form'] = self.form_class(initial = context['machine'])
         return context
 
 #####################
