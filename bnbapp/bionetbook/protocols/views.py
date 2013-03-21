@@ -719,7 +719,8 @@ class ActionDeleteView(NodeDeleteView):
 
 
 class ComponentDetailView(NodeDetailView):
-    slugs = ['step_slug', 'action_slug', 'componenet_slug']
+    template_name = "component/component_detail.html"
+    slugs = ['step_slug', 'action_slug', 'component_slug']
 
 # class ComponentUpdateView(NodeDetailView):
 #     form_class = ComponentForm
@@ -727,6 +728,22 @@ class ComponentDetailView(NodeDetailView):
 #     success_url = "component_detail"
 #     node_type = "component"
 #     slugs = ['step_slug', 'action_slug', 'componenet_slug']
+
+class ComponentUpdateView(NodeUpdateView):
+    model = Protocol
+    form_class = ComponentForm
+    slug_url_kwarg = "protocol_slug"
+    template_name = "component/component_form.html"
+    success_url = "component_detail"
+    node_type = "component"
+    slugs = ['step_slug', 'action_slug', 'component_slug']
+
+    # def get_context_data(self, form = None, **kwargs):
+    #     context = super(MachineUpdateView, self).get_context_data(**kwargs)
+    #     context['component'] = self.object.nodes[componenet_slug]
+    #     context['form'] = self.form_class(initial = context['component'])
+    #     return context
+
 
 
 #####################
@@ -752,19 +769,9 @@ class MachineUpdateView(NodeUpdateView):
     node_type = "machine"
     slugs = ['step_slug', 'action_slug', 'machine_slug']
 
-    def get_context_data(self, form = None, verb_form = None, **kwargs):
+    def get_context_data(self, form = None, **kwargs):
         context = super(MachineUpdateView, self).get_context_data(**kwargs)
         context['machine'] = context['action']['machine']
-
-        #if form:
-        #    context['verb_form'] = verb_form
-        #else:
-        #    context['verb_form'] = VERB_FORM_DICT[context['action']['verb']](initial=context['action'], prefix='verb')
-        #context['verb_name'] = context['verb_form'].name
-        
-        # if 'machine' in context.keys():
-        #     context['machine_form'] = self.form_class(initial = context['machine'], prefix = 'machine')
-
         context['form'] = self.form_class(initial = context['machine'])
         return context
 
