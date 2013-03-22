@@ -781,12 +781,13 @@ class MachineUpdateView(NodeUpdateView):
 
 
 class ThermocyclerDetailView(NodeDetailView):
-    slugs = ['step_slug', 'action_slug', 'thermocycler_slug']
+    template_name = "thermocycle/thermocycle_detail.html"
+    slugs = ['step_slug', 'action_slug', 'thermo_slug']
 
 
 class ThermocyclerUpdateView(NodeDetailView):
     form_class = ThermocyclerForm
-    template_name = "thermocycler/thermocycler_form.html"
-    success_url = "thermocycler_detail"
+    template_name = "thermocycle/thermocycle_form.html"
+    success_url = "thermocycle_detail"
     node_type = "thermocycler"
-    slugs = ['step_slug', 'action_slug', 'thermocycler_slug']
+    slugs = ['step_slug', 'action_slug', 'thermo_slug']

@@ -25,10 +25,17 @@ Action: {{ action.title }}
 
 <div class="row">
     <div class="span4">
+      <h2>Action Attributes</h2>
         {% object_data_table action %}
         <a class="btn btn-warning" href="{{ action.action_delete_url }}">Delete Action</a>
         <p></p>
     </div>
+    <!-- <div class "span3.5">
+      <h2>Verb Attributes</h2>
+      {% object_data_table action.verb }  
+
+
+    </div> -->
     <div class="span4">
         {% if action.has_components %}
         <h2>Components</h2> 
@@ -46,9 +53,9 @@ Action: {{ action.title }}
         {% endif %}
         {% if action.has_thermocycler %}
         <h2>Thermocycler</h2>
-        {% for thermocycler in action.thermocycler %}
-          <h3>{{thermocycler.name}}</h3><a href="{{thermocycler.get_update_url}}">edit</a>
-          {% object_data_table thermocycler %}
+        {% for thermocycle in action.thermocycle %}
+          <h3>{{thermocycle.name}}</h3><a href="{{ thermocycle.get_update_url}}">edit</a>
+          {% object_data_table thermocycle %}
         {% endfor %}
         <a class="btn btn-warning" href="#">Add Thermocycler</a>
         {% endif %}
