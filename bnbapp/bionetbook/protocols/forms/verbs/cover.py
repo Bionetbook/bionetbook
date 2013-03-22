@@ -7,7 +7,8 @@ class CoverForm(forms.VerbForm):
     slug = "cover"
 
 
-    add_conditional_statement = forms.CharField()
-    edit_what_remark = forms.CharField()
-    comment_why = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    conditional_statement = forms.CharField(required = False, help_text ='if X happens, do Y')
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    remarks = forms.CharField(required = False)

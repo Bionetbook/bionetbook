@@ -12,7 +12,7 @@ class HeatForm(forms.VerbForm):
     # min_temp = forms.IntegerField()
     # max_temp = forms.IntegerField()
     # duration_min_time = forms.IntegerField()
-    # other_settings = forms.CharField(required = False)
+    other_settings = forms.CharField(required = False)
     remarks = forms.CharField(required = False, initial = 'open or closed container, etc')
 	
     

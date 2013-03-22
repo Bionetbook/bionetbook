@@ -1,5 +1,5 @@
 from protocols.forms import forms
-
+from core.utils import SPEED_UNITS
 
 class CentrifugeForm(forms.VerbForm):
 
@@ -7,17 +7,10 @@ class CentrifugeForm(forms.VerbForm):
     slug = "centrifuge"
     has_machine = True
 
-    handled_object = forms.CharField(required = False, initial = 'Name for tube: Sample | Mix | Buffer')
+    # duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
     min_speed = forms.IntegerField()
     max_speed = forms.IntegerField(required = False)
-    # comment_why = forms.CharField()
-    min_time = forms.IntegerField()
-    max_time = forms.IntegerField(required = False)
-    min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField(required = False)
-    time_units = forms.CharField(required=False, initial = 'Seconds' )
-    temp_units = forms.CharField(required=False, initial = "Celcius" )
-    speed_units = forms.CharField(required=False, initial = 'RPM' )
+    speed_units = forms.ChoiceField(required=False, choices = SPEED_UNITS, initial = 'rpm' )
     speed_comment = forms.CharField(required=False)
-    temp_comment = forms.CharField(required=False)
-    time_comment = forms.CharField(required=False)
+    comment_why = forms.CharField(required = False)

@@ -1,5 +1,5 @@
 from protocols.forms import forms
-
+from core.utils import TEMPERATURE_UNITS, VESSELS
 
 class CombineForm(forms.VerbForm):
 
@@ -8,13 +8,12 @@ class CombineForm(forms.VerbForm):
     has_component = True
 
 
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
     min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
-    duration_min_time = forms.IntegerField() # remove this
-    describe_where = forms.CharField()
-    edit_remarks = forms.CharField()
-
-    # add these:
-    # description = forms.CharField()
-    # add_reagents = forms.CharField(required = False, helptext='500 ng oligoDt | CaCl2, 5M 20 ml' )
-    # bring_volume_to = forms.CharField(required=False, helptext='12 ul, ddw')
+    max_temp = forms.IntegerField(required = False)
+    temp_units = forms.ChoiceField(choices = TEMPERATURE_UNITS, initial = 's')
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    remarks = forms.CharField(required = False)
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    vessel_type = forms.ChoiceField(required = False, choices = VESSELS)
+    

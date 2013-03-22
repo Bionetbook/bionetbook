@@ -606,15 +606,21 @@ class Machine(NodeBase):
         ''' takes self.label as a list and turns it into a dict:
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
-        output = {}
-        
-        for i in self.label:
-            if 'Celsius' in i or 'degre' in i:
-                output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-            if 'minute' in i or 'second' in i or 'hour' in i:
-                output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+        tmp = settify(self, summary = True)
+        tmp['name'] = self['name']   
 
-        return output   
+
+        # output = {}
+        
+        # for i in self.label:
+        #     if 'Celsius' in i or 'degre' in i or 'c' in i:
+        #         output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
+        #     if 'minute' in i or 'second' in i or 'hour' in i or 'm' in i:
+        #         output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
+        #     # if 'rpm'     
+
+
+        return tmp   
 
 
 # class Subphase(NodeBase):
@@ -651,10 +657,10 @@ class Thermocycle(NodeBase):
         #     self['name'] = self.pop("reagent_name")
         
     def get_absolute_url(self):
-        return reverse("thermo_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
+        return reverse("thermocycler_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
 
     def get_update_url(self):
-        return reverse('thermo_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
+        return reverse('thermocycler_update', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
 
 
     # def get_absolute_url(self):

@@ -6,7 +6,8 @@ class CutForm(forms.VerbForm):
     name = "Cut"
     slug = "cut"
 
-
-    edit_what_remark = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    comment_why = forms.CharField()
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    remarks = forms.CharField(required = False)
+    comment_why = forms.CharField(required = False)
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')

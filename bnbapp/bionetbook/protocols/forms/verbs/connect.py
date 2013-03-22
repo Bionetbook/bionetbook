@@ -7,6 +7,9 @@ class ConnectForm(forms.VerbForm):
     slug = "connect"
 
 
-    edit_what_remark = forms.CharField()
-    describe_where = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    comment_why = forms.CharField(required = False)
+    remarks = forms.CharField(required = False)
+    using_what = forms.CharField(required = False, help_text = 'rotator, shaker, manual etc')

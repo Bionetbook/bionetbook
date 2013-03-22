@@ -7,4 +7,8 @@ class CollectForm(forms.VerbForm):
     slug = "collect"
     has_machine = True
 
-    duration_in_seconds = forms.IntegerField()
+    comment_why = forms.CharField(required = False)
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    # duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    remarks = forms.CharField(required = False)

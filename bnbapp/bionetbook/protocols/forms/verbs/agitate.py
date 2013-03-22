@@ -8,10 +8,10 @@ class AgitateForm(forms.VerbForm):
     has_machine = True
 
 
-    duration_min_time = forms.IntegerField()
-    add_conditional_statement = forms.CharField()
-    edit_what_remark = forms.CharField()
-    comment_why = forms.CharField()
-    describe_where = forms.CharField()
-    edit_remarks = forms.CharField()
-    add_with_what = forms.CharField()
+    # duration = forms.IntegerField(help_text='this is the minimal time this should take')
+    conditional_statement = forms.CharField(required = False, help_text = 'If X, do Y')
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, tube, etc')
+    comment_why = forms.CharField(required = False, help_text = 'purpose')
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    remarks = forms.CharField(required = False)
+    using_what = forms.CharField(required = False, help_text = 'rotator, shaker, manual etc')

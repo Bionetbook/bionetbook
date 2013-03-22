@@ -90,8 +90,7 @@ def settify(settings_dict, shorthand = True, summary = False):
         numbers = None
         out = None
 
-        if 'temp_units' in temp:
-            units = str(temp['temp_units'])
+        
         # else: 
         #     units = 'Celsius'
 
@@ -108,19 +107,21 @@ def settify(settings_dict, shorthand = True, summary = False):
             if 'min_temp' in temp:
                  numbers = temp['min_temp']  
 
-        out = str(numbers) + ' ' + units
+        if numbers != None:
+            out = str(numbers) + ' ' + units
+            if 'temp_units' in temp:
+                units = str(temp['temp_units'])
+            if 'temp_comment' in temp:
+                    out = str(out) + ', ' + 'Remark: ' + temp['temp_comment']    
+
+            if shorthand:
+                units = shorten(units)
             
-        if 'temp_comment' in temp:
-                out = str(out) + ', ' + 'Remark: ' + temp['temp_comment']    
+            if summary:
+                output['temp'] = [numbers, units]
 
-        if shorthand:
-            units = shorten(units)
-        
-        if summary:
-            output['temp'] = [numbers, units]
-
-        else:    
-            settings.append(out)
+            else:    
+                settings.append(out)
 
 
     if time: 
@@ -128,11 +129,6 @@ def settify(settings_dict, shorthand = True, summary = False):
         numbers = None
         out = None
         
-        if 'time_units' in time:
-            units = str(time['time_units'])
-        # else: 
-        #     units = 'Celsius'
-
         if 'max_time' in time and 'min_time' in time:
             
             if time['min_time'] == time['max_time']:
@@ -146,29 +142,30 @@ def settify(settings_dict, shorthand = True, summary = False):
             if 'min_time' in time:
                  numbers = time['min_time']  
 
-        out = str(numbers) + ' ' + units
+        if nummbers != None:
+
+            out = str(numbers) + ' ' + units
+            if 'time_units' in time:
+                units = str(time['time_units'])            
             
-        if 'time_comment' in time:
-                out = str(out) + ', ' + 'Remark: ' + time['time_comment']    
+            if 'time_comment' in time:
+                    out = str(out) + ', ' + 'Remark: ' + time['time_comment']    
 
-        if shorthand:
-            units = shorten(units)        
-        
-        if summary:
-            output['time'] = [numbers, units]
+            if shorthand:
+                units = shorten(units)        
+            
+            if summary:
+                output['time'] = [numbers, units]
 
-        else:    
-            settings.append(out) 
+            else:    
+                settings.append(out) 
 
     if speed: 
         units = None
         numbers = None
         out = None
         
-        if 'speed_units' in speed:
-            units = str(speed['speed_units'])
-        else: 
-            units = 'RPM'
+        
 
         if 'max_speed' in speed and 'min_speed' in speed:
             
@@ -183,19 +180,25 @@ def settify(settings_dict, shorthand = True, summary = False):
             if 'min_speed' in speed:
                  numbers = speed['min_speed']  
 
-        out = str(numbers) + ' ' + units
+        if numbers != None:
             
-        if 'speed_comment' in speed:
+            out = str(numbers) + ' ' + units
+            if 'speed_comment' in speed:
                 out = str(out) + ', ' + 'Remark: ' + speed['speed_comment']    
 
-        if shorthand:
-            units = shorten(units)        
-                
-        if summary:
-            output['speed'] = [numbers, units]
+            if 'speed_units' in speed:
+                units = str(speed['speed_units'])
+            else: 
+                units = 'RPM'        
 
-        else:    
-            settings.append(out)    
+            if shorthand:
+                units = shorten(units)        
+                    
+            if summary:
+                output['speed'] = [numbers, units]
+
+            else:    
+                settings.append(out)    
 
     if cycle:
         units = None

@@ -13,7 +13,7 @@ from close import CloseForm
 from collect import CollectForm
 from combine import CombineForm
 from connect import ConnectForm
-from cool import CoolForm
+# from cool import CoolForm
 from cover import CoverForm
 from cut import CutForm
 from decant import DecantForm
