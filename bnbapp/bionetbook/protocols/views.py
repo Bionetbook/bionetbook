@@ -785,6 +785,35 @@ class ThermocyclerDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug', 'thermo_slug']
 
 
+class ThrmocyclerCreateView(NodeCreateViewBase):
+    form_class = ThermocyclerForm
+    template_name = "thermocycler/thermocycler_form.html"
+    success_url = "thermocycler_detail"
+    node_type = "thermocycler"
+    slugs = ['step_slug', 'action_slug']
+
+
+
+    '''Creates and appends a thermocycle to an action.'''
+
+    template_name = "steps/step_create.html"
+    form_class = StepForm
+    success_url = 'protocol_detail'
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        new_step = Step(protocol, data=form.cleaned_data)
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your step \'%s\'' was added." % new_step.title)
+        return super(StepCreateView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+
+
 class ThermocyclerUpdateView(NodeDetailView):
     form_class = ThermocyclerForm
     template_name = "thermocycle/thermocycle_form.html"
