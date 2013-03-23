@@ -16,7 +16,7 @@ from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixi
 
 from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
 from protocols.forms.baseforms import ProtocolForm
-from protocols.models import Protocol, Step, Action
+from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
@@ -780,41 +780,35 @@ class MachineUpdateView(NodeUpdateView):
 #####################
 
 
-class ThermocyclerDetailView(NodeDetailView):
+class ThermocycleDetailView(NodeDetailView):
     template_name = "thermocycle/thermocycle_detail.html"
     slugs = ['step_slug', 'action_slug', 'thermo_slug']
 
 
-class ThrmocyclerCreateView(NodeCreateViewBase):
+class ThermocycleCreateView(NodeCreateViewBase):
+    '''Creates and appends a thermocycle to an action.'''
+
     form_class = ThermocyclerForm
     template_name = "thermocycler/thermocycler_form.html"
     success_url = "thermocycler_detail"
-    node_type = "thermocycler"
+    # node_type = "thermocycler"
     slugs = ['step_slug', 'action_slug']
-
-
-
-    '''Creates and appends a thermocycle to an action.'''
-
-    template_name = "steps/step_create.html"
-    form_class = StepForm
-    success_url = 'protocol_detail'
 
     def form_valid(self, form):
         protocol = self.get_protocol()
-        new_step = Step(protocol, data=form.cleaned_data)
+        new_item = Thermocycle(protocol, data=form.cleaned_data)
         protocol.save()
 
-        messages.add_message(self.request, messages.INFO, "Your step \'%s\'' was added." % new_step.title)
-        return super(StepCreateView, self).form_valid(form)
+        messages.add_message(self.request, messages.INFO, "Your thermocycle \'%s\'' was added." % new_item.title)
+        return super(ThrmocyclerCreateView, self).form_valid(form)
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
-
-
+    # def form_invalid(self, form):
+    #     return self.render_to_response(self.get_context_data(form=form))
 
 
-class ThermocyclerUpdateView(NodeDetailView):
+
+
+class ThermocycleUpdateView(NodeDetailView):
     form_class = ThermocyclerForm
     template_name = "thermocycle/thermocycle_form.html"
     success_url = "thermocycle_detail"

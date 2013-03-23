@@ -649,12 +649,12 @@ class Machine(NodeBase):
 
 class Thermocycle(NodeBase):
         
-    def __init__(self, protocol, parent=None, data=None, **kwargs):
-        #self.parent = parent
-        super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    # def __init__(self, protocol, parent=None, data=None, **kwargs):
+    #     #self.parent = parent
+    #     super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        # if 'reagent_name' in self:
-        #     self['name'] = self.pop("reagent_name")
+    #     # if 'reagent_name' in self:
+    #     #     self['name'] = self.pop("reagent_name")
         
     def get_absolute_url(self):
         return reverse("thermocycler_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })

@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% load wysiwyg %}
 
-{% block title %}Action Form{% endblock %}
+{% block title %}Machine Form{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
@@ -12,7 +12,7 @@
       <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
-      <li class="active">Edit Action</li>
+      <li class="active">Edit Machine</li>
     </ul>
 {% endblock %}
 

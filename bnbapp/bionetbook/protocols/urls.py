@@ -41,8 +41,8 @@ urlpatterns = patterns("",
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c/(?P<component_slug>[-\w]+)/delete/$', view=views.ComponentDeleteView.as_view(), name='component_delete'),
 
     # THERMOCYCLER
-    # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/add-termocycler/$', view=views.ThermocyclerCreateView.as_view(), name='thermocycler_create'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermo_slug>[-\w]+)/$', view=views.ThermocyclerDetailView.as_view(), name='thermocycler_detail'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermo_slug>[-\w]+)/edit/$', view=views.ThermocyclerUpdateView.as_view(), name='thermocycler_update'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/themocycle/add/$', view=views.ThermocycleCreateView.as_view(), name='thermocycler_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermo_slug>[-\w]+)/$', view=views.ThermocycleDetailView.as_view(), name='thermocycler_detail'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermo_slug>[-\w]+)/edit/$', view=views.ThermocycleUpdateView.as_view(), name='thermocycler_update'),
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermocycler_slug>[-\w]+)/delete/$', view=views.ThermocyclerDeleteView.as_view(), name='thermocycler_delete'),
 )
