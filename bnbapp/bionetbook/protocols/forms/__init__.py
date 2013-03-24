@@ -5,7 +5,7 @@ from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNIT
 
 class NodeForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
-    remark = forms.CharField(label='Comment', required=False, initial ='phase of protocol')
+    remark = forms.CharField(label='Comment', required=False)#, initial ='phase of protocol')
 
 
 class OrganizationListForm(forms.Form):
@@ -23,11 +23,11 @@ class StepForm(NodeForm):
 class ActionForm(NodeForm):
 
     name = forms.CharField(max_length=100, required=False, help_text = 'describe phase')
-    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
-    time_units = forms.CharField(initial='seconds', required=False)
+    duration = forms.IntegerField(help_text='this is the minimal time this should take, in seconds')
+    time_units = forms.CharField(help_text='in seconds', required=False)
     # duration_comment = forms.ChoiceField(choices = (("Passive","You dont have to be here"),("Active","You are here"),), required=False)
-    tube = forms.CharField(initial ='Name for tube: Sample | Mix | Buffer', required=False)
-    why = forms.CharField(required=False, initial = 'why are you doing this?')
+    tube = forms.CharField(help_text ='Name for tube: Sample | Mix | Buffer', required=False)
+    why = forms.CharField(required=False, help_text='why are you doing this?')
 
 class VerbForm(forms.Form):
     has_component = False
@@ -49,22 +49,22 @@ class ComponentForm(NodeForm):
     max_vol = forms.FloatField(required=False)
     min_vol = forms.FloatField(required=False)
     max_vol = forms.FloatField(required=False)
-    source = forms.CharField(required=False, initial = 'Invitrogen')
+    source = forms.CharField(required=False, help_text='example: Invitrogen')
     # ph = forms.FloatField()
 
 
 class MachineForm(NodeForm):
 
     name = forms.CharField(required=False)
-    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, initial = 's' )
+    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )
     min_time = forms.FloatField(required=False)
     max_time = forms.FloatField(required=False)
     time_comment = forms.CharField(required=False)
     # min_speed = forms.FloatField()
     # max_speed = forms.FloatField()
-    min_temp = forms.FloatField(required=False, initial = 22.0)
-    max_temp = forms.FloatField(required=False, initial = 22.0)
-    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, initial = 'c')
+    min_temp = forms.FloatField(required=False)#, initial = 22.0)
+    max_temp = forms.FloatField(required=False)#, initial = 22.0)
+    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
     temp_comment = forms.CharField(required=False)
     # speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
     # speed_comment = forms.CharField(required=False)
@@ -74,7 +74,7 @@ class MachineForm(NodeForm):
 
 class ThermocyclerForm(NodeForm):
 
-    phase_name = forms.CharField(required=False, initial = 'Initiaion denaturation')
+    phase_name = forms.CharField(required=False, help_text='example: Initiaion denaturation')
     min_temp = forms.FloatField()
     max_temp = forms.FloatField()
     min_time = forms.FloatField()
