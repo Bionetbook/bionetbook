@@ -831,9 +831,12 @@ class Action(NodeBase):
         Removes a Child Node with the given name from the list of nodes
         Though it can be called directly it is meant to be called from the protocol and trickle down
         """
-        print "%s (%s): REMOVING -> %s" % (self.__class__, self['objectid'], node_id)
+        #print "%s (%s): REMOVING -> %s" % (self.__class__.__name__, self['objectid'], node_id)
+        print "ACTION DELETE"
         if 'machine' in self:
+            print "HAS MACHINE"
             if self['machine']['objectid'] == node_id:
+                print "REMOVE MACHINE"
                 del( self['machine'] )
                 return
 
@@ -841,7 +844,7 @@ class Action(NodeBase):
             self['thermocycle'] = [ x for x in self['thermocycle'] if x['objectid'] is not node_id ]
             return
 
-        if 'componenets' in self and node_id in [r['objectid'] for r in self['componenets']]:
+        if 'components' in self and node_id in [r['objectid'] for r in self['components']]:
             self['components'] = [ x for x in self['components'] if x['objectid'] is not node_id ]
 
     def has_components(self):

@@ -283,7 +283,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         parent = obj.parent
         message = "The %s \"%s\" was deleted." % (self.node_type, obj['name'])
         self.object.delete_node(obj['objectid'])
-        # self.object.save()
+        self.object.save()
         messages.add_message(self.request, messages.INFO, message)
         url = parent.get_absolute_url()
         return http.HttpResponseRedirect(url)
@@ -840,7 +840,7 @@ class ComponentDeleteView(NodeDeleteView):
     template_name = "component/component_delete.html"
     node_type = "component"
     cancel_parent_redirect = True
-    
+
     def get_context_data(self, **kwargs):
         context = super(ComponentDeleteView, self).get_context_data(**kwargs)
         slug = self.kwargs['%s_slug' % self.node_type]
