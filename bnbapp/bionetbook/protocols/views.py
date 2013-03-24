@@ -820,7 +820,14 @@ class ThermocycleCreateView(NodeCreateViewBase):
 
     def form_valid(self, form):
         protocol = self.get_protocol()
-        new_item = Thermocycle(protocol, data=form.cleaned_data)
+        
+        context = self.get_context_data()
+        action = context['action']
+
+        new_item = Thermocycle(protocol, parent=action, data=form.cleaned_data)
+        # NEEDS TO ADD IT'S SELF TO THE ACTION
+
+
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your thermocycle \'%s\'' was added." % new_item.title)
