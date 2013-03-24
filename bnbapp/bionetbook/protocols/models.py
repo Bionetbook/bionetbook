@@ -760,6 +760,9 @@ class Action(NodeBase):
     def action_delete_url(self):
         return reverse("action_delete", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
+    def machine_create_url(self):
+        return reverse("machine_create", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
+        
     def thermocycle_create_url(self):
         return reverse("thermocycle_create", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 

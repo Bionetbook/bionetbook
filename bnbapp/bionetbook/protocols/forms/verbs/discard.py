@@ -6,8 +6,6 @@ class DiscardForm(forms.VerbForm):
     name = "Discard"
     slug = "discard"
 
-    edit_what_remark = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    describe_where = forms.CharField()
-    edit_remarks = forms.CharField()
-    edit_why_step = forms.CharField()
+    what_are_you_discarding = forms.CharField()
+    conditional_statement = forms.CharField(required = False, help_text ='if X happens, do Y')
+    remarks = forms.CharField(required = False)

@@ -7,6 +7,6 @@ class DryForm(forms.VerbForm):
     slug = "dry"
     has_machine = True
 
-    duration_min_time = forms.IntegerField()
-    edit_what_remark = forms.CharField()
-    add_with_what = forms.CharField()
+    conditional_statement = forms.CharField(required = False, help_text ='if X happens, do Y')
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    remarks = forms.CharField(required = False)
