@@ -535,6 +535,15 @@ class Component(NodeBase):
 
         if 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
+
+        if 'components' in parent:
+            if parent['components']:
+                if self['objectid'] not in [x['objectid'] for x in parent['components']]:
+                    parent['components'].append(self)
+                return
+
+        parent['components'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
@@ -656,9 +665,10 @@ class Thermocycle(NodeBase):
         # REGISTER SELF WITH PARENT?
 
         if 'thermocycle' in parent:
-            if parent['thermocycle'] and self not in parent['thermocycle']:
-                parent['thermocycle'].append(self)
-            return
+            if parent['thermocycle']:
+                if self['objectid'] not in [x['objectid'] for x in parent['thermocycle']]:
+                    parent['thermocycle'].append(self)
+                return
         
         parent['thermocycle'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
 
@@ -744,6 +754,9 @@ class Action(NodeBase):
 
     def thermocycle_create_url(self):
         return reverse("thermocycle_create", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
+
+    def component_create_url(self):
+        return reverse("component_create", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
 
     # def machine_update_url(self):
     #     return reverse('machine_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug, 'machine_slug':self.machine.slug  })    

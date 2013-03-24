@@ -44,7 +44,7 @@ Action: {{ action.title }}
           {% object_data_table component %}
 
         {% endfor %}
-        <a class="btn btn-warning" href="#">Add Component</a>
+        <a class="btn btn-warning" href="{{ action.component_create_url }}">Add Component</a>
         {% endif %}
         {% if action.has_machine %}
         <h2>Machine</h2>

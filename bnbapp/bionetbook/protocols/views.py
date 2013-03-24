@@ -54,9 +54,34 @@ class NodeCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, SingleO
     form_prefix = None
     slugs = []
 
+    # def get_url_args(self):
+    #     protocol = self.get_protocol()
+    #     result = {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug}
+
+    #     if self.slugs:
+    #         context = self.get_context_data()
+    #         for slug in self.slugs:
+    #             label = self.kwargs[slug]
+    #             if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF FOR THE context OBJECT
+    #                 slug = slug[:-5]
+    #             result[slug] = context[label].slug
+
+    #     return result
+
     def get_url_args(self):
-        protocol = self.get_protocol()
-        return {'owner_slug':protocol.owner.slug, 'protocol_slug': protocol.slug}
+        args = {'protocol_slug': self.object.slug, 'owner_slug':self.object.owner.slug}
+
+        if self.slugs:
+            context = self.get_context_data()
+            for slug in self.slugs:
+                objectid = slug
+                if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
+                    objectid = slug[:-5]
+
+                args[slug] = context[objectid].slug
+
+        return args
+
 
     def get_success_url(self):
         """
@@ -175,19 +200,17 @@ class NodeUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         return context
 
     def get_url_args(self):
-        args = {}
-
-        args['protocol_slug'] = self.object.slug
-        args['owner_slug'] = self.object.owner.slug
-
+        args = {'protocol_slug': self.object.slug, 'owner_slug':self.object.owner.slug}
         context = self.get_context_data()
 
-        for slug in self.slugs:
-            objectid = slug
-            if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
-                objectid = slug[:-5]
+        if self.slugs:
+            context = self.get_context_data()
+            for slug in self.slugs:
+                objectid = slug
+                if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
+                    objectid = slug[:-5]
 
-            args[slug] = context[objectid].slug
+                args[slug] = context[objectid].slug
 
         return args
 
@@ -519,12 +542,7 @@ class ActionCreateView(NodeCreateViewBase):
     template_name = "actions/action_create.html"
     success_url = 'step_detail'
     form_prefix = 'action'
-
-    def get_url_args(self):
-        args = super(ActionCreateView, self).get_url_args()
-        context = self.get_context_data()
-        args['step_slug'] = context['step'].slug
-        return args
+    slugs = ['step_slug']
 
 
     def get_context_data(self, **kwargs):
@@ -731,16 +749,10 @@ class ComponentCreateView(NodeCreateViewBase):
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug']
 
-    def get_url_args(self):
-        args = super(ComponentCreateView, self).get_url_args()
-        context = self.get_context_data()
-        args['step_slug'] = context['step'].slug
-        args['action_slug'] = context['action'].slug
-        return args
-
     def form_valid(self, form):
         protocol = self.get_protocol()
-        new_item = Component(protocol, data=form.cleaned_data)
+        context = self.get_context_data()
+        new_item = Component(protocol, parent=context['action'], data=form.cleaned_data)
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your component \'%s\'' was added." % new_item.title)
@@ -811,23 +823,10 @@ class ThermocycleCreateView(NodeCreateViewBase):
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug']
 
-    def get_url_args(self):
-        args = super(ThermocycleCreateView, self).get_url_args()
-        context = self.get_context_data()
-        args['step_slug'] = context['step'].slug
-        args['action_slug'] = context['action'].slug
-        return args
-
     def form_valid(self, form):
         protocol = self.get_protocol()
-        
         context = self.get_context_data()
-        action = context['action']
-
-        new_item = Thermocycle(protocol, parent=action, data=form.cleaned_data)
-        # NEEDS TO ADD IT'S SELF TO THE ACTION
-
-
+        new_item = Thermocycle(protocol, parent=context['action'], data=form.cleaned_data)
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your thermocycle \'%s\'' was added." % new_item.title)
@@ -840,7 +839,6 @@ class ThermocycleUpdateView(NodeUpdateView):
     slug_url_kwarg = "protocol_slug"
     template_name = "thermocycle/thermocycle_form.html"
     success_url = "thermocycle_detail"
-    node_type = "thermocycler"
     slugs = ['step_slug', 'action_slug', 'thermocycle_slug']
     node_type = "thermocycle"
 

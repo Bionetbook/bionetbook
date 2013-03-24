@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Component Form{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
+      {% if component %}
+      <li class="active">Edit Component</li>
+      {% else %}
+      <li class="active">Add Component</li>
+      {% endif %}
+    </ul>
+{% endblock %}
+
+
+{% block page_title %}
+{% if component %}
+  Editing Component: {{ step.name }} -> {{ action.name }} -> {{ component.name }}
+{% else %}
+  Adding Component to Action: <a href="{{ component.get_absolute_url }}">{{ action.name }}</a>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<form action="." method="post">
+  <div class="row">
+      <!-- main form div -->
+        <div class="span12">
+          <div class="well">{% csrf_token %}
+            <h3>Verb: {{action.name}}</h3>
+            {{ form|crispy }}
+          </div>
+        </div>
+  </div>
+
+  <div class="row">
+      <div class="span12">
+          <div class="actions">
+              <input type="submit" class="btn btn-primary" value="Submit">
+          </div>
+      </div>
+  </div>      
+</form>
+{% endblock %}
