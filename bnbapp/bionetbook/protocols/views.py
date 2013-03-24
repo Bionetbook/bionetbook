@@ -250,15 +250,38 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
-        url = self.object.get_absolute_url()
+        slug = None
+
+        if self.node_type:
+            slug = self.kwargs['%s_slug' % self.node_type]
+
+        if slug and slug in self.object.nodes:
+            url = self.object.nodes[slug].get_absolute_url()
+        else:
+            url = self.object.get_absolute_url()
+
         return http.HttpResponseRedirect(url)
 
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        #print "NODE DELETED"
 
-        messages.add_message(self.request, messages.INFO, "Your node was deleted.")
-        url = self.object.get_absolute_url()
+    # def confirm(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     #print "NODE DELETED"
+
+    #     messages.add_message(self.request, messages.INFO, "Your node was deleted.")
+    #     url = self.object.get_absolute_url()
+    #     return http.HttpResponseRedirect(url)
+
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()                     # <- NEEDED?
+        slug = self.kwargs['%s_slug' % self.node_type]
+        obj = self.object.nodes[slug]
+        parent = obj.parent
+        message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
+        self.object.delete_node(obj['objectid'])
+        # self.object.save()
+        messages.add_message(self.request, messages.INFO, message)
+        url = parent.get_absolute_url()
         return http.HttpResponseRedirect(url)
 
     # def get_context_data(self, **kwargs):
@@ -493,16 +516,16 @@ class StepDeleteView(NodeDeleteView):
         context['step'] = self.object.nodes[step_slug]
         return context
 
-    def cancel(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        step_slug = self.kwargs['step_slug']
+    # def cancel(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     step_slug = self.kwargs['step_slug']
         
-        if step_slug in self.object.nodes:
-            url = self.object.nodes[step_slug].get_absolute_url()
-        else:
-            url = self.object.get_absolute_url()
+    #     if step_slug in self.object.nodes:
+    #         url = self.object.nodes[step_slug].get_absolute_url()
+    #     else:
+    #         url = self.object.get_absolute_url()
 
-        return http.HttpResponseRedirect(url)
+    #     return http.HttpResponseRedirect(url)
 
     def confirm(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -707,28 +730,41 @@ class ActionDeleteView(NodeDeleteView):
         context['step'] = context['action'].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
-    def cancel(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['action_slug']
+    # def cancel(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     slug = self.kwargs['action_slug']
 
-        if slug in self.object.nodes:
-            url = self.object.nodes[slug].get_absolute_url()
-        else:
-            url = self.object.get_absolute_url()
+    #     if slug in self.object.nodes:
+    #         url = self.object.nodes[slug].get_absolute_url()
+    #     else:
+    #         url = self.object.get_absolute_url()
 
-        return http.HttpResponseRedirect(url)
+    #     return http.HttpResponseRedirect(url)
 
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['action_slug']
-        action = self.object.nodes[slug]
-        parent = action.parent
-        message = "The Action \"%s\" was deleted." % action['name']
-        self.object.delete_node(action['objectid'])
-        self.object.save()
-        messages.add_message(self.request, messages.INFO, message)
-        url = parent.get_absolute_url()
-        return http.HttpResponseRedirect(url)
+    # def confirm(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     slug = self.kwargs['action_slug']
+    #     action = self.object.nodes[slug]
+    #     parent = action.parent
+    #     message = "The Action \"%s\" was deleted." % action['name']
+    #     self.object.delete_node(action['objectid'])
+    #     self.object.save()
+    #     messages.add_message(self.request, messages.INFO, message)
+    #     url = parent.get_absolute_url()
+    #     return http.HttpResponseRedirect(url)
+
+
+    # def confirm(self, request, *args, **kwargs):
+    #     self.object = self.get_object()                     # <- NEEDED?
+    #     slug = self.kwargs['%s_slug' % self.node_type]
+    #     obj = self.object.nodes[slug]
+    #     parent = obj.parent
+    #     message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
+    #     self.object.delete_node(obj['objectid'])
+    #     # self.object.save()
+    #     messages.add_message(self.request, messages.INFO, message)
+    #     url = parent.get_absolute_url()
+    #     return http.HttpResponseRedirect(url)
 
 
 
@@ -798,7 +834,7 @@ class ComponentUpdateView(NodeUpdateView):
 
 class ComponentDeleteView(NodeDeleteView):
     template_name = "component/component_delete.html"
-    node_type = "thermocycle"
+    node_type = "component"
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDeleteView, self).get_context_data(**kwargs)
@@ -807,28 +843,28 @@ class ComponentDeleteView(NodeDeleteView):
         context['action'] = context[self.node_type].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
-    def cancel(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['%s_slug' % self.node_type]
+    # def cancel(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     slug = self.kwargs['%s_slug' % self.node_type]
 
-        if slug in self.object.nodes:
-            url = self.object.nodes[slug].get_absolute_url()
-        else:
-            url = self.object.get_absolute_url()
+    #     if slug in self.object.nodes:
+    #         url = self.object.nodes[slug].get_absolute_url()
+    #     else:
+    #         url = self.object.get_absolute_url()
 
-        return http.HttpResponseRedirect(url)
+    #     return http.HttpResponseRedirect(url)
 
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['%s_slug' % self.node_type]
-        action = self.object.nodes[slug]
-        parent = action.parent
-        message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
-        self.object.delete_node(action['objectid'])
-        # self.object.save()
-        messages.add_message(self.request, messages.INFO, message)
-        url = parent.get_absolute_url()
-        return http.HttpResponseRedirect(url)
+    # def confirm(self, request, *args, **kwargs):
+    #     self.object = self.get_object()                     # <- NEEDED?
+    #     slug = self.kwargs['%s_slug' % self.node_type]
+    #     obj = self.object.nodes[slug]
+    #     parent = obj.parent
+    #     message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
+    #     self.object.delete_node(obj['objectid'])
+    #     # self.object.save()
+    #     messages.add_message(self.request, messages.INFO, message)
+    #     url = parent.get_absolute_url()
+    #     return http.HttpResponseRedirect(url)
 
 
 #####################
@@ -844,6 +880,22 @@ class MachineDetailView(NodeDetailView):
         context['machine'] = context['action']['machine']
         return context
 
+class MachineCreateView(NodeCreateViewBase):
+    '''Creates and appends a thermocycle to an action.'''
+
+    form_class = MachineForm
+    template_name = "machine/machine_form.html"
+    success_url = "action_detail"
+    slugs = ['step_slug', 'action_slug']
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        context = self.get_context_data()
+        new_item = Machine(protocol, parent=context['action'], data=form.cleaned_data)
+        #protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your machine \'%s\'' was added." % new_item.title)
+        return super(MachineCreateView, self).form_valid(form)          # DOES NOT SEEM RIGHT
 
 class MachineUpdateView(NodeUpdateView):
     model = Protocol
@@ -858,6 +910,18 @@ class MachineUpdateView(NodeUpdateView):
         context = super(MachineUpdateView, self).get_context_data(**kwargs)
         context['machine'] = context['action']['machine']
         context['form'] = self.form_class(initial = context['machine'])
+        return context
+
+
+class MachineDeleteView(NodeDeleteView):
+    template_name = "machine/machine_delete.html"
+    node_type = "machine"
+
+    def get_context_data(self, **kwargs):
+        context = super(MachineDeleteView, self).get_context_data(**kwargs)
+        slug = self.kwargs['%s_slug' % self.node_type]
+        context[self.node_type] = self.object.nodes[slug]
+        context['action'] = context[self.node_type].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
 #####################
@@ -922,25 +986,25 @@ class ThermocycleDeleteView(NodeDeleteView):
         context['action'] = context[self.node_type].parent       #NOT SURE IF THIS IS BETTER THEN THE ABOVE TECHNIQUE
         return context
 
-    def cancel(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['%s_slug' % self.node_type]
+    # def cancel(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     slug = self.kwargs['%s_slug' % self.node_type]
 
-        if slug in self.object.nodes:
-            url = self.object.nodes[slug].get_absolute_url()
-        else:
-            url = self.object.get_absolute_url()
+    #     if slug in self.object.nodes:
+    #         url = self.object.nodes[slug].get_absolute_url()
+    #     else:
+    #         url = self.object.get_absolute_url()
 
-        return http.HttpResponseRedirect(url)
+    #     return http.HttpResponseRedirect(url)
 
-    def confirm(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        slug = self.kwargs['%s_slug' % self.node_type]
-        action = self.object.nodes[slug]
-        parent = action.parent
-        message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
-        self.object.delete_node(action['objectid'])
-        # self.object.save()
-        messages.add_message(self.request, messages.INFO, message)
-        url = parent.get_absolute_url()
-        return http.HttpResponseRedirect(url)
+    # def confirm(self, request, *args, **kwargs):
+    #     self.object = self.get_object()                     # <- NEEDED?
+    #     slug = self.kwargs['%s_slug' % self.node_type]
+    #     obj = self.object.nodes[slug]
+    #     parent = obj.parent
+    #     message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
+    #     self.object.delete_node(obj['objectid'])
+    #     # self.object.save()
+    #     messages.add_message(self.request, messages.INFO, message)
+    #     url = parent.get_absolute_url()
+    #     return http.HttpResponseRedirect(url)

@@ -17,7 +17,7 @@
 {% block page_title %}
 Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
-    <div><small><a href="{{ action.action_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
+    <div><small><a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a></small></div>
 {% endif %}
 {% endblock %}
 
@@ -27,7 +27,9 @@ Action: {{ action.title }}
     <div class="span4">
       <h2>Action Attributes</h2>
         {% object_data_table action %}
-        <a class="btn btn-warning" href="{{ action.action_delete_url }}">Delete Action</a>
+        {% if protocol_edit_authorization %} 
+        <a class="btn btn-danger" href="{{ action.action_delete_url }}"><i class="icon-trash icon-white"></i> Delete Action</a>
+        {% endif %}
         <p></p>
     </div>
     <!-- <div class "span3.5">
@@ -37,27 +39,32 @@ Action: {{ action.title }}
 
     </div> -->
     <div class="span4">
+        {% if action.has_machine %}
+          <h2>Machine</h2>
+          {% if action.machine %}
+            <a class="btn btn-primary" href="{{ machine.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-success" href="{{ machine.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+            {% object_data_table action.machine %}
+          {% else %}
+            <a class="btn btn-success" href="{{ action.machine_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Machine</a>
+          {% endif %}
+        {% endif %}
         {% if action.has_components %}
         <h2>Components</h2> 
         {% for component in action.components %}
-          <h3>{{component.name}}</h3><a href="{{component.get_update_url}}">edit</a>
+          <h3>{{component.name}}</h3>
+          <a class="btn btn-primary" href="{{ component.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ component.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
           {% object_data_table component %}
-
         {% endfor %}
-        <a class="btn btn-warning" href="{{ action.component_create_url }}">Add Component</a>
-        {% endif %}
-        {% if action.has_machine %}
-        <h2>Machine</h2>
-        {% object_data_table action.machine %}
-        <a class="btn btn-warning" href="{{ action.machine.get_absolute_url }}">View Machine</a>
+        <a class="btn btn-success" href="{{ action.component_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Component</a>
         {% endif %}
         {% if action.has_thermocycler %}
         <h2>Thermocycler</h2>
         {% for thermocycle in action.thermocycle %}
-          <h3>{{thermocycle.name}}</h3><a href="{{ thermocycle.get_update_url }}">edit</a>
+          <h3>{{thermocycle.name}}</h3>
+          <a class="btn btn-primary" href="{{ thermocycle.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ thermocycle.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
           {% object_data_table thermocycle %}
         {% endfor %}
-        <a class="btn btn-warning" href="{{ action.thermocycle_create_url }}">Add Thermocycler</a>
+        <a class="btn btn-success" href="{{ action.thermocycle_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Thermocycler</a>
         {% endif %}
     </div>
   </div>

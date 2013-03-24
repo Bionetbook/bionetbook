@@ -551,6 +551,9 @@ class Component(NodeBase):
     def get_update_url(self):
         return reverse('component_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
 
+    def get_delete_url(self):
+        return reverse('component_delete', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
+
     # @property
     # def title(self):
     #     return "%s - %s - %s" % (self.protocol.name, self.action.step['name'], self.action['name'], self['name'])
@@ -594,8 +597,11 @@ class Machine(NodeBase):
         return reverse('machine_detail', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
         #return reverse("machine_detail", kwargs={'protocol_slug': self.protocol.slug, 'step_slug':self.action.step.slug, 'action_slug':self.action.slug, 'machine_slug':self.slug  })
 
-    def machine_update_url(self):
+    def get_update_url(self):
         return reverse('machine_edit', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
+
+    def get_delete_url(self):
+        return reverse('machine_delete', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
 
 
     # @property
@@ -681,6 +687,8 @@ class Thermocycle(NodeBase):
     def get_update_url(self):
         return reverse('thermocycle_update', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermocycle_slug':self.slug  })
 
+    def get_delete_url(self):
+        return reverse('thermocycle_delete', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
 
     # def get_absolute_url(self):
     #     return "#NDF"
