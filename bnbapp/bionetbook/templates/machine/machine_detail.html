@@ -43,7 +43,7 @@
         {% for thermocycler in action.thermocycler %}
           {% object_data_table thermocycler %}
         {% endfor %}
-        <a class="btn btn-warning" href="#">Add Thermocycler</a>
+        <a class="btn btn-warning" href="{{ action.thermocycle_add_url }}">Add Thermocycler</a>
         {% endif %}
     </div>
   </div>

@@ -7,7 +7,7 @@ class ThermocycleForm(forms.VerbForm):
     slug = "thermocycle"
     has_thermocycler = True
 
-    phase_name = forms.CharField(required = False, initial = 'Initiaion denaturation')
+    phase_name = forms.CharField(required = False, help_text='example: Initiaion denaturation')
     min_temp = forms.FloatField()
     max_temp = forms.FloatField(required = False)
     min_time = forms.FloatField()

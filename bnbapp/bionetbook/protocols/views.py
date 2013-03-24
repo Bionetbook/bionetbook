@@ -722,12 +722,30 @@ class ComponentDetailView(NodeDetailView):
     template_name = "component/component_detail.html"
     slugs = ['step_slug', 'action_slug', 'component_slug']
 
-# class ComponentUpdateView(NodeDetailView):
-#     form_class = ComponentForm
-#     template_name = "component/component_form.html"
-#     success_url = "component_detail"
-#     node_type = "component"
-#     slugs = ['step_slug', 'action_slug', 'componenet_slug']
+
+class ComponentCreateView(NodeCreateViewBase):
+    '''Creates and appends a component to an action.'''
+
+    form_class = ComponentForm
+    template_name = "component/component_form.html"
+    success_url = "action_detail"
+    slugs = ['step_slug', 'action_slug']
+
+    def get_url_args(self):
+        args = super(ComponentCreateView, self).get_url_args()
+        context = self.get_context_data()
+        args['step_slug'] = context['step'].slug
+        args['action_slug'] = context['action'].slug
+        return args
+
+    def form_valid(self, form):
+        protocol = self.get_protocol()
+        new_item = Component(protocol, data=form.cleaned_data)
+        protocol.save()
+
+        messages.add_message(self.request, messages.INFO, "Your component \'%s\'' was added." % new_item.title)
+        return super(ComponentCreateView, self).form_valid(form)
+
 
 class ComponentUpdateView(NodeUpdateView):
     model = Protocol
@@ -789,9 +807,8 @@ class ThermocycleCreateView(NodeCreateViewBase):
     '''Creates and appends a thermocycle to an action.'''
 
     form_class = ThermocyclerForm
-    template_name = "thermocycler/thermocycler_form.html"
+    template_name = "thermocycle/thermocycle_form.html"
     success_url = "action_detail"
-    # node_type = "thermocycler"
     slugs = ['step_slug', 'action_slug']
 
     def get_url_args(self):
@@ -808,11 +825,6 @@ class ThermocycleCreateView(NodeCreateViewBase):
 
         messages.add_message(self.request, messages.INFO, "Your thermocycle \'%s\'' was added." % new_item.title)
         return super(ThermocycleCreateView, self).form_valid(form)
-
-    # def form_invalid(self, form):
-    #     return self.render_to_response(self.get_context_data(form=form))
-
-
 
 
 class ThermocycleUpdateView(NodeDetailView):

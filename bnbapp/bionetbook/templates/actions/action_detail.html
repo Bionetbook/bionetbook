@@ -57,7 +57,7 @@ Action: {{ action.title }}
           <h3>{{thermocycle.name}}</h3><a href="{{ thermocycle.get_update_url}}">edit</a>
           {% object_data_table thermocycle %}
         {% endfor %}
-        <a class="btn btn-warning" href="#">Add Thermocycler</a>
+        <a class="btn btn-warning" href="{{ action.thermocycle_create_url }}">Add Thermocycler</a>
         {% endif %}
     </div>
   </div>

@@ -80,4 +80,4 @@ class ThermocyclerForm(NodeForm):
     min_time = forms.FloatField()
     max_time = forms.FloatField()
     cycles = forms.IntegerField()
-    #cycle_back_to = forms.ChoiceField(required=False, choices = [str(x) for x in range(1,10)] )
+    cycle_back_to = forms.ChoiceField(required=False, choices = [(x,x) for x in range(1,10)] )
