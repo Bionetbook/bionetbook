@@ -42,7 +42,7 @@ class ComponentForm(NodeForm):
     #reagent_name = forms.CharField(max_length=100, required=False)                 # THIS IS COVERED WITH THE name FIELD
     conc_units = forms.ChoiceField(required=False, choices=CONCENTRATION_UNITS )
     vol_units = forms.ChoiceField(required=False, choices=VOLUME_UNITS )
-    ammount_units = forms.ChoiceField(required=False, choices = AMMOUNT_UNITS)
+    ammount_units = forms.ChoiceField(required=False, choices = AMMOUNT_UNITS, initial = None)
     min_conc = forms.FloatField(required=False)
     max_conc = forms.FloatField(required=False)
     min_vol = forms.FloatField(required=False)
@@ -60,12 +60,12 @@ class MachineForm(NodeForm):
     min_time = forms.FloatField(required=False)
     max_time = forms.FloatField(required=False)
     time_comment = forms.CharField(required=False)
-    # min_speed = forms.FloatField()
-    # max_speed = forms.FloatField()
     min_temp = forms.FloatField(required=False)#, initial = 22.0)
     max_temp = forms.FloatField(required=False)#, initial = 22.0)
     temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
     temp_comment = forms.CharField(required=False)
+    # min_speed = forms.FloatField()
+    # max_speed = forms.FloatField()
     # speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
     # speed_comment = forms.CharField(required=False)
     

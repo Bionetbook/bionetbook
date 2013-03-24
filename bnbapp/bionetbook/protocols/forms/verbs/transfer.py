@@ -1,21 +1,14 @@
 from protocols.forms import forms
-
+VOLUME_UNITS = (("l","liter"),("ml","Mililiter"), ("ul","microliter"), )
 
 class TransferForm(forms.VerbForm):
 
     name = "Transfer"
     slug = "transfer"
 
-    describe_where = forms.CharField()
-    min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
-    duration_min_time = forms.IntegerField()
-    comment_why = forms.CharField()
-    edit_kit_name = forms.CharField()
-    edit_protocol_output = forms.CharField()
-    edit_remarks = forms.CharField()
-    edit_what_remark = forms.CharField()
-    specify_machine = forms.CharField()
-    min_spin_speed = forms.IntegerField()
-    max_spin_speed = forms.IntegerField()
-    edit_why_step = forms.CharField()
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    old_vessel = forms.CharField(help_text = 'Where are you transferring from?')
+    new_vessel = forms.CharField(help_text = 'Where are you transferring to?')
+    target = forms.CharField(help_text = 'what are you transferring?')
+    volume = forms.FloatField()
+    volume_units = forms.ChoiceField(choices = VOLUME_UNITS)

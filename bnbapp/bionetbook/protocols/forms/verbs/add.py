@@ -8,7 +8,7 @@ class AddForm(forms.VerbForm):
     slug = "add"
     has_component = True
 
-    duration = forms.IntegerField(help_text='this is the minimal time this should take')
+    # duration = forms.IntegerField(help_text='this is the minimal time this should take')
     describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
     remarks = forms.CharField(required = False)
     edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
