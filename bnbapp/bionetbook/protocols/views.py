@@ -800,7 +800,7 @@ class ThermocycleCreateView(NodeCreateViewBase):
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your thermocycle \'%s\'' was added." % new_item.title)
-        return super(ThrmocyclerCreateView, self).form_valid(form)
+        return super(ThermocycleCreateView, self).form_valid(form)
 
     # def form_invalid(self, form):
     #     return self.render_to_response(self.get_context_data(form=form))
