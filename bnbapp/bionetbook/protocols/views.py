@@ -790,9 +790,16 @@ class ThermocycleCreateView(NodeCreateViewBase):
 
     form_class = ThermocyclerForm
     template_name = "thermocycler/thermocycler_form.html"
-    success_url = "thermocycler_detail"
+    success_url = "action_detail"
     # node_type = "thermocycler"
     slugs = ['step_slug', 'action_slug']
+
+    def get_url_args(self):
+        args = super(ThermocycleCreateView, self).get_url_args()
+        context = self.get_context_data()
+        args['step_slug'] = context['step'].slug
+        args['action_slug'] = context['action'].slug
+        return args
 
     def form_valid(self, form):
         protocol = self.get_protocol()
