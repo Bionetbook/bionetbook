@@ -22,6 +22,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
 
 class AuthorizedForProtocolMixin(object):
+    '''Checks to see if the user has the right to see the given protocol'''
 
     def get_protocol(self):
         if hasattr(self, "protocol"):

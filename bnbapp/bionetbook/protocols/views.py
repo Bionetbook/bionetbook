@@ -313,7 +313,7 @@ class ProtocolDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailV
 class ProtocolListView(LoginRequiredMixin, ListView):
 
     model = Organization
-    template_name = "organization/organization_list.html"
+    template_name = "protocols/protocol_list.html"
     slug_url_kwarg = "owner_slug"
 
     def get_queryset(self):

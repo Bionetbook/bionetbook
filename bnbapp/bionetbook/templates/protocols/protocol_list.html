@@ -9,15 +9,23 @@
     </ul>
 {% endblock %}
 
-{% block page_title %}Protocol List 
-    {% if request.user.is_authenticated %}
-        <small>( <a href="{% url protocol_create %}">new</a> )</small>
-    {% endif %}
+{% block page_title %}Protocol List
 {% endblock %}
 
 {% block content %}
+<div class=row>
+    <div class="span12" style="text-align: right">
+        <a class="btn btn-success" href="{% url compare_select %}">Compare Protocols</a>
+        <hr>
+    </div>
+</div>
+{% for object in object_list %}
+{% with profile=object.owner.get_profile %}
 <div class="row">
     <div class="span12">
+        <h2><a href="{{ object.organization_protocol_list }}">{{ object.name }}</a></h2>
+    </div>
+    <div class="span10">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -25,7 +33,7 @@
                         <th></th>
                     {% endif %}
                     <th>Title</th>
-                    <th>Owner</th>
+                    <th>Author</th>
                     <th>Steps</th>
                     <th>Actions</th>
                     {% if request.user.is_authenticated %}
@@ -35,36 +43,38 @@
                 </tr>
             </thead>
             <tbody>
-                {% for object in object_list %}
-                {% with profile=object.owner.get_profile %}
-                <tr>    
-                    {% if request.user.is_authenticated %}
-                        <td>
-                            {% if object.status == object.STATUS_DRAFT %}
-                                {% if request.user == object.owner or request.user.is_superuser or request.user.is_staff %}
-                                    <a href="{% url protocol_update object.slug %}"><i class="icon-edit"></i></a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-
-                    {% endif %}
+                {% for protocol in object.protocol_set.all %}
+                <tr>
                     <td>
-                        <a href="{% url protocol_detail object.slug %}">{{ object }}</a>
+                        {% if not protocol.published %}
+                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% endif %}
+                        <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a>
                     </td>
+                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
                     <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
-                    <td>{{ object.step_set.count }}</td>
-                    <td>{{ object.actions.count }}</td>
-                    <td>{{ object.status }}</td>
-                    <td>{{ object.modified }}</td>
+                    <td>{{ protocol.steps|length }}</td>
+                    <td>{{ protocol.actions.count }}</td>
+                    <td>{{ protocol.status }}</td>
+                    <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
                 </tr>
-                {% endwith %}
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url protocol_create %}">ADD PROTOCOL</a>
-        <hr>
-
     </div>
-  </div>
-{% endblock %}
+</div>
+<div class="row">
+    <div class="span2 offset10">
+        {% if request.user.is_authenticated %}
+        <a class="btn btn-info" href="{{ object.create_protocol_url }}">NEW PROTOCOL</a>
+        {% endif %}
+        <br>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>
+{% endwith %}
+{% endfor %}
 
+{% endblock %}

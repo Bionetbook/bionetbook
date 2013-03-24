@@ -27,5 +27,7 @@ class Profile(TimeStampedModel):
         return user.username
 
     def get_absolute_url(self):
-
         return reverse("profile_detail", kwargs={"pk": self.pk})
+
+    # def get_organizations(self):
+    #     return self.organization_set.all()

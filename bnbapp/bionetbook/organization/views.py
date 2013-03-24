@@ -2,14 +2,14 @@ from django.core.urlresolvers import reverse
 #from django import forms
 #from django.contrib import messages
 #from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
+from django.views.generic import ListView, DetailView 			#, CreateView, UpdateView, FormView
 #from django.views.generic.detail import SingleObjectMixin
 #from django.views.generic.edit import FormMixin
 #from django.http import HttpResponseRedirect
 
 
 #from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
+#from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
 from braces.views import LoginRequiredMixin
 
 #from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
@@ -36,3 +36,6 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
 #	template_name = 'organization/organization_detail.html'
 
 
+class OrganizationListView(LoginRequiredMixin, ListView):
+
+    model = Organization
