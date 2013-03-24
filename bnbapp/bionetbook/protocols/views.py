@@ -247,6 +247,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
     template_name = "protocols/node_delete.html"
     slugs = []
     node_type = None
+    cancel_parent_redirect = False
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -256,7 +257,10 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
             slug = self.kwargs['%s_slug' % self.node_type]
 
         if slug and slug in self.object.nodes:
-            url = self.object.nodes[slug].get_absolute_url()
+            if self.cancel_parent_redirect:         # REDIRECT TO THE PARENT'S DETAIL PAGE ON CANCEL
+                url = self.object.nodes[slug].parent.get_absolute_url()
+            else:
+                url = self.object.nodes[slug].get_absolute_url()
         else:
             url = self.object.get_absolute_url()
 
@@ -277,7 +281,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         slug = self.kwargs['%s_slug' % self.node_type]
         obj = self.object.nodes[slug]
         parent = obj.parent
-        message = "The %s \"%s\" was deleted." % (self.node_type, self['name'])
+        message = "The %s \"%s\" was deleted." % (self.node_type, obj['name'])
         self.object.delete_node(obj['objectid'])
         # self.object.save()
         messages.add_message(self.request, messages.INFO, message)
@@ -835,7 +839,8 @@ class ComponentUpdateView(NodeUpdateView):
 class ComponentDeleteView(NodeDeleteView):
     template_name = "component/component_delete.html"
     node_type = "component"
-
+    cancel_parent_redirect = True
+    
     def get_context_data(self, **kwargs):
         context = super(ComponentDeleteView, self).get_context_data(**kwargs)
         slug = self.kwargs['%s_slug' % self.node_type]
@@ -916,6 +921,7 @@ class MachineUpdateView(NodeUpdateView):
 class MachineDeleteView(NodeDeleteView):
     template_name = "machine/machine_delete.html"
     node_type = "machine"
+    cancel_parent_redirect = True
 
     def get_context_data(self, **kwargs):
         context = super(MachineDeleteView, self).get_context_data(**kwargs)
@@ -978,6 +984,7 @@ class ThermocycleUpdateView(NodeUpdateView):
 class ThermocycleDeleteView(NodeDeleteView):
     template_name = "thermocycle/thermocycle_delete.html"
     node_type = "thermocycle"
+    cancel_parent_redirect = True
 
     def get_context_data(self, **kwargs):
         context = super(ThermocycleDeleteView, self).get_context_data(**kwargs)
