@@ -39,7 +39,7 @@ forms.VerbForm = VerbForm
 
 class ComponentForm(NodeForm):
 
-    reagent_name = forms.CharField(max_length=100, required=False)
+    #reagent_name = forms.CharField(max_length=100, required=False)                 # THIS IS COVERED WITH THE name FIELD
     conc_units = forms.ChoiceField(required=False, choices=CONCENTRATION_UNITS )
     vol_units = forms.ChoiceField(required=False, choices=VOLUME_UNITS )
     ammount_units = forms.ChoiceField(required=False, choices = AMMOUNT_UNITS)

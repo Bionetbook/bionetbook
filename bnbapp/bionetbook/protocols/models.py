@@ -533,7 +533,7 @@ class Component(NodeBase):
         #self.parent = parent
         super(Component, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        if 'reagent_name' in self:
+        if 'name' in self and not['name'] and 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
 
         if 'components' in parent:
