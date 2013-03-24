@@ -800,7 +800,7 @@ class MachineUpdateView(NodeUpdateView):
 
 class ThermocycleDetailView(NodeDetailView):
     template_name = "thermocycle/thermocycle_detail.html"
-    slugs = ['step_slug', 'action_slug', 'thermo_slug']
+    slugs = ['step_slug', 'action_slug', 'thermocycle_slug']
 
 
 class ThermocycleCreateView(NodeCreateViewBase):
@@ -834,9 +834,13 @@ class ThermocycleCreateView(NodeCreateViewBase):
         return super(ThermocycleCreateView, self).form_valid(form)
 
 
-class ThermocycleUpdateView(NodeDetailView):
+class ThermocycleUpdateView(NodeUpdateView):
+    model = Protocol
     form_class = ThermocyclerForm
+    slug_url_kwarg = "protocol_slug"
     template_name = "thermocycle/thermocycle_form.html"
     success_url = "thermocycle_detail"
     node_type = "thermocycler"
-    slugs = ['step_slug', 'action_slug', 'thermo_slug']
+    slugs = ['step_slug', 'action_slug', 'thermocycle_slug']
+    node_type = "thermocycle"
+

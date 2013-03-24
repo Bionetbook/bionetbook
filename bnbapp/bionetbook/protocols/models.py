@@ -666,10 +666,10 @@ class Thermocycle(NodeBase):
         #     self['name'] = self.pop("reagent_name")
         
     def get_absolute_url(self):
-        return reverse("thermocycler_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
+        return reverse("thermocycle_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermocycle_slug':self.slug  })
 
     def get_update_url(self):
-        return reverse('thermocycler_update', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermo_slug':self.slug  })
+        return reverse('thermocycle_update', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'thermocycle_slug':self.slug  })
 
 
     # def get_absolute_url(self):
