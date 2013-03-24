@@ -764,7 +764,7 @@ class ComponentUpdateView(NodeUpdateView):
     form_class = ComponentForm
     slug_url_kwarg = "protocol_slug"
     template_name = "component/component_form.html"
-    success_url = "component_detail"
+    success_url = "action_detail"
     node_type = "component"
     slugs = ['step_slug', 'action_slug', 'component_slug']
 
@@ -773,6 +773,19 @@ class ComponentUpdateView(NodeUpdateView):
     #     context['component'] = self.object.nodes[componenet_slug]
     #     context['form'] = self.form_class(initial = context['component'])
     #     return context
+
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            args = self.get_url_args()
+            args.pop('component_slug')
+            url = reverse(self.success_url, kwargs=args)
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
 
 
 
@@ -838,7 +851,19 @@ class ThermocycleUpdateView(NodeUpdateView):
     form_class = ThermocyclerForm
     slug_url_kwarg = "protocol_slug"
     template_name = "thermocycle/thermocycle_form.html"
-    success_url = "thermocycle_detail"
+    success_url = "action_detail"
     slugs = ['step_slug', 'action_slug', 'thermocycle_slug']
     node_type = "thermocycle"
 
+    def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
+        if self.success_url:
+            args = self.get_url_args()
+            args.pop('thermocycle_slug')
+            url = reverse(self.success_url, kwargs=args)
+        else:
+            raise ImproperlyConfigured(
+                "No URL to redirect to. Provide a success_url.")
+        return url
