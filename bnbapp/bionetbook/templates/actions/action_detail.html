@@ -40,7 +40,7 @@ Action: {{ action.title }}
     </div> -->
     <div class="span6">
         {% if action.has_machine %}
-          <h2>Machine</h2>
+          <h2>Machine: {{ action.machine.name }}</h2>
           {% if action.machine %}
             <a class="btn btn-primary" href="{{ action.machine.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ action.machine.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
             {% object_data_table action.machine %}

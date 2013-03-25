@@ -897,7 +897,8 @@ class MachineCreateView(NodeCreateViewBase):
         protocol = self.get_protocol()
         context = self.get_context_data()
         new_item = Machine(protocol, parent=context['action'], data=form.cleaned_data)
-        #protocol.save()
+        protocol.save()
+        print "PROTOCOL SAVED"
 
         messages.add_message(self.request, messages.INFO, "Your machine \'%s\'' was added." % new_item.title)
         return super(MachineCreateView, self).form_valid(form)          # DOES NOT SEEM RIGHT

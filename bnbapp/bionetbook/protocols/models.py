@@ -591,6 +591,12 @@ class Machine(NodeBase):
             if item not in data:
                 data[item] = None
 
+        # if 'machine' in parent:
+        #     parent['machine'] = self
+        
+        parent['machine'] = self # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+
+
         super(Machine, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
     def get_absolute_url(self):
