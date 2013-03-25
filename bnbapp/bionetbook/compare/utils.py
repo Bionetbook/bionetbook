@@ -55,15 +55,59 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
 
     if 'machine' in kwargs:
+        _temp = ''
+        _time = ''
+        _speed = ''
 
-        for i in changed:
-            stack.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+        if 'temp' in changed:
+            _temp = '''
+            <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+            <TD color="#015666"><font color="#015666"> %s</font></TD>'''%(
+            str(x['temp'][0]) + str(x['temp'][1]), 
+            str(y['temp'][0]) + str(y['temp'][1]))
+        
+        if 'temp' in unchanged and 'temp' not in changed:
+            _temp = '''
+            <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
+            str(x['temp'][0]) + ' ' + str(x['temp'][1]))          
+    
+        if 'time' in changed:
+            _time = '''
+            <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+            <TD color="#015666"><font color="#015666"> %s</font></TD>'''%(
+            str(x['time'][0]) + str(x['time'][1]), 
+            str(y['time'][0]) + str(y['time'][1]))
+        
+        if 'time' in unchanged and 'time' not in changed:
+            _time = '''
+            <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
+            str(x['time'][0]) + ' ' + str(x['time'][1]))
+    
+        if 'speed' in changed:
+            _speed = '''
+            <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+            <TD color="#015666"><font color="#015666"> %s</font></TD>'''%(
+            str(x['speed'][0]) + str(x['speed'][1]), 
+            str(y['speed'][0]) + str(y['speed'][1]))
+        
+        if 'speed' in unchanged and 'speed' not in changed:
+            _speed = '''
+            <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
+            str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        for j in unchanged:
-            stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j])) 
 
-        return stack
 
+        _name = '<TR><TD>%s</TD>' %x['name']    
+
+        return  _name + _temp + _time + _speed + '</TR>'
+
+        # for i in changed:
+            # stack.append('<TR><TD color="#C0C0C0"><font color="#B82F3">%s</font></TD><TD color="#C0C0C0"><font color="#015666">%s</font></TD></TR>'%(x[i], y[i]))
+        # for j in unchanged:
+        #     stack.append('<TR><TD color="#C0C0C0" colspan="2">%s</TD></TR>'%(x[j])) 
+
+        # return stack
+        
 
     if 'components' in kwargs: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
         ''' assuming that the objectids of the reagents are the same'''

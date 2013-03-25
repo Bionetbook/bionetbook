@@ -19,7 +19,7 @@ from organization.models import Organization
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, settify, unify
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, settify #, unify
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -564,7 +564,7 @@ class Component(NodeBase):
 
     @property
     def label(self):
-        return unify(self, summary = False)
+        return settify(self, summary = False)
 
     @property
     def summary(self):
@@ -572,7 +572,7 @@ class Component(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
         
-        tmp = unify(self, summary = True)
+        tmp = settify(self, summary = True)
         tmp['name'] = self['name']      
 
         return tmp
@@ -627,7 +627,7 @@ class Machine(NodeBase):
         ''' takes self.label as a list and turns it into a dict:
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
-        tmp = settify(self, summary = True)
+        tmp = settify(self, shorthand = True, summary = True)
         tmp['name'] = self['name']   
 
 

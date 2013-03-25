@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from compare.models import ProtocolPlot, DictDiffer
 from django.views.generic import TemplateView, View
-from compare.utils import html_label_two_protocols, merge_table_pieces, set_title_label, add_step_label  
+from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label  
 from django.core.urlresolvers import reverse
 from protocols.models import Protocol
 
