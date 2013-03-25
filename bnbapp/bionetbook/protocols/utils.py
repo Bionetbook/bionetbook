@@ -73,17 +73,17 @@ def settify(settings_dict, shorthand = True, summary = False):
             if max_item in data and min_item in data:
                 if data[max_item] == data[min_item]:
                     # units_c = conc['max_conc']
-                    numbers = data[max_item]
+                    numbers = str(data[max_item])
                 else:
-                    units_c = data[min_item] + '-' + data[max_item]
-                    numbers = data[min_item] + '-' + data[max_item]
+                    # units_c = data[min_item] + '-' + data[max_item]
+                    numbers = str(data[min_item]) + '-' + str(data[max_item])
             else:
                 if max_item in data:
                      # units_c = conc[max_item]
-                    numbers = data[max_item]
+                    numbers = str(data[max_item])
                 if min_item in data:
                      # units_c = conc[min_item]   
-                    numbers = data[min_item] 
+                    numbers = str(data[min_item]) 
 
             if numbers != None:
                 
@@ -134,7 +134,7 @@ def shorten(units, reverse = False):
         'nanograms/microLiter': 'ng/ul',
         'Units/microliter': 'U/ul',
         'Units': 'U',
-        'X':'X',
+        # 'X':'X',
         'minutes':'m', 
         'minute':'m', 
         'mins':'m', 

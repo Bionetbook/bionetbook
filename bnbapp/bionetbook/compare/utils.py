@@ -75,8 +75,8 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             _time = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
             <TD color="#015666"><font color="#015666"> %s</font></TD>'''%(
-            str(x['time'][0]) + str(x['time'][1]), 
-            str(y['time'][0]) + str(y['time'][1]))
+            str(x['time'][0]) + ' ' + str(x['time'][1]), 
+            str(y['time'][0]) + ' ' + str(y['time'][1]))
         
         if 'time' in unchanged and 'time' not in changed:
             _time = '''
