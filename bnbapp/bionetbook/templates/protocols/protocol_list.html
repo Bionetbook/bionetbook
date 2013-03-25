@@ -5,10 +5,10 @@
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
         {% for object in object_list %}
-      <li><a href="{{ object.organization_protocol_list }}">{{ object.name }}</a> <span class="divider">/</span></li>
+      <li class="active">{{ object.name }}</li>
         {%endfor%}
-      <li class="active">Protocols</li>
     </ul>
 {% endblock %}
 
@@ -26,7 +26,7 @@
 {% with profile=object.owner.get_profile %}
 <div class="row">
     <div class="span12">
-        <h2><a href="{{ object.organization_protocol_list }}">{{ object.name }}</a></h2>
+        <h2>{{ object.name }}</h2>
     </div>
     <div class="span10">
         <table class="table table-striped">

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load core_tags %}
+
+{% block title %}Machine{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block page_title %}Machine{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">{{action.parent.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{machine.get_absolute_url}}">{{machine.name}}</a> <span class="divider">/</span></li>
+      <li class="active">Delete</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- main form div -->
+    <div class="span6">
+      {% if object %}<h2>Confirm</h2>{% endif %}
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+        <div class="actions">
+          <p>Are you sure you wish to delete this Machine, "{{ machine.name }}"?</p>
+          <input type="submit" class="btn btn-danger" name="cancel" value="Cancel">
+          <input type="submit" class="btn btn-success" name="confirm" value="Confirm">
+        </div>
+      </form>
+    </div>
+
+    <!-- secondary form div -->
+    {% if step %}
+    <div class="span6">
+        <h2>Detail</h2>
+        {% object_data_table machine %}
+    </div>
+    {% endif %}
+  </div>
+{% endblock %}

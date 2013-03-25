@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from braces.views import LoginRequiredMixin
 
-from core.utils import check_protocol_edit_authorization
+from core.utils import check_protocol_edit_authorization, check_protocol_view_authorization
 from protocols.models import Protocol
 
 logger = getLogger('django.request')
@@ -45,7 +45,7 @@ class AuthorizedForProtocolMixin(object):
 
         # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
-            if check_protocol_edit_authorization(protocol, self.request.user):
+            if check_protocol_view_authorization(protocol, self.request.user):
                 return protocol
 
         # if published just show it.

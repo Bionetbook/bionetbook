@@ -28,12 +28,6 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/edit/$', view=views.ActionUpdateView.as_view(), name='action_update'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/delete/$', view=views.ActionDeleteView.as_view(), name='action_delete'),
 
-    # MACHINE
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/add/$', view=views.MachineCreateView.as_view(), name='machine_create'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/edit/$', view=views.MachineUpdateView.as_view(), name='machine_edit'),
-    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/delete/$', view=views.MachineDeleteView.as_view(), name='machine_delete'),
-
     # COMPONENT
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/component/add/$', view=views.ComponentCreateView.as_view(), name='component_create'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/c/(?P<component_slug>[-\w]+)/$', view=views.ComponentDetailView.as_view(), name='component_detail'),
@@ -45,4 +39,10 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermocycle_slug>[-\w]+)/$', view=views.ThermocycleDetailView.as_view(), name='thermocycle_detail'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermocycle_slug>[-\w]+)/edit/$', view=views.ThermocycleUpdateView.as_view(), name='thermocycle_update'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/t/(?P<thermocycle_slug>[-\w]+)/delete/$', view=views.ThermocycleDeleteView.as_view(), name='thermocycle_delete'),
+
+    # MACHINE
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/machine/add/$', view=views.MachineCreateView.as_view(), name='machine_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/$', view=views.MachineDetailView.as_view(), name='machine_detail'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/edit/$', view=views.MachineUpdateView.as_view(), name='machine_edit'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/(?P<step_slug>[-\w]+)/(?P<action_slug>[-\w]+)/(?P<machine_slug>[-\w]+)/delete/$', view=views.MachineDeleteView.as_view(), name='machine_delete'),
 )
