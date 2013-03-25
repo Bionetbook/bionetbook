@@ -24,7 +24,7 @@ Action: {{ action.title }}
 {% block content %}
 
 <div class="row">
-    <div class="span4">
+    <div class="span6">
       <h2>Action Attributes</h2>
         {% object_data_table action %}
         {% if protocol_edit_authorization %} 
@@ -38,7 +38,7 @@ Action: {{ action.title }}
 
 
     </div> -->
-    <div class="span4">
+    <div class="span6">
         {% if action.has_machine %}
           <h2>Machine</h2>
           {% if action.machine %}
