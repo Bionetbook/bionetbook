@@ -64,10 +64,10 @@ class MachineForm(NodeForm):
     max_temp = forms.FloatField(required=False)#, initial = 22.0)
     temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
     temp_comment = forms.CharField(required=False)
-    # min_speed = forms.FloatField()
-    # max_speed = forms.FloatField()
-    # speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
-    # speed_comment = forms.CharField(required=False)
+    min_speed = forms.FloatField(required=False)
+    max_speed = forms.FloatField(required=False)
+    speed_units = forms.ChoiceField(required=False, choices=SPEED_UNITS )
+    speed_comment = forms.CharField(required=False)
     
     
 
@@ -76,8 +76,8 @@ class ThermocyclerForm(NodeForm):
 
     phase_name = forms.CharField(required=False, help_text='example: Initiaion denaturation')
     min_temp = forms.FloatField()
-    max_temp = forms.FloatField()
+    max_temp = forms.FloatField(required=False)
     min_time = forms.FloatField()
-    max_time = forms.FloatField()
-    cycles = forms.IntegerField()
+    max_time = forms.FloatField(required=False)
+    cycles = forms.IntegerField(required=False)
     cycle_back_to = forms.ChoiceField(required=False, choices = [(x,x) for x in range(1,10)] )

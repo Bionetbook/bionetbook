@@ -43,7 +43,7 @@ from melt import MeltForm
 from mix import MixForm
 from open_ import OpenForm
 from pass_ import PassForm
-from pcr import PcrForm
+# from pcr import PcrForm
 from photograph import PhotographForm
 from pipette_out import PipetteOutForm
 from place import PlaceForm
