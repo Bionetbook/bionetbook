@@ -18,3 +18,7 @@ restoredata:
 	dropdb bionetbook
 	createdb bionetbook
 	pg_restore --verbose --clean --no-acl --no-owner -d bionetbook latest.dump
+
+
+# OTHER USEFUL COMMANDS
+#	heroku domains:add www.bionetbook.com --app bnbapp		# https://devcenter.heroku.com/articles/custom-domains
