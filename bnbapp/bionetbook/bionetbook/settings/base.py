@@ -47,7 +47,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '{{ secret_key }}'
+SECRET_KEY = '+@6q$m-n3aj^@h*1(ct2hs#hzym@phrc4ylg0x)o^kf^2g&8mo'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
