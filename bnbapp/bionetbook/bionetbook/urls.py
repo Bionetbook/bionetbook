@@ -6,13 +6,12 @@ from django.views.generic import TemplateView
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    #url(r'^static/(?P.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(regex=r'^$', view=TemplateView.as_view(template_name="home.html"), name="home"),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^dashboard/', include('core.urls')),
     url(r'^profiles/', include('profiles.urls')),
-    #url(r'^api/', include('api.urls')),
+    url(r'^api/', include('api.urls')),
     url(r'^compare/', include('compare.urls')),
     url(r'^organization/', include('organization.urls')),
     url(r'^signup/', include('interest.urls')),
