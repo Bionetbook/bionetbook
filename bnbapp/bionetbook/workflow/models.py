@@ -1,6 +1,10 @@
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
+from protocols.models import Protocol
+from organization.models import Organization
 # Create your models here.
 
 class Workflow(TimeStampedModel):

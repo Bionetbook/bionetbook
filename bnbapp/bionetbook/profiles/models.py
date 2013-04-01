@@ -6,6 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_extensions.db.models import TimeStampedModel
 
+from protocols.models import Protocol
+
 
 class Profile(TimeStampedModel):
 
