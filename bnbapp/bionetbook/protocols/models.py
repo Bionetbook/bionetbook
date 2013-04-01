@@ -928,7 +928,18 @@ class Step(NodeBase):
     #     return 
 
 
+class Favorite(TimeStampedModel):
+    '''For simple bookmarking by a user for quickly finding protocols they have tagged as liking'''
+    user = models.ForeignKey(User, blank=True, null=True)
+    protocols = models.ManyToManyField(Protocol)
+    note = models.TextField(_("Notes"), blank=True, null=True)
+
+    def __unicode__(self):
+        return self.user.username + " - " + self.protocol.name
+
+
 class Workflow(TimeStampedModel):
+    '''Collection of Protocols for working doing an experiment with'''
     name = models.CharField(_("Name"), max_length=255, unique=True)
     author = models.ForeignKey(User, blank=True, null=True)
     owner = models.ForeignKey(Organization)
@@ -940,6 +951,7 @@ class Workflow(TimeStampedModel):
 
 
 class WorkflowProtocol(TimeStampedModel):
+    '''Connection model between Protocols and Workflows'''
     protocol = models.ForeignKey(Protocol)
     workflow = models.ForeignKey(Workflow)
     order = models.IntegerField(_("Order or Protocols"), blank=True, null=True)
