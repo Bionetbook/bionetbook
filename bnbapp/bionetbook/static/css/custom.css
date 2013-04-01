@@ -22,10 +22,6 @@ height: 25px;
 
 
 
-
-
-
-
 /* Sticky footer styles
 -------------------------------------------------- */
 
@@ -49,13 +45,39 @@ body {
 footer {
 	height: 60px;
 }
+
 footer {
+	color: gray;
 	background-color: #f5f5f5;
+	padding-top: 20px;
+}
+
+footer ul {
+	display: block;
+	list-style-type: none;
+	text-align: right;
+}
+
+footer li {
+	display: inline;
+	line-height: 20px;
+	border-style:solid;
+	border-width:0px;
+	border-right-width:1px;
+	padding-right:5px;
+}
+
+footer .menu-end {
+	border-right-width:0px;
+	padding-right:0px;
+}
+
+footer li a {
 }
 
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
-	#footer {
+	footer {
 		margin-left: -20px;
 		margin-right: -20px;
 		padding-left: 20px;
@@ -63,21 +85,12 @@ footer {
 	}
 }
 
-
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
 #wrap > .container {
 	padding-top: 60px;
 }
+
 .container .credit {
 	margin: 20px 0;
-}
-
-code {
-	font-size: 80%;
 }
 
 
