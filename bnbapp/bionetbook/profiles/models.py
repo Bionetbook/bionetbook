@@ -31,3 +31,13 @@ class Profile(TimeStampedModel):
 
     # def get_organizations(self):
     #     return self.organization_set.all()
+
+
+class Favorite(TimeStampedModel):
+    '''For simple bookmarking by a user for quickly finding protocols they have tagged as liking'''
+    user = models.ForeignKey(User, blank=True, null=True)
+    protocols = models.ManyToManyField(Protocol)
+    note = models.TextField(_("Notes"), blank=True, null=True)
+
+    def __unicode__(self):
+        return self.user.username + " - " + self.protocol.name
