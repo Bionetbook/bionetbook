@@ -89,8 +89,8 @@ def settify(settings_dict, shorthand = True, summary = False):
                 
                 if unit_item in data:
                     units = str(data[unit_item])
-                # else:
-                #     units = ''
+                else:
+                    units = ''
                     # return 'no concentration units specified for %s' % units_dict['name']
                 out = str(numbers) + ' ' + units
                     

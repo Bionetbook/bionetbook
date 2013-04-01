@@ -628,45 +628,9 @@ class Machine(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
         tmp = settify(self, shorthand = True, summary = True)
-        tmp['name'] = self['name']   
-
-
-        # output = {}
-        
-        # for i in self.label:
-        #     if 'Celsius' in i or 'degre' in i or 'c' in i:
-        #         output['temp'] = str(re.findall(r'\d+',i)[0]) + 'C'
-        #     if 'minute' in i or 'second' in i or 'hour' in i or 'm' in i:
-        #         output['time'] = str(re.findall(r'\d+',i)[0]) + str(re.findall(r'\D+',i)[0])
-        #     # if 'rpm'     
-
+        tmp['name'] = self['name']  
 
         return tmp   
-
-
-# class Subphase(NodeBase):
-
-#     default_attrs = ['name', 'objectid', 'time', 'temperature']
-
-#     def get_absolute_url(self):
-#         return "#NDF"
-
-
-# class Phase(NodeBase):
-
-#     default_attrs = ['name', 'objectid', 'cycles', 'before', 'after']
-
-#     def get_absolute_url(self):
-#         return "#NDF"
-
-#     def update_data(self, data={}, **kwargs):
-#         super(Phase, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-
-#         if 'subphases' in data:
-#             self['subphases'] = [ Subphase(self.protocol, parent=self, data=a) for a in data['subphases'] ]
-#         else:
-#             self['subphases'] = []
-
 
 class Thermocycle(NodeBase):
         

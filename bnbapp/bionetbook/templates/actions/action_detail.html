@@ -18,6 +18,7 @@
 Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
     <div><small><a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a></small></div>
+    <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a>
 {% endif %}
 {% endblock %}
 
