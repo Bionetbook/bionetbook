@@ -8,4 +8,4 @@ class DecantForm(forms.VerbForm):
     has_machine = True
 
     edit_what_remark = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
