@@ -1,16 +1,14 @@
 from protocols.forms import forms
-
+from core.utils import   VESSELS
 
 class GrowForm(forms.VerbForm):
 
     name = "Grow"
     slug = "grow"
 
-    edit_what_remark = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    edit_what_to = forms.CharField()
-    edit_vessel_type = forms.CharField()
-    edit_remarks = forms.CharField()
-    describe_where = forms.CharField()
-    specify_date = forms.DateField()
-    comment_why = forms.CharField()
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    vessel_type = forms.ChoiceField(required = False, choices = VESSELS)
+    remarks = forms.CharField(required = False)
+    describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
+    comment_why = forms.CharField(required = False)

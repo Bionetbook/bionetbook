@@ -7,5 +7,7 @@ class GrindForm(forms.VerbForm):
     slug = "grind"
     has_machine = True
 
-    edit_what_remark = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    remarks = forms.CharField(required = False)
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    specify_tool = forms.CharField(required = False, help_text = 'not machine, scissors, pippete, blade etc')
+    

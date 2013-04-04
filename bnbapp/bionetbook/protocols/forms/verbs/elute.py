@@ -6,8 +6,7 @@ class EluteForm(forms.VerbForm):
     name = "Elute"
     slug = "elute"
 
-    edit_what_remark = forms.CharField()
-    edit_into = forms.CharField()
-    add_with_what = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    edit_remarks = forms.CharField()
+    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    using_what = forms.CharField(required = False, help_text = 'rotator, shaker, manual etc')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    remarks = forms.CharField(required = False)
