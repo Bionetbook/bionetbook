@@ -24,25 +24,12 @@ from organization.models import Organization
 
 # Workflow View
 
-class WorkflowDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView):
+class WorkflowDetailView(LoginRequiredMixin, DetailView):
 
     model = Workflow
     slug_url_kwarg = "workflow_slug"
-    #slugs = []
 
-    # def get_context_data(self, **kwargs):
 
-    #     context = super(WorkflowDetailView, self).get_context_data(**kwargs)
-
-    #     for slug in self.slugs:
-    #         objectid = self.kwargs[slug]
-    #         if slug[-5:] == '_slug':        # STRIP THE _slug SUFFIX OFF
-    #             slug = slug[:-5]
-    #         context[slug] = self.object.nodes[objectid]
-
-    #     return context
-
-#class WorkflowListView(LoginRequiredMixin, AuthorizedForProtocolMixin, ListView):
 class WorkflowListView(LoginRequiredMixin, ListView):
 
     model = Organization
@@ -74,32 +61,6 @@ class WorkflowListView(LoginRequiredMixin, ListView):
         context = super(WorkflowListView, self).get_context_data(**kwargs)
         context['organization'] = self.object
         return context
-
-
-    # model = Organization
-    # template_name = "protocols/protocol_list.html"
-    # slug_url_kwarg = "owner_slug"
-
-    # def get_queryset(self):
-    #     slug = self.kwargs.get(self.slug_url_kwarg, None)
-
-    #     if slug:
-    #         return Organization.objects.filter(slug=slug)
-    #     else:
-    #         if self.request.user.is_superuser or self.request.user.is_staff:
-    #             return Organization.objects.all()    # GET ALL THE PROTOCOLS
-    #         if self.request.user.is_authenticated():
-    #             #return self.request.user.organizations.protocols
-    #             # return Protocol.objects.filter(
-    #             #         Q(status=Protocol.STATUS_PUBLISHED) |
-    #             #         Q(owner=self.request.user)
-    #             #         )
-    #             return self.request.user.organization_set.all() # GET ALL THE ORGANIZATIONS THE USER IS A MEMEBER OF
-    #         return []
-
-    # def get_context_data(self, **kwargs):
-    #     print "GETTING CONTEXT DATA"
-    #     return super(WorkflowListView, self).get_context_data(**kwargs)
 
 
 

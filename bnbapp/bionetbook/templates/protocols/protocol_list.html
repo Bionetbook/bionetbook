@@ -17,7 +17,7 @@
 {% block content %}
 <div class=row>
     <div class="span12" style="text-align: right">
-        <a class="btn" href="{% url workflow_list organization.slug %}">Workflows</a>
+        <a class="btn btn-primary" href="{% url workflow_list organization.slug %}">Workflows</a>
         <a class="btn btn-success" href="{% url compare_select %}">Compare Protocols</a>
         <hr>
     </div>
@@ -69,7 +69,7 @@
 <div class="row">
     <div class="span2 offset10">
         {% if request.user.is_authenticated %}
-        <a class="btn btn-info" href="{{ object.create_protocol_url }}">NEW PROTOCOL</a>
+        <a class="btn btn-info" href="{{ object.create_protocol_url }}">New Protocol</a>
         {% endif %}
         <br>
         <br>

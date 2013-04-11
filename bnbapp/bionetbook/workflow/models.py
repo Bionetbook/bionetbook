@@ -1,8 +1,10 @@
 from django.db import models
+from django.db.models import ObjectDoesNotExist
 from django_extensions.db.models import TimeStampedModel
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 
 from protocols.models import Protocol
 from organization.models import Organization
@@ -19,8 +21,25 @@ class Workflow(TimeStampedModel):
     description = models.TextField(_("Description"), blank=True, null=True)
     note = models.TextField(_("Notes"), blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        super(Workflow, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+        if not self.slug:
+            self.slug = self.generate_slug()
+            self.save()
+
     def get_absolute_url(self):
         return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+    def generate_slug(self):
+        slug = slugify(self.name)
+        try:
+            Protocol.objects.get(slug=slug)
+            return "%s-%d" % (slug, self.pk)
+        except ObjectDoesNotExist:
+            return slug
+
+    def __unicode__(self):
+        return self.name
 
 
 class WorkflowProtocol(TimeStampedModel):
@@ -30,4 +49,4 @@ class WorkflowProtocol(TimeStampedModel):
     order = models.IntegerField(_("Order or Protocols"), default=0)
 
     def __unicode__(self):
-        return self.protocol.name + " - " + self.workflow.name
+        return self.workflow.name + " - " + self.protocol.name

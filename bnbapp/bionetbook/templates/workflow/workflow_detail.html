@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Protocol: {{ object.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{% url workflow_list object.owner.slug %}">Workflow</a> <span class="divider">/</span></li>
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
+
+
+{% block page_title %}Workflow: {{ object.name }}
+{% if not protocol.published %}
+  {% if protocol_edit_authorization %}
+    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="span8">
+        <h2>Detail</h2>
+        
+        {% object_data_table object %}
+    </div>
+    <!-- secondary form div -->
+</div>    
+
+{% endblock %}
