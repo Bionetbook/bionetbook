@@ -320,6 +320,7 @@ class ProtocolListView(LoginRequiredMixin, ListView):
         slug = self.kwargs.get(self.slug_url_kwarg, None)
 
         if slug:
+            self.object = Organization.objects.get(slug=slug)
             return Organization.objects.filter(slug=slug)
         else:
             if self.request.user.is_superuser or self.request.user.is_staff:
@@ -332,6 +333,11 @@ class ProtocolListView(LoginRequiredMixin, ListView):
                 #         )
                 return self.request.user.organization_set.all() # GET ALL THE ORGANIZATIONS THE USER IS A MEMEBER OF
             return []
+
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolListView, self).get_context_data(**kwargs)
+        context['organization'] = self.object
+        return context
 
 
 class ProtocolCreateView(LoginRequiredMixin, CreateView):

@@ -10,14 +10,13 @@
     </ul>
 {% endblock %}
 
-{% block page_title %}{{ organization.name }}'s Protocol List 
+{% block page_title %}{{ organization.name }}'s Workflow List
 {% endblock %}
 
 {% block content %}
 <div class=row>
     <div class="span12" style="text-align: right">
-        <a class="btn" href="{% url workflow_list organization.slug %}">Workflows</a>
-        <a class="btn btn-success" href="{% url compare_select %}">Compare Protocols</a>
+        <a class="btn" href="{% url organization_protocol_list organization.slug %}">Protocols</a>
         <hr>
     </div>
 </div>
