@@ -46,6 +46,14 @@ def object_data_table(model_instance):
     return {'fields': fields}
 
 
+@register.filter(name='possesive')
+def possesive(value):
+    if unicode(value)[-1] == 's':
+        return "%s'" % value
+    else:
+        return "%s's" % value
+
+
 @register.filter(name='protocoltree')
 def protocoltree(value):
     # GET A LIST OF EACH STEP

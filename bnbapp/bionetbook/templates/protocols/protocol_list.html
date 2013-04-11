@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load core_tags %}
 
 {% block title %}Protocol List{% endblock %}
 
@@ -10,7 +11,7 @@
     </ul>
 {% endblock %}
 
-{% block page_title %}{{ organization.name }}'s Protocol List 
+{% block page_title %}{{ organization.name|possesive }} Protocol List 
 {% endblock %}
 
 {% block content %}

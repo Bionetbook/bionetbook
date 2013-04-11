@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load core_tags %}
 
 {% block title %}Protocol List{% endblock %}
 
@@ -6,11 +7,12 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
-      <li class="active">{{ organization.name }}</li>
+      <li><a href="{% url organization_protocol_list organization.slug %}">{{ organization.name }}</a> <span class="divider">/</span></li>
+      <li class="active">Workflows</li>
     </ul>
 {% endblock %}
 
-{% block page_title %}{{ organization.name }}'s Workflow List
+{% block page_title %}{{ organization.name|possesive }} Workflow List
 {% endblock %}
 
 {% block content %}
