@@ -8,7 +8,7 @@
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{% url workflow_list object.owner.slug %}">Workflow</a> <span class="divider">/</span></li>
+      <li><a href="{% url workflow_list object.owner.slug %}">Workflows</a> <span class="divider">/</span></li>
       <li class="active">{{object.name}}</li>
     </ul>
 {% endblock %}
