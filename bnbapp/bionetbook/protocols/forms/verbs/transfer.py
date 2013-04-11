@@ -10,5 +10,6 @@ class TransferForm(forms.VerbForm):
     old_vessel = forms.CharField(help_text = 'Where are you transferring from?')
     new_vessel = forms.CharField(help_text = 'Where are you transferring to?')
     target = forms.CharField(help_text = 'what are you transferring?')
+    leave_behind = forms.CharField(help_text = 'careful not to transfer this part')
     volume = forms.FloatField()
     volume_units = forms.ChoiceField(choices = VOLUME_UNITS)

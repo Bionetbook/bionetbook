@@ -17,7 +17,7 @@ class ProtocolPublishForm(forms.Form):
 
 
 class StepForm(NodeForm):
-    pass
+    verbatim_text = forms.CharField()
 
 
 class ActionForm(NodeForm):
@@ -33,6 +33,7 @@ class VerbForm(forms.Form):
     has_component = False
     has_machine = False
     has_thermocycler = False
+    has_manual = False
 
 forms.VerbForm = VerbForm
 
