@@ -26,8 +26,6 @@ class CompareSelectView(TemplateView):
         url = reverse("compare_layers", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug, 'layers':'none'})
         return HttpResponseRedirect(url)
 
-
-
 class CompareBaseView(TemplateView):
     # template_name = "compare/compare_default.html"
 
@@ -35,7 +33,7 @@ class CompareBaseView(TemplateView):
         '''Gets the context data'''
         arguments={}
         context = self.get_context_data()
-        nodes = ['thermo', 'machine', 'component', 'steps']
+        nodes = ['thermo', 'machine', 'component', 'steps', 'manual']
 
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
@@ -43,8 +41,6 @@ class CompareBaseView(TemplateView):
         arguments={'protocol_a_slug':context['protocol_a'].slug}              
         # template_name = "compare/single_base_default.html"
         # render = 'compare_single'
-        
-        
 
         if 'protocol_b_slug' in kwargs and kwargs['protocol_b_slug'] != 'layers':
             
@@ -187,9 +183,7 @@ class CompareSingleLayersGraphicView(View):
             format = format + "+xml"
 
         response = HttpResponse(img, mimetype='image/%s' % format)
-        # print 'returning SingleLayersGraphicView'
         return response                
-
 
 class Grapher(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
@@ -276,51 +270,6 @@ class Grapher(object):
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = '_top'
         return self
-    
-
-    def add_step_layer(self, verb_a, verb_b, verb_object_a, verb_object_b, diff_object = None): 
-            first_actions_a = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_A.get_steps]
-            first_actions_b = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_B.get_steps]
-            steps_a = [r for r in self.protocol_A.data['verbatim']]
-            steps_b = [r for r in self.protocol_A.data['verbatim']]
-            if verb_a in first_actions_a: # or verb_b in first_actions_b  
-                
-
-                self.agraph.add_node(self.protocol_A.nodes[self.protocol_A.nodes[verb_a].parent['objectid']].pk)
-                self.agraph.add_node(self.protocol_B.nodes[self.protocol_B.nodes[verb_b].parent['objectid']].pk)
-                step_object_a = self.agraph.get_node(self.protocol_A.nodes[self.protocol_A.nodes[verb_a].parent['objectid']].pk)
-                step_object_b = self.agraph.get_node(self.protocol_B.nodes[self.protocol_B.nodes[verb_b].parent['objectid']].pk)
-
-                self.agraph.add_edge(step_object_a,verb_object_a)
-                self.agraph.add_edge(step_object_b,verb_object_b)
-
-                eas = self.agraph.get_edge(step_object_a, verb_object_a)
-                ebs = self.agraph.get_edge(step_object_b, verb_object_b)
-
-                
-                if diff_object == None:
-                    N = self.agraph.add_subgraph([step_object_a, verb_object_a, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk, 
-                else:
-                    N = self.agraph.add_subgraph([step_object_a, verb_object_a, diff_object, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk,
-                
-                sa = self.agraph.get_node(step_object_a)
-                sa.attr['shape'] = 'box'
-                sa.attr['color'] = '#C0C0C0'
-                sa.attr['style'] = 'rounded'
-                sa.attr['fontsize'] = '10'
-                VERBATIM_A = self.protocol_A.data['verbatim'] 
-                PARENT_A = self.protocol_A.nodes[verb_a].parent['objectid'] 
-                sa.attr['label'] = add_step_label(VERBATIM_A[self.protocol_A.get_steps.index(PARENT_A)])
-
-                sb = self.agraph.get_node(step_object_b)
-                sb.attr['shape'] = 'box'
-                sb.attr['color'] = '#C0C0C0'
-                sb.attr['style'] = 'rounded'
-                sb.attr['fontsize'] = '10'
-                # sb.attr['width'] = '0.15'
-                VERBATIM_B = self.protocol_A.data['verbatim'] 
-                PARENT_B = self.protocol_B.nodes[verb_b].parent['objectid'] 
-                sb.attr['label'] = add_step_label(VERBATIM_B[self.protocol_B.get_steps.index(PARENT_B)], step_layer = True)
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
         ''' this function assumes that the pairs of objects are equivalent in that both have validated:
@@ -332,9 +281,56 @@ class Grapher(object):
         if 'layers' in kwargs.keys():
             layers = kwargs['layers'].split('-')
 
+        if 'steps' in layers: 
+            first_actions_a = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_A.get_steps]
+            first_actions_b = [self.protocol_A.nodes[r].children[0]['objectid'] for r in self.protocol_B.get_steps]
             
-        for verb_a,verb_b in self.matching_verbs: #[(node_a, node_b), ]
-            # print verb_a, verb_b
+            for verb_a,verb_b in self.matching_verbs:
+
+                self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+                self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+                verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+                verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+
+                if verb_a in first_actions_a: 
+
+                    self.agraph.add_node(self.protocol_A.nodes[self.protocol_A.nodes[verb_a].parent['objectid']].pk)
+                    self.agraph.add_node(self.protocol_B.nodes[self.protocol_B.nodes[verb_b].parent['objectid']].pk)
+                    step_object_a = self.agraph.get_node(self.protocol_A.nodes[self.protocol_A.nodes[verb_a].parent['objectid']].pk)
+                    step_object_b = self.agraph.get_node(self.protocol_B.nodes[self.protocol_B.nodes[verb_b].parent['objectid']].pk)
+
+                    self.agraph.add_edge(step_object_a,verb_object_a)
+                    self.agraph.add_edge(step_object_b,verb_object_b)
+
+                    eas = self.agraph.get_edge(step_object_a, verb_object_a)
+                    ebs = self.agraph.get_edge(step_object_b, verb_object_b)
+
+                    N = self.agraph.add_subgraph([step_object_a, verb_object_a, verb_object_b, step_object_b], rank = 'same', rankdir='LR')#) #, name='%s'%(layer_names[nc])) name = self.protocol_A.nodes[verb_a].pk, 
+                    
+                    sa = self.agraph.get_node(step_object_a)
+                    sa.attr['shape'] = 'box'
+                    sa.attr['color'] = '#C0C0C0'
+                    sa.attr['style'] = 'rounded'
+                    sa.attr['fontsize'] = '10'
+                    try:
+                        VERBATIM_A = self.protocol_A.nodes[verb_a].parent['verbatim_text'] 
+                    except KeyError:
+                        VERBATIM_A = 'nothing to show' 
+                    sa.attr['label'] = add_step_label(VERBATIM_A)
+
+                    sb = self.agraph.get_node(step_object_b)
+                    sb.attr['shape'] = 'box'
+                    sb.attr['color'] = '#C0C0C0'
+                    sb.attr['style'] = 'rounded'
+                    sb.attr['fontsize'] = '10'
+                    try:
+                        VERBATIM_B = self.protocol_B.nodes[verb_b].parent['verbatim_text']
+                    except KeyError:
+                        VERBATIM_B = 'nothing to show'
+                    sb.attr['label'] = add_step_label(VERBATIM_B)
+
+        for verb_a,verb_b in self.matching_verbs: 
+            
             if 'machine' in self.protocol_A.nodes[verb_a].keys() and 'machine' in layers:
                 x = self.protocol_A.nodes[verb_a]['machine'].summary
                 y = self.protocol_B.nodes[verb_b]['machine'].summary
@@ -351,10 +347,7 @@ class Grapher(object):
                 self.agraph.add_edge(verb_object_a,diff_object)
                 self.agraph.add_edge(verb_object_b,diff_object)
 
-                if 'steps' in layers:
-                    self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
-                else:    
-                    N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+                N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                            # set layout and colors
                 s = self.agraph.get_node(diff_object)
                 s.attr['shape'] = 'box'
@@ -364,7 +357,33 @@ class Grapher(object):
                 # set label:
                 s.attr['label'] = merge_table_pieces(content)
 
-            if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: # and type(self.protocol_A.nodes[a]) == 'protocols.models.Component':
+            if 'manual' in layers and not self.protocol_A.nodes[verb_a].children:
+
+                x = self.protocol_A.nodes[verb_a].summary
+                y = self.protocol_B.nodes[verb_b].summary
+                d = DictDiffer (x, y)
+                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), manual = True) 
+
+
+                self.agraph.add_node(self.protocol_A.nodes[verb_a].pk)
+                self.agraph.add_node(self.protocol_B.nodes[verb_b].pk)
+                verb_object_a = self.agraph.get_node(self.protocol_A.nodes[verb_a].pk)
+                verb_object_b = self.agraph.get_node(self.protocol_B.nodes[verb_b].pk)
+
+                diff_object = self.protocol_A.nodes[verb_a].pk + '_manual'
+                self.agraph.add_edge(verb_object_a,diff_object)
+                self.agraph.add_edge(verb_object_b,diff_object)
+
+                N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+                           # set layout and colors
+                s = self.agraph.get_node(diff_object)
+                s.attr['shape'] = 'plaintext'
+                s.attr['color'] = '#C0C0C0'
+                s.attr['fontsize'] = '10'
+                # set label:
+                s.attr['label'] = merge_table_pieces(content)    
+
+            if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: 
                 # Validate that reagent objectids are the same:
 
 
@@ -400,12 +419,8 @@ class Grapher(object):
                     diff_object = self.protocol_A.nodes[components_a[0]].pk 
                     ea = self.agraph.add_edge(verb_object_b, diff_object)
                     eb = self.agraph.add_edge(verb_object_a, diff_object)     
-                    
-
-                    if 'steps' in layers:
-                        self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
-                    else:    
-                        N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+                
+                    N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc]))     
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'
@@ -416,7 +431,6 @@ class Grapher(object):
 
             if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
 
-
                 if len(self.protocol_A.nodes[verb_a]['thermocycle']) == 0:
                     continue
                 else:
@@ -424,13 +438,6 @@ class Grapher(object):
                     thermo_a = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
                     thermo_b = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
                     
-                    # components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[verb_a].children) - set(r['objectid'] for r in self.protocol_B.nodes[verb_b].children)
-
-                    # if components_list_diff:
-                    #     pass
-                        # add a function that can tell the difference between different names
-                    
-                    # else:
                     scores = [] # tracks the error rate of a matching components
                     content = [] # gets the html strings
                     for m,n in zip(thermo_a,thermo_b): 
@@ -450,11 +457,7 @@ class Grapher(object):
                     ea = self.agraph.add_edge(verb_object_b, diff_object)
                     eb = self.agraph.add_edge(verb_object_a, diff_object)     
                     
-
-                    if 'steps' in layers:
-                        self.add_step_layer(verb_a, verb_b, verb_object_a, verb_object_b, diff_object= diff_object)
-                    else:    
-                        N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
+                    N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                     # set layout and colors
                     s = self.agraph.get_node(diff_object)
                     s.attr['shape'] = 'box'
@@ -462,7 +465,7 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'thermocycle')
-    
+        
         return self 
 
         

@@ -777,6 +777,17 @@ class Action(NodeBase):
         else:
             return None
 
+    @property
+    def summary(self):
+        ''' takes self.label as a list and turns it into a dict:
+            u'25 degrees Celsius', u'2 minutes' -> 
+            {temp: '25C', time: '2 min'}'''
+        
+        tmp = settify(self, summary = True)
+        # tmp['name'] = self['name']      
+
+        return tmp        
+
 
     @property
     def children(self):
@@ -834,6 +845,11 @@ class Action(NodeBase):
         if 'verb' in self:
             return self['verb'] in THERMOCYCLER_VERBS
         return False
+
+    def has_manual(self):
+        if 'verb' in self:
+            return self['verb'] in MANUAL_VERBS
+        return False    
 
 
 class Step(NodeBase):

@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from compare.utils import html_label_one_protocol, html_label_two_protocols, add_html_cell, merge_table_pieces, add_thermo, set_title_label, add_step_label 
+from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label #, html_label_one_protocol, add_html_cell, set_title_label,
 
 class DictDiffer(object):
     """

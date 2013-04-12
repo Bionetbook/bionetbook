@@ -28,7 +28,14 @@ def settify(settings_dict, shorthand = True, summary = False):
     settings = []
     units = ''
     output = {}
-    items = ['temp', 'time','speed','cycle','comment', 'conc','vol','mass']
+    
+    # Duration replaces min_time if None, or not present. 
+    if 'duration' in settings_dict.keys():
+        if 'min_time' not in settings_dict.keys() or not settings_dict['min_time']: 
+            settings_dict['min_time'] = settings_dict['duration']    
+
+
+    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass']
 
     for item in items:
         data = dict((k, v) for k, v in settings_dict.iteritems() if item in k and v != None)
@@ -95,13 +102,15 @@ def settify(settings_dict, shorthand = True, summary = False):
                 out = str(numbers) + ' ' + units
                     
                 if comment_item in data:
-                    out = 'Remark: ' + data[comment_item]  
+                    comment = str(data[comment_item])
+                else:
+                    comment = None
 
                 if shorthand:
                     units = shorten(units)           
 
                 if summary:
-                    output[item] = [numbers, units]
+                    output[item] = [numbers, units, comment]
                 else:    
                     settings.append(out)
              
