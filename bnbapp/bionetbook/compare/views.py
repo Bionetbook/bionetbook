@@ -60,7 +60,6 @@ class CompareBaseView(TemplateView):
         # template_name = "compare/compare_layer.html" 
         # render_base = 'compare_protocols'
         
-        
         if display == 'single':
             render_layers = 'compare_single_layers'      
             # template_name = "compare/single_base_default.html"
@@ -317,6 +316,9 @@ class Grapher(object):
                     except KeyError:
                         VERBATIM_A = 'nothing to show' 
                     sa.attr['label'] = add_step_label(VERBATIM_A)
+                    node_object = self.protocol_A.nodes[verb_a].parent
+                    sa.attr['URL'] = node_object.step_update_url()
+                    sa.attr['target'] = '_top'
 
                     sb = self.agraph.get_node(step_object_b)
                     sb.attr['shape'] = 'box'
@@ -356,6 +358,9 @@ class Grapher(object):
                 s.attr['fontsize'] = '10'
                 # set label:
                 s.attr['label'] = merge_table_pieces(content)
+                node_object = self.protocol_A.nodes[verb_a]['machine']
+                s.attr['URL'] = node_object.get_update_url()
+                s.attr['target'] = '_top'
 
             if 'manual' in layers and not self.protocol_A.nodes[verb_a].children:
 
@@ -377,11 +382,15 @@ class Grapher(object):
                 N = self.agraph.add_subgraph([verb_object_a, diff_object, verb_object_b], rank = 'same', name = self.protocol_A.nodes[verb_a].pk, rankdir='LR')#) #, name='%s'%(layer_names[nc])) 
                            # set layout and colors
                 s = self.agraph.get_node(diff_object)
-                s.attr['shape'] = 'plaintext'
+                s.attr['shape'] = 'note'
                 s.attr['color'] = '#C0C0C0'
+                s.attr['height'] = '0.18'
                 s.attr['fontsize'] = '10'
                 # set label:
-                s.attr['label'] = merge_table_pieces(content)    
+                s.attr['label'] = merge_table_pieces(content)
+                node_object = self.protocol_A.nodes[verb_a]
+                s.attr['URL'] = node_object.action_update_url()
+                s.attr['target'] = '_top'    
 
             if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: 
                 # Validate that reagent objectids are the same:
@@ -428,6 +437,9 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
+                    # node_object = self.protocol_A.nodes[verb_a]['components']
+                    # s.attr['URL'] = node_object.get_update_url()
+                    # s.attr['target'] = '_top'
 
             if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
 
@@ -465,6 +477,9 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'thermocycle')
+                    # node_object = self.protocol_A.nodes[verb_a]['thermocycle']
+                    # s.attr['URL'] = node_object.get_update_url()
+                    # s.attr['target'] = '_top'
         
         return self 
 
