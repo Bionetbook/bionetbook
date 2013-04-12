@@ -23,7 +23,7 @@ from drain import DrainForm
 from dry import DryForm
 from electrophorese import ElectrophoreseForm
 from elute import EluteForm
-from equilibrate import EquilibrateForm
+# from equilibrate import EquilibrateForm
 from excise import ExciseForm
 from extract import ExtractForm
 from filter import FilterForm
