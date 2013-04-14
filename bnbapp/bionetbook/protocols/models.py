@@ -117,9 +117,14 @@ class Protocol(TimeStampedModel):
                 self.name = self.data['Name']
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-        if not self.slug:
-            self.slug = self.generate_slug()
-            self.save()
+        
+        new_slug = self.generate_slug()
+
+        if not new_slug == self.slug:
+            self.slug = new_slug
+            #self.slug = self.generate_slug()
+            #self.save()
+            super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     ##########
     # URLs
@@ -160,11 +165,12 @@ class Protocol(TimeStampedModel):
 
     def generate_slug(self):
         slug = slugify(self.name)
-        try:
-            Protocol.objects.get(slug=slug)
-            return "%s-%d" % (slug, self.pk)
-        except ObjectDoesNotExist:
-            return slug
+        #try:
+        #    Protocol.objects.get(slug=slug)
+        #    return "%s-%d" % (slug, self.pk)
+        #except ObjectDoesNotExist:
+        #    return slug
+        return "%s-%d" % (slug, self.pk)
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
