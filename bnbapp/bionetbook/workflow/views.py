@@ -64,13 +64,13 @@ class WorkflowCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, Sin
     model = Workflow
 
 
-class WorkflowUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
 
     slugs = []
     #node_type = None
 
 
-class WorkflowDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+class WorkflowDeleteView(LoginRequiredMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"

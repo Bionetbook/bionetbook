@@ -27,8 +27,25 @@
 <div class="row">
     <div class="span8">
         <h2>Detail</h2>
-        
         {% object_data_table object %}
+    </div>
+    <div class="span4">
+        <h2>Protocols</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for protocol in object.protocols.all %}
+                <tr>
+                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     <!-- secondary form div -->
 </div>    
