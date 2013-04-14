@@ -23,26 +23,22 @@
     </div>
 </div>
 {% for object in object_list %}
-{% with profile=object.owner.get_profile %}
 <div class="row">
     <div class="span12">
-        <h2><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h2>
-    </div>
-    <div class="span10">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Protocol</th>
-                    <th>Last Modified</th>
+                    <th>Workflow</th>
+                    <th>Description</th>
+                    <th>Protocol Count</th>
                 </tr>
             </thead>
             <tbody>
-                {% for protocol in object.protocols.all %}
                 <tr>
-                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
-                    <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
+                    <td><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></td>
+                    <td>{{ object.description }}</td>
+                    <td>{{ object.protocol_count }}</td>
                 </tr>
-                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -58,7 +54,6 @@
         <br>
     </div>
 </div>
-{% endwith %}
 {% endfor %}
 
 {% endblock %}

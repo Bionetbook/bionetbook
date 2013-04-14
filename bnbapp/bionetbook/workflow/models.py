@@ -41,6 +41,10 @@ class Workflow(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    @property
+    def protocol_count(self):
+        return 3                # THIS IS TEMP FOR CODING
+
 
 class WorkflowProtocol(TimeStampedModel):
     '''Connection model between Protocols and Workflows'''

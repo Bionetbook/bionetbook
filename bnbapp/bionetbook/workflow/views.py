@@ -14,16 +14,11 @@ from django.views.generic.detail import SingleObjectMixin
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
 
-#from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
-#from protocols.forms.baseforms import ProtocolForm
 from workflow.models import Workflow
 from protocols.models import Protocol 	#, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 
-#from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
-
-# Workflow View
-
+# Workflow Views
 class WorkflowDetailView(LoginRequiredMixin, DetailView):
 
     model = Workflow
@@ -35,7 +30,6 @@ class WorkflowListView(LoginRequiredMixin, ListView):
     model = Organization
     slug_url_kwarg = "owner_slug"
     context_object_name = "workflow_list"
-    #template_name = "protocols/protocol_list.html"
 
     def get_queryset(self):
         """
