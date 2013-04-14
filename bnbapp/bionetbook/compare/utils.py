@@ -6,6 +6,8 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         _time = ''
         _speed = ''
 
+        _name = '<TR><TD>%s</TD>' %x['name']        
+
         if 'temp' in changed:
             _temp = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
@@ -16,7 +18,12 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         if 'temp' in unchanged and 'temp' not in changed:
             _temp = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-            str(x['temp'][0]) + ' ' + str(x['temp'][1]))          
+            str(x['temp'][0]) + ' ' + str(x['temp'][1]))   
+
+        else:
+            _temp = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )            
     
         if 'time' in changed:
             _time = '''
@@ -29,6 +36,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             _time = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + ' ' + str(x['time'][1]))
+
+        else:
+            _time = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )     
     
         if 'speed' in changed:
             _speed = '''
@@ -42,29 +54,22 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        _name = '<TR><TD>%s</TD>' %x['name']    
+        else:
+            _speed = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )     
+
         return  _name + _temp + _time + _speed + '</TR>'
     
     if 'components' in kwargs: 
         ''' assuming that the objectids of the reagents are the same'''
 
         # count how many changes each reagent has, if 2 reagent names are different, write them last 
-        _conc = ''
         _vol = ''
+        _conc = ''
         _mass = ''
 
-        if 'conc' in changed:
-            _conc = '''
-            <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
-            <TD color="#015666"><font color="#015666">%s</font></TD>'''%(
-            str(x['conc'][0]) + str(x['conc'][1]), 
-            str(y['conc'][0]) + str(y['conc'][1]))  
-            
-        if 'conc' in unchanged and 'conc' not in changed:
-            _conc = '''
-            <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-            str(x['conc'][0]) + str(x['conc'][1])) 
-            
+        _name = '<TR><TD>%s</TD>' %x['name']
 
         if 'vol' in changed and 'vol' not in unchanged:
             _vol = '''
@@ -76,7 +81,30 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         if 'vol' in unchanged and 'vol' not in changed:
             _vol = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-            str(x['vol'][0]) + str(x['vol'][1]))    
+            str(x['vol'][0]) + str(x['vol'][1]))  
+
+        else:
+            _vol = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') ) 
+ 
+        if 'conc' in changed:
+            _conc = '''
+            <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+            <TD color="#015666"><font color="#015666">%s</font></TD>'''%(
+            str(x['conc'][0]) + str(x['conc'][1]), 
+            str(y['conc'][0]) + str(y['conc'][1]))  
+            
+        if 'conc' in unchanged and 'conc' not in changed:
+            _conc = '''
+            <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
+            str(x['conc'][0]) + str(x['conc'][1]))     
+
+        else:
+            _conc = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') ) 
+                  
 
         if 'mass' in changed and 'mass' not in unchaged:
             _mass = '''
@@ -90,7 +118,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['mass'][0]) + str(x['mass'][1]))
 
-        _name = '<TR><TD>%s</TD>' %x['name']
+        else:
+            _mass = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )     
 
         return  _name + _vol + _conc + _mass + '</TR>'
 
@@ -100,6 +131,8 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         _temp = ''
         _time = ''
         _cycle = ''
+
+        _name = '<TR><TD>%s</TD>' % x['name'].replace('_',' ')
 
         if 'temp' in changed:
             _temp = ''' 
@@ -113,6 +146,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['temp'][0]) + str(x['temp'][1]))
 
+        else:
+            _temp = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )         
+
         if 'time' in changed and 'time' not in unchanged:
             _time = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
@@ -124,6 +162,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             _time = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + str(x['time'][1]))
+
+        else:
+            _time = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )     
 
         if 'cycle' in changed and 'cycle' not in unchanged:
             if x['cycle'][1] == y['cycle'][1]:
@@ -162,13 +205,15 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
                 str(x['cycle'][0]),
                 str(x['cycle'][1])) 
 
-        _name = '<TR><TD>%s</TD>' % x['name'].replace('_',' ')
+        
         return  _name + _temp + _time + _cycle + '</TR>'
     
     if 'manual' in kwargs:
         _temp = ''
         _time = ''
         _speed = ''
+
+        _name = '<TR>'     
 
         if 'temp' in changed:
             _temp = '''
@@ -180,7 +225,12 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         if 'temp' in unchanged and 'temp' not in changed:
             _temp = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-            str(x['temp'][0]) + ' ' + str(x['temp'][1]))          
+            str(x['temp'][0]) + ' ' + str(x['temp'][1]))    
+
+        else:
+            _temp = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )               
     
         if 'time' in changed:
             _time = '''
@@ -193,6 +243,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             _time = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + ' ' + str(x['time'][1]))
+
+        else:
+            _time = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )         
     
         if 'speed' in changed:
             _speed = '''
@@ -206,7 +261,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        _name = '<TR>'     
+        else:
+            _speed = '''
+            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+            str('input') )         
+
         return  _name + _temp + _time + _speed + '</TR>' 
 
 def merge_table_pieces(content_tmp, layer = None):

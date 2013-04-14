@@ -5,11 +5,11 @@ CONCENTRATION_UNITS = (("ng/ul","nanogram / microliter"),("ug/ul","microgram / m
     ("mg/l","miligram / liter"), ("g/ml","gram / mililiter"), ("g/l","gram / liter"), ('nM', 'nanoMolar'), ('uM', 'microMolar'), ('mM', 'miliMolar'), ('M', 'Molar'), 
     ('U/ul', 'Units / microliter'), ('X', 'Fold'), )
 MASS_UNITS = (('ng', 'nanogram'),('ug', 'microgram'),('mg', 'miligram'),('g', 'gram'),('kg', 'kilogram'), ('U', 'Units'), )
-VOLUME_UNITS = (("l","liter"),("ml","Mililiter"), ("ul","microliter"), ('%v', 'percent volume'), ('%m', 'percent mass'),)
+VOLUME_UNITS = (("L","liter"),("ml","Mililiter"), ("ul","microliter"), ('%v', 'percent volume'), ('%m', 'percent mass'),)
 AMMOUNT_UNITS = (('nm', 'nanomole'),('um', 'micromole'),('mm', 'milimole'),('m', 'mole'), )
 TIME_UNITS = (("hrs","Hours"),("min","Minutes"),("sec","Seconds"),)
 SPEED_UNITS = (("rpm","Revolutions Per Minutes"),("rcf","Relative Centrifugal Force"),)
-TEMPERATURE_UNITS = (("c","Celsius"),("k","Kelvin"),("f","Ferinheit"),)
+TEMPERATURE_UNITS = (("C","Celsius"),("K","Kelvin"),("F","Ferinheit"),)
 VESSELS = (('epi','1.8 ml tube'), ('pcr','200 ul tube'), ('15 ml','Falcon 15 ml'), ('50 ml', 'Falcon 50 ml'),)
 
 
