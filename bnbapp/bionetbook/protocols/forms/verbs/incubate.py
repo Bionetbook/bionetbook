@@ -7,13 +7,6 @@ class IncubateForm(forms.VerbForm):
     slug = "incubate"
     has_machine = True
 
-    edit_what_remark = forms.CharField()
-    min_temp = forms.IntegerField()
-    max_temp = forms.IntegerField()
-    duration_min_time = forms.IntegerField()
-    comment_why = forms.CharField()
-    edit_remarks = forms.CharField()
-    edit_input = forms.CharField()
-    edit_protocol_output = forms.CharField()
-    edit_vessel_type = forms.CharField()
-    edit_kit_name = forms.CharField()
+    conditional_statement = forms.CharField(required = False, help_text ='if X happens, do Y')
+    remarks = forms.CharField(required = False)
+    

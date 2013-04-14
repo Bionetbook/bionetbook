@@ -7,9 +7,11 @@ class CallForProtocolForm(forms.VerbForm):
     slug = "call-for-protocol"
     has_component = True
 
-    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
     protocol_type = forms.CharField(required = False, help_text = 'describe the basic chemistry')
-    input_name = forms.CharField(help_text = 'reagent, sample, molecule, compouns, strain etc.')
-    output_name = forms.CharField(help_text = 'reagent, sample, molecule, compouns, strain etc.')
+    input_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
+    input_notes = forms.CharField(required = False, help_text = 'concentration, volume, mass etc')
+    output_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
+    output_notes = forms.CharField(required = False, help_text = 'concentration, volume, mass etc')
+    # settings like concentration, volume, yield etc. 
     remarks = forms.CharField(required = False)
-    comment_why = forms.CharField(required = False)
+    
