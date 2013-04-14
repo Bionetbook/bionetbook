@@ -170,7 +170,10 @@ class Protocol(TimeStampedModel):
         #    return "%s-%d" % (slug, self.pk)
         #except ObjectDoesNotExist:
         #    return slug
-        return "%s-%d" % (slug, self.pk)
+        if self.pk:
+            return "%d-%s" % (self.pk, slug)
+        else:
+            return slug
 
     def get_hash_id(self, size=6, chars=string.ascii_lowercase + string.digits):
         '''Always returns a unique ID in the protocol'''
