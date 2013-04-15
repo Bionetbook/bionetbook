@@ -9,7 +9,7 @@ from django.views.generic import ListView, DetailView 			#, CreateView, UpdateVi
 
 
 #from braces.views import LoginRequiredMixin
-#from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin
+#from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin
 from braces.views import LoginRequiredMixin
 
 #from protocols.forms import ProtocolForm, PublishForm, StepForm, ActionForm
@@ -19,7 +19,7 @@ from braces.views import LoginRequiredMixin
 from organization.models import Organization
 
 
-#class OrganizationDetailView(AuthorizedForProtocolMixin, DetailView):
+#class OrganizationDetailView(AuthorizedOrganizationMixin, DetailView):
 class OrganizationDetailView(LoginRequiredMixin, DetailView):
 
     model = Organization

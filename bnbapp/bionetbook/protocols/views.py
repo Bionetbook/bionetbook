@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
+from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 
 from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
 from protocols.forms.baseforms import ProtocolForm
@@ -25,7 +25,7 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 # BASE CLASSES
 #####################
 
-class NodeDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView):
+class NodeDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, DetailView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -44,7 +44,7 @@ class NodeDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView)
         return context
 
 
-class NodeCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+class NodeCreateViewBase(LoginRequiredMixin, AuthorizedOrganizationMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
     model = Protocol
@@ -144,7 +144,7 @@ class NodeCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, SingleO
             return self.form_invalid(form)
 
 
-class NodeUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+class NodeUpdateView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
 
     slugs = []
     node_type = None
@@ -240,7 +240,7 @@ class NodeUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+class NodeDeleteView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -299,7 +299,7 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authorizedf
 # PROTOCOLS
 #####################
 
-class ProtocolDetailView(LoginRequiredMixin, AuthorizedForProtocolMixin, DetailView):
+class ProtocolDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, DetailView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -365,7 +365,7 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, UpdateView):
+class ProtocolUpdateView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
@@ -418,7 +418,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedForProtocolMixin, Authori
         return obj
 
 
-class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+class ProtocolPublishView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -438,7 +438,7 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedForProtocolMixin, Author
         return http.HttpResponseRedirect(url)
 
 
-class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView):
+class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     # NEED TO VALIDATE THE FORM TO GET THE OWNER
     # NEED TO CONFIRM THE PROTOCOL IS PUBLISHED BEFORE DUPLICATING
@@ -562,7 +562,7 @@ class ActionDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug']
 
 
-class ActionVerbListView(AuthorizedForProtocolMixin, DetailView):
+class ActionVerbListView(AuthorizedOrganizationMixin, DetailView):
 
     model = Protocol
     template_name = "actions/action_verb_list.html"

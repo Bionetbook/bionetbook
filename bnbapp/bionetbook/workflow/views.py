@@ -13,7 +13,7 @@ from django.views.generic.detail import SingleObjectMixin
 #from django.utils.translation import ugettext as _
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedForProtocolMixin, AuthorizedforProtocolEditMixin, ConfirmationObjectView
+from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 
 from workflow.models import Workflow
 from protocols.models import Protocol 	#, Step, Action, Thermocycle, Machine, Component
@@ -59,7 +59,7 @@ class WorkflowListView(LoginRequiredMixin, ListView):
 
 
 
-class WorkflowCreateViewBase(LoginRequiredMixin, AuthorizedForProtocolMixin, SingleObjectMixin, FormView):
+class WorkflowCreateViewBase(LoginRequiredMixin, AuthorizedOrganizationMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
     model = Workflow

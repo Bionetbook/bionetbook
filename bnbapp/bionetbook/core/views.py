@@ -22,7 +22,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AuthorizedForProtocolMixin(object):
+class AuthorizedOrganizationMixin(object):
     '''Checks to see if the user has the right to see the given protocol'''
 
     def get_protocol(self):
@@ -58,13 +58,13 @@ class AuthorizedForProtocolMixin(object):
 
     def get_context_data(self, **kwargs):
         self.protocol = self.get_protocol()
-        context = super(AuthorizedForProtocolMixin, self).get_context_data(**kwargs)
+        context = super(AuthorizedOrganizationMixin, self).get_context_data(**kwargs)
         context['protocol'] = self.protocol
         context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
         return context
 
 
-class AuthorizedforProtocolEditMixin(object):
+class AuthorizedOrganizationEditMixin(object):
 
     def check_authorization(self):
         if not check_owner_edit_authorization(self.protocol, self.request.user):
@@ -72,7 +72,7 @@ class AuthorizedforProtocolEditMixin(object):
 
     def get_context_data(self, **kwargs):
         self.check_authorization()
-        return super(AuthorizedforProtocolEditMixin, self).get_context_data(**kwargs)
+        return super(AuthorizedOrganizationEditMixin, self).get_context_data(**kwargs)
 
 
 class ConfirmationMixin(object):
