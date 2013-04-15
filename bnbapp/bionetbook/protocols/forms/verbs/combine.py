@@ -7,9 +7,7 @@ class CombineForm(forms.VerbForm):
     slug = "combine"
     has_component = True
 
-    min_temp = forms.IntegerField()
     max_temp = forms.IntegerField(required = False)
     temp_units = forms.ChoiceField(choices = TEMPERATURE_UNITS, initial = 's')
-    remarks = forms.CharField(required = False)
     vessel_type = forms.ChoiceField(required = False, choices = VESSELS)
     

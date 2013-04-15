@@ -8,6 +8,7 @@ class CallForProtocolForm(forms.VerbForm):
     has_component = True
 
     protocol_type = forms.CharField(required = False, help_text = 'describe the basic chemistry')
+    protocol_kit_name = forms.CharField(required = False, help_text = 'kit name')
     input_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
     input_notes = forms.CharField(required = False, help_text = 'concentration, volume, mass etc')
     output_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
