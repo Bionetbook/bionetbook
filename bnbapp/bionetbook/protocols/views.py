@@ -316,6 +316,13 @@ class ProtocolListView(LoginRequiredMixin, ListView):
     template_name = "protocols/protocol_list.html"
     slug_url_kwarg = "owner_slug"
 
+    # def get_context_data(self, **kwargs):
+    #     context = super(ProtocolCreateView, self).get_context_data(**kwargs)
+    #     slug = self.kwargs.get(self.slug_url_kwarg, None)
+    #     if slug:
+    #         context['organization'] = Organization.objects.get(slug=slug)
+    #     return context
+
     def get_queryset(self):
         slug = self.kwargs.get(self.slug_url_kwarg, None)
 
@@ -394,9 +401,22 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedOrganizationMixin, Author
 
     # NEED TO ONLY RETURN A PROTOCOL WHO'S PUBLISH IS SET TO False
 
+    #slug_url_kwarg = "owner_slug"
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(ProtocolCreateView, self).get_context_data(**kwargs)
+    #     # slug = self.kwargs.get("owner_slug", None)
+    #     # if slug:
+    #     #     context['organization'] = Organization.objects.get(slug=slug)
+    #     print "FOO"
+    #     print self.object
+    #     context['organization'] = self.object.owner
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
+        context['organization'] = self.object.owner
         return context
 
     def get_object(self, queryset=None):

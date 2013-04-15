@@ -37,14 +37,15 @@
               <a data-toggle="modal" href="{{ object.protocol_publish_url }}"> Publish</a>
             </p>
         {% endif %}
-        
         {% object_data_table object %}
     </div>
     <!-- secondary form div -->
     <div class="span6">
       <h2>Steps</h2>
-      {% if protocol_edit_authorization %}      
+      {% if protocol_edit_authorization %}
+        {% if not protocol.published %}
           <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.step_create_url }}">Add step</a></p>
+        {% endif %}
       {% endif %}
 
       {% if steps|length %}
