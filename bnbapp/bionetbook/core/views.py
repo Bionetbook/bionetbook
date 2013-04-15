@@ -7,7 +7,7 @@ from django import http
 
 from braces.views import LoginRequiredMixin
 
-from core.utils import check_protocol_edit_authorization, check_protocol_view_authorization
+from core.utils import check_owner_edit_authorization, check_owner_view_authorization
 from protocols.models import Protocol
 
 logger = getLogger('django.request')
@@ -46,7 +46,7 @@ class AuthorizedForProtocolMixin(object):
 
         # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
-            if check_protocol_view_authorization(protocol, self.request.user):
+            if check_owner_view_authorization(protocol, self.request.user):
                 return protocol
 
         # if published just show it.
@@ -60,14 +60,14 @@ class AuthorizedForProtocolMixin(object):
         self.protocol = self.get_protocol()
         context = super(AuthorizedForProtocolMixin, self).get_context_data(**kwargs)
         context['protocol'] = self.protocol
-        context['protocol_edit_authorization'] = check_protocol_edit_authorization(self.protocol, self.request.user)
+        context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
         return context
 
 
 class AuthorizedforProtocolEditMixin(object):
 
     def check_authorization(self):
-        if not check_protocol_edit_authorization(self.protocol, self.request.user):
+        if not check_owner_edit_authorization(self.protocol, self.request.user):
             raise Http404
 
     def get_context_data(self, **kwargs):
