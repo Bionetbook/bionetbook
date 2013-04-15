@@ -353,6 +353,14 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
     #     form.instance.owner = self.request.user
     #     return super(ProtocolCreateView, self).form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolCreateView, self).get_context_data(**kwargs)
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if slug:
+            context['organization'] = Organization.objects.get(slug=slug)
+        return context
+
+
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.

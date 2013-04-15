@@ -6,7 +6,7 @@ class ProtocolForm(forms.ModelForm):
 
     class Meta:
         model = Protocol
-        exclude = ('parent', 'slug', 'duration_in_seconds', 'status','raw', 'data', 'author', 'owner')
+        exclude = ('parent', 'slug', 'duration_in_seconds', 'status','raw', 'data', 'author', 'owner', 'published', 'public')
 
     # def __init__(self, *args, **kwargs):
     #     super(ProtocolForm, self).__init__(*args, **kwargs)

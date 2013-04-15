@@ -2,14 +2,14 @@
 {% load crispy_forms_tags %}
 {% load wysiwyg %}
 
-{% block title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
+{% block title %}Protocol{% if not object %} Create{% else %}: {{ object }}{% endif %}{% endblock %}
 
-{% block page_title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
+{% block page_title %}Protocol{% if not object %} Create{% else %}: {{ object }}{% endif %}{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_protocol_list organization.slug %}">Protocols</a> <span class="divider">/</span></li>
       {% if object %}
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
       <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>
