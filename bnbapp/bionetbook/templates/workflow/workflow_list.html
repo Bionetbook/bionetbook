@@ -46,7 +46,7 @@
 <div class="row">
     <div class="span2 offset10">
         {% if request.user.is_authenticated %}
-        <a class="btn btn-info" href="{{ object.create_protocol_url }}">New Protocol</a>
+        <a class="btn btn-info" href="{% url workflow_create organization.slug %}">New Workflow</a>
         {% endif %}
         <br>
         <br>
