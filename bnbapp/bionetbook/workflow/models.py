@@ -27,8 +27,6 @@ class Workflow(TimeStampedModel):
             self.slug = self.generate_slug()
             self.save()
 
-    def get_absolute_url(self):
-        return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
 
     def generate_slug(self):
         slug = slugify(self.name)
@@ -40,6 +38,22 @@ class Workflow(TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+
+    ##########
+    # URLs
+
+    def get_absolute_url(self):
+        return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+    def get_update_url(self):
+        return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+    def get_delete_url(self):
+        return reverse("workflow_delete", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+
+    ##########
+    # Properties
 
     @property
     def protocol_count(self):

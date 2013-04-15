@@ -1,5 +1,6 @@
 #from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django import http
 #from django import forms, http
 from django.http import Http404
 from django.contrib import messages
@@ -72,5 +73,23 @@ class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
 
 class WorkflowDeleteView(LoginRequiredMixin, ConfirmationObjectView):
 
-    model = Protocol
-    slug_url_kwarg = "protocol_slug"
+    model = Workflow
+    slug_url_kwarg = "workflow_slug"
+    template_name = "workflow/workflow_delete.html"
+    success_url = "workflow_list"
+
+    def get_cancel_url(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return self.object.get_absolute_url()
+
+    def get_url_args(self):
+        args = {'owner_slug':self.object.owner.slug}
+        return args
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        url = reverse(self.success_url, kwargs=self.get_url_args())
+        message = "The Workflow \"%s\" was deleted." % self.object.name
+    #     self.object.delete()
+        messages.add_message(self.request, messages.INFO, message)
+        return http.HttpResponseRedirect(url)

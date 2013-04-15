@@ -14,22 +14,18 @@
 {% endblock %}
 
 
-{% block page_title %}Workflow: {{ object.name }}
-{% if not protocol.published %}
-  {% if protocol_edit_authorization %}
-    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
-  {% endif %}
-{% endif %}
+{% block page_title %}Workflow: {{ object.name }}    <small><a href="{{ object.get_update_url }}"><i class="icon-edit"></i> edit</a></small>
 {% endblock %}
 
 
 {% block content %}
 <div class="row">
-    <div class="span8">
+    <div class="span6">
         <h2>Detail</h2>
         {% object_data_table object %}
+        <small><a href="{{ object.get_delete_url }}"><i class="icon-trash"></i> Delete Workflow</a></small> 
     </div>
-    <div class="span4">
+    <div class="span6">
         <h2>Protocols</h2>
 
         <table class="table table-striped">
@@ -46,6 +42,7 @@
                 {% endfor %}
             </tbody>
         </table>
+
     </div>
     <!-- secondary form div -->
 </div>    
