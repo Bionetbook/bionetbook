@@ -435,6 +435,9 @@ class Protocol(TimeStampedModel):
         
         return self.verb_reagents  
 
+    def update_duration(self):
+        pass
+
 
 class NodeBase(dict):
     """Base class for the protocol components"""
@@ -534,6 +537,8 @@ class NodeBase(dict):
     def children(self):
         print 'object does not have children'    
 
+    def update_duration(self):
+        pass
 
 
 class Component(NodeBase):
@@ -860,6 +865,9 @@ class Action(NodeBase):
             return self['verb'] in MANUAL_VERBS
         return False    
 
+    def update_duration(self):
+        pass
+
 
 class Step(NodeBase):
 
@@ -932,6 +940,10 @@ class Step(NodeBase):
             return self['actions']
         else:
             return None
+
+
+    def update_duration(self):
+        pass
 
     # NEED TO UPDATE URLS TO USE THE BELOW METHOD
     # def __getitem__(self, key):
