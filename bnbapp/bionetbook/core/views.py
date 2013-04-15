@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import View, TemplateView
 from django.utils.log import getLogger
 from django.views.generic.detail import SingleObjectMixin
+from django import http
 
 from braces.views import LoginRequiredMixin
 
