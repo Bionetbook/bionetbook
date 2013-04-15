@@ -29,7 +29,8 @@
                 <tr>
                     <th>Workflow</th>
                     <th>Description</th>
-                    <th>Protocol Count</th>
+                    <th>Protocols</th>
+                    <th>Last Modified</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,6 +39,7 @@
                     <td><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></td>
                     <td>{{ object.description }}</td>
                     <td>{{ object.protocol_count }}</td>
+                    <td>{{ object.modified|date:"M d, Y H:i"}}</td>
                 </tr>
 {% endfor %}
             </tbody>
@@ -45,7 +47,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="span2 offset10">
+    <div class="span12" style="text-align:right">
         {% if request.user.is_authenticated %}
         <a class="btn btn-info" href="{% url workflow_create organization.slug %}">New Workflow</a>
         {% endif %}
