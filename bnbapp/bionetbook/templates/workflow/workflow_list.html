@@ -34,14 +34,14 @@
                 </tr>
             </thead>
             <tbody>
-{% for object in object_list %}
+                {% for object in object_list %}
                 <tr>
                     <td><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></td>
                     <td>{{ object.description }}</td>
                     <td>{{ object.protocol_count }}</td>
                     <td>{{ object.modified|date:"M d, Y H:i"}}</td>
                 </tr>
-{% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </div>

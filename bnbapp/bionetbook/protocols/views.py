@@ -347,10 +347,23 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
 
     model = Protocol
     form_class = ProtocolForm
+    slug_url_kwarg = "owner_slug"
 
     # def form_valid(self, form):
     #     form.instance.owner = self.request.user
     #     return super(ProtocolCreateView, self).form_valid(form)
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        org = Organization.objects.get(slug=slug)
+
+        form.instance.owner = org
+        form.instance.author = self.request.user
+
+        return super(ProtocolCreateView, self).form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -360,7 +373,7 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         Returns an instance of the form to be used in this view.
         """
         form = form_class(**self.get_form_kwargs())
-        form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
+        # form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
         # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
         return form
 
