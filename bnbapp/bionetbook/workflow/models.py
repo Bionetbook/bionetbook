@@ -57,7 +57,7 @@ class Workflow(TimeStampedModel):
 
     @property
     def protocol_count(self):
-        return 3                # THIS IS TEMP FOR CODING
+        return self.protocols.count()                # THIS IS TEMP FOR CODING
 
 
 class WorkflowProtocol(TimeStampedModel):
