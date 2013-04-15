@@ -22,7 +22,6 @@
         <hr>
     </div>
 </div>
-{% for object in object_list %}
 <div class="row">
     <div class="span12">
         <table class="table table-striped">
@@ -34,11 +33,13 @@
                 </tr>
             </thead>
             <tbody>
+{% for object in object_list %}
                 <tr>
                     <td><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></td>
                     <td>{{ object.description }}</td>
                     <td>{{ object.protocol_count }}</td>
                 </tr>
+{% endfor %}
             </tbody>
         </table>
     </div>
@@ -54,6 +55,5 @@
         <br>
     </div>
 </div>
-{% endfor %}
 
 {% endblock %}

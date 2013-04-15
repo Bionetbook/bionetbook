@@ -111,11 +111,6 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-
-
-
-
-
 class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
     #pass
     #slugs = []
