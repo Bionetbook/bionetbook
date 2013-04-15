@@ -18,6 +18,7 @@ from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMi
 from workflow.models import Workflow
 from protocols.models import Protocol 	#, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
+from workflow.forms import WorkflowForm
 
 # Workflow Views
 class WorkflowDetailView(LoginRequiredMixin, DetailView):
@@ -58,7 +59,6 @@ class WorkflowListView(LoginRequiredMixin, ListView):
         return context
 
 
-
 class WorkflowCreateViewBase(LoginRequiredMixin, AuthorizedOrganizationMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
@@ -66,9 +66,12 @@ class WorkflowCreateViewBase(LoginRequiredMixin, AuthorizedOrganizationMixin, Si
 
 
 class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
-
-    slugs = []
+    #pass
+    #slugs = []
     #node_type = None
+    model = Workflow
+    slug_url_kwarg = "owner_slug"
+    form_class = WorkflowForm
 
 
 class WorkflowDeleteView(LoginRequiredMixin, ConfirmationObjectView):
