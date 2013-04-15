@@ -23,7 +23,7 @@ THERMOCYCLER_VERBS = [x.slug for x in VERB_LIST if x.has_thermocycler]
 
 # print [x.name for x in VERB_LIST]
 
-def settify(settings_dict, shorthand = True, summary = False):
+def settify(settings_dict, shorthand = True, summary = False, action = False):
 
     settings = []
     units = ''

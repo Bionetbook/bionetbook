@@ -20,10 +20,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['temp'][0]) + ' ' + str(x['temp'][1]))   
 
-        else:
-            _temp = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )            
+        # else:
+        #     _temp = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )            
     
         if 'time' in changed:
             _time = '''
@@ -37,10 +37,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + ' ' + str(x['time'][1]))
 
-        else:
-            _time = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )     
+        # else:
+        #     _time = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )     
     
         if 'speed' in changed:
             _speed = '''
@@ -54,10 +54,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        else:
-            _speed = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )     
+        # else:
+        #     _speed = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )     
 
         return  _name + _temp + _time + _speed + '</TR>'
     
@@ -227,10 +227,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['temp'][0]) + ' ' + str(x['temp'][1]))    
 
-        else:
-            _temp = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )               
+        # else:
+        #     _temp = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )               
     
         if 'time' in changed:
             _time = '''
@@ -244,10 +244,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + ' ' + str(x['time'][1]))
 
-        else:
-            _time = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )         
+        # else:
+        #     _time = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )         
     
         if 'speed' in changed:
             _speed = '''
@@ -261,10 +261,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        else:
-            _speed = '''
-            <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )         
+        # else:
+        #     _speed = '''
+        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
+        #     str('input') )         
 
         return  _name + _temp + _time + _speed + '</TR>' 
 
@@ -279,7 +279,7 @@ def merge_table_pieces(content_tmp, layer = None):
     content = ''.join(list(itertools.chain(*content_tmp)))
 
     if layer:
-        switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD></TR>',
+        switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD><TD colspan="2">Mass</TD></TR>',
               'thermocycle': '<TR><TD>Phase name</TD><TD colspan="2">temp</TD><TD colspan="2">time</TD><TD colspan="2">cycles</TD><TD colspan="2">cycle to</TD></TR>'}
         header = switch[layer]          
         merge = '<' + table + header + content + '</TABLE>>'

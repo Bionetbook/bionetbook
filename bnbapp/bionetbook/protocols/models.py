@@ -792,7 +792,7 @@ class Action(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
         
-        tmp = settify(self, summary = True)
+        tmp = settify(self, summary = True, action = True)
         # tmp['name'] = self['name']      
 
         return tmp        
