@@ -19,7 +19,7 @@ from organization.models import Organization
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, settify 
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, settify, labeler 
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -797,7 +797,7 @@ class Action(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
         
-        tmp = settify(self, summary = True, action = True)
+        tmp = labeler(self, summary = True)
         # tmp['name'] = self['name']      
 
         return tmp        

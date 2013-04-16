@@ -1,3 +1,6 @@
+from protocols.utils import MANUAL_LAYER
+# from core.utils import TIME_UNITS
+
 def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
     stack = []
@@ -215,8 +218,25 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         _temp = ''
         _time = ''
         _speed = ''
+        _name = '<TR>'
+        display=[]
+        display.append(_name)
 
-        _name = '<TR>'     
+        display_order = MANUAL_LAYER[x['verb']] 
+        if display_order !='settify':
+            for item in display_order:
+                tmp= ''
+                if item in changed:
+                    tmp = '''
+                    <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+                    <TD color="#015666"><font color="#015666"> %s</font></TD>'''%(
+                    str(x[item]), str(y[item]))
+
+                if item in unchanged and item not in changed:
+                    tmp = '''
+                    <TD color="#C0C0C0" colspan="2">%s</TD>'''%str(x[item])
+
+                display.append(tmp)         
 
         if 'temp' in changed:
             _temp = '''
@@ -228,12 +248,9 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         if 'temp' in unchanged and 'temp' not in changed:
             _temp = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
-            str(x['temp'][0]) + ' ' + str(x['temp'][1]))    
+            str(x['temp'][0]) + ' ' + str(x['temp'][1]))  
 
-        # else:
-        #     _temp = '''
-        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-        #     str('input') )               
+        display.append(_temp)      
     
         if 'time' in changed:
             _time = '''
@@ -247,11 +264,8 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['time'][0]) + ' ' + str(x['time'][1]))
 
-        # else:
-        #     _time = '''
-        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-        #     str('input') )         
-    
+        display.append(_time)    
+
         if 'speed' in changed:
             _speed = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
@@ -264,12 +278,11 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['speed'][0]) + ' ' + str(x['speed'][1]))
 
-        # else:
-        #     _speed = '''
-        #     <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-        #     str('input') )         
+        display.append(_speed)
+        display.append('</TR>')
 
-        return  _name + _temp + _time + _speed + '</TR>' 
+        # return  _name + _temp + _time + _speed + '</TR>' 
+        return ''.join(display)
 
 def merge_table_pieces(content_tmp, layer = None):
     ''' label is an HTML object and for automation sake, created by concatenating a few peices:

@@ -20,6 +20,16 @@ VERB_FORM_DICT = {x.slug: x for x in VERB_LIST}
 MACHINE_VERBS = [x.slug for x in VERB_LIST if x.has_machine]
 COMPONENT_VERBS = [x.slug for x in VERB_LIST if x.has_component]
 THERMOCYCLER_VERBS = [x.slug for x in VERB_LIST if x.has_thermocycler]
+MANUAL_VERBS = [x.slug for x in VERB_LIST if x.has_manual]
+MANUAL_LAYER={'mix':['technique_comment','duration','duration_units'],
+                'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
+                'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
+                'let-sit-stand':'settify',
+                'store':'settify',
+                'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
+                'dry':['technique_comment'],
+                }
+
 
 # print [x.name for x in VERB_LIST]
 
@@ -30,6 +40,8 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
     output = {}
     
     # Duration replaces min_time if None, or not present. 
+
+
     if 'duration' in settings_dict.keys():
         if 'min_time' not in settings_dict.keys() or not settings_dict['min_time']: 
             settings_dict['min_time'] = settings_dict['duration']    
@@ -37,7 +49,6 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
     if 'duration_units' in settings_dict.keys():
         if 'time_units' not in settings_dict.keys() or not settings_dict['time_units']: 
             settings_dict['time_units'] = settings_dict['duration_units']            
-
 
     items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link']
 
@@ -152,13 +163,13 @@ def shorten(units, reverse = False):
         'Units/microliter': 'U/ul',
         'Units': 'U',
         # 'X':'X',
-        'minutes':'m', 
-        'minute':'m', 
-        'mins':'m', 
-        'minu':'m', 
-        'seconds':'s',    
-        'second':'s',    
-        'sec':'s',    
+        'minutes':'min', 
+        'minute':'min', 
+        'mins':'min', 
+        'minu':'min', 
+        'seconds':'sec',    
+        'second':'sec',    
+        'sec':'sec',    
         'hour':'hr',    
         'hours':'hr',    
         'day':'d',  
@@ -179,281 +190,54 @@ def shorten(units, reverse = False):
 
         return short_units
 
-
-
-# def unify(settings_dict, shorthand = True, summary = False):
-
-    # temp = dict((k, v) for k, v in settings_dict.iteritems() if 'temp' in k and v != None)
-    # time = dict((k, v) for k, v in settings_dict.iteritems() if 'time' in k and v != None)
-    # speed = dict((k, v) for k, v in settings_dict.iteritems() if 'speed' in k and v != None)
-    # cycle = dict((k, v) for k, v in settings_dict.iteritems() if 'cycle' in k and v != None)
-    # comment = dict((k, v) for k, v in settings_dict.iteritems() if 'comment' in k or 'why' in k and v != None )
-    # conc = dict((k, v) for k, v in settings_dict.iteritems() if 'conc' in k and v != None)
-    # vol = dict((k, v) for k, v in settings_dict.iteritems() if 'vol' in k and v != None)
-    # mass = dict((k, v) for k, v in settings_dict.iteritems() if 'mass' in k and v != None)
-
-
-    # if conc:
-    #     units = None
-    #     numbers = None
-    #     out = None
-
-    #     if 'max_conc' in conc and 'min_conc' in conc:
-    #         if conc['max_conc'] == conc['min_conc']:
-    #             # units_c = conc['max_conc']
-    #             numbers = conc['max_conc']
-    #         else:
-    #             units_c = conc['min_conc'] + '-' + conc['max_conc']
-    #             numbers = conc['min_conc'] + '-' + conc['max_conc']
-    #     else:
-    #         if 'max_conc' in conc:
-    #              # units_c = conc['max_conc']
-    #             numbers = conc['max_conc']
-    #         if 'min_conc' in conc:
-    #              # units_c = conc['min_conc']   
-    #             numbers = conc['min_conc'] 
-
-    #     if numbers != None:
-            
-    #         if 'conc_units' in conc:
-    #             units = str(conc['conc_units'])
-    #         # else:
-    #         #     units = ''
-    #             # return 'no concentration units specified for %s' % units_dict['name']
-    #         out = str(numbers) + ' ' + units
-                
-    #         if 'conc_comment' in conc:
-    #             out = 'Remark: ' + conc['conc_comment']  
-
-    #         if shorthand:
-    #             units = shorten(units)           
-
-    #         if summary:
-    #             output['conc'] = [numbers, units]
-    #         else:    
-    #             settings.append(out)
+def labeler(object_dict, shorthand=False, summary=False):
+    output = {}
     
-    # if vol:  
-    #     units = None
-    #     numbers = None
-    #     out = None  
-        
-    #     if 'max_vol' in vol and 'min_vol' in vol:
-    #         if vol['max_vol'] == vol['min_vol']:
-    #             units_c = vol['max_vol']
-    #             numbers = vol['max_vol']
-    #         else:
-    #             units_c = vol['min_vol'] + '-' + vol['max_vol']
-    #             numbers = vol['min_vol'] + '-' + vol['max_vol']
-    #     else:
-    #         if 'max_vol' in vol:
-    #              units_c = vol['max_vol']
-    #              numbers = vol['max_vol']
-    #         if 'min_vol' in vol:
-    #              units_c = vol['min_vol']   
-    #              numbers = vol['min_vol'] 
-
-    #     if numbers != None:
-            
-    #         if 'vol_units' in vol:
-    #             units = str(vol['vol_units'])
-    #         # else:
-    #         #     units = ''
-    #             # return 'no volentration units specified for %s' % units_dict['name']
-    #         out = str(numbers) + ' ' + units
+    if object_dict['verb'] in MANUAL_VERBS:
+        # switch={'mix':['technique_comment','duration','duration_units'],
+        #         'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
+        #         'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
+        #         'let-sit-stand':'settify',
+        #         'store':'settify',
+        #         'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
+        #         'dry':['technique_comment'],
+        #         }
                 
-    #         if 'vol_comment' in vol:
-    #             out = 'Remark: ' + vol['vol_comment']  
 
-    #         if shorthand:
-    #             units = shorten(units)           
+        display_order = MANUAL_LAYER[object_dict['verb']]
+        
+        if display_order == 'settify':
+            tmp = settify(object_dict, summary=True)        
+            tmp['verb'] = object_dict['verb']
+            return tmp
+             
+        else:
+            output['verb'] = object_dict['verb']
+            for item in display_order:
+                if item in object_dict.keys():
+                    output[item] = object_dict[item]
 
-    #         if summary:
-    #             output['vol'] = [numbers, units]
-    #         else:    
-    #             settings.append(out)
+            # if 'duration' in output.keys():
+            #     if 'min_time' not in output.keys() or not output['min_time']: 
+            #         output['time'] = []
+            #         output['time'].append(object_dict['duration'])    
+
+            # if 'duration_units' in output.keys():
+            #     if 'time_units' not in output.keys() or not output['time_units']: 
+            #         output['time'].append(object_dict['duration_units'])          
+#                       output[item] = [object_dict[item] for item in display_order if item in object_dict.keys()]
+
+    return output 
         
 
-    # if mass:
-    #     if 'max_mass' in mass and 'min_mass' in mass:
-    #         if mass['max_mass'] == mass['min_mass']:
-    #             units_c = mass['max_mass']
-    #             numbers = mass['max_mass']
-    #         else:
-    #             units_c = mass['min_mass'] + '-' + mass['max_mass']
-    #             numbers = mass['min_mass'] + '-' + mass['max_mass']
-    #     else:
-    #         if 'max_mass' in mass:
-    #              units_c = mass['max_mass']
-    #              numbers = mass['max_mass']
-    #         if 'min_mass' in mass:
-    #              units_c = mass['min_mass']   
-    #              numbers = mass['min_mass'] 
-
-    #     if numbers != None:
-            
-    #         if 'mass_units' in mass:
-    #             units = str(mass['mass_units'])
-    #         # else:
-    #         #     units = ''
-    #             # return 'no massentration units specified for %s' % units_dict['name']
-    #         out = str(numbers) + ' ' + units
-                
-    #         if 'mass_comment' in mass:
-    #             out = 'Remark: ' + mass['mass_comment']  
-
-    #         if shorthand:
-    #             units = shorten(units)           
-
-    #         if summary:
-    #             output['mass'] = [numbers, units]
-    #         else:    
-    #             settings.append(out)
 
 
-    # if temp:
-    #     if 'max_temp' in temp and 'min_temp' in temp:
-            
-    #         if temp['min_temp'] == temp['max_temp']:
-    #             numbers =  temp['max_temp']
-    #         else:
-    #             numbers =  temp['min_temp'] + '-' + temp['max_temp']        
-    #     else:
-    #         if 'max_temp' in temp:
-    #              numbers = temp['max_temp']
-
-    #         if 'min_temp' in temp:
-    #              numbers = temp['min_temp']  
-
-    #     if numbers != None:
-            
-    #         if 'temp_units' in temp:
-    #             units = str(temp['temp_units'])
-            
-    #         out = str(numbers) + ' ' + units    
-
-    #         if 'temp_comment' in temp:
-    #                 out = str(out) + ', ' + 'Remark: ' + temp['temp_comment']    
-
-    #         if shorthand:
-    #             units = shorten(units)
-            
-    #         if summary:
-    #             output['temp'] = [numbers, units]
-
-    #         else:    
-    #             settings.append(out)
 
 
-    # if time: 
-    #     units = None
-    #     numbers = None
-    #     out = None
-        
-    #     if 'max_time' in time and 'min_time' in time:
-            
-    #         if time['min_time'] == time['max_time']:
-    #             numbers =  time['max_time']
-    #         else:
-    #             numbers =  time['min_time'] + '-' + time['max_time']        
-    #     else:
-    #         if 'max_time' in time:
-    #              numbers = time['max_time']
 
-    #         if 'min_time' in time:
-    #              numbers = time['min_time']  
 
-    #     if nummbers != None:
 
-            
-    #         if 'time_units' in time:
-    #             units = str(time['time_units'])            
-            
-    #         out = str(numbers) + ' ' + units
 
-    #         if 'time_comment' in time:
-    #                 out = str(out) + ', ' + 'Remark: ' + time['time_comment']    
 
-    #         if shorthand:
-    #             units = shorten(units)        
-            
-    #         if summary:
-    #             output['time'] = [numbers, units]
-
-    #         else:    
-    #             settings.append(out) 
-
-    # if speed: 
-    #     units = None
-    #     numbers = None
-    #     out = None
-        
-        
-
-    #     if 'max_speed' in speed and 'min_speed' in speed:
-            
-    #         if speed['min_speed'] == speed['max_speed']:
-    #             numbers =  speed['max_speed']
-    #         else:
-    #             numbers =  speed['min_speed'] + '-' + speed['max_speed']        
-    #     else:
-    #         if 'max_speed' in speed:
-    #             numbers = speed['max_speed']
-
-    #         if 'min_speed' in speed:
-    #              numbers = speed['min_speed']  
-
-    #     if numbers != None:
-            
-    #         if 'speed_units' in speed:
-    #             units = str(speed['speed_units'])
-    #         else: 
-    #             units = 'RPM'        
-    #         out = str(numbers) + ' ' + units
-            
-    #         if 'speed_comment' in speed:
-    #             out = str(out) + ', ' + 'Remark: ' + speed['speed_comment']    
-
-    #         if shorthand:
-    #             units = shorten(units)        
-                    
-    #         if summary:
-    #             output['speed'] = [numbers, units]
-
-    #         else:    
-    #             settings.append(out)    
-
-    # if cycle:
-    #     units = None
-    #     numbers = None
-    #     out = None
-        
-    #     plural = ' cycles'
-
-    #     if 'cycle_to' in cycle and 'cycles' in cycle:
-    #         if cycle['cycles'] == '1':
-    #             plural = ' cycle'
-            
-    #         numbers = str(cycle['cycles']) 
-    #         units = plural
-    #         cycle_to = cycle['cycle_to'] 
-
-    #     if 'cycles' in cycle and 'cycle_to' not in cycle:
-    #         if cycle['cycles'] == '1':
-    #             plural = ' cycle'
-            
-    #         numbers = str(cycle['cycles']) 
-    #         units = plural
-
-    #     if summary:
-    #         output['cycle'] = [numbers, cycle.get('cycle_to', '')]
-
-    #     else:    
-    #         settings.append(out)    
-   
-    # if summary:
-    #     return output
-    # else:
-    #     return settings
 
 
