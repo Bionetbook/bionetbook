@@ -9,4 +9,4 @@ class AddForm(forms.VerbForm):
     has_component = True
 
     # duration = forms.IntegerField(help_text='this is the minimal time this should take')
-    add_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    # add_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
