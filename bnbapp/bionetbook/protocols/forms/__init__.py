@@ -25,7 +25,8 @@ class StepForm(NodeForm):
 class ActionForm(NodeForm):
 
     name = forms.CharField(max_length=100, required=False, help_text = 'defaults to verb')
-    duration = forms.IntegerField(help_text='this is the minimal time this should take, in seconds')
+    duration = forms.IntegerField(help_text='this is the minimal time this should take')
+    duration_units = forms.ChoiceField(choices = TIME_UNITS, initial='sec')
     physical_commitment = forms.ChoiceField(choices = (("N/A","unknown"),("Passive","You dont have to be here"),("Active","You are here"),('Setup', 'only required to start'), ('missing','no description present'),), required=False)
     # time_units = forms.CharField(help_text='in seconds', required=False)
     tracking_object = forms.CharField(required=False, help_text='Sample mix | Buffer | Other mix')

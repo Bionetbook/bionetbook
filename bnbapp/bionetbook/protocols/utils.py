@@ -34,6 +34,10 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
         if 'min_time' not in settings_dict.keys() or not settings_dict['min_time']: 
             settings_dict['min_time'] = settings_dict['duration']    
 
+    if 'duration_units' in settings_dict.keys():
+        if 'time_units' not in settings_dict.keys() or not settings_dict['time_units']: 
+            settings_dict['time_units'] = settings_dict['duration_units']            
+
 
     items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link']
 

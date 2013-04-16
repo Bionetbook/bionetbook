@@ -1,5 +1,5 @@
 from protocols.forms import forms
-from core.utils import TIME_UNITS
+from core.utils import TIME_UNITS, TEMPERATURE_UNITS
 
 class StoreForm(forms.VerbForm):
 
@@ -8,5 +8,6 @@ class StoreForm(forms.VerbForm):
 
     min_temp = forms.IntegerField(required=False)
     max_temp = forms.IntegerField(required=False)
-    time = forms.IntegerField(help_text='how long can it stay there?', required = False)
+    temp_units = forms.ChoiceField(choices = TEMPERATURE_UNITS, initial='C')
+    # time = forms.IntegerField(help_text='how long can it stay there?', required = False)
     time_units = forms.ChoiceField(choices = TIME_UNITS)
