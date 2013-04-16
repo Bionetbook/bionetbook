@@ -224,8 +224,6 @@ class Grapher(object):
             n.attr['height'] = '0.2'
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
             n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
-
-            # if 'call_for_protocol' in node_object:
             n.attr['URL'] = node_object.get_absolute_url()
             n.attr['target'] = '_top'
                 
@@ -437,9 +435,10 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = '10'
                     s.attr['label'] = merge_table_pieces(content, 'components')
+                    s.attr['target'] = '_top'
                     # node_object = self.protocol_A.nodes[verb_a]['components']
                     # s.attr['URL'] = node_object.get_update_url()
-                    # s.attr['target'] = '_top'
+                    
 
             if 'thermocycle' in self.protocol_A.nodes[verb_a].keys() and 'thermo' in layers: 
 
@@ -480,7 +479,7 @@ class Grapher(object):
                     # node_object = self.protocol_A.nodes[verb_a]['thermocycle']
                     # s.attr['URL'] = node_object.get_update_url()
                     # s.attr['target'] = '_top'
-        
+       
         return self 
 
         

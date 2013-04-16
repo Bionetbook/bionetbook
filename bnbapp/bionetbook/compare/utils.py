@@ -69,7 +69,10 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         _conc = ''
         _mass = ''
 
-        _name = '<TR><TD>%s</TD>' %x['name']
+        # embed link for components that are protocol links:
+        _name = '<TR><TD>%s</TD>' % x['name']
+        if 'link' in x.keys():
+            _name = '<TR><TD href="%s">%s</TD>' %(x['link'],x['name'])
 
         if 'vol' in changed and 'vol' not in unchanged:
             _vol = '''

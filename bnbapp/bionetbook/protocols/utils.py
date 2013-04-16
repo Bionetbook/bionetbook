@@ -35,7 +35,7 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
             settings_dict['min_time'] = settings_dict['duration']    
 
 
-    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass']
+    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link']
 
     for item in items:
         data = dict((k, v) for k, v in settings_dict.iteritems() if item in k and v != None)
@@ -66,6 +66,10 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
                 output[item] = [numbers, data.get('cycle_to', '')]
             else:    
                 settings.append(out)
+
+        if item == 'link':
+            if summary:
+                output['link'] = data['protocol_link']        
 
 
         else:        
