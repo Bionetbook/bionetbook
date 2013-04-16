@@ -5,7 +5,7 @@ class MixForm(forms.VerbForm):
 
     name = "Mix"
     slug = "mix"
-
+    has_manual = True
     # duration_min_time = forms.IntegerField()
     # comment_why = forms.CharField()
     # edit_remarks = forms.CharField()
