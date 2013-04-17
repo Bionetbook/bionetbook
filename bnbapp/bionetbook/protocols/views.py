@@ -627,6 +627,17 @@ class ActionCreateView(NodeCreateViewBase):
     slugs = ['step_slug']
 
 
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = form_class(**self.get_form_kwargs())
+
+        if 'protocol_id' in form.fields:
+            form.fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.get_all_published_protocols()]
+
+        return form
+
     def get_context_data(self, **kwargs):
         '''Ads the Verb form to the context'''
         context = super(ActionCreateView, self).get_context_data(**kwargs)
@@ -654,7 +665,6 @@ class ActionCreateView(NodeCreateViewBase):
         else:
             print "FORM INVALID"
             return self.form_invalid(form, verb_form)
-
 
     def form_invalid(self, form, verb_form):
         """
@@ -711,6 +721,18 @@ class ActionUpdateView(NodeUpdateView):
     success_url = 'action_detail'
     slugs = ['step_slug', 'action_slug']
     node_type = "action"
+
+
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = form_class(**self.get_form_kwargs())
+
+        if 'protocol_id' in form.fields:
+            form.fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.get_all_published_protocols()]
+
+        return form
 
     def get_context_data(self, form=None, verb_form=None, **kwargs):
         context = super(ActionUpdateView, self).get_context_data(**kwargs)
