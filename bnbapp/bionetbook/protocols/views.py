@@ -626,18 +626,6 @@ class ActionCreateView(NodeCreateViewBase):
     form_prefix = 'action'
     slugs = ['step_slug']
 
-
-    def get_form(self, form_class):
-        """
-        Returns an instance of the form to be used in this view.
-        """
-        form = form_class(**self.get_form_kwargs())
-
-        if 'protocol_id' in form.fields:
-            form.fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.get_all_published_protocols()]
-
-        return form
-
     def get_context_data(self, **kwargs):
         '''Ads the Verb form to the context'''
         context = super(ActionCreateView, self).get_context_data(**kwargs)
@@ -646,8 +634,11 @@ class ActionCreateView(NodeCreateViewBase):
         if not 'verb_form' in kwargs:
             context['verb_form'] = VERB_FORM_DICT[verb_slug](prefix='verb')
             context['verb_name'] = context['verb_form'].name
-        return context
 
+        if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
+            context['verb_form'].fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.profile.get_all_published_protocols()]
+
+        return context
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
@@ -678,7 +669,6 @@ class ActionCreateView(NodeCreateViewBase):
         # FORMS NOT PASSING POPULATED
         return self.render_to_response(ctx)
 
-
     def form_valid(self, form, verb_form):
         '''Takes in two forms for processing'''
         protocol = self.get_protocol()
@@ -701,17 +691,6 @@ class ActionCreateView(NodeCreateViewBase):
         return super(ActionCreateView, self).form_valid(form)
 
 
-
-
-# class StepUpdateView(NodeUpdateView):
-#     model = Protocol
-#     form_class = StepForm
-#     slug_url_kwarg = "protocol_slug"
-#     template_name = "steps/step_form.html"
-#     success_url = 'step_detail'
-#     slugs = ['step_slug']
-#     node_type = "step"
-
 class ActionUpdateView(NodeUpdateView):
 
     model = Protocol
@@ -722,18 +701,6 @@ class ActionUpdateView(NodeUpdateView):
     slugs = ['step_slug', 'action_slug']
     node_type = "action"
 
-
-    def get_form(self, form_class):
-        """
-        Returns an instance of the form to be used in this view.
-        """
-        form = form_class(**self.get_form_kwargs())
-
-        if 'protocol_id' in form.fields:
-            form.fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.get_all_published_protocols()]
-
-        return form
-
     def get_context_data(self, form=None, verb_form=None, **kwargs):
         context = super(ActionUpdateView, self).get_context_data(**kwargs)
 
@@ -743,12 +710,14 @@ class ActionUpdateView(NodeUpdateView):
             context['verb_form'] = VERB_FORM_DICT[context[self.node_type]['verb']](initial=context[self.node_type], prefix='verb')
         context['verb_name'] = context['verb_form'].name
 
+        if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
+            context['verb_form'].fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.profile.get_all_published_protocols()]
+
         if form:
             context['form'] = form
         else:
             context['form'] = self.form_class(initial=context[self.node_type], prefix=self.node_type)
         
-    
         return context
 
     def post(self, request, *args, **kwargs):
