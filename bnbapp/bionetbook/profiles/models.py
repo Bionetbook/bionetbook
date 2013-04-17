@@ -63,6 +63,9 @@ class Profile(TimeStampedModel):
 
         return result
 
+    def get_all_published_protocol_choices(self):
+        return [(protocol.pk, protocol.name) for protocol in self.get_all_published_protocols()]
+
 
 class Favorite(TimeStampedModel):
     '''For simple bookmarking by a user for quickly finding protocols they have tagged as liking'''

@@ -636,7 +636,7 @@ class ActionCreateView(NodeCreateViewBase):
             context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.profile.get_all_published_protocols()]
+            context['verb_form'].fields['protocol_id'].choices = self.request.user.profile.get_all_published_protocol_choices()
 
         return context
 
@@ -711,7 +711,7 @@ class ActionUpdateView(NodeUpdateView):
         context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'].choices = [(protocol.pk, protocol.name) for protocol in self.request.user.profile.get_all_published_protocols()]
+            context['verb_form'].fields['protocol_id'].choices = self.request.user.profile.get_all_published_protocol_choices()
 
         if form:
             context['form'] = form
