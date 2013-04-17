@@ -6,6 +6,7 @@ class TransferForm(forms.VerbForm):
     name = "Transfer"
     slug = "transfer"
     has_manual = True
+    layers = ['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units']
     
     old_vessel = forms.CharField(help_text = 'Where are you transferring from?')
     new_vessel = forms.CharField(help_text = 'Where are you transferring to?')

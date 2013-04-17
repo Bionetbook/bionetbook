@@ -6,7 +6,8 @@ class LetSitStandForm(forms.VerbForm):
     name = "Let Sit/Stand"
     slug = "let-sit-stand"
     has_manual = True
-
+    layers = ['settify']
+    
     min_temp = forms.FloatField(required=False)#, initial = 22.0)
     max_temp = forms.FloatField(required=False)#, initial = 22.0)
     temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')

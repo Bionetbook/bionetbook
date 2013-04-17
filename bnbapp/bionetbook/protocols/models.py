@@ -797,7 +797,7 @@ class Action(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
 
-        return labeler(self, summary = True)
+        return labeler(self)
 
 
     @property

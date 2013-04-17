@@ -6,7 +6,8 @@ class StoreForm(forms.VerbForm):
     name = "Store"
     slug = "store"
     has_manual = True
-
+    layers = ['settify']
+    
     min_temp = forms.IntegerField(required=False)
     max_temp = forms.IntegerField(required=False)
     temp_units = forms.ChoiceField(choices = TEMPERATURE_UNITS, initial='C')
