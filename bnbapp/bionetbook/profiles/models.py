@@ -64,7 +64,7 @@ class Profile(TimeStampedModel):
         return result
 
     def get_all_published_protocol_choices(self):
-        return [(protocol.pk, protocol.name) for protocol in self.get_all_published_protocols()]
+        return [(protocol.pk, protocol.owner.name + " - " + protocol.name) for protocol in self.get_all_published_protocols()]
 
 
 class Favorite(TimeStampedModel):
