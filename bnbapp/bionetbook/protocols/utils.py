@@ -197,8 +197,8 @@ def labeler(object_dict):
     if object_dict['verb'] in MANUAL_VERBS:
         display_order = MANUAL_LAYER[object_dict['verb']]
         
-        if display_order == 'settify':
-            output = settify(object_dict, summary=True)        
+        if len(display_order) == 1 and display_order[0] == 'settify':
+            output = settify(object_dict, summary=True)
         else:
             for item in display_order:
                 if item in object_dict.keys():
