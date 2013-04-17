@@ -796,11 +796,8 @@ class Action(NodeBase):
         ''' takes self.label as a list and turns it into a dict:
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
-        
-        tmp = labeler(self, summary = True)
-        # tmp['name'] = self['name']      
 
-        return tmp        
+        return labeler(self, summary = True)
 
 
     @property
