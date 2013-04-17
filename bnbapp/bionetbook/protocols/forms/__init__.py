@@ -37,6 +37,7 @@ class VerbForm(forms.Form):
     has_machine = False
     has_thermocycler = False
     has_manual = False
+    layers = []
 
 forms.VerbForm = VerbForm
 

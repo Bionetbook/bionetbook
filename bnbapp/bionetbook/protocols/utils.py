@@ -21,14 +21,17 @@ MACHINE_VERBS = [x.slug for x in VERB_LIST if x.has_machine]
 COMPONENT_VERBS = [x.slug for x in VERB_LIST if x.has_component]
 THERMOCYCLER_VERBS = [x.slug for x in VERB_LIST if x.has_thermocycler]
 MANUAL_VERBS = [x.slug for x in VERB_LIST if x.has_manual]
-MANUAL_LAYER={'mix':['technique_comment','duration','duration_units'],
-                'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
-                'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
-                'let-sit-stand':'settify',
-                'store':'settify',
-                'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
-                'dry':['technique_comment'],
-                }
+# MANUAL_LAYER={'mix':['technique_comment','duration','duration_units'],
+#                 'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
+#                 'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
+#                 'let-sit-stand':'settify',
+#                 'store':'settify',
+#                 'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
+#                 'dry':['technique_comment'],
+#                 }
+
+MANUAL_LAYER = dict((x.slug, x.layers) for x in VERB_LIST if x.layers)
+
 
 
 # print [x.name for x in VERB_LIST]
@@ -139,7 +142,7 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
         return settings        
 
 
-def shorten(units, reverse = False):
+def shorten(units):
 
     d ={'nanograms':'ng',
         'micrograms':'ug',    
@@ -180,52 +183,28 @@ def shorten(units, reverse = False):
         'kelvin':'K', 
         }
 
-    if reverse:
-        pass
-    else:
-        try:
-            short_units = d[units]
-        except KeyError:
-            short_units = units
+    try:
+        short_units = d[units]
+    except KeyError:
+        short_units = units
 
-        return short_units
+    return short_units
 
-def labeler(object_dict, shorthand=False, summary=False):
+
+def labeler(object_dict):
     output = {}
     
     if object_dict['verb'] in MANUAL_VERBS:
-        # switch={'mix':['technique_comment','duration','duration_units'],
-        #         'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
-        #         'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
-        #         'let-sit-stand':'settify',
-        #         'store':'settify',
-        #         'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
-        #         'dry':['technique_comment'],
-        #         }
-                
-
         display_order = MANUAL_LAYER[object_dict['verb']]
         
         if display_order == 'settify':
-            tmp = settify(object_dict, summary=True)        
-            tmp['verb'] = object_dict['verb']
-            return tmp
-             
+            output = settify(object_dict, summary=True)        
         else:
-            output['verb'] = object_dict['verb']
             for item in display_order:
                 if item in object_dict.keys():
                     output[item] = object_dict[item]
-
-            # if 'duration' in output.keys():
-            #     if 'min_time' not in output.keys() or not output['min_time']: 
-            #         output['time'] = []
-            #         output['time'].append(object_dict['duration'])    
-
-            # if 'duration_units' in output.keys():
-            #     if 'time_units' not in output.keys() or not output['time_units']: 
-            #         output['time'].append(object_dict['duration_units'])          
-#                       output[item] = [object_dict[item] for item in display_order if item in object_dict.keys()]
+        
+        output['verb'] = object_dict['verb']
 
     return output 
         
