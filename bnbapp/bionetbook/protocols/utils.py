@@ -21,6 +21,8 @@ MACHINE_VERBS = [x.slug for x in VERB_LIST if x.has_machine]
 COMPONENT_VERBS = [x.slug for x in VERB_LIST if x.has_component]
 THERMOCYCLER_VERBS = [x.slug for x in VERB_LIST if x.has_thermocycler]
 MANUAL_VERBS = [x.slug for x in VERB_LIST if x.has_manual]
+MANUAL_LAYER = dict((x.slug, x.layers) for x in VERB_LIST if x.layers)
+
 # MANUAL_LAYER={'mix':['technique_comment','duration','duration_units'],
 #                 'place':['item_to_place','target','conditional_statement','technique_comment','duration','duration_units'],
 #                 'discard':['item_to_discard','item_to_retain','conditional_statement','technique_comment','duration','duration_units'],
@@ -29,12 +31,6 @@ MANUAL_VERBS = [x.slug for x in VERB_LIST if x.has_manual]
 #                 'transfer':['item_to_place','old_vessel','new_vessel','item_to_discard','technique_comment','min_vol','vol_units','duration','duration_units'],
 #                 'dry':['technique_comment'],
 #                 }
-
-MANUAL_LAYER = dict((x.slug, x.layers) for x in VERB_LIST if x.layers)
-
-
-
-# print [x.name for x in VERB_LIST]
 
 def settify(settings_dict, shorthand = True, summary = False, action = False):
 
@@ -45,12 +41,12 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
     # Duration replaces min_time if None, or not present. 
 
 
-    if 'duration' in settings_dict.keys():
-        if 'min_time' not in settings_dict.keys() or not settings_dict['min_time']: 
-            settings_dict['min_time'] = settings_dict['duration']    
+    if 'duration' in settings_dict:
+        if 'min_time' not in settings_dict or not settings_dict['min_time']:
+            settings_dict['min_time'] = settings_dict['duration']
 
-    if 'duration_units' in settings_dict.keys():
-        if 'time_units' not in settings_dict.keys() or not settings_dict['time_units']: 
+    if 'duration_units' in settings_dict:
+        if 'time_units' not in settings_dict or not settings_dict['time_units']: 
             settings_dict['time_units'] = settings_dict['duration_units']            
 
     items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link']
