@@ -20,6 +20,7 @@ class Profile(TimeStampedModel):
     city = models.CharField(_("City"), max_length=100, null=True, blank=True)
     state = USStateField(_("State"), null=True, blank=True)
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
+    #protocols = models.ManyToManyField(Protocol, through='Organization')
 
     def __unicode__(self):
         if self.first_name or self.last_name:
@@ -33,6 +34,27 @@ class Profile(TimeStampedModel):
 
     # def get_organizations(self):
     #     return self.organization_set.all()
+
+    def get_published_org_protocols(self):
+        result = []
+
+        for org in self.user.organization_set.prefetch_related('protocol_set').all():
+            result.extend( org.protocol_set.filter(published=True, public=False))
+
+        return result
+
+    def get_published_public_protocols(self):
+        return Protocol.objects.filter(published=True, public=True)
+
+    def get_all_published_protocols(self):
+        '''
+        example:
+        user.profile.get_all_published_protocols()
+        '''
+        result = self.get_published_org_protocols()
+        result.extend( self.get_published_public_protocols() )
+
+        return result
 
 
 class Favorite(TimeStampedModel):
