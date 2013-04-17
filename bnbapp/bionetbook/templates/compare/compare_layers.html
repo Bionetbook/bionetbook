@@ -6,7 +6,7 @@
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
       <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
       <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> << to >> </li>
       <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li>
