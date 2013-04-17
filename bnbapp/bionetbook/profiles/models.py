@@ -36,6 +36,9 @@ class Profile(TimeStampedModel):
     #     return self.organization_set.all()
 
     def get_published_org_protocols(self):
+        '''
+        Returns a list of published protocols the user has access to.
+        '''
         result = []
 
         for org in self.user.organization_set.prefetch_related('protocol_set').all():
@@ -44,10 +47,14 @@ class Profile(TimeStampedModel):
         return result
 
     def get_published_public_protocols(self):
+        '''
+        Returns a list of public protocols the user has access to.
+        '''
         return Protocol.objects.filter(published=True, public=True)
 
     def get_all_published_protocols(self):
         '''
+        Returns a list of all protocols the user has access to.
         example:
         user.profile.get_all_published_protocols()
         '''
