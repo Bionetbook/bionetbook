@@ -35,36 +35,51 @@ class Profile(TimeStampedModel):
     # def get_organizations(self):
     #     return self.organization_set.all()
 
-    def get_published_org_protocols(self):
+    def get_published_protocols(self, public=True, private=True):
         '''
         Returns a list of published protocols the user has access to.
         '''
         result = []
 
-        for org in self.user.organization_set.prefetch_related('protocol_set').all():
-            result.extend( org.protocol_set.filter(published=True, public=False))
+        if private:
+            for org in self.user.organization_set.prefetch_related('protocol_set').all():
+                result.extend( org.protocol_set.filter(published=True, public=False))
+
+        if public:
+            result.extend( Protocol.objects.filter(published=True, public=True) )
 
         return result
 
-    def get_published_public_protocols(self):
-        '''
-        Returns a list of public protocols the user has access to.
-        '''
-        return Protocol.objects.filter(published=True, public=True)
+    # def get_published_org_protocols(self):
+    #     '''
+    #     Returns a list of published protocols the user has access to.
+    #     '''
+    #     result = []
 
-    def get_all_published_protocols(self):
-        '''
-        Returns a list of all protocols the user has access to.
-        example:
-        user.profile.get_all_published_protocols()
-        '''
-        result = self.get_published_org_protocols()
-        result.extend( self.get_published_public_protocols() )
+    #     for org in self.user.organization_set.prefetch_related('protocol_set').all():
+    #         result.extend( org.protocol_set.filter(published=True, public=False))
 
-        return result
+    #     return result
+
+    # def get_published_public_protocols(self):
+    #     '''
+    #     Returns a list of public protocols the user has access to.
+    #     '''
+    #     return Protocol.objects.filter(published=True, public=True)
+
+    # def get_all_published_protocols(self):
+    #     '''
+    #     Returns a list of all protocols the user has access to.
+    #     example:
+    #     user.profile.get_all_published_protocols()
+    #     '''
+    #     result = self.get_published_org_protocols()
+    #     result.extend( self.get_published_public_protocols() )
+
+    #     return result
 
     def get_all_published_protocol_choices(self):
-        return [(protocol.pk, protocol.owner.name + " - " + protocol.name) for protocol in self.get_all_published_protocols()]
+        return [(protocol.pk, protocol.owner.name + " - " + protocol.name) for protocol in self.get_published_protocols()]
 
 
 class Favorite(TimeStampedModel):
