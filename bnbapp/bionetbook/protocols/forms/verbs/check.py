@@ -5,10 +5,11 @@ class CheckForm(forms.VerbForm):
 
     name = "Check"
     slug = "check"
+    has_machine = True
 
-    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
-    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
-    specify_tool = forms.CharField(required = False, help_text = 'calculator, scissors, pippete, blade etc')
+    item_to_check = forms.CharField(help_text='what are you checking')
+    target = forms.CharField(required=False, help_text='criteria for checking, for example 15 ng/ul')
+    unit_comment = forms.CharField(required=False)
     remarks = forms.CharField(required = False)
    
     

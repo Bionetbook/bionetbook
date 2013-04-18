@@ -5,10 +5,11 @@ class ExciseForm(forms.VerbForm):
 
     name = "Excise"
     slug = "excise"
+    has_manual = True
+    layers = ['item_to_exise','target','using_what','duration','duration_units']
 
-    edit_to_what = forms.CharField(required = False, help_text = 'sample, mastermix, tube, etc')
+    item_to_exise = forms.CharField(help_text='what are you exising')
+    target = forms.CharField(required=False, help_text='where are you exising into')
     using_what = forms.CharField(required = False, help_text = 'rotator, shaker, manual etc')
     remarks = forms.CharField(required = False)
-    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
-    # edit_kit_name = forms.CharField()
-    # edit_protocol_output = forms.CharField()
+    
