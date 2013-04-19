@@ -5,7 +5,7 @@ class WashForm(forms.VerbForm):
 
     name = "Wash"
     slug = "wash"
+    has_component = True
 
-    edit_what_remark = forms.CharField()
-    add_with_what = forms.CharField()
-    duration_min_time = forms.IntegerField()
+    item_to_act = forms.CharField(required=False, help_text='what are you washing', label='item to wash')
+    number_of_times = forms.IntegerField(initial='1')

@@ -5,11 +5,11 @@ class RemoveForm(forms.VerbForm):
 
     name = "Remove"
     slug = "remove"
+    has_manual = True
+    layers = ['item_to_place','target','specify_tool','conditional_statement','technique_comment','duration','duration_units']
 
-    edit_what_remark = forms.CharField()
-    specify_tool = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    specify_date = forms.DateField()
-    how = forms.CharField()
-    min_time = forms.IntegerField()
-    max_time = forms.IntegerField()
+    item_to_place = forms.CharField(required=False, help_text='what are you removing', label='item to remove')
+    target = forms.CharField(required=False, help_text='where are you placing it')
+    conditional_statement = forms.CharField(required=False)
+    specify_tool = forms.CharField(required=False)
+    

@@ -5,9 +5,7 @@ class ResuspendForm(forms.VerbForm):
 
     name = "Resuspend"
     slug = "resuspend"
+    has_component = True
 
-    edit_what_remark = forms.CharField()
-    add_with_what = forms.CharField()
-    duration_min_time = forms.IntegerField()
-    edit_protocol_output = forms.CharField()
-    edit_remarks = forms.CharField()
+    item_to_act = forms.CharField(required=False, help_text='what are you resuspending?', label='item to resuspend')
+    edit_remarks = forms.CharField(required=False)
