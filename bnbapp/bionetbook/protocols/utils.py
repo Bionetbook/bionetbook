@@ -62,22 +62,22 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
             
             plural = ' cycles'
 
-            if 'cycle_to' in data and 'cycles' in data:
+            if 'cycle_back_to' in data and 'cycles' in data:
                 if data['cycles'] == '1':
                     plural = ' cycle'
                 
                 numbers = str(data['cycles']) 
                 units = plural
-                cycle_to = data['cycle_to'] 
+                cycle_to = data['cycle_back_to'] 
 
-            if 'cycles' in data and 'cycle_to' not in data:
+            if 'cycles' in data and 'cycle_back_to' not in data:
                 if data['cycles'] == '1':
                     plural = ' cycle'
                 
                 numbers = str(data['cycles']) 
                 units = plural
             if summary:
-                output[item] = [numbers, data.get('cycle_to', '')]
+                output[item] = [numbers, data.get('cycle_back_to', '')]
             else:    
                 settings.append(out)
 

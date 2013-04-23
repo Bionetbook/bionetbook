@@ -93,8 +93,12 @@ class ThermocyclerForm(NodeForm):
     max_temp = forms.FloatField(required=False)
     min_time = forms.FloatField()
     max_time = forms.FloatField(required=False)
+    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, initial='sec' )
+    time_comment = forms.CharField(required=False)
     cycles = forms.IntegerField(required=False)
-    cycle_back_to = forms.ChoiceField(required=False, choices = [(x,x) for x in range(1,10)] )
+    phase_list= [('','no cycle back')]
+    phase_list.extend([(x,x) for x in range(1,10)])
+    cycle_back_to = forms.ChoiceField(required=False, choices=phase_list, initial='')
 
 
 

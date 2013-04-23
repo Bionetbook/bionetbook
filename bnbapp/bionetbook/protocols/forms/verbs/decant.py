@@ -5,7 +5,8 @@ class DecantForm(forms.VerbForm):
 
     name = "Decant"
     slug = "decant"
-    has_machine = True
-
-    edit_what_remark = forms.CharField()
-    duration = forms.IntegerField(help_text='this is the minimal time this should take', initial = 'sec')
+    has_manual = True
+    layer= []
+    
+    item_to_act = forms.CharField(required=False, label='item to decant')
+    target = forms.CharField(required=False, help_text='where are you placing it')
