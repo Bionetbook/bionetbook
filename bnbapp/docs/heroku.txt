@@ -1,0 +1,89 @@
+gviklund-> history | grep heroku
+   59  heroku 
+   76  heroku create
+   79  git push heroku master
+   80  git push git@heroku.com:drinkmod.git master
+   94  git push git@heroku.com:drinkmod.git master
+  110  git push git@heroku.com:drinkmod.git master
+  111  heroku run python django/mixeddrinks/manage.py syncdb
+  112  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  113  heroku logs --app drinkmod
+  114  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  115  heroku run python django/mixeddrinks/manage.py shell --app drinkmod
+  117  subl django/mixeddrinks/mixeddrinks/settings/heroku.py 
+  119  heroku run python manage.py shell --app drinkmod
+  121  heroku run python django/mixeddrinks/manage.py shell -settings=mixeddrinks.settings.heroku --app drinkmod
+  124  git push git@heroku.com:drinkmod.git master
+  125  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  126  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  131  git push git@heroku.com:drinkmod.git master
+  132  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  133  heroku log -v
+  134  heroku logs -v
+  135  heroku logs
+  136  heroku logs 
+  137  heroku logs --app drinkmod
+  138  heroku logs --app drinkmod
+  139  heroku logs --app drinkmod
+  140  heroku logs --app drinkmod -v
+  141  heroku logs --app drinkmod
+  154  git push git@heroku.com:drinkmod.git master
+  155  heroku logs --app drinkmod
+  156  heroku logs --app drinkmod
+  157  git push git@heroku.com:drinkmod.git master
+  158  heroku run python django/mixeddrinks/manage.py syncdb --app drinkmod
+  198  heroku 
+  199  heroku create
+  200  git push heroku master
+  201  git push git@heroku.com:protected-fjord-8575.git master
+  202  git push git@heroku.com:protected-fjord-8575.git master
+  211  git push git@heroku.com:protected-fjord-8575.git master
+  213  heroku git:remote
+  215  heroku git:remote
+  221  heroku git:remote
+  222  git push git@heroku.com:bnbapp.git master
+  277  git push git@heroku.com:bnbapp.git master
+  297  git push git@heroku.com:bnbapp.git master
+  299  git push git@heroku.com:bnbapp.git master
+  300  git push git@heroku.com:bnbapp.git master
+  301  git push git@heroku.com:bnbapp.git master
+  302  heroku run python bnbapp/bionetbook/manage.py syncdb --app bnbapp
+  303  git push git@heroku.com:bnbapp.git master
+  307  history | grep heroku
+  310  git push git@heroku.com:bnbapp.git master
+  328  heroku 
+  329  heroku logs
+  330  heroku logs
+  331  heroku logs --app bnbapp
+  336  heroku logs --app bnbapp
+  338  heroku run python bnbapp/bionetbook/manage.py collectstatic --noinput
+  339  heroku run python bnbapp/bionetbook/manage.py collectstatic --noinput --app bnbapp
+  341  heroku run python bnbapp/bionetbook/manage.py help
+  342  heroku run python bnbapp/bionetbook/manage.py help --app bnbapp
+  343  heroku run python bnbapp/bionetbook/manage.py createsuperuser --settings=bionetbook.settings.heroku --app bnbapp
+  344  heroku run python bnbapp/bionetbook/manage.py createsuperuser --settings=bionetbook.settings.heroku --app bnbapp
+  345  heroku domains:add www.bionetbook.com --app bnbapp
+  347  history | grep heroku
+  395  heroku
+  396  heroku pgbackups:capture --expire
+  399  heroku pgbackups:capture --expire
+  420  t push git@heroku.com:bnbapp.git master
+  421  git push git@heroku.com:bnbapp.git master
+  422  heroku run python bnbapp/bionetbook/manage.py syncdb --app bnbapp
+  423  git push git@heroku.com:bnbapp.git master
+  427  history | grep heroku
+  430  git push git@heroku.com:bnbapp.git master
+  448  heroku 
+  449  heroku logs
+  450  heroku logs
+  451  heroku logs --app bnbapp
+  456  heroku logs --app bnbapp
+  458  heroku run python bnbapp/bionetbook/manage.py collectstatic --noinput
+  459  heroku run python bnbapp/bionetbook/manage.py collectstatic --noinput --app bnbapp
+  461  heroku run python bnbapp/bionetbook/manage.py help
+  462  heroku run python bnbapp/bionetbook/manage.py help --app bnbapp
+  463  heroku run python bnbapp/bionetbook/manage.py createsuperuser --settings=bionetbook.settings.heroku --app bnbapp
+  464  heroku run python bnbapp/bionetbook/manage.py createsuperuser --settings=bionetbook.settings.heroku --app bnbapp
+  465  heroku domains:add www.bionetbook.com --app bnbapp
+  467  history | grep heroku
+  512  history | grep heroku

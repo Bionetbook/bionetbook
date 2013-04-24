@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}Protocol: {{ object.name }}{% endblock %}
+{% block title %}Protocol: {{ protocol_a.name }}{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
       <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> </li>
+      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> <span class="divider">/</span></li>
       <!-- <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li> -->
-      <li class="active">{{object.name}}</li>
+      <li class="active">Protocol Outline</li>
     </ul>
 {% endblock %}
 
 
-{% block page_title %}Protocol outline: {{ object.name }}
+{% block page_title %}Protocol outline: {{ protocol_a.name }}
 {% if not protocol.published %}
   {% if protocol_edit_authorization %}
-    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
+    <small><a href="{{ protocol_a.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
   {% endif %}
 {% endif %}
 {% endblock %}

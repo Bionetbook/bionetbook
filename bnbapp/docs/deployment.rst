@@ -4,15 +4,16 @@ Deployment on Heroku
 
 .. parsed-literal::
 
-    heroku create --stack cedar
-    heroku addons:add memcache:5mb
-    heroku addons:add sendgrid:starter
-    heroku addons:add heroku-postgresql:dev
-    heroku addons:add pgbackups
-    heroku addons:add newrelic:standard
-    heroku addons:add sentry:developer
-    heroku config:add AWS_ACCESS_KEY_ID=XXX
-    heroku config:add AWS_SECRET_ACCESS_KEY=XXX
-    heroku pg:promote DATABASE_COLOR
-    git push heroku master
+    git push git@heroku.com:bnbapp.git master
     
+
+
+
+
+Useful commands
+    heroku run python bnbapp/bionetbook/manage.py syncdb --app bnbapp
+    heroku run python bnbapp/bionetbook/manage.py collectstatic --noinput --app bnbapp
+    heroku run python bnbapp/bionetbook/manage.py help --app bnbapp
+    heroku run python bnbapp/bionetbook/manage.py createsuperuser --settings=bionetbook.settings.heroku --app bnbapp
+    heroku logs --app bnbapp
+    heroku pgbackups:capture --expire
