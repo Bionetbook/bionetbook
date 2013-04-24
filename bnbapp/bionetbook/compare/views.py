@@ -5,6 +5,7 @@ from compare.utils import html_label_two_protocols, merge_table_pieces, add_step
 from django.core.urlresolvers import reverse
 from protocols.models import Protocol
 
+FONT_SIZE = '10'
 
 class CompareSelectView(TemplateView):
     template_name = "compare/compare_select.html"
@@ -219,7 +220,7 @@ class Grapher(object):
             e.attr['color'] = '#B82F3' 
             n=self.agraph.get_node(self.A_pk[i])
             n.attr['shape']='box'
-            n.attr['fontsize'] = '10'
+            n.attr['fontsize'] = FONT_SIZE
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
@@ -232,7 +233,7 @@ class Grapher(object):
         n = self.agraph.get_node(self.matching_verbs_pk[0][0])
         
         n.attr['shape']='box'
-        n.attr['fontsize'] = '10'
+        n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
         node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
@@ -249,7 +250,7 @@ class Grapher(object):
             e.attr['color'] = '#015666' 
             n=self.agraph.get_node(self.B_pk[i])
             n.attr['shape']='box'
-            n.attr['fontsize'] = '10'
+            n.attr['fontsize'] = FONT_SIZE
             n.attr['style'] = 'rounded'
             n.attr['height'] = '0.2'
             node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
@@ -259,7 +260,7 @@ class Grapher(object):
         # Set the 0'th node in  protocol_A  
         n = self.agraph.get_node(self.matching_verbs_pk[0][1])
         n.attr['shape']='box'
-        n.attr['fontsize'] = '10'
+        n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = 'rounded'
         n.attr['height'] = '0.2'
         node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
@@ -308,7 +309,7 @@ class Grapher(object):
                     sa.attr['shape'] = 'box'
                     sa.attr['color'] = '#C0C0C0'
                     sa.attr['style'] = 'rounded'
-                    sa.attr['fontsize'] = '10'
+                    sa.attr['fontsize'] = FONT_SIZE
                     try:
                         VERBATIM_A = self.protocol_A.nodes[verb_a].parent['verbatim_text'] 
                     except KeyError:
@@ -322,7 +323,7 @@ class Grapher(object):
                     sb.attr['shape'] = 'box'
                     sb.attr['color'] = '#C0C0C0'
                     sb.attr['style'] = 'rounded'
-                    sb.attr['fontsize'] = '10'
+                    sb.attr['fontsize'] = FONT_SIZE
                     try:
                         VERBATIM_B = self.protocol_B.nodes[verb_b].parent['verbatim_text']
                     except KeyError:
@@ -353,7 +354,7 @@ class Grapher(object):
                 s.attr['shape'] = 'box'
                 s.attr['color'] = '#C0C0C0'
                 s.attr['style'] = 'rounded'
-                s.attr['fontsize'] = '10'
+                s.attr['fontsize'] = FONT_SIZE
                 # set label:
                 s.attr['label'] = merge_table_pieces(content)
                 node_object = self.protocol_A.nodes[verb_a]['machine']
@@ -383,7 +384,7 @@ class Grapher(object):
                 s.attr['shape'] = 'note'
                 s.attr['color'] = '#C0C0C0'
                 s.attr['height'] = '0.18'
-                s.attr['fontsize'] = '10'
+                s.attr['fontsize'] = FONT_SIZE
                 # set label:
                 s.attr['label'] = merge_table_pieces(content)
                 node_object = self.protocol_A.nodes[verb_a]
@@ -433,7 +434,7 @@ class Grapher(object):
                     s.attr['shape'] = 'box'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
-                    s.attr['fontsize'] = '10'
+                    s.attr['fontsize'] = FONT_SIZE
                     s.attr['label'] = merge_table_pieces(content, 'components')
                     s.attr['target'] = '_top'
                     # node_object = self.protocol_A.nodes[verb_a]['components']
@@ -474,7 +475,7 @@ class Grapher(object):
                     s.attr['shape'] = 'box'
                     s.attr['color'] = '#C0C0C0'
                     s.attr['style'] = 'rounded'
-                    s.attr['fontsize'] = '10'
+                    s.attr['fontsize'] = FONT_SIZE
                     s.attr['label'] = merge_table_pieces(content, 'thermocycle')
                     # node_object = self.protocol_A.nodes[verb_a]['thermocycle']
                     # s.attr['URL'] = node_object.get_update_url()
