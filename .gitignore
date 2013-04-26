@@ -13,7 +13,7 @@ bionetbook/compare/SANDBOX.py
 bnbapp/data/
 
 bnbapp copy/
-
+update/
 *.svg
 
 bnbapp/bionetbook/compare/Figures/test.svg
