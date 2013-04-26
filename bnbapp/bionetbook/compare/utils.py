@@ -112,7 +112,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
             str('input') ) 
                   
 
-        if 'mass' in changed and 'mass' not in unchaged:
+        if 'mass' in changed and 'mass' not in unchanged:
             _mass = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
             <TD color="#015666"><font color="#015666">%s</font></TD>'''%(

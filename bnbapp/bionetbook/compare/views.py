@@ -6,6 +6,9 @@ from django.core.urlresolvers import reverse
 from protocols.models import Protocol
 
 FONT_SIZE = '10'
+HTML_TARGET = '_top'
+COLOR_A = '#B82F3'
+COLOR_B = '#015666' 
 
 class CompareSelectView(TemplateView):
     template_name = "compare/compare_select.html"
@@ -217,7 +220,7 @@ class Grapher(object):
             self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
             e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
             e.attr['style'] = 'setlinewidth(9)' 
-            e.attr['color'] = '#B82F3' 
+            e.attr['color'] = COLOR_A
             n=self.agraph.get_node(self.A_pk[i])
             n.attr['shape']='box'
             n.attr['fontsize'] = FONT_SIZE
@@ -226,11 +229,11 @@ class Grapher(object):
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
             n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
             n.attr['URL'] = node_object.get_absolute_url()
-            n.attr['target'] = '_top'
+            n.attr['target'] = HTML_TARGET
                 
 
         # Set the 0'th node and title in protocol_A 
-        n = self.agraph.get_node(self.matching_verbs_pk[0][0])
+        n = self.agraph.get_node(self.A_pk[0])
         
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
@@ -239,7 +242,7 @@ class Grapher(object):
         node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
         n.attr['label']=node_object['verb'] 
         n.attr['URL'] = node_object.get_absolute_url()
-        n.attr['target'] = '_top'
+        n.attr['target'] = HTML_TARGET
         
         # add base of second protocol:
         for i in range(1, len(self.B_pk)):
@@ -247,7 +250,7 @@ class Grapher(object):
             # print 'drawing protocol %s'% self.protocol_B.name
             e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
             e.attr['style'] = 'setlinewidth(9)' 
-            e.attr['color'] = '#015666' 
+            e.attr['color'] = COLOR_B
             n=self.agraph.get_node(self.B_pk[i])
             n.attr['shape']='box'
             n.attr['fontsize'] = FONT_SIZE
@@ -256,9 +259,9 @@ class Grapher(object):
             node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
             n.attr['label']= node_object['verb'] 
             n.attr['URL'] = node_object.get_absolute_url()    
-            n.attr['target'] = '_top'
+            n.attr['target'] = HTML_TARGET
         # Set the 0'th node in  protocol_A  
-        n = self.agraph.get_node(self.matching_verbs_pk[0][1])
+        n = self.agraph.get_node(self.B_pk[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = 'rounded'
@@ -266,7 +269,13 @@ class Grapher(object):
         node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
         n.attr['label']= node_object['verb'] 
         n.attr['URL'] = node_object.get_absolute_url()
-        n.attr['target'] = '_top'
+        n.attr['target'] = HTML_TARGET
+        
+        # both = list(set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions)))
+        # w = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in both]
+        # for j in range(len(w)):
+        #     N = self.agraph.add_subgraph(w[j],name =str(j), rank='same', rankdir='LR')
+
         return self
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
@@ -317,7 +326,7 @@ class Grapher(object):
                     sa.attr['label'] = add_step_label(VERBATIM_A)
                     node_object = self.protocol_A.nodes[verb_a].parent
                     sa.attr['URL'] = node_object.step_update_url()
-                    sa.attr['target'] = '_top'
+                    sa.attr['target'] = HTML_TARGET
 
                     sb = self.agraph.get_node(step_object_b)
                     sb.attr['shape'] = 'box'
@@ -359,7 +368,7 @@ class Grapher(object):
                 s.attr['label'] = merge_table_pieces(content)
                 node_object = self.protocol_A.nodes[verb_a]['machine']
                 s.attr['URL'] = node_object.get_update_url()
-                s.attr['target'] = '_top'
+                s.attr['target'] = HTML_TARGET
 
             if 'manual' in layers and not self.protocol_A.nodes[verb_a].children:
 
@@ -389,7 +398,7 @@ class Grapher(object):
                 s.attr['label'] = merge_table_pieces(content)
                 node_object = self.protocol_A.nodes[verb_a]
                 s.attr['URL'] = node_object.action_update_url()
-                s.attr['target'] = '_top'    
+                s.attr['target'] = HTML_TARGET    
 
             if 'components' in self.protocol_A.nodes[verb_a].keys() and 'component' in layers: 
                 # Validate that reagent objectids are the same:
@@ -436,7 +445,7 @@ class Grapher(object):
                     s.attr['style'] = 'rounded'
                     s.attr['fontsize'] = FONT_SIZE
                     s.attr['label'] = merge_table_pieces(content, 'components')
-                    s.attr['target'] = '_top'
+                    s.attr['target'] = HTML_TARGET
                     # node_object = self.protocol_A.nodes[verb_a]['components']
                     # s.attr['URL'] = node_object.get_update_url()
                     
@@ -479,7 +488,7 @@ class Grapher(object):
                     s.attr['label'] = merge_table_pieces(content, 'thermocycle')
                     # node_object = self.protocol_A.nodes[verb_a]['thermocycle']
                     # s.attr['URL'] = node_object.get_update_url()
-                    # s.attr['target'] = '_top'
+                    # s.attr['target'] = HTML_TARGET
        
         return self 
 
