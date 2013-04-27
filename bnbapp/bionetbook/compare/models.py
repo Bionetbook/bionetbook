@@ -8,6 +8,13 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label #, html_label_one_protocol, add_html_cell, set_title_label,
+import itertools
+
+FONT_SIZE = '10'
+HTML_TARGET = '_top'
+COLOR_A = '#B82F3'
+COLOR_B = '#015666' 
+
 
 class DictDiffer(object):
     """
@@ -260,6 +267,33 @@ class Compare(object):
         n.attr['label']= node_object['verb'] 
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = HTML_TARGET
+
+        self.both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
+        alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
+        # uniques = alls - both
+        self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
+        # a_s = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
+        # print a_s
+        # b_s = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
+        # print b_s
+
+        # cnt = 0
+        # print cnt
+        #   Apply both protocols subgraphs
+        for j in itertools.izip(itertools.count(0), self.pairs):
+            N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')
+        #     cnt = j[0]
+        # print cnt    
+        # Name single verb subgraphs:
+        # for k in itertools.izip(itertools.count(cnt), a_s):
+        #     print k
+        #     N = self.agraph.add_subgraph(k[0],name =str(k[1]), rank='same', rankdir='LR')    
+        #     cnt = k[1]
+        # print cnt    
+        # for f in itertools.izip(itertools.count(cnt), b_s):
+        #     N = self.agraph.add_subgraph(f[0],name =str(f[1]), rank='same', rankdir='LR')    
+        #     cnt = f[1]
+        # print cnt    
         return self
 
     def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True

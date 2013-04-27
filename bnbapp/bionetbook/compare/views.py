@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, View
 from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label  
 from django.core.urlresolvers import reverse
 from protocols.models import Protocol
+import itertools
 
 FONT_SIZE = '10'
 HTML_TARGET = '_top'
@@ -271,10 +272,28 @@ class Grapher(object):
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = HTML_TARGET
         
-        # both = list(set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions)))
-        # w = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in both]
-        # for j in range(len(w)):
-        #     N = self.agraph.add_subgraph(w[j],name =str(j), rank='same', rankdir='LR')
+        both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
+        alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
+        uniques = alls - both
+        w = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in both]
+        a_s = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
+        b_s = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
+
+
+        cnt = ''
+        #   Apply both protocols subgraphs
+        for j in itertools.izip(itertools.count(0), w):
+            N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')
+            cnt = j[0]
+        # Name single verb subgraphs:
+        for j in itertools.izip(itertools.count(cnt), a_s):
+            N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')    
+            cnt = j[0]
+
+        for j in itertools.izip(itertools.count(cnt), b_s):
+            N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')    
+            cnt = j[0]
+    
 
         return self
 
