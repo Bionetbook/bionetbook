@@ -280,8 +280,11 @@ class Compare(object):
         # cnt = 0
         # print cnt
         #   Apply both protocols subgraphs
-        for j in itertools.izip(itertools.count(0), self.pairs):
-            N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')
+        # for j in itertools.izip(itertools.count(0), self.pairs):
+        #     N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')
+
+        for j in self.pairs:
+            N = self.agraph.add_subgraph(j, name =str(j[0][j[0].index('-')+1:]), rank='same', rankdir='LR')
         #     cnt = j[0]
         # print cnt    
         # Name single verb subgraphs:
