@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
+from protocols.utils import MANUAL_VERBS
 from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label #, html_label_one_protocol, add_html_cell, set_title_label,
 import itertools
 
@@ -521,26 +522,77 @@ class Compare(object):
             'steps' - displays verbatim text. '''
         
         if 'layers' in kwargs.keys():
-            layers = kwargs['layers'].split('-')
-
+            self.layers = kwargs['layers'].split('-')
 
         for j in self.both:
+            print j
             # identify the type of layer
-            if 'machine' in self.protocol_A.nodes[j]:
-                # add machine layer
-                # extract parameters from layer context using the summary method:
+            if 'machine' in self.protocol_A.nodes[j] and 'machine' in self.layers:
+                layer = 'machine'
+                # print layer
                 x = self.protocol_A.nodes[j]['machine'].summary
                 y = self.protocol_B.nodes[j]['machine'].summary
-                node_object = self.protocol_A.nodes[j]['machine']
-                # create the diff object:
                 d = DictDiffer (x, y)
-                # generate the HTML content:
-                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), machine = True) 
+                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
+                node_object = self.protocol_A.nodes[j]['machine']
+                URL = node_object.get_update_url()
                 diff_object = self.protocol_A.nodes[j]['machine'].pk
-                self.add_diff_layer(j, diff_object, content, node_object)
+
+                # create the diff object:
+                # d = DictDiffer (x, y)
+                # generate the HTML content:
+                # content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), layers) 
+                
+                self.add_diff_layer(j, x, y, node_object, diff_object, content)
+
+            if self.protocol_A.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:
+                layer = 'manual'
+                # print layer
+                x = self.protocol_A.nodes[j].summary
+                y = self.protocol_B.nodes[j].summary  
+                d = DictDiffer (x, y)
+                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
+                node_object = self.protocol_A.nodes[j]
+                URL = node_object.action_update_url()
+                diff_object = self.protocol_A.nodes[j].pk + '_manual'
+                self.add_diff_layer(j, URL, diff_object, content)
+
+
+            if 'components' in self.protocol_A.nodes[j] and 'components' in self.layers: 
+                layer = 'components'
+                # Validate that reagent objectids are the same:
+
+                if len(self.protocol_A.nodes[j]['components']) == 0:
+                    continue
+                else:
+                    # generate the diff content:   
+                    x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+                    y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+                    
+                    # components_list_diff = set(r['objectid'] for r in self.protocol_A.nodes[j].children) - set(r['objectid'] for r in self.protocol_B.nodes[j].children)
+                    # print components_list_diff
+                    # if components_list_diff:
+                    #     pass
+                    #     # add a function that can tell the difference between different names
+                    
+                    # else:
+                    scores = [] # tracks the error rate of a matching components
+                    content = [] # gets the html strings
+                    for m,n in zip(x,y): 
+                        d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+                        scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+                        # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+                        tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
+                        content.append(tmp)      
+                    diff_object = self.protocol_A.nodes[x[0]].pk 
+                    URL ='None'
+                    self.add_diff_layer(j, URL, diff_object, content, current_layer = layer)    
+                    
 
                 
-    def add_diff_layer(self, j, diff_object, content, node_object):
+    def add_diff_layer(self, j, URL, diff_object, content, current_layer = None):
+
+        
 
         N = self.agraph.get_subgraph(str(j))
         if len(N.nodes()) == 2:
@@ -557,9 +609,9 @@ class Compare(object):
         s.attr['fontsize'] = FONT_SIZE  
 
         # set label:
-        s.attr['label'] = merge_table_pieces(content)
+        s.attr['label'] = merge_table_pieces(content, current_layer)
         # node_object = self.protocol_A.nodes[j]['machine']
-        s.attr['URL'] = node_object.get_update_url()
+        s.attr['URL'] = URL
         s.attr['target'] = HTML_TARGET        
     
 

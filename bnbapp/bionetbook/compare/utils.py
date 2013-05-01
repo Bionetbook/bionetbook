@@ -1,10 +1,10 @@
 from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
-def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
-
+def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwargs):
+    print current_layer
     stack = []
-    if 'machine' in layers:
+    if 'machine' in current_layer:
         _temp = ''
         _time = ''
         _speed = ''
@@ -64,7 +64,7 @@ def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
 
         return  _name + _temp + _time + _speed + '</TR>'
     
-    if 'components' in layers: 
+    if 'components' in current_layer: 
         ''' assuming that the objectids of the reagents are the same'''
 
         # count how many changes each reagent has, if 2 reagent names are different, write them last 
@@ -73,27 +73,38 @@ def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
         _mass = ''
 
         # embed link for components that are protocol links:
-        _name = '<TR><TD>%s</TD>' % x['name']
+        
+        if 'name' in changed:
+            _name = '''
+            <TR><TD color="#B82F3"><font color="#B82F3">%s</font></TD>
+            <TD color="#015666"><font color="#015666">%s</font></TD>''' % (
+            str(x['name']), str(y['name'])) 
+
+        if 'name' in unchanged:    
+            _name = '<TR><TD>%s</TD>' % x['name']
+        
         if 'link' in x.keys():
             _name = '<TR><TD href="%s">%s</TD>' %(x['link'],x['name'])
 
-        if 'vol' in changed and 'vol' not in unchanged:
+        print _name    
+
+        if 'vol' in changed:# and 'vol' not in unchanged:
             _vol = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
             <TD color="#015666"><font color="#015666">%s</font></TD>'''%(
             str(x['vol'][0]) + str(x['vol'][1]), 
             str(y['vol'][0]) + str(y['vol'][1])) 
 
-        if 'vol' in unchanged and 'vol' not in changed:
+        if 'vol' in unchanged:# and 'vol' not in changed:
             _vol = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['vol'][0]) + str(x['vol'][1]))  
 
-        else:
+        if 'vol' not in changed and 'vol' not in unchanged:
             _vol = '''
             <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
             str('input') ) 
- 
+
         if 'conc' in changed:
             _conc = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
@@ -106,32 +117,31 @@ def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['conc'][0]) + str(x['conc'][1]))     
 
-        else:
+        if 'conc' not in changed and 'conc' not in unchanged:
             _conc = '''
             <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') ) 
-                  
+            str('input') )           
 
-        if 'mass' in changed and 'mass' not in unchanged:
+        if 'mass' in changed:  #and 'mass' not in unchanged
             _mass = '''
             <TD color="#B82F3"><font color="#B82F3">%s</font></TD>
             <TD color="#015666"><font color="#015666">%s</font></TD>'''%(
             str(x['mass'][0]) + str(x['mass'][1]), 
             str(y['mass'][0]) + str(y['mass'][1])) 
         
-        if 'mass' in unchanged and 'mass' not in unchanged:
+        if 'mass' in unchanged: # and 'mass' not in unchanged:
             _mass = '''
             <TD color="#C0C0C0" colspan="2">%s</TD>'''%(
             str(x['mass'][0]) + str(x['mass'][1]))
 
-        else:
+        if 'mass' not in changed and 'mass' not in unchanged:
             _mass = '''
             <TD color="#C0C0C0" colspan="2"><i>%s</i></TD>'''%(
-            str('input') )     
+            str('input') )  
 
         return  _name + _vol + _conc + _mass + '</TR>'
 
-    if 'thermocycle' in layers: 
+    if 'thermocycle' in current_layer: 
         ''' assuming that the objectids of the reagents are the same'''
 
         _temp = ''
@@ -214,7 +224,7 @@ def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
         
         return  _name + _temp + _time + _cycle + '</TR>'
     
-    if 'manual' in layers:
+    if 'manual' in current_layer:
         _temp = ''
         _time = ''
         _speed = ''
@@ -284,7 +294,7 @@ def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
         # return  _name + _temp + _time + _speed + '</TR>' 
         return ''.join(display)
 
-def merge_table_pieces(content_tmp, layer = None):
+def merge_table_pieces(content_tmp, layers = None):
     ''' label is an HTML object and for automation sake, created by concatenating a few peices:
         table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">' --> defines the table properties in HTML
         content = '<TR><TD>{0}</TD><TD>{1}</TD></TR><TR><TD colspan="2">{2}</TD></TR>' --> generates the content of the comparison table
@@ -294,10 +304,10 @@ def merge_table_pieces(content_tmp, layer = None):
     table = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="1">'
     content = ''.join(list(itertools.chain(*content_tmp)))
 
-    if layer:
+    if layers:
         switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD><TD colspan="2">Mass</TD></TR>',
               'thermocycle': '<TR><TD>Phase name</TD><TD colspan="2">temp</TD><TD colspan="2">time</TD><TD colspan="2">cycles</TD><TD colspan="2">cycle to</TD></TR>'}
-        header = switch[layer]          
+        header = switch[layers]          
         merge = '<' + table + header + content + '</TABLE>>'
 
     else:
