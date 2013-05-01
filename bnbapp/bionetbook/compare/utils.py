@@ -1,10 +1,10 @@
 from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
-def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
+def html_label_two_protocols(x,y,changed, unchanged, layers, **kwargs):
 
     stack = []
-    if 'machine' in kwargs:
+    if 'machine' in layers:
         _temp = ''
         _time = ''
         _speed = ''
@@ -64,7 +64,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
         return  _name + _temp + _time + _speed + '</TR>'
     
-    if 'components' in kwargs: 
+    if 'components' in layers: 
         ''' assuming that the objectids of the reagents are the same'''
 
         # count how many changes each reagent has, if 2 reagent names are different, write them last 
@@ -131,7 +131,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
 
         return  _name + _vol + _conc + _mass + '</TR>'
 
-    if 'thermocycle' in kwargs: 
+    if 'thermocycle' in layers: 
         ''' assuming that the objectids of the reagents are the same'''
 
         _temp = ''
@@ -214,7 +214,7 @@ def html_label_two_protocols(x,y,changed, unchanged, **kwargs):
         
         return  _name + _temp + _time + _cycle + '</TR>'
     
-    if 'manual' in kwargs:
+    if 'manual' in layers:
         _temp = ''
         _time = ''
         _speed = ''
