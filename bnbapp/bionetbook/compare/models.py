@@ -82,110 +82,6 @@ class ProtocolPlot(Protocol):
         n.attr['height'] = '0.2'
         n.attr['label']=self.nodes[self.get_actions[0]]['verb']
         
-        
-
-    def same_rank_objects_by_1st_degree_nbrs(self, protocol_B):
-
-
-        # a = ProtocolPlot.objects.get(name__icontains=protocol_A)  
-        b = ProtocolPlot.objects.get(name__icontains=protocol_B)
-        
-        a_actions = [r[2] for r in self.get_action_tree('objectid')]
-        b_actions = [r[2] for r in b.get_action_tree('objectid')]
-
-    
-        comparator = []
-
-        for idxa in a_actions:
-            
-            a_name = self.nodes[idxa]['verb']
-            if 'machine' in self.nodes[idxa].keys():
-                a_type = 'machine'
-                a_child = self.nodes[idxa]['machine']['objectid']
-            # if 'components' in self.nodes[idxa].keys():
-            else: 
-                if 'components' not in self.nodes[idxa] or len(self.nodes[idxa]['components']) == 0:
-                    a_type = 'other'
-                    a_child = None
-
-                else: 
-                    a_type = 'components'
-                    a_child = [r['objectid'] for r in self.nodes[idxa]['components']]
-            
-            a_parent = self.nodes[idxa].parent['objectid'] # pointer to the step object
-            idx_of_a = a_actions.index(idxa)
-            
-            if idx_of_a == 0: 
-                a_previous = self.nodes[idxa]['objectid']
-                a_nextt = self.nodes[a_actions[idx_of_a + 1]]['objectid']
-
-            if idx_of_a == len(a_actions)-1: 
-                a_previous = self.nodes[a_actions[idx_of_a - 1]]['objectid']
-                a_nextt = self.nodes[a_actions[idx_of_a]]['objectid']
-
-            else:
-                a_previous = self.nodes[a_actions[idx_of_a -1 ]]['objectid']
-                a_nextt = self.nodes[a_actions[idx_of_a +1 ]]['objectid']
-
-            # print (idxa, a_name, a_type, a_previous, a_nextt)     
-            
-            for idxb in b_actions:
-
-                b_name = b.nodes[idxb]['verb']
-                
-                if 'machine' in b.nodes[idxb].keys():
-                    b_type = 'machine'
-                    b_child = b.nodes[idxb]['machine']['objectid']
-                else: 
-                    if 'components' not in b.nodes[idxb] or len(b.nodes[idxb]['components']) == 0:
-                        b_type = 'other'
-                        b_child = None
-
-                    else: 
-                        b_type = 'components'
-                        b_child = None
-                
-                b_parent = b.nodes[idxb].parent['objectid'] # pointer to the step object
-                idx_of_b = b_actions.index(idxb)
-                
-                if idx_of_b == 0: 
-                    b_previous = b.nodes[b_actions[idx_of_b]]['objectid']
-                    b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
-
-                if idx_of_b == len(b_actions)-1: 
-                    b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
-                    b_nextt = b.nodes[b_actions[idx_of_b ]]['objectid']
-
-                else:
-                    b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
-                    b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
-
-                # print (idxb, b_name, b_type, b_previous, b_nextt) 
-
-                #-------- >  LOGIC < ---------------                    
-
-                if a_name == b_name and a_type == b_type:
-                    edges = True
-                else:
-                    edges = False
-
-                if self.nodes[a_previous]['verb'] ==  b.nodes[b_previous]['verb']:
-                    previous = True
-                else:
-                    previous = False
-
-                if self.nodes[a_nextt]['verb'] ==  b.nodes[b_nextt]['verb']:
-                    nextt = True
-                else:
-                    nextt = False   
-                
-                if edges == True and previous ==True and nextt == True:
-                    comparator.append([idxa, idxb, 3])
-
-
-        return comparator
-
-
 
 class Compare(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
@@ -204,6 +100,15 @@ class Compare(object):
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
          # list of actions in pk-objectid format
         # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
+
+        self.both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
+        alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
+        # uniques = alls - both
+        self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
+        self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
+        print self.a_unique
+        self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
+        print self.b_unique
         self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
         self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
         
@@ -269,38 +174,208 @@ class Compare(object):
         n.attr['URL'] = node_object.get_absolute_url()
         n.attr['target'] = HTML_TARGET
 
-        self.both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
-        alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
-        # uniques = alls - both
-        self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
-        self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
-        print self.a_unique
-        self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
-        print self.b_unique
-
-        # cnt = 0
-        # print cnt
-        #   Apply both protocols subgraphs
-        # for j in itertools.izip(itertools.count(0), self.pairs):
-        #     N = self.agraph.add_subgraph(j[1],name =str(j[0]), rank='same', rankdir='LR')
-
         for j in self.pairs:
             N = self.agraph.add_subgraph(j, name =str(j[0][j[0].index('-')+1:]), rank='same', rankdir='LR')
-        #     cnt = j[0]
-        # print cnt    
-        # Name single verb subgraphs:
-        # for k in itertools.izip(itertools.count(cnt), a_s):
-        #     print k
-        #     N = self.agraph.add_subgraph(k[0],name =str(k[1]), rank='same', rankdir='LR')    
-        #     cnt = k[1]
-        # print cnt    
-        # for f in itertools.izip(itertools.count(cnt), b_s):
-        #     N = self.agraph.add_subgraph(f[0],name =str(f[1]), rank='same', rankdir='LR')    
-        #     cnt = f[1]
-        # print cnt    
-        return self
+    
+        # return self
 
-    # def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
+    
+    def add_layers_routine(self, **kwargs):
+        ''' this function adds layers on the three groups of subgraphs that control the verb alignment in this view: 
+        paired --> verb_a.pk -- diff_object.pk -- verb_b.pk
+        single_left --> verb_a.pk -- diff_object.pk 
+        single_right -->  diff_object.pk -- verb_b.pk
+        it currently adds these layers:
+            'manual',
+            'machines'
+            'components'
+            'thermocycle'
+            'steps' - displays verbatim text. '''
+
+        if 'layers' in kwargs.keys():
+            self.layers = kwargs['layers'].split('-')
+
+        self.add_node_object(self.both)
+        # self.add_node_object(self, self.a_unique)
+        # self.add_node_object(self, self.b_unique)
+
+    def add_node_object(self, node, **kwargs): # , machines = True, components = True, thermocycle = True
+        for j in node:
+            # identify the type of layer
+            if 'machine' in self.protocol_A.nodes[j] and 'machine' in self.layers:
+                if not self.add_machine_layer(j):
+                    continue
+
+            if self.protocol_A.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:    
+                if not self.add_manual_layer(j):
+                    continue
+
+            if 'components' in self.protocol_A.nodes[j] and 'components' in self.layers:     
+                if not self.add_components_layer(j):
+                    continue
+
+            if 'thermocycle' in self.protocol_A.nodes[j] and 'thermo' in self.layers:                 
+                if not self.add_thermocycle_layer(j):
+                    continue
+
+    def add_machine_layer(self, j):
+        layer = 'machine'
+        # print layer
+        x = self.protocol_A.nodes[j]['machine'].summary
+        y = self.protocol_B.nodes[j]['machine'].summary
+        d = DictDiffer (x, y)
+        content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
+        node_object = self.protocol_A.nodes[j]['machine']
+        URL = node_object.get_update_url()
+        diff_object = self.protocol_A.nodes[j]['machine'].pk
+        self.style_content(j, x, y, node_object, diff_object, content)
+
+    def add_manual_layer(self, j):
+        layer = 'manual'
+        # print layer
+        x = self.protocol_A.nodes[j].summary
+        y = self.protocol_B.nodes[j].summary  
+        d = DictDiffer (x, y)
+        content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
+        node_object = self.protocol_A.nodes[j]
+        URL = node_object.action_update_url()
+        diff_object = self.protocol_A.nodes[j].pk + '_manual'
+        self.style_content(j, URL, diff_object, content)
+
+    def add_components_layer(self, j):
+        layer = 'components'
+        # Validate that reagent objectids are the same:
+
+        if len(self.protocol_A.nodes[j]['components']) == 0:
+            return None
+        else:
+            # generate the diff content:   
+            x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+            y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+            scores = [] # tracks the error rate of a matching components
+            content = [] # gets the html strings
+            for m,n in zip(x,y): 
+                d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+                scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+                # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+                tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
+                content.append(tmp)      
+            diff_object = self.protocol_A.nodes[x[0]].pk 
+            URL ='None'
+            self.style_content(j, URL, diff_object, content, current_layer = layer)    
+
+    def add_thermocycle_layer(self, j):
+        layer = 'thermocycle'
+        if len(self.protocol_A.nodes[j]['thermocycle']) == 0:
+            return None
+        else:
+            # generate the diff content:   
+            x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+            y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+            
+            scores = [] # tracks the error rate of a matching components
+            content = [] # gets the html strings
+            for m,n in zip(x,y): 
+                d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+                scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+                # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+                tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
+                content.append(tmp)
+
+            diff_object = self.protocol_A.nodes[x[0]].pk 
+            URL = None
+            self.style_content(j, URL, diff_object, content, current_layer = layer)  
+
+        # for j in self.a_unique:               
+                    
+
+                
+    def style_content(self, j, URL, diff_object, content, current_layer = None):
+
+        N = self.agraph.get_subgraph(str(j))
+        if len(N.nodes()) == 2:
+            (verb_object_a, verb_object_b) = N.nodes()
+
+        N.add_node(diff_object)
+        self.agraph.add_edge(verb_object_a,diff_object)
+        self.agraph.add_edge(diff_object, verb_object_b)
+
+        s = self.agraph.get_node(diff_object)
+        s.attr['shape'] = 'box'
+        s.attr['color'] = '#C0C0C0'
+        s.attr['style'] = 'rounded'
+        s.attr['fontsize'] = FONT_SIZE  
+
+        # set label:
+        s.attr['label'] = merge_table_pieces(content, current_layer)
+        # node_object = self.protocol_A.nodes[j]['machine']
+        s.attr['URL'] = URL
+        s.attr['target'] = HTML_TARGET      
+
+
+
+    
+
+    
+    def uniqify_order_preserving(self, seq, idfun=None): 
+       # order preserving
+       if idfun is None:
+           def idfun(x): return x
+       seen = {}
+       result = []
+       for item in seq:
+           marker = idfun(item)
+           if marker in seen: continue
+           seen[marker] = 1
+           result.append(item)
+       return result
+            
+
+
+    def align_lists(self,x,y):
+        import itertools
+
+        # x = self.protocol_A.get_actions
+        # y = self.protocol_B.get_actions
+        
+        u = list(itertools.chain(*itertools.izip_longest(x,y)))
+
+        if None in u:
+            u.pop(u.index(None))
+
+        U = self.uniqify_order_preserving(u)
+
+        out_1 = []
+
+        for i in U:
+            if i in x:
+                tmpx = i
+            else:
+                tmpx = None
+
+            if i in y:
+                tmpy = i
+            else:
+                tmpy = None
+
+            out_1.append((tmpx,tmpy))  
+        return out_1       
+
+    def check_aligned(lst1, lst2):
+        it = iter(lst1)
+        try:
+            i = next(it)
+            for x in lst2:
+                if x == i:
+                    i = next(it)
+        except StopIteration:
+            return True
+        return False    
+# http://stackoverflow.com/questions/8024052/comparing-element-order-in-python-lists?answertab=oldest#tab-top
+# http://www.avatar.se/molbioinfo2001/dynprog/dynamic.html
+# http://www.dzone.com/snippets/needleman-wunsch-back-track
+
+# def add_diff_layer(self, **kwargs): # , machines = True, components = True, thermocycle = True
     #     ''' this function assumes that the pairs of objects are equivalent in that both have validated:
     #         'machines'
     #         'components'
@@ -514,176 +589,6 @@ class Compare(object):
        
     #     return self 
 
-    def add_diff_object(self, **kwargs): # , machines = True, components = True, thermocycle = True
-        ''' this function assumes that the pairs of objects are equivalent in that both have validated:
-            'machines'
-            'components'
-            'thermocycle'
-            'steps' - displays verbatim text. '''
-        
-        if 'layers' in kwargs.keys():
-            self.layers = kwargs['layers'].split('-')
-
-        for j in self.both:
-            # identify the type of layer
-            if 'machine' in self.protocol_A.nodes[j] and 'machine' in self.layers:
-                layer = 'machine'
-                # print layer
-                x = self.protocol_A.nodes[j]['machine'].summary
-                y = self.protocol_B.nodes[j]['machine'].summary
-                d = DictDiffer (x, y)
-                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
-                node_object = self.protocol_A.nodes[j]['machine']
-                URL = node_object.get_update_url()
-                diff_object = self.protocol_A.nodes[j]['machine'].pk
-                self.add_diff_layer(j, x, y, node_object, diff_object, content)
-
-            if self.protocol_A.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:
-                layer = 'manual'
-                # print layer
-                x = self.protocol_A.nodes[j].summary
-                y = self.protocol_B.nodes[j].summary  
-                d = DictDiffer (x, y)
-                content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
-                node_object = self.protocol_A.nodes[j]
-                URL = node_object.action_update_url()
-                diff_object = self.protocol_A.nodes[j].pk + '_manual'
-                self.add_diff_layer(j, URL, diff_object, content)
-
-
-            if 'components' in self.protocol_A.nodes[j] and 'components' in self.layers: 
-                layer = 'components'
-                # Validate that reagent objectids are the same:
-
-                if len(self.protocol_A.nodes[j]['components']) == 0:
-                    continue
-                else:
-                    # generate the diff content:   
-                    x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
-                    y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
-                    scores = [] # tracks the error rate of a matching components
-                    content = [] # gets the html strings
-                    for m,n in zip(x,y): 
-                        d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
-                        scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-                        # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                        tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
-                        content.append(tmp)      
-                    diff_object = self.protocol_A.nodes[x[0]].pk 
-                    URL ='None'
-                    self.add_diff_layer(j, URL, diff_object, content, current_layer = layer)    
-
-            if 'thermocycle' in self.protocol_A.nodes[j] and 'thermo' in self.layers: 
-                layer = 'components'
-                if len(self.protocol_A.nodes[j]['thermocycle']) == 0:
-                    continue
-                else:
-                    # generate the diff content:   
-                    x = [r['objectid'] for r in self.protocol_A.nodes[verb_a].children]
-                    y = [r['objectid'] for r in self.protocol_B.nodes[verb_b].children]
-                    
-                    scores = [] # tracks the error rate of a matching components
-                    content = [] # gets the html strings
-                    for m,n in zip(x,y): 
-                        d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
-                        scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-                        # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                        tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), thermocycle = True) 
-                        content.append(tmp)
-
-                    diff_object = self.protocol_A.nodes[thermo_a[0]].pk 
-                    URL = None
-                    self.add_diff_layer(j, URL, diff_object, content, current_layer = layer)  
-
-        # for j in self.a_unique:               
-                    
-
-                
-    def add_diff_layer(self, j, URL, diff_object, content, current_layer = None):
-
-        N = self.agraph.get_subgraph(str(j))
-        if len(N.nodes()) == 2:
-            (verb_object_a, verb_object_b) = N.nodes()
-
-        N.add_node(diff_object)
-        self.agraph.add_edge(verb_object_a,diff_object)
-        self.agraph.add_edge(diff_object, verb_object_b)
-
-        s = self.agraph.get_node(diff_object)
-        s.attr['shape'] = 'box'
-        s.attr['color'] = '#C0C0C0'
-        s.attr['style'] = 'rounded'
-        s.attr['fontsize'] = FONT_SIZE  
-
-        # set label:
-        s.attr['label'] = merge_table_pieces(content, current_layer)
-        # node_object = self.protocol_A.nodes[j]['machine']
-        s.attr['URL'] = URL
-        s.attr['target'] = HTML_TARGET      
-
-
-
-    
-
-    
-    def uniqify_order_preserving(self, seq, idfun=None): 
-       # order preserving
-       if idfun is None:
-           def idfun(x): return x
-       seen = {}
-       result = []
-       for item in seq:
-           marker = idfun(item)
-           if marker in seen: continue
-           seen[marker] = 1
-           result.append(item)
-       return result
-            
-
-
-    def align_lists(self,x,y):
-        import itertools
-
-        # x = self.protocol_A.get_actions
-        # y = self.protocol_B.get_actions
-        
-        u = list(itertools.chain(*itertools.izip_longest(x,y)))
-
-        if None in u:
-            u.pop(u.index(None))
-
-        U = self.uniqify_order_preserving(u)
-
-        out_1 = []
-
-        for i in U:
-            if i in x:
-                tmpx = i
-            else:
-                tmpx = None
-
-            if i in y:
-                tmpy = i
-            else:
-                tmpy = None
-
-            out_1.append((tmpx,tmpy))  
-        return out_1       
-
-    def check_aligned(lst1, lst2):
-        it = iter(lst1)
-        try:
-            i = next(it)
-            for x in lst2:
-                if x == i:
-                    i = next(it)
-        except StopIteration:
-            return True
-        return False    
-# http://stackoverflow.com/questions/8024052/comparing-element-order-in-python-lists?answertab=oldest#tab-top
-# http://www.avatar.se/molbioinfo2001/dynprog/dynamic.html
-# http://www.dzone.com/snippets/needleman-wunsch-back-track
-
 
 
     # def align_lists (self):
@@ -715,5 +620,104 @@ class Compare(object):
 
     #     return itertools.izip_longest(first,second) 
 
+# def same_rank_objects_by_1st_degree_nbrs(self, protocol_B):
+
+
+#         # a = ProtocolPlot.objects.get(name__icontains=protocol_A)  
+#         b = ProtocolPlot.objects.get(name__icontains=protocol_B)
+        
+#         a_actions = [r[2] for r in self.get_action_tree('objectid')]
+#         b_actions = [r[2] for r in b.get_action_tree('objectid')]
 
     
+#         comparator = []
+
+#         for idxa in a_actions:
+            
+#             a_name = self.nodes[idxa]['verb']
+#             if 'machine' in self.nodes[idxa].keys():
+#                 a_type = 'machine'
+#                 a_child = self.nodes[idxa]['machine']['objectid']
+#             # if 'components' in self.nodes[idxa].keys():
+#             else: 
+#                 if 'components' not in self.nodes[idxa] or len(self.nodes[idxa]['components']) == 0:
+#                     a_type = 'other'
+#                     a_child = None
+
+#                 else: 
+#                     a_type = 'components'
+#                     a_child = [r['objectid'] for r in self.nodes[idxa]['components']]
+            
+#             a_parent = self.nodes[idxa].parent['objectid'] # pointer to the step object
+#             idx_of_a = a_actions.index(idxa)
+            
+#             if idx_of_a == 0: 
+#                 a_previous = self.nodes[idxa]['objectid']
+#                 a_nextt = self.nodes[a_actions[idx_of_a + 1]]['objectid']
+
+#             if idx_of_a == len(a_actions)-1: 
+#                 a_previous = self.nodes[a_actions[idx_of_a - 1]]['objectid']
+#                 a_nextt = self.nodes[a_actions[idx_of_a]]['objectid']
+
+#             else:
+#                 a_previous = self.nodes[a_actions[idx_of_a -1 ]]['objectid']
+#                 a_nextt = self.nodes[a_actions[idx_of_a +1 ]]['objectid']
+
+#             # print (idxa, a_name, a_type, a_previous, a_nextt)     
+            
+#             for idxb in b_actions:
+
+#                 b_name = b.nodes[idxb]['verb']
+                
+#                 if 'machine' in b.nodes[idxb].keys():
+#                     b_type = 'machine'
+#                     b_child = b.nodes[idxb]['machine']['objectid']
+#                 else: 
+#                     if 'components' not in b.nodes[idxb] or len(b.nodes[idxb]['components']) == 0:
+#                         b_type = 'other'
+#                         b_child = None
+
+#                     else: 
+#                         b_type = 'components'
+#                         b_child = None
+                
+#                 b_parent = b.nodes[idxb].parent['objectid'] # pointer to the step object
+#                 idx_of_b = b_actions.index(idxb)
+                
+#                 if idx_of_b == 0: 
+#                     b_previous = b.nodes[b_actions[idx_of_b]]['objectid']
+#                     b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
+
+#                 if idx_of_b == len(b_actions)-1: 
+#                     b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
+#                     b_nextt = b.nodes[b_actions[idx_of_b ]]['objectid']
+
+#                 else:
+#                     b_previous = b.nodes[b_actions[idx_of_b -1 ]]['objectid']
+#                     b_nextt = b.nodes[b_actions[idx_of_b +1 ]]['objectid']
+
+#                 # print (idxb, b_name, b_type, b_previous, b_nextt) 
+
+#                 #-------- >  LOGIC < ---------------                    
+
+#                 if a_name == b_name and a_type == b_type:
+#                     edges = True
+#                 else:
+#                     edges = False
+
+#                 if self.nodes[a_previous]['verb'] ==  b.nodes[b_previous]['verb']:
+#                     previous = True
+#                 else:
+#                     previous = False
+
+#                 if self.nodes[a_nextt]['verb'] ==  b.nodes[b_nextt]['verb']:
+#                     nextt = True
+#                 else:
+#                     nextt = False   
+                
+#                 if edges == True and previous ==True and nextt == True:
+#                     comparator.append([idxa, idxb, 3])
+
+
+#         return comparator
+#     
