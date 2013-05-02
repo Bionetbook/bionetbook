@@ -2,7 +2,6 @@ from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
 def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwargs):
-    print current_layer
     stack = []
     if 'machine' in current_layer:
         _temp = ''
@@ -81,12 +80,12 @@ def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwarg
             str(x['name']), str(y['name'])) 
 
         if 'name' in unchanged:    
-            _name = '<TR><TD>%s</TD>' % x['name']
+            _name = '<TR><TD color="#C0C0C0" colspan="2">%s</TD>' % x['name']
         
         if 'link' in x.keys():
             _name = '<TR><TD href="%s">%s</TD>' %(x['link'],x['name'])
 
-        print _name    
+        # print _name    
 
         if 'vol' in changed:# and 'vol' not in unchanged:
             _vol = '''
@@ -305,7 +304,7 @@ def merge_table_pieces(content_tmp, layers = None):
     content = ''.join(list(itertools.chain(*content_tmp)))
 
     if layers:
-        switch = {'components': '<TR><TD>Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD><TD colspan="2">Mass</TD></TR>',
+        switch = {'components': '<TR><TD colspan="2">Name</TD><TD colspan="2">Volume</TD><TD colspan="2">Conc</TD><TD colspan="2">Mass</TD></TR>',
               'thermocycle': '<TR><TD>Phase name</TD><TD colspan="2">temp</TD><TD colspan="2">time</TD><TD colspan="2">cycles</TD><TD colspan="2">cycle to</TD></TR>'}
         header = switch[layers]          
         merge = '<' + table + header + content + '</TABLE>>'
