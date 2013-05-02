@@ -3,7 +3,7 @@
 all: deploy
 
 deploy:
-	# heroku pgbackups:capture --expire --app bnbapp
+	heroku pgbackups:capture --expire --app bnbapp
 	git push git@heroku.com:bnbapp.git master
 	heroku run python bnbapp/bionetbook/manage.py syncdb --noinput  --settings=bionetbook.settings.heroku --app bnbapp
 	# heroku run python bnbapp/bionetbook/manage.py migrate --settings=bionetbook.settings.heroku --app bnbapp
