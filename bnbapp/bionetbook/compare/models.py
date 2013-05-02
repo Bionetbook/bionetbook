@@ -91,13 +91,16 @@ class Compare(object):
         self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
         self.protocol_A = protocol_a
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+        self.flags = {'steps': False}
         
         if protocol_b == None:
             self.protocol_B = protocol_a
             self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+            self.flags['steps'] = False
         else:
             self.protocol_B = protocol_b    
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
+            self.flags['steps'] = True
          # list of actions in pk-objectid format
         # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
 
@@ -196,8 +199,12 @@ class Compare(object):
             self.layers = kwargs['layers'].split('-')
 
         self.add_node_object(self.both)
-        # self.add_node_object(self, self.a_unique)
-        # self.add_node_object(self, self.b_unique)
+
+        # these lists contain a few or no nodes:
+        if self.a_unique:
+            self.add_node_object(self.a_unique)
+        if self.b_unique:
+            self.add_node_object(self.b_unique)
 
     def add_node_object(self, node, **kwargs): # , machines = True, components = True, thermocycle = True
         for j in node:
@@ -228,7 +235,7 @@ class Compare(object):
         node_object = self.protocol_A.nodes[j]['machine']
         URL = node_object.get_update_url()
         diff_object = self.protocol_A.nodes[j]['machine'].pk
-        self.style_content(j, x, y, node_object, diff_object, content)
+        self.style_content(j, URL, diff_object, content)
 
     def add_manual_layer(self, j):
         layer = 'manual'
