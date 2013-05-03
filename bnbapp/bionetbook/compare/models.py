@@ -91,36 +91,32 @@ class Compare(object):
         self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
         self.protocol_A = protocol_a
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
-        self.flags = {'steps': False}
+        self.flags = {}
         
         if protocol_b == None:
             self.protocol_B = protocol_a
             self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
-            self.flags['steps'] = False
+            self.flags['steps'] = True
         else:
             self.protocol_B = protocol_b    
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
-            self.flags['steps'] = True
-         # list of actions in pk-objectid format
-        # self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
+            self.flags['steps'] = False
 
+        # find all actions common to both protocols:    
         self.both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
-        alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
-        # uniques = alls - both
+        # alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
+        # Set the pair names using the .pk index for graph node naming
         self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
+        # set the unaligned verbs:
         self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
-        print self.a_unique
         self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
-        print self.b_unique
-        self.matching_verbs_pk = zip(self.A_pk,self.B_pk)
-        self.matching_verbs = zip(self.protocol_A.get_actions, self.protocol_B.get_actions)
         
     def draw_two_protocols(self, **kwargs):
         ''' this function draws out 2 base protocols as a sequence of actions. 
-            add_layers adds the specified layers that a user wants to compare'''
+            add_layers_routine(layers = 'none-manual') adds the specified layers that a user wants to compare'''
 
         # Draw out the first protocol:
-            
+        self.layers = []    
         for i in range(1, len(self.A_pk)):
             
             self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
@@ -137,10 +133,8 @@ class Compare(object):
             n.attr['URL'] = node_object.get_absolute_url()
             n.attr['target'] = HTML_TARGET
                 
-
         # Set the 0'th node and title in protocol_A 
-        n = self.agraph.get_node(self.matching_verbs_pk[0][0])
-        
+        n = self.agraph.get_node(self.A_pk[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = 'rounded'
@@ -167,7 +161,7 @@ class Compare(object):
             n.attr['URL'] = node_object.get_absolute_url()    
             n.attr['target'] = HTML_TARGET
         # Set the 0'th node in  protocol_A  
-        n = self.agraph.get_node(self.matching_verbs_pk[0][1])
+        n = self.agraph.get_node(self.B_pk[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = 'rounded'
@@ -198,64 +192,84 @@ class Compare(object):
         if 'layers' in kwargs.keys():
             self.layers = kwargs['layers'].split('-')
 
-        self.add_node_object(self.both)
+        self.add_node_object(self.both, ref_protocol = self.protocol_A)
 
         # these lists contain a few or no nodes:
         if self.a_unique:
-            self.add_node_object(self.a_unique)
+            self.flags['position'] = 'right'
+            self.add_node_object(self.a_unique, ref_protocol = self.protocol_A)
         if self.b_unique:
-            self.add_node_object(self.b_unique)
+            self.flags['position'] = 'left'
+            self.add_node_object(self.b_unique, ref_protocol = self.protocol_B, position = 'left')
 
-    def add_node_object(self, node, **kwargs): # , machines = True, components = True, thermocycle = True
-        for j in node:
+
+    def add_node_object(self, node_group, ref_protocol = None, **kwargs): # , machines = True, components = True, thermocycle = True
+        
+        if 'position' in kwargs:
+            pass
+
+        for j in node_group:
             # identify the type of layer
-            if 'machine' in self.protocol_A.nodes[j] and 'machine' in self.layers:
-                if not self.add_machine_layer(j):
+            if 'machine' in ref_protocol.nodes[j] and 'machine' in self.layers:
+                if not self.add_machine_layer(j, ref_protocol):
                     continue
 
-            if self.protocol_A.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:    
-                if not self.add_manual_layer(j):
+            if ref_protocol.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:    
+                if not self.add_manual_layer(j, ref_protocol):
                     continue
 
-            if 'components' in self.protocol_A.nodes[j] and 'components' in self.layers:     
-                if not self.add_components_layer(j):
+            if 'components' in ref_protocol.nodes[j] and 'components' in self.layers:     
+                if not self.add_components_layer(j, ref_protocol):
                     continue
 
-            if 'thermocycle' in self.protocol_A.nodes[j] and 'thermo' in self.layers:                 
-                if not self.add_thermocycle_layer(j):
+            if 'thermocycle' in ref_protocol.nodes[j] and 'thermo' in self.layers:                 
+                if not self.add_thermocycle_layer(j, ref_protocol):
                     continue
 
-    def add_machine_layer(self, j):
+    def add_machine_layer(self, j, ref_protocol):
         layer = 'machine'
-        # print layer
-        x = self.protocol_A.nodes[j]['machine'].summary
-        y = self.protocol_B.nodes[j]['machine'].summary
+        node_object = ref_protocol.nodes[j]['machine']
+        URL = node_object.get_update_url()
+        diff_object = ref_protocol.nodes[j]['machine'].pk
+        if 'position' in self.flags:
+            if self.flags['position'] == 'right':
+                x = ref_protocol.nodes[j]['machine'].summary
+                y = x
+
+            if self.flags['position'] == 'left':
+                y =  ref_protocol.nodes[j]['machine'].summary   
+                x = y
+        
+        else: 
+            x = self.protocol_A.nodes[j]['machine'].summary
+            y = self.protocol_B.nodes[j]['machine'].summary
+        
         d = DictDiffer (x, y)
         content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
-        node_object = self.protocol_A.nodes[j]['machine']
-        URL = node_object.get_update_url()
-        diff_object = self.protocol_A.nodes[j]['machine'].pk
         self.style_content(j, URL, diff_object, content)
 
-    def add_manual_layer(self, j):
+    def add_manual_layer(self, j, ref_protocol):
         layer = 'manual'
+        node_object = ref_protocol.nodes[j]
+        URL = node_object.action_update_url()
+        diff_object = ref_protocol.nodes[j].pk + '_manual'
         # print layer
         x = self.protocol_A.nodes[j].summary
         y = self.protocol_B.nodes[j].summary  
         d = DictDiffer (x, y)
         content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
-        node_object = self.protocol_A.nodes[j]
-        URL = node_object.action_update_url()
-        diff_object = self.protocol_A.nodes[j].pk + '_manual'
         self.style_content(j, URL, diff_object, content)
 
-    def add_components_layer(self, j):
+    def add_components_layer(self, j, ref_protocol):
         layer = 'components'
+
         # Validate that reagent objectids are the same:
 
-        if len(self.protocol_A.nodes[j]['components']) == 0:
+        if len(ref_protocol.nodes[j]['components']) == 0:
             return None
         else:
+            node_object = ref_protocol.nodes[j]
+            URL ='None'
             # generate the diff content:   
             x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
             y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
@@ -267,13 +281,13 @@ class Compare(object):
                 # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
                 tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
                 content.append(tmp)      
-            diff_object = self.protocol_A.nodes[x[0]].pk 
-            URL ='None'
+            diff_object = ref_protocol.nodes[x[0]].pk 
+            
             self.style_content(j, URL, diff_object, content, current_layer = layer)    
 
-    def add_thermocycle_layer(self, j):
+    def add_thermocycle_layer(self, j, ref_protocol):
         layer = 'thermocycle'
-        if len(self.protocol_A.nodes[j]['thermocycle']) == 0:
+        if len(ref_protocol.nodes[j]['thermocycle']) == 0:
             return None
         else:
             # generate the diff content:   
@@ -289,7 +303,7 @@ class Compare(object):
                 tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
                 content.append(tmp)
 
-            diff_object = self.protocol_A.nodes[x[0]].pk 
+            diff_object = ref_protocol.nodes[x[0]].pk 
             URL = None
             self.style_content(j, URL, diff_object, content, current_layer = layer)  
 
@@ -299,14 +313,27 @@ class Compare(object):
                 
     def style_content(self, j, URL, diff_object, content, current_layer = None):
 
-        N = self.agraph.get_subgraph(str(j))
-        if len(N.nodes()) == 2:
-            (verb_object_a, verb_object_b) = N.nodes()
+        try:
+            N = self.agraph.get_subgraph(str(j))
+            if len(N.nodes()) == 2:
+                (verb_object_a, verb_object_b) = N.nodes()
+                N.add_node(diff_object)        
+                self.agraph.add_edge(verb_object_a,diff_object)
+                self.agraph.add_edge(diff_object, verb_object_b)    
 
-        N.add_node(diff_object)
-        self.agraph.add_edge(verb_object_a,diff_object)
-        self.agraph.add_edge(diff_object, verb_object_b)
+        except AttributeError:
+            if self.flags['position'] == 'right':
+                verb_object_a = self.protocol_A.nodes[j].pk
+                self.agraph.add_edge(verb_object_a,diff_object)
+                subgraph = [verb_object_a, diff_object]
 
+            if self.flags['position'] == 'left':    
+                verb_object_b = self.protocol_B.nodes[j].pk
+                self.agraph.add_edge(diff_object, verb_object_b)
+                subgraph = [diff_object, verb_object_b]
+
+            N = self.agraph.add_subgraph(subgraph, name =str(j), rank='same', rankdir='LR')    
+          
         s = self.agraph.get_node(diff_object)
         s.attr['shape'] = 'box'
         s.attr['color'] = '#C0C0C0'
@@ -315,8 +342,16 @@ class Compare(object):
 
         # set label:
         s.attr['label'] = merge_table_pieces(content, current_layer)
-        # node_object = self.protocol_A.nodes[j]['machine']
+
+        # if current_layer == 'manual':
+        #     node_object = self.protocol_A.nodes[j]
+        #     s.attr['URL'] = node_object.action_update_url()
+
+        # else:
+        #     node_object = self.protocol_A.nodes[j][current_layer]
+        #     s.attr['URL'] = node_object.get_update_url()    
         s.attr['URL'] = URL
+
         s.attr['target'] = HTML_TARGET      
 
 
