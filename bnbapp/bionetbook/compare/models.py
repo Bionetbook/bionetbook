@@ -253,11 +253,23 @@ class Compare(object):
         node_object = ref_protocol.nodes[j]
         URL = node_object.action_update_url()
         diff_object = ref_protocol.nodes[j].pk + '_manual'
-        # print layer
-        x = self.protocol_A.nodes[j].summary
-        y = self.protocol_B.nodes[j].summary  
+        if 'position' in self.flags:
+            if self.flags['position'] == 'right':
+                x = ref_protocol.nodes[j].summary
+                y = x
+
+            if self.flags['position'] == 'left':
+                y =  ref_protocol.nodes[j].summary   
+                x = y    
+        
+        else:        
+            x = self.protocol_A.nodes[j].summary
+            y = self.protocol_B.nodes[j].summary  
+        
         d = DictDiffer (x, y)
+        print x, y
         content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
+        print content
         self.style_content(j, URL, diff_object, content)
 
     def add_components_layer(self, j, ref_protocol):
