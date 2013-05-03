@@ -197,7 +197,7 @@ class Compare(object):
         # these lists contain a few or no nodes:
         if self.a_unique:
             self.flags['position'] = 'right'
-            self.add_node_object(self.a_unique, ref_protocol = self.protocol_A)
+            self.add_node_object(self.a_unique, ref_protocol = self.protocol_A, position = 'right')
         if self.b_unique:
             self.flags['position'] = 'left'
             self.add_node_object(self.b_unique, ref_protocol = self.protocol_B, position = 'left')
@@ -267,9 +267,7 @@ class Compare(object):
             y = self.protocol_B.nodes[j].summary  
         
         d = DictDiffer (x, y)
-        print x, y
         content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
-        print content
         self.style_content(j, URL, diff_object, content)
 
     def add_components_layer(self, j, ref_protocol):
@@ -282,9 +280,22 @@ class Compare(object):
         else:
             node_object = ref_protocol.nodes[j]
             URL ='None'
+
+            if 'position' in self.flags:
+                if self.flags['position'] == 'right':
+                    x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+                    y = x
+
+                if self.flags['position'] == 'left':
+                    y = [r['objectid'] for r in self.protocol_B.nodes[j].children] 
+                    x = y 
+
+            else:        
             # generate the diff content:   
-            x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
-            y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+                x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+                y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+            
+            diff_object = ref_protocol.nodes[x[0]].pk 
             scores = [] # tracks the error rate of a matching components
             content = [] # gets the html strings
             for m,n in zip(x,y): 
@@ -293,7 +304,6 @@ class Compare(object):
                 # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
                 tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
                 content.append(tmp)      
-            diff_object = ref_protocol.nodes[x[0]].pk 
             
             self.style_content(j, URL, diff_object, content, current_layer = layer)    
 
