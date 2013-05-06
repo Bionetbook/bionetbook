@@ -45,7 +45,7 @@
             </table>
         </div>
     </div>    
-    <div class="span2">
+    <div class="span2" id="graph_switches">
 
         {% if component_layer %}
         <a href="{{component_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Component</button></a>
@@ -81,7 +81,7 @@
 </div >    
 
 <div class="row">   
-    <div class="span4" >
+    <div class="span4" id="graph_container">
         <div>
             <embed src="{% url compare_single_layers_graphic protocol_a.slug layers 'svg' %}" type="image/svg+xml" />
         </div>
