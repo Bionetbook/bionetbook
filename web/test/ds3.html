@@ -1,10 +1,69 @@
 <html>
 
+
 <head>
 <title>D3 Testing Page</title>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
 </head>
+
+<title>D3 Test</title>
+<head>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+	<row>
+		<p> Gary </p>
+		<p> James </p>
+		<p> brown </p>
+		<div class = "span6">
+			<svg width = "100pt" height = "100pt">
+				<circle cx="50" cy ="50" r="25" style="fill #800590">rt</circle> 
+				<path d=" M 10 25
+					      L 10 75 
+					      L 60 75
+                          L 10 25"
+                          stroke="red" stroke-width="2" fill="none" />
+			</svg>
+		</div>
+	</row>	
+</body>
+<script type="text/javascript">
+d3.selectAll("p").style("color", "blue");
+d3.selectAll("p")
+    .data([16, 23, 42])
+    .style("font-size", function(d) { return d + "px"; });
+var svg = d3.select("svg");
+svg.append("circle")
+    .attr("cx", 100)
+    .attr("cy", 99)
+    .attr("r", 25)
+    .style("fill", "blue");    
+
+var circle = svg.selectAll("circle")
+
+var lineData = [ { "x": 1,   "y": 5},  { "x": 20,  "y": 20},
+                 { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+                 { "x": 80,  "y": 5},  { "x": 100, "y": 60}];
+
+var lineFunction = d3.svg.line()
+	.x(function(d) { return d.x; })
+	.y(function(d) { return d.y; })
+	.interpolate("linear");
+
+var svgContainer = d3.select("body").append("svg")
+	.attr("width", 200)
+	.attr("height", 200);
+
+var lineGraph = svgContainer.append("path")
+	.attr("d", lineFunction(lineData))
+	.attr("stroke", "blue")
+	.attr("stroke-width", 2)
+	.attr("fill", "none");
+
+
+</script>
+
 
 <body>
 
