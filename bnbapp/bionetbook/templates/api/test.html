@@ -10,6 +10,7 @@
 	  $.get("/api/jqtest/", function(data){
 	    $("#idName").html(data.name);
 	    $("#idBirthday").html(data.birthday);
+	    $("#idCake").html(data.cake);
 	  });
 	}
 	</script>
@@ -19,6 +20,7 @@
 	<input type="button" onclick="send_request();" value="Request this page with AJAX" /><br/>
 	<b>Name via AJAX:</b><span id="idName"></span><br/>
 	<b>Birthday via AJAX:</b><span id="idBirthday"></span><br/>
+	<b>Cake via AJAX:</b><span id="idCake"></span><br/>
 </body>
 </html>
 

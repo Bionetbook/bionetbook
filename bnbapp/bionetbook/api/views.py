@@ -46,7 +46,7 @@ class JSONResponseMixin(object):
 class JQTestView(JSONResponseMixin, TemplateView):
 
     def get_context(self):
-        return {'name': "BOB", 'birthday':"yesterday", 'cake':"none"}
+        return {'name': "BOB", 'birthday':"now", 'cake':"none"}
 
     def render_to_response(self, context, **httpresponse_kwargs):
         context = self.get_context()
@@ -69,7 +69,7 @@ class JQTestView(JSONResponseMixin, TemplateView):
 
 
 class TestView(TemplateView):
-    template_name = "api/test.html"
+    template_name = "api/test1.html"
     
     # def get(self, request):
     #     # <view logic>
