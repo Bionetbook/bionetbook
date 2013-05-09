@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>Bootstrap JS Testing Page</title>
+<link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+  </style>
+
+  <script>
+  // When called this sets the form field 'order' to the order of the child divs in the sortable list.
+  function setOrder() {
+    var elms = $.map(document.getElementById("sortable").getElementsByTagName("div"), function(element) { return $(element).attr('id'); });
+    document.forms['sort_order'].elements["order"].value = elms.join();
+  };
+
+  // When an update event happens on the sortable, the setOrder() is called.
+  $(function() {
+    $( "#sortable" ).sortable( { 
+                          update: function(event, ui) { setOrder(); },
+                    } );
+    $( "#sortable" ).disableSelection();
+  });
+  </script>
+
+</head>
+
+<body>
+
+
+<row>
+  <div class="span6">
+    <ul id="sortable">
+      <li>
+        ONE
+        <div id="p_one" class="btn-group">
+          <button class="btn btn-warning"><i class="icon-arrow-up icon-white"></i></button>
+          <button class="btn btn-warning"><i class="icon-arrow-down icon-white"></i></button>
+          <button class="btn btn-danger"><i class="icon-remove-circle icon-white"></i></button>
+        </div>
+      </li>
+      <li>
+        TWO
+        <div id="p_two" class="btn-group">
+          <button class="btn btn-warning"><i class="icon-arrow-up icon-white"></i></button>
+          <button class="btn btn-warning"><i class="icon-arrow-down icon-white"></i></button>
+          <button class="btn btn-danger"><i class="icon-remove-circle icon-white"></i></button>
+        </div>
+      </li>
+      <li>
+        THREE
+        <div id="p_three" class="btn-group">
+          <button class="btn btn-warning"><i class="icon-arrow-up icon-white"></i></button>
+          <button class="btn btn-warning"><i class="icon-arrow-down icon-white"></i></button>
+          <button class="btn btn-danger"><i class="icon-remove-circle icon-white"></i></button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="span6">
+    <form id="sort_order" method="post">
+      ORDER: <input type="text" name="order">
+      <input type="submit" value="Save">
+    </form>
+  </div>
+</row>
+
+  <script>
+
+  setOrder();
+
+  //var elms = document.getElementById("sortable").getElementsByTagName("div");;
+  </script>
+
+
+</body>
+</html>

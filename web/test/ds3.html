@@ -45,3 +45,25 @@ var rect = svgSelection
 				.attr("y", 5)
 				.attr("width", 15)
 				.attr("height", 15);
+
+
+<script type="text/javascript">
+
+	function appendButton(id, label) {
+		result = svgSelection
+			.append(id)
+			.attr("fill", "green")
+			.attr("stroke", "black")
+			.attr("x", 5)
+			.attr("y", 5)
+			.attr("width", 15)
+			.attr("height", 15);
+
+		return result;
+	}
+
+	var b1 = appendButton("svg", "one");
+	var b2 = appendButton("svg", "two");
+	var b3 = appendButton("svg", "three");
+
+</script>
