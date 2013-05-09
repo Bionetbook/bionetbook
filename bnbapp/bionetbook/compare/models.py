@@ -15,6 +15,7 @@ FONT_SIZE = '10'
 HTML_TARGET = '_top'
 COLOR_A = '#B82F3'
 COLOR_B = '#015666' 
+NODE_STYLE = 'solid' # "rounded" produces a longer svg filled with polylines. 
 
 
 class DictDiffer(object):
@@ -71,14 +72,14 @@ class ProtocolPlot(Protocol):
             n=self.agraph.get_node(self.pks[i])
             n.attr['shape']='box'
             n.attr['fontsize'] = '10'
-            n.attr['style'] = 'rounded'
+            n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
             n.attr['label']= self.nodes[self.get_actions[i]]['verb']
 
         n = self.agraph.get_node(self.pks[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
-        n.attr['style'] = 'rounded'
+        n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
         n.attr['label']=self.nodes[self.get_actions[0]]['verb']
         
@@ -126,23 +127,23 @@ class Compare(object):
             n=self.agraph.get_node(self.A_pk[i])
             n.attr['shape']='box'
             n.attr['fontsize'] = FONT_SIZE
-            n.attr['style'] = 'rounded'
+            n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
             node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
             n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
-            n.attr['URL'] = node_object.get_absolute_url()
-            n.attr['target'] = HTML_TARGET
+            # n.attr['URL'] = node_object.get_absolute_url()
+            # n.attr['target'] = HTML_TARGET
                 
         # Set the 0'th node and title in protocol_A 
         n = self.agraph.get_node(self.A_pk[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
-        n.attr['style'] = 'rounded'
+        n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
         node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
         n.attr['label']=node_object['verb'] 
-        n.attr['URL'] = node_object.get_absolute_url()
-        n.attr['target'] = HTML_TARGET
+        # n.attr['URL'] = node_object.get_absolute_url()
+        # n.attr['target'] = HTML_TARGET
         
         # add base of second protocol:
         for i in range(1, len(self.B_pk)):
@@ -154,22 +155,22 @@ class Compare(object):
             n=self.agraph.get_node(self.B_pk[i])
             n.attr['shape']='box'
             n.attr['fontsize'] = FONT_SIZE
-            n.attr['style'] = 'rounded'
+            n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
             node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
             n.attr['label']= node_object['verb'] 
-            n.attr['URL'] = node_object.get_absolute_url()    
-            n.attr['target'] = HTML_TARGET
+            # n.attr['URL'] = node_object.get_absolute_url()    
+            # n.attr['target'] = HTML_TARGET
         # Set the 0'th node in  protocol_A  
         n = self.agraph.get_node(self.B_pk[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = FONT_SIZE
-        n.attr['style'] = 'rounded'
+        n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
         node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
         n.attr['label']= node_object['verb'] 
-        n.attr['URL'] = node_object.get_absolute_url()
-        n.attr['target'] = HTML_TARGET
+        # n.attr['URL'] = node_object.get_absolute_url()
+        # n.attr['target'] = HTML_TARGET
 
         for j in self.pairs:
             N = self.agraph.add_subgraph(j, name =str(j[0][j[0].index('-')+1:]), rank='same', rankdir='LR')
@@ -359,7 +360,7 @@ class Compare(object):
         s = self.agraph.get_node(diff_object)
         s.attr['shape'] = 'box'
         s.attr['color'] = '#C0C0C0'
-        s.attr['style'] = 'rounded'
+        s.attr['style'] = NODE_STYLE
         s.attr['fontsize'] = FONT_SIZE  
 
         # set label:
@@ -478,7 +479,7 @@ class Compare(object):
     #                 sa = self.agraph.get_node(step_object_a)
     #                 sa.attr['shape'] = 'box'
     #                 sa.attr['color'] = '#C0C0C0'
-    #                 sa.attr['style'] = 'rounded'
+    #                 sa.attr['style'] = NODE_STYLE
     #                 sa.attr['fontsize'] = FONT_SIZE
     #                 try:
     #                     VERBATIM_A = self.protocol_A.nodes[verb_a].parent['verbatim_text'] 
@@ -492,7 +493,7 @@ class Compare(object):
     #                 sb = self.agraph.get_node(step_object_b)
     #                 sb.attr['shape'] = 'box'
     #                 sb.attr['color'] = '#C0C0C0'
-    #                 sb.attr['style'] = 'rounded'
+    #                 sb.attr['style'] = NODE_STYLE
     #                 sb.attr['fontsize'] = FONT_SIZE
     #                 try:
     #                     VERBATIM_B = self.protocol_B.nodes[verb_b].parent['verbatim_text']
@@ -523,7 +524,7 @@ class Compare(object):
     #             s = self.agraph.get_node(diff_object)
     #             s.attr['shape'] = 'box'
     #             s.attr['color'] = '#C0C0C0'
-    #             s.attr['style'] = 'rounded'
+    #             s.attr['style'] = NODE_STYLE
     #             s.attr['fontsize'] = FONT_SIZE
     #             # set label:
     #             s.attr['label'] = merge_table_pieces(content)
@@ -603,7 +604,7 @@ class Compare(object):
     #                 s = self.agraph.get_node(diff_object)
     #                 s.attr['shape'] = 'box'
     #                 s.attr['color'] = '#C0C0C0'
-    #                 s.attr['style'] = 'rounded'
+    #                 s.attr['style'] = NODE_STYLE
     #                 s.attr['fontsize'] = FONT_SIZE
     #                 s.attr['label'] = merge_table_pieces(content, 'components')
     #                 s.attr['target'] = HTML_TARGET
@@ -644,7 +645,7 @@ class Compare(object):
     #                 s = self.agraph.get_node(diff_object)
     #                 s.attr['shape'] = 'box'
     #                 s.attr['color'] = '#C0C0C0'
-    #                 s.attr['style'] = 'rounded'
+    #                 s.attr['style'] = NODE_STYLE
     #                 s.attr['fontsize'] = FONT_SIZE
     #                 s.attr['label'] = merge_table_pieces(content, 'thermocycle')
     #                 # node_object = self.protocol_A.nodes[verb_a]['thermocycle']
