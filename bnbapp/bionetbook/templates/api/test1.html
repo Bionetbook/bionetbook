@@ -1,99 +1,113 @@
-<html>
+{% extends "base.html" %}
+{% load core_tags %}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> << to >> </li>
+      <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li>
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
 
-<head>
-	<title>JQuery Testing Page</title>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	<link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	</head>
-<body>
-	Object in template called without AJAX: {{object}}<hr/>
+{% block page_title %}Protocol Diagram {% endblock %}
+<!-- <title>JQuery Testing Page</title>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+ -->
+{% block content %}
+Object in template called without AJAX: {{object}}<hr/>
+
 	<input type="button" onclick="send_request();" value="Request this page with AJAX" /><br/>
 	<b>Name via AJAX:</b><span id="idName"></span><br/>
-	<b>Birthday via AJAX:</b><span id="idBirthday"></span><br/>
-	<b>Cake via AJAX:</b><span id="idCake"></span><br/>
+	<!-- <b>Birthday via AJAX:</b><span id="idBirthday"></span><br/> -->
+	<!-- <b>Cake via AJAX:</b><span id="idCake"></span><br/> -->
 	<p> BLAH</p>
-	
-</body>
-<script type="text/javascript">
+	<div id="jshere"></div>
+
+	{% block javascript %}
+		<script type="text/javascript">
+			d3.selectAll("p").style("color", "blue");
+			
+			function send_request(){
+			  $.get("/api/jqtest/", function(data){
+			    $("#idName").html(data.protocols.actions[0].verb);
+			    // $("#idBirthday").html(data.birthday);
+			    // $("#idCake").html(data.cake);
+			  });
+			}
+			
+
+			var width = 80
+				height = 30
+				xPos = 100
+				rx = 5
+				x=150
+				y=20
 
 
-flip = d3.selectAll("p").style("color", "blue");
-	
-	function send_request(){
-	  $.get("/api/jqtest/", function(data){
-	    $("#idName").html(data.name);
-	    $("#idBirthday").html(data.birthday);
-	    $("#idCake").html(data.cake);
-	  });
-	}
-	
+			var matrix = [[
+			  {"verb" : "add", "position" : 20, "url" : "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/k0ul5c/j4json/"}, 
+			  {"verb" : "mix", "position" : 70 }, 
+			  {"verb" : "chill", "position" : 120 }, 
+			  {"verb" : "heat", "position" : 170 },
+			  {"verb" : "call_for_protocol", "position" : 270 }],
+			];
 
-	var width = 80
-		height = 30
-		xPos = 100
-		rx = 5
-		x=150
-		y=20
+			// var svgObject = d3.select("body").append("svg");
 
+			var grid = d3.select("#jshere").append("svg")
+			    .attr("width", 300)
+			    .attr("height", 500)
+			    .attr("class", "chart");
 
-	var matrix = [[
-	  {"verb" : "add", "position" : 20, "url" : "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/k0ul5c/j4json/"}, 
-	  {"verb" : "mix", "position" : 70 }, 
-	  {"verb" : "chill", "position" : 120 }, 
-	  {"verb" : "heat", "position" : 170 },
-	  {"verb" : "call_for_protocol", "position" : 270 }],
-	];
+			var row = grid.selectAll(".row")
+			    .data(matrix)
+			    .enter().append("svg:g")
+			    .attr("class", "row");
 
-	// var svgObject = d3.select("body").append("svg");
+			var verb = row.selectAll(".line")
+				.data([1]).enter().append("g:line")
+				.attr("class", "line")
+				.attr("x1", x + 40  )
+				.attr("y1", 20)
+				.attr("x2", x + 40  )
+				.attr("y2", 400)
+				// <line fill="none" stroke-width="9" x1="50" y1="50" x2="50" y2="80"/>
+				.style("stroke-width", 9)
+				.style("stroke", "#b82f03");
 
-	var grid = d3.select("body").append("svg")
-	    .attr("width", 300)
-	    .attr("height", 500)
-	    .attr("class", "chart");
+			var verb = row.selectAll(".verb")
+				.data(function(d) { return d;} )
+				.enter().append("g:rect")
+				.attr("class", "verb")
+				.attr("x", x)
+				.attr("y", function(d) { return d.position; })
+				.attr("width", width)
+				.attr("height", height)
+				.attr("rx", rx)
+				.style("fill", '#FFF')
+				.style("stroke", '#555');
 
-	var row = grid.selectAll(".row")
-	    .data(matrix)
-	    .enter().append("svg:g")
-	    .attr("class", "row");
+			var verb_label = row.selectAll(".label")
+			    .data(function(d) {return d;})
+			  	.enter().append("a").attr("xlink:href", function(d) {return d.url;} )
+			  	.append("g:text")
+			  	.attr("class", "verb_label")
+			    .attr("x", x + 40)
+			    .attr("y", function(d) { return d.position + 15;})
+			    .attr("text-anchor","middle")
+			    .attr("dy",".35em")
+			    .text(function(d) {return d.verb;});
+			</script>
 
-	var verb = row.selectAll(".line")
-		.data([1]).enter().append("g:line")
-		.attr("class", "line")
-		.attr("x1", x + 40  )
-		.attr("y1", 20)
-		.attr("x2", x + 40  )
-		.attr("y2", 400)
-		// <line fill="none" stroke-width="9" x1="50" y1="50" x2="50" y2="80"/>
-		.style("stroke-width", 9)
-		.style("stroke", "#b82f03");
-
-	var verb = row.selectAll(".verb")
-		.data(function(d) { return d;} )
-		.enter().append("g:rect")
-		.attr("class", "verb")
-		.attr("x", x)
-		.attr("y", function(d) { return d.position; })
-		.attr("width", width)
-		.attr("height", height)
-		.attr("rx", rx)
-		.style("fill", '#FFF')
-		.style("stroke", '#555');
-
-	var verb_label = row.selectAll(".label")
-	    .data(function(d) {return d;})
-	  	.enter().append("a").attr("xlink:href", function(d) {return d.url;} )
-	  	.append("g:text")
-	  	.attr("class", "verb_label")
-	    .attr("x", x + 40)
-	    .attr("y", function(d) { return d.position + 15;})
-	    .attr("text-anchor","middle")
-	    .attr("dy",".35em")
-	    .text(function(d) {return d.verb;});
-	</script>
+		{% endblock %}	
 
 
 
-</html>
+
+{% endblock %}
 
 
