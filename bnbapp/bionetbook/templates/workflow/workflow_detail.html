@@ -3,6 +3,13 @@
 
 {% block title %}Protocol: {{ object.name }}{% endblock %}
 
+{% block extracss %}
+  <style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; }
+  </style>
+{% endblock%}
+
+
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
@@ -28,23 +35,40 @@
     <div class="span6">
         <h2>Protocols</h2>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for protocol in object.protocols.all %}
-                <tr>
-                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <form id="sort_order" method="post">
+          ORDER: <input type="text" name="order">
+          <input type="submit" value="Save">
+        </form>
+
+        <ul id="sortable">
+            {% for protocol in object.ordered_protocols %}
+            <li><div id="proto_{{protocol.pk}}" class="btn"><i class="icon-move"></i> {{ protocol.name }}</div></li>
+            {% endfor %}
+        </ul>
 
     </div>
     <!-- secondary form div -->
 </div>    
 
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+  // When called this sets the form field 'order' to the order of the child divs in the sortable list.
+  function setOrder() {
+    var elms = $.map(document.getElementById("sortable").getElementsByTagName("div"), function(element) { return $(element).attr('id'); });
+    document.forms['sort_order'].elements["order"].value = elms.join();
+  };
+
+  // When an update event happens on the sortable, the setOrder() is called.
+  $(function() {
+    $( "#sortable" ).sortable( { 
+                          update: function(event, ui) { setOrder(); },
+                    } );
+    $( "#sortable" ).disableSelection();
+  });
+
+  setOrder();
+
+  </script>
 {% endblock %}

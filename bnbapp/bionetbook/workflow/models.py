@@ -51,6 +51,11 @@ class Workflow(TimeStampedModel):
     def get_delete_url(self):
         return reverse("workflow_delete", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
 
+    ##########
+    # Methods
+
+    def ordered_protocols(self):
+        return [x.protocol for x in self.workflowprotocol_set.all()]       # THERE MIGHT BE A BETTER WAY TO DO THIS
 
     ##########
     # Properties
@@ -65,6 +70,9 @@ class WorkflowProtocol(TimeStampedModel):
     protocol = models.ForeignKey(Protocol)
     workflow = models.ForeignKey(Workflow)
     order = models.IntegerField(_("Order or Protocols"), default=0)
+
+    class Meta:
+        ordering = ('order',)
 
     def __unicode__(self):
         return self.workflow.name + " - " + self.protocol.name
