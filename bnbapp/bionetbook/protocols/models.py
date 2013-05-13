@@ -865,6 +865,15 @@ class Action(NodeBase):
     def update_duration(self):
         pass
 
+    def childtype(self):
+        if self.has_components:
+            return 'components'
+        if self.has_machine:
+            return 'machine'
+        if self.has_thermocycle:
+            return 'thermocycle'            
+        if self.has_manual:
+            return 'manual'    
 
 class Step(NodeBase):
 
