@@ -38,3 +38,9 @@ web/test/d3_layout_test.html
 bnbapp/sandbox/tmp_git/test1.html
 
 bnbapp/sandbox/tmp_git/views1.py
+
+bnbapp/bionetbook/api/views1.py
+
+bnbapp/bionetbook/templates/api/test1.html
+
+bnbapp/bionetbook/templates/api/test1.html
