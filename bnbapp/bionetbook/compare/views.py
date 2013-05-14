@@ -73,6 +73,7 @@ class CompareBaseView(TemplateView):
         for t in JSONdata:
             t[u'url']= protocol_a.nodes[t['objectid']].action_update_url()
             t[u'position'] = y_position[t['objectid']]
+            t[u'childtype'] = protocol_a.nodes[t['objectid']].childtype()
 
 
         context['data'] = json.dumps(JSONdata)
