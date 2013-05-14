@@ -19,7 +19,7 @@ from organization.models import Organization
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, settify, labeler 
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler 
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -866,13 +866,13 @@ class Action(NodeBase):
         pass
 
     def childtype(self):
-        if self.has_components:
+        if self['verb'] in COMPONENT_VERBS: 
             return 'components'
-        if self.has_machine:
+        if self['verb'] in MACHINE_VERBS:
             return 'machine'
-        if self.has_thermocycle:
+        if self['verb'] in THERMOCYCLER_VERBS:
             return 'thermocycle'            
-        if self.has_manual:
+        if self['verb'] in MANUAL_VERBS:
             return 'manual'    
 
 class Step(NodeBase):
