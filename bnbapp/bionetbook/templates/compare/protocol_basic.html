@@ -36,7 +36,7 @@ Object in template called without AJAX: {{object}}<hr/>
 			var dataset;									// Create a variable to hold the data
 
 			function getData() {							// Fetch the raw JSON data from the server
-			  $.get("/api/jqtest/some-slug/", function(data) {
+			  $.get("/api/jqtest/", function(data) {
 				dataset = data;								// Put the results in the variable
 			  });
 			}
