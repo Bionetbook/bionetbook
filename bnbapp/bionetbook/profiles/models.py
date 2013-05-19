@@ -20,6 +20,7 @@ class Profile(TimeStampedModel):
     city = models.CharField(_("City"), max_length=100, null=True, blank=True)
     state = USStateField(_("State"), null=True, blank=True)
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
+    #orgs = models.CharField( max_length=100, null=True, blank=True)
     #protocols = models.ManyToManyField(Protocol, through='Organization')
 
     def __unicode__(self):

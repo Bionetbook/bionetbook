@@ -52,3 +52,5 @@ bnbapp/bionetbook/api/views1.py
 bnbapp/bionetbook/templates/api/test1.html
 
 bnbapp/bionetbook/templates/api/json_example.html
+
+*.bak2

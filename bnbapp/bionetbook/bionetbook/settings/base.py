@@ -96,7 +96,7 @@ BASE_APPS = (
     'django.contrib.admin',
     #'gunicorn',
     'django_extensions',
-    #'south',
+    'south',
     'crispy_forms',
     'floppyforms',
     'braces',
