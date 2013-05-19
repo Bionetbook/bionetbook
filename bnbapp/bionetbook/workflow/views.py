@@ -116,7 +116,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
     #slugs = []
     #node_type = None
     model = Workflow
-    slug_url_kwarg = "owner_slug"
+    slug_url_kwarg = "workflow_slug"
     form_class = WorkflowForm
 
 
