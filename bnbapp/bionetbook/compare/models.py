@@ -104,7 +104,7 @@ class Compare(object):
             self.flags['steps'] = False
 
         # find all actions common to both protocols:    
-        self.both = set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions))
+        self.both = list(set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions)))
         # alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
         # Set the pair names using the .pk index for graph node naming
         self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
@@ -112,6 +112,72 @@ class Compare(object):
         self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
         self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
         
+    
+    def find_diff_verbs(self, **kwargs):
+
+        diffs = []
+        for verb in self.both:
+            temp = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).changed()
+            if temp:
+                diffs.append((verb, temp))
+
+        return diffs       
+
+    def find_children_in_diff(self, **kwargs):
+
+        out = []
+        for verb in self.find_diff_verbs():
+
+            try:
+                children_A = [r['objectid'] for r in self.protocol_A.nodes[verb[0]].children]
+                children_B = [r['objectid'] for r in self.protocol_B.nodes[verb[0]].children]
+                children_both = list(set(children_A).intersection(set(children_B)))    
+                children_A_unique = set(children_A)-set(children_B)
+                children_B_unique = set(children_B)-set(children_A) 
+            
+            except TypeError:
+                    
+                if children_A:
+                    children_A = self.protocol_A.nodes[verb[0]].children['objectid']
+                if children_B:
+                    children_B = self.protocol_B.nodes[verb[0]].children['objectid']
+                
+                if str(children_A) == str(children_B):
+                    children_both = children_A
+
+                else: 
+                    children_A_unique = children_A
+                    children_B_unique = children_B
+            
+            if not children_A_unique:
+                children_A_unique = None
+
+            if not children_B_unique:
+                children_B_unique = None    
+
+            
+
+            out.append((verb[0], [children_both, children_A_unique, children_B_unique ]))
+
+
+        return out  
+
+    def diff_children(self, **kwargs):
+        
+        out = []
+        for verb in self.find_children_in_diff():
+            for child in verb[1]:
+                temp = DictDiffer(self.protocol_A.nodes[child].summary, self.protocol_B.nodes[child].summary).changed()
+                if temp:
+                    out.append((verb, child, temp))
+
+        return out            
+
+
+
+
+
+
     def draw_two_protocols(self, **kwargs):
         ''' this function draws out 2 base protocols as a sequence of actions. 
             add_layers_routine(layers = 'none-manual') adds the specified layers that a user wants to compare'''
@@ -382,60 +448,69 @@ class Compare(object):
     
 
     
-    def uniqify_order_preserving(self, seq, idfun=None): 
-       # order preserving
-       if idfun is None:
-           def idfun(x): return x
-       seen = {}
-       result = []
-       for item in seq:
-           marker = idfun(item)
-           if marker in seen: continue
-           seen[marker] = 1
-           result.append(item)
-       return result
+
+
+
+
+#_________________________________________________________________________________________________________________________________
+#_________________________________________________________________________________________________________________________________
+#_________________________________________________________________________________________________________________________________
+#_________________________________________________________________________________________________________________________________
+#_________________________________________________________________________________________________________________________________
+    # def uniqify_order_preserving(self, seq, idfun=None): 
+    #    # order preserving
+    #    if idfun is None:
+    #        def idfun(x): return x
+    #    seen = {}
+    #    result = []
+    #    for item in seq:
+    #        marker = idfun(item)
+    #        if marker in seen: continue
+    #        seen[marker] = 1
+    #        result.append(item)
+    #    return result
             
 
 
-    def align_lists(self,x,y):
-        import itertools
+    # def align_lists(self,x,y):
+    #     import itertools
 
-        # x = self.protocol_A.get_actions
-        # y = self.protocol_B.get_actions
+    #     # x = self.protocol_A.get_actions
+    #     # y = self.protocol_B.get_actions
         
-        u = list(itertools.chain(*itertools.izip_longest(x,y)))
+    #     u = list(itertools.chain(*itertools.izip_longest(x,y)))
 
-        if None in u:
-            u.pop(u.index(None))
+    #     if None in u:
+    #         u.pop(u.index(None))
 
-        U = self.uniqify_order_preserving(u)
+    #     U = self.uniqify_order_preserving(u)
 
-        out_1 = []
+    #     out_1 = []
 
-        for i in U:
-            if i in x:
-                tmpx = i
-            else:
-                tmpx = None
+    #     for i in U:
+    #         if i in x:
+    #             tmpx = i
+    #         else:
+    #             tmpx = None
 
-            if i in y:
-                tmpy = i
-            else:
-                tmpy = None
+    #         if i in y:
+    #             tmpy = i
+    #         else:
+    #             tmpy = None
 
-            out_1.append((tmpx,tmpy))  
-        return out_1       
+    #         out_1.append((tmpx,tmpy))  
+    #     return out_1       
 
-    def check_aligned(lst1, lst2):
-        it = iter(lst1)
-        try:
-            i = next(it)
-            for x in lst2:
-                if x == i:
-                    i = next(it)
-        except StopIteration:
-            return True
-        return False    
+    # def check_aligned(lst1, lst2):
+    #     it = iter(lst1)
+    #     try:
+    #         i = next(it)
+    #         for x in lst2:
+    #             if x == i:
+    #                 i = next(it)
+    #     except StopIteration:
+    #         return True
+    #     return False    
 # http://stackoverflow.com/questions/8024052/comparing-element-order-in-python-lists?answertab=oldest#tab-top
 # http://www.avatar.se/molbioinfo2001/dynprog/dynamic.html
 # http://www.dzone.com/snippets/needleman-wunsch-back-track
