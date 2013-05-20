@@ -21,7 +21,6 @@ class Profile(TimeStampedModel):
     state = USStateField(_("State"), null=True, blank=True)
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
     orgs = models.CharField( max_length=100, null=True, blank=True)
-    #protocols = models.ManyToManyField(Protocol, through='Organization')
 
     def __unicode__(self):
         if self.first_name or self.last_name:
@@ -31,7 +30,7 @@ class Profile(TimeStampedModel):
         return user.username
 
     def save(self, *args, **kwargs):
-        self.update_orgs()                              # Update the list of organizations whenever saved
+        self.update_orgs()                              # Update the cache list of organizations whenever profile is saved
         super(Profile, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
