@@ -20,7 +20,7 @@ class Profile(TimeStampedModel):
     city = models.CharField(_("City"), max_length=100, null=True, blank=True)
     state = USStateField(_("State"), null=True, blank=True)
     zip_code = models.CharField(_("Zip Code"), max_length=10, null=True, blank=True)
-    #orgs = models.CharField( max_length=100, null=True, blank=True)
+    orgs = models.CharField( max_length=100, null=True, blank=True)
     #protocols = models.ManyToManyField(Protocol, through='Organization')
 
     def __unicode__(self):
@@ -29,6 +29,10 @@ class Profile(TimeStampedModel):
         user = self.user
 
         return user.username
+
+    def save(self, *args, **kwargs):
+        self.update_orgs()                              # Update the list of organizations whenever saved
+        super(Profile, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("profile_detail", kwargs={"pk": self.pk})
@@ -81,6 +85,16 @@ class Profile(TimeStampedModel):
 
     def get_all_published_protocol_choices(self):
         return [(protocol.pk, protocol.owner.name + " - " + protocol.name) for protocol in self.get_published_protocols()]
+
+    #**************
+    # Organization Caching
+    
+    @property
+    def org_list(self):
+        return [int(x) for x in self.orgs.split(",")]
+
+    def update_orgs(self):
+        self.orgs = ",".join([str(x.id) for x in self.user.organization_set.all().order_by("id")])
 
 
 class Favorite(TimeStampedModel):
