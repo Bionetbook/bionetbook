@@ -1,5 +1,6 @@
+import string
+import random
 from django.db import models
-
 import pygraphviz as pgv 
 from protocols.models import Protocol, Action, Step
 from django.db.models import ObjectDoesNotExist
@@ -117,9 +118,26 @@ class Compare(object):
 
         diffs = []
         for verb in self.both:
-            temp = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).changed()
-            if temp:
-                diffs.append((verb, temp))
+            changed = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).changed()
+            added = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).added()
+            removed = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).removed()
+            
+            diff_attributes = []
+            any_change = False
+
+            if changed:
+                diff_attributes.append(changed)
+                any_change = True
+            if added:
+                diff_attributes.append(added)
+                any_change = True
+            if removed:
+                diff_attributes.append(removed)
+                any_change = True
+
+            if any_change:    
+                attributes = [item for sublist in diff_attributes for item in sublist]
+                diffs.append((verb, attributes))        
 
         return diffs       
 
@@ -173,6 +191,27 @@ class Compare(object):
 
         return out            
 
+    def make_diff_object(self, **kwargs):
+        
+        out = []
+        child_nodes = ['machine', 'components', 'thermocycle']
+        diff = self.find_diff_verbs()
+        for verb in diff:
+            attributes = verb[1]
+            non_child_attributes = list(set(attributes)-set(child_nodes))
+            diff_object = {
+            "node": self.protocol_A.nodes[verb[0]].childtype(),
+            "name": self.protocol_A.nodes[verb[0]]['name'],
+            "objectid": ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6)),
+            "child_node": []
+            }
+
+
+
+
+            out.append(diff_object)
+
+        return out    
 
 
 

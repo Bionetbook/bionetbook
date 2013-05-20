@@ -32,7 +32,7 @@ MANUAL_LAYER = dict((x.slug, x.layers) for x in VERB_LIST if x.layers)
 #                 'dry':['technique_comment'],
 #                 }
 
-def settify(settings_dict, shorthand = True, summary = False, action = False):
+def settify(settings_dict, shorthand = True, summary = False, action = False, comments = False):
 
     settings = []
     units = ''
@@ -127,8 +127,11 @@ def settify(settings_dict, shorthand = True, summary = False, action = False):
                 if shorthand:
                     units = shorten(units)           
 
-                if summary:
+                if comment:
                     output[item] = [numbers, units, comment]
+
+                if summary:
+                    output[item] = [numbers, units]    
                 else:    
                     settings.append(out)
              
