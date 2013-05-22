@@ -19,7 +19,13 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
-
+def json_dump(request, protocol_slug):
+    '''
+    Very simple JSON Call example.
+    '''
+    p = Protocol.objects.get(slug=protocol_slug)
+    data_dict = {'name':p.name}
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json")
 
 
 class JSONResponseMixin(object):
@@ -47,7 +53,7 @@ class JQTestView(JSONResponseMixin, TemplateView):
 
     def get_context(self):
         context = super(JQTestView, self).get_context_data()
-        protocol_a = Protocol.objects.get(id="3")
+        protocol_a = Protocol.objects.get(pk=3)
         JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions]
         num_verbs = len(protocol_a.get_actions)
         y_height = 30
@@ -145,3 +151,5 @@ class CompareBaseView(JSONResponseMixin, TemplateView):
 
 class CompareLayersView(CompareBaseView, TemplateView):
     template_name = "compare/protocol_basic.html"        
+
+

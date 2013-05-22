@@ -29,6 +29,7 @@ MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 DEV_APPS = (
     'stubtools',
     'debug_toolbar',
+    'django_coverage',
 )
 
 INSTALLED_APPS = INSTALLED_APPS + DEV_APPS

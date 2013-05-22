@@ -37,6 +37,8 @@ Object in template called without AJAX: {{object}}<hr/>
 	<script type="text/javascript">
 		d3.selectAll("p").style("color", "blue");
 
+		var foodump;
+
 		function send_request(){
 		  $.get("/api/jqtest/", function(data){
 		    $("#idName").html(data[0].name);
@@ -89,7 +91,7 @@ Object in template called without AJAX: {{object}}<hr/>
 		
 		});
 
-
+		d3.json("/api/jqtest/", function(error, json) { foodump = json };);
 
 		var dataset = d3.json("/api/jqtest/", function(error, json) {
 		if (error) return console.warn(error);
