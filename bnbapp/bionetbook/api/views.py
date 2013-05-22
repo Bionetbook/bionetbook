@@ -24,7 +24,7 @@ def json_dump(request, protocol_slug):
     Very simple JSON Call example.
     '''
     p = Protocol.objects.get(slug=protocol_slug)
-    data_dict = {'name':p.name}
+    data_dict = {'name':p.name, 'pk':p.pk}
     return HttpResponse(json.dumps(data_dict), mimetype="application/json")
 
 
