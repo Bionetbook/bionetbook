@@ -118,24 +118,25 @@ class Compare(object):
 
         diffs = []
         for verb in self.both:
-            changed = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).changed()
-            added = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).added()
-            removed = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb]).removed()
+            difffff = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb])
+            changed = difffff.changed()
+            added = difffff.added()
+            removed = difffff.removed()
             
             diff_attributes = []
-            any_change = False
+            dirty = False
 
             if changed:
                 diff_attributes.append(changed)
-                any_change = True
+                dirty = True
             if added:
                 diff_attributes.append(added)
-                any_change = True
+                dirty = True
             if removed:
                 diff_attributes.append(removed)
-                any_change = True
+                dirty = True
 
-            if any_change:    
+            if dirty:    
                 attributes = [item for sublist in diff_attributes for item in sublist]
                 diffs.append((verb, attributes))        
 
