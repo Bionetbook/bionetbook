@@ -237,7 +237,7 @@ class Compare(object):
             node_dict['node_objectid'] = self.protocol_A.nodes[obj[0]]['objectid']
             node_dict['child_type'] = self.protocol_A.nodes[obj[0]].childtype()
             if node_dict['child_type'] in child_nodes:
-                node_dict['child'] = []#self.get_child_diff()
+                node_dict['child'] = self.get_child_diff(obj[0])
 
             out.append(node_dict)
 
@@ -245,36 +245,79 @@ class Compare(object):
 
 
     def get_child_diff(self, parent_id, **kwargs):
+        ''' this method is called knowing that the parent_id has children
+        '''
         
         out = []
-        children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children]
-        children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children]
+        children_a = self.protocol_A.nodes[parent_id].children # either one or more children
+        children_b = self.protocol_B.nodes[parent_id].children
 
-        both = list(set(children_A).intersection(set(children_B)))
-        a_unique = set(children_A)-set(children_B)
-        b_unique = set(children_B)-set(children_A)
+        if type(children_a) is list: 
+            children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
+        else:
+            children_A = [children_a['objectid']]
+        print children_A    
+            
+        if type(children_b) is list:      
+            children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
+        else:
+            children_B = [children_b['objectid']]
+        print children_B    
+            
+        
 
-        for (cnt, item) in enumerate(both):
-            print cnt, item
-            child_dict={}
-            child_dict['name'] = str(self.protocol_A.nodes[parent_id].childtype()) + str(cnt)
-            child_dict['objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-            D = DictDiffer(self.protocol_A.nodes[item].summary, self.protocol_B.nodes[item].summary)
+        both = list(set(children_A).intersection(set(children_B)))    
+        print both
+        unique_A = set(children_A)-set(children_B)
+        unique_B = set(children_B)-set(children_A) 
+        
+        if len(both) == 1:
+            temp = self.get_child_dict(0, both[0])        
+            if temp:
+                    out.append(temp)
+            
+        if len(both) > 1:
+            for (cnt, item) in enumerate(both):    
+                print cnt, item
+                temp = self.get_child_dict(cnt, item) 
+                if temp:
+                    out.append(temp)
+
+        return out             
+        
+    
+    def get_child_dict(self, cnt, item, **kvargs):    
+        dirty = False
+        child_dict={}
+        LEFT = self.protocol_A
+        RIGHT = self.protocol_B
+        # child_dict['order'] = str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype()) + ' ' + str(cnt)
+        child_dict['node'] =  str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype())
+        child_dict['number'] =  child_dict['node'] + ' ' + str(cnt)
+        child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+        child_dict['node_objectid'] = LEFT.nodes[item]['objectid']
+        D = DictDiffer(LEFT.nodes[item].summary, RIGHT.nodes[item].summary)
+        
+        for attr in D.changed():  
+            print 'attr: ', LEFT.nodes[item].summary[attr]
             if len(D.changed()) > 0:
-                for attr in D.changed():
-                    child_dict[attr] = [self.protocol_A.nodes[item][attr],self.protocol_B.nodes[item][attr]]
+                dirty = True
+                child_dict[attr] = [LEFT.nodes[item].summary[attr],RIGHT.nodes[item].summary[attr]]
+    
+        for attr in D.uniq_a():
             if len(D.uniq_a()) > 0:    
-                for attr in D.uniq_a():
-                    child_dict[attr] = [self.protocol_A.nodes[item][attr],None]
+                dirty = True
+                child_dict[attr] = [LEFT.nodes[item].summary[attr],None]
+
+        for attr in D.uniq_b():
             if len(D.uniq_b()) > 0:    
-                for attr in D.uniq_b():
-                    child_dict[attr] = [None, self.protocol_B.nodes[item][attr]]    
+                dirty = True
+                child_dict[attr] = [None, RIGHT.nodes[item].summary[attr]]    
 
-            out.append(child_dict)
-
-        return out    
-
-
+        if dirty:
+            return child_dict        
+        else:
+            return {}    
 
 
 
