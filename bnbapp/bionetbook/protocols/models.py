@@ -912,7 +912,10 @@ class Action(NodeBase):
         if self['verb'] in THERMOCYCLER_VERBS:
             return 'thermocycle'            
         if self['verb'] in MANUAL_VERBS:
-            return 'manual'    
+            return 'manual'
+        else:
+            return None
+
 
 class Step(NodeBase):
 
