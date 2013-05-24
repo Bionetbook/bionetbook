@@ -19,13 +19,53 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
-def json_dump(request, protocol_slug):
+def protocol_json(request, protocol_slug):
+    '''
+    returns json with basic protocol data: 
+    [{
+    'name': verb_name, 
+    'objectid' : objectid,
+    'URL': URL
+    },
+    ]
+    '''
+    p = ProtocolPlot.objects.get(slug=protocol_slug)
+    out = []
+    
+    for verb in p.get_actions():
+        print 'verb: ', verb
+        data_dict={}
+        data_dict['name'] = p.nodes[verb]['verb']
+        data_dict['objectid'] = p.nodes[verb]['objectid']
+        data_dict['URL'] = p.nodes[verb].action_update_url()
+        out.append(data_dict)
+    # data_dict = {'name':p.name, 'pk':p.pk}
+    return HttpResponse(json.dumps(out), mimetype="application/json")
+
+def protocol_layers_json(request, protocol_slug):
     '''
     Very simple JSON Call example.
     '''
     p = Protocol.objects.get(slug=protocol_slug)
     data_dict = {'name':p.name, 'pk':p.pk}
-    return HttpResponse(json.dumps(data_dict), mimetype="application/json")
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+    
+def protocol_compare_json(request, protocol_slug):
+    '''
+    Very simple JSON Call example.
+    '''
+    p = Protocol.objects.get(slug=protocol_slug)
+    data_dict = {'name':p.name, 'pk':p.pk}
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+
+def protocol_compare_layers_json(request, protocol_slug):
+    '''
+    Very simple JSON Call example.
+    '''
+    p = Protocol.objects.get(slug=protocol_slug)
+    data_dict = {'name':p.name, 'pk':p.pk}
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+
 
 
 class JSONResponseMixin(object):
