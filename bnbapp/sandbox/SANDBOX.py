@@ -41,17 +41,19 @@ for step in c.get_steps:
     out.append(step_dict)
 
 
-def get_diff_attributes(self, **kwargs):
-    child_nodes = ['machine', 'components', 'thermocycle']
-    attributes = self.find_diff_verbs()
-    non_children_attributes = list(set(attributes)-set(child_nodes))
+def get_verb_index(x, y):
+    r = list(set(x).union(set(y)))
+    out = []
+    for (cnt, i) in enumerate(r):
+        if i in x and i in y:
+            out.append((i, x.index(i), y.index(i)), x.index(i) + y.index(i))
+        if i in x and i not in y: 
+            out.append((i, x.index(i), x.index(i) + 0.5, x.index(i) + y.index(i)))
+        if i in y and i not in x: 
+            out.append((i, y.index(i) + 0.5, y.index(i), x.index(i) + y.index(i))) 
 
-    out = {}
-    for attr in non_children_attributes:
-        out[attr] = self.protocol_A.nodes[verb_diff[0][attr]]
+    return out                  
 
-
-    return out
 
 
 

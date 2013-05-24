@@ -49,6 +49,11 @@ class DictDiffer(object):
     def unchanged(self):
         return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
+class ColNum(object):
+    def __init__(self,colnum):
+        self.colnum = colnum
+    def __call__(self, x):
+        return x[self.colnum]
 
 class ProtocolPlot(Protocol):
 
@@ -112,7 +117,12 @@ class Compare(object):
         # set the unaligned verbs:
         self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
         self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
-        
+    
+    def isint(self, x): 
+        if type(x) is int:
+            return True
+        else:
+            return False     
     
     def find_diff_verbs(self, **kwargs):
 
@@ -141,6 +151,33 @@ class Compare(object):
                 diffs.append((verb, attributes))        
 
         return diffs      
+
+    def align_verbs(self):
+        x = self.protocol_A.get_actions
+        y = self.protocol_B.get_actions
+        r = list(set(x).union(set(y)))
+        order = []
+        out = []
+        for i in r:
+            if i in x and i in y:
+                order.append((i, x.index(i), y.index(i), x.index(i) + y.index(i)))
+            if i in x and i not in y: 
+                order.append((i, x.index(i), x.index(i) + 0.5, 2*x.index(i) + 0.5 ))
+            if i in y and i not in x: 
+                order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
+
+        order.sort(key=ColNum(3))
+        
+        for row in order:
+            if self.isint(row[1]) and self.isint(row[2]):
+                out.append((row[0], row[0]))
+            if self.isint(row[1]) and not self.isint(row[2]):
+                out.append((row[0], None))  
+            if self.isint(row[2]) and not self.isint(row[1]):
+                out.append((None, row[0]))      
+        
+        return out    
+
 
     def get_diff_attributes_all_protocol(self, **kwargs):
         child_nodes = ['machine', 'components', 'thermocycle']
