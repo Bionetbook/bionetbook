@@ -4,7 +4,7 @@ import django.utils.simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
 from django import http
-from compare.models import ProtocolPlot, DictDiffer
+from compare.models import ProtocolPlot, DictDiffer, Compare
 from protocols.models import Protocol
 
 def protocol_detail(request, protocol_slug):
@@ -63,17 +63,51 @@ def protocol_layers_json(request, protocol_slug):
                 data_dict['node'] = p.nodes[verb].children.summary    
         else:
             data_dict['node'] = None                
-            
+
         out.append(data_dict)
     return HttpResponse(json.dumps(out), mimetype="application/json") 
     
-def protocol_compare_json(request, protocol_slug):
+def protocol_compare_json(request, protocol_a_slug, protocol_b_slug):
     '''
-    Very simple JSON Call example.
+    returns a json aligning verbs to rows:
+    [{
+    'name': [verb_name_a, verb_name_b], 
+    'objectid': [objectid_a, objectid_b]
+    'URL': [URL_a, URL_b]
+    },
+    {
+    'name': [verb_name_a, None], 
+    'objectid': [objectid_a, None]
+    'URL': [URL_a, None]
+    }, 
+    ]
     '''
-    p = Protocol.objects.get(slug=protocol_slug)
-    data_dict = {'name':p.name, 'pk':p.pk}
-    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    
+    out = []
+    G = Compare(A,B)
+    aligned = G.align_verbs()
+    for row in aligned:
+        data_dict = {}
+        if None in row:
+            if row[0]:
+                data_dict['name'] = [A.nodes[row[0]]['verb'], None]
+                data_dict['objectid'] = [A.nodes[row[0]]['objectid'], None]
+                data_dict['URL'] = [A.nodes[row[0]].action_update_url(), None]  
+            else:
+                data_dict['name'] = [None, B.nodes[row[1]]['verb']]
+                data_dict['objectid'] = [None, B.nodes[row[1]]['objectid']]
+                data_dict['URL'] = [None, B.nodes[row[1]].action_update_url()]    
+
+        else:
+            data_dict['name'] = [A.nodes[row[0]]['verb'], B.nodes[row[1]]['verb']]
+            data_dict['objectid'] = [A.nodes[row[0]]['objectid'], B.nodes[row[1]]['objectid']]
+            data_dict['URL'] = [A.nodes[row[0]].action_update_url(), B.nodes[row[1]].action_update_url()]
+
+        out.append(data_dict)        
+
+    return HttpResponse(json.dumps(out), mimetype="application/json") 
 
 def protocol_compare_layers_json(request, protocol_slug):
     '''
