@@ -299,19 +299,19 @@ class Protocol(TimeStampedModel):
                             
         return result
 
-    @property
+    
     def get_machines(self):
-         return [self.nodes[r]['objectid'] for r in self.get_actions if 'machine' in self.nodes[r].keys() ]
+         return [self.nodes[r]['objectid'] for r in self.get_actions() if 'machine' in self.nodes[r].keys() ]
 
-    @property
+    
     def get_actions(self):
         return [r[2] for r in self.get_action_tree('objectid')]    
 
-    @property
+    
     def get_steps(self):
         return [r['objectid'] for r in self.steps]
 
-    @property
+    
     def get_components(self):
         return self.get_reagents_by_action('objectid')
  
@@ -440,7 +440,7 @@ class Protocol(TimeStampedModel):
 
     def action_children_json(self):
         out = []
-        for action in self.get_actions:
+        for action in self.get_actions():
             children = self.nodes[action].children
             if children:
                 if type(children) is list:

@@ -65,7 +65,7 @@ class ProtocolPlot(Protocol):
     
         self.agraph = pgv.AGraph(ranksep = '0.2')  
 
-        self.pks = [self.nodes[r].pk for r in self.get_actions] # list of actions in pk-objectid format
+        self.pks = [self.nodes[r].pk for r in self.get_actions()] # list of actions in pk-objectid format
     def plot(self, **kwargs):
         # super(ProtocolPlot, self).__init__(**kwargs)
         # self.prot = Protocol.objects.get(name__icontains=protocol_name)
@@ -80,14 +80,14 @@ class ProtocolPlot(Protocol):
             n.attr['fontsize'] = '10'
             n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
-            n.attr['label']= self.nodes[self.get_actions[i]]['verb']
+            n.attr['label']= self.nodes[self.get_actions()[i]]['verb']
 
         n = self.agraph.get_node(self.pks[0])
         n.attr['shape']='box'
         n.attr['fontsize'] = '10'
         n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
-        n.attr['label']=self.nodes[self.get_actions[0]]['verb']
+        n.attr['label']=self.nodes[self.get_actions()[0]]['verb']
         
 
 class Compare(object):
@@ -97,26 +97,26 @@ class Compare(object):
         self.agraph = pgv.AGraph(ranksep = '0.2')
         self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
         self.protocol_A = protocol_a
-        self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+        self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions()]
         self.flags = {}
         
         if protocol_b == None:
             self.protocol_B = protocol_a
-            self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions]
+            self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions()]
             self.flags['steps'] = True
         else:
             self.protocol_B = protocol_b    
-            self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions]
+            self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions()]
             self.flags['steps'] = False
 
         # find all actions common to both protocols:    
-        self.both = list(set(self.protocol_A.get_actions).intersection(set(self.protocol_B.get_actions)))
-        # alls = set(self.protocol_A.get_actions).union(set(self.protocol_B.get_actions))
+        self.both = list(set(self.protocol_A.get_actions()).intersection(set(self.protocol_B.get_actions())))
+        # alls = set(self.protocol_A.get_actions()).union(set(self.protocol_B.get_actions()))
         # Set the pair names using the .pk index for graph node naming
         self.pairs = [(self.protocol_A.nodes[r].pk, self.protocol_B.nodes[r].pk) for r in self.both]
         # set the unaligned verbs:
-        self.a_unique = set(self.protocol_A.get_actions)-set(self.protocol_B.get_actions)
-        self.b_unique = set(self.protocol_B.get_actions)-set(self.protocol_A.get_actions)
+        self.a_unique = set(self.protocol_A.get_actions())-set(self.protocol_B.get_actions())
+        self.b_unique = set(self.protocol_B.get_actions())-set(self.protocol_A.get_actions())
     
     def isint(self, x): 
         if type(x) is int:
@@ -153,8 +153,8 @@ class Compare(object):
         return diffs      
 
     def align_verbs(self):
-        x = self.protocol_A.get_actions
-        y = self.protocol_B.get_actions
+        x = self.protocol_A.get_actions()
+        y = self.protocol_B.get_actions()
         r = list(set(x).union(set(y)))
         order = []
         out = []
@@ -359,8 +359,8 @@ class Compare(object):
             n.attr['fontsize'] = FONT_SIZE
             n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
-            node_object = self.protocol_A.nodes[self.protocol_A.get_actions[i]]
-            n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions[i]].pk
+            node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[i]]
+            n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions()[i]].pk
             # n.attr['URL'] = node_object.get_absolute_url()
             # n.attr['target'] = HTML_TARGET
                 
@@ -370,7 +370,7 @@ class Compare(object):
         n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
-        node_object = self.protocol_A.nodes[self.protocol_A.get_actions[0]]
+        node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[0]]
         n.attr['label']=node_object['verb'] 
         # n.attr['URL'] = node_object.get_absolute_url()
         # n.attr['target'] = HTML_TARGET
@@ -387,7 +387,7 @@ class Compare(object):
             n.attr['fontsize'] = FONT_SIZE
             n.attr['style'] = NODE_STYLE
             n.attr['height'] = '0.2'
-            node_object = self.protocol_B.nodes[self.protocol_B.get_actions[i]]
+            node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[i]]
             n.attr['label']= node_object['verb'] 
             # n.attr['URL'] = node_object.get_absolute_url()    
             # n.attr['target'] = HTML_TARGET
@@ -397,7 +397,7 @@ class Compare(object):
         n.attr['fontsize'] = FONT_SIZE
         n.attr['style'] = NODE_STYLE
         n.attr['height'] = '0.2'
-        node_object = self.protocol_B.nodes[self.protocol_B.get_actions[0]]
+        node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[0]]
         n.attr['label']= node_object['verb'] 
         # n.attr['URL'] = node_object.get_absolute_url()
         # n.attr['target'] = HTML_TARGET
@@ -639,8 +639,8 @@ class Compare(object):
     # def align_lists(self,x,y):
     #     import itertools
 
-    #     # x = self.protocol_A.get_actions
-    #     # y = self.protocol_B.get_actions
+    #     # x = self.protocol_A.get_actions()
+    #     # y = self.protocol_B.get_actions()
         
     #     u = list(itertools.chain(*itertools.izip_longest(x,y)))
 
@@ -897,10 +897,10 @@ class Compare(object):
 
     # def align_lists (self):
     #     import
-    #     first = list(self.protocol_A.get_actions)
-    #     second = list(self.protocol_B.get_actions)     
-    #     len_1 = len(self.protocol_A.get_actions)
-    #     len_2 = len(self.protocol_B.get_actions)
+    #     first = list(self.protocol_A.get_actions())
+    #     second = list(self.protocol_B.get_actions())     
+    #     len_1 = len(self.protocol_A.get_actions())
+    #     len_2 = len(self.protocol_B.get_actions())
     #     if len_1 > len_2:
     #         longer = len_1
     #     else:

@@ -54,13 +54,13 @@ class JQTestView(JSONResponseMixin, TemplateView):
     def get_context(self):
         context = super(JQTestView, self).get_context_data()
         protocol_a = Protocol.objects.get(pk=3)
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions]
-        num_verbs = len(protocol_a.get_actions)
+        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
+        num_verbs = len(protocol_a.get_actions())
         y_height = 30
         y_spacer = 15
         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
         spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions,spacing))
+        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
 
         # add URLS and y position to action 
         for t in JSONdata:
@@ -125,15 +125,15 @@ class CompareBaseView(JSONResponseMixin, TemplateView):
             arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}
 
         # assemble JSON object for JS D3:
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions]
+        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
         
         # set position variables:
-        num_verbs = len(protocol_a.get_actions)
+        num_verbs = len(protocol_a.get_actions())
         y_height = 30
         y_spacer = 15
         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
         spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions,spacing))
+        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
 
         # add URLS and y position to action 
         for t in JSONdata:
