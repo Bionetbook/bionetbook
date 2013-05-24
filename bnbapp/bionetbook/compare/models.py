@@ -140,57 +140,7 @@ class Compare(object):
                 attributes = [item for sublist in diff_attributes for item in sublist]
                 diffs.append((verb, attributes))        
 
-        return diffs       
-
-    def find_children_in_diff(self, **kwargs):
-
-        out = []
-        for verb in self.find_diff_verbs():
-
-            try:
-                children_A = [r['objectid'] for r in self.protocol_A.nodes[verb[0]].children]
-                children_B = [r['objectid'] for r in self.protocol_B.nodes[verb[0]].children]
-                children_both = list(set(children_A).intersection(set(children_B)))    
-                children_A_unique = set(children_A)-set(children_B)
-                children_B_unique = set(children_B)-set(children_A) 
-            
-            except TypeError:
-                    
-                if children_A:
-                    children_A = self.protocol_A.nodes[verb[0]].children['objectid']
-                if children_B:
-                    children_B = self.protocol_B.nodes[verb[0]].children['objectid']
-                
-                if str(children_A) == str(children_B):
-                    children_both = children_A
-
-                else: 
-                    children_A_unique = children_A
-                    children_B_unique = children_B
-            
-            if not children_A_unique:
-                children_A_unique = None
-
-            if not children_B_unique:
-                children_B_unique = None    
-
-            
-
-            out.append((verb[0], [children_both, children_A_unique, children_B_unique ]))
-
-
-        return out  
-
-    def diff_children(self, **kwargs):
-        
-        out = []
-        for verb in self.find_children_in_diff():
-            for child in verb[1]:
-                temp = DictDiffer(self.protocol_A.nodes[child].summary, self.protocol_B.nodes[child].summary).changed()
-                if temp:
-                    out.append((verb, child, temp))
-
-        return out  
+        return diffs      
 
     def get_diff_attributes_all_protocol(self, **kwargs):
         child_nodes = ['machine', 'components', 'thermocycle']
@@ -256,37 +206,52 @@ class Compare(object):
             children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
         else:
             children_A = [children_a['objectid']]
-        print children_A    
             
         if type(children_b) is list:      
             children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
         else:
             children_B = [children_b['objectid']]
-        print children_B    
-            
-        
 
         both = list(set(children_A).intersection(set(children_B)))    
-        print both
-        unique_A = set(children_A)-set(children_B)
-        unique_B = set(children_B)-set(children_A) 
+        unique_A = list(set(children_A)-set(children_B))
+        unique_B = list(set(children_B)-set(children_A)) 
         
         if len(both) == 1:
-            temp = self.get_child_dict(0, both[0])        
+            temp = self.child_compare(0, both[0])        
             if temp:
-                    out.append(temp)
+                out.append(temp)
             
         if len(both) > 1:
             for (cnt, item) in enumerate(both):    
-                print cnt, item
-                temp = self.get_child_dict(cnt, item) 
+                temp = self.child_compare(cnt, item) 
                 if temp:
                     out.append(temp)
 
+        if len(unique_A) == 1:
+            temp = self.child_dict(0, unique_A[0], side = 'LEFT')
+            if temp:
+                out.append(temp)
+            
+        if len(unique_A) > 1:
+            for (cnt, item) in enumerate(unique_A):    
+                temp = self.child_dict(cnt, item, side = 'LEFT') 
+                if temp:
+                    out.append(temp)
+
+        if len(unique_B) == 1:
+            temp = self.child_dict(0, unique_B[0], side = 'RIGHT')
+            if temp:
+                out.append(temp)
+            
+        if len(unique_B) > 1:
+            for (cnt, item) in enumerate(unique_B):    
+                temp = self.child_dict(cnt, item, side = 'RIGHT') 
+                if temp:
+                    out.append(temp)                                
         return out             
         
     
-    def get_child_dict(self, cnt, item, **kvargs):    
+    def child_compare(self, cnt, item, **kvargs):    
         dirty = False
         child_dict={}
         LEFT = self.protocol_A
@@ -299,7 +264,6 @@ class Compare(object):
         D = DictDiffer(LEFT.nodes[item].summary, RIGHT.nodes[item].summary)
         
         for attr in D.changed():  
-            print 'attr: ', LEFT.nodes[item].summary[attr]
             if len(D.changed()) > 0:
                 dirty = True
                 child_dict[attr] = [LEFT.nodes[item].summary[attr],RIGHT.nodes[item].summary[attr]]
@@ -318,6 +282,26 @@ class Compare(object):
             return child_dict        
         else:
             return {}    
+
+    def child_dict(self, cnt, item, side = None):
+        child_dict={}
+        if side == 'LEFT':
+            protocol = self.protocol_A
+        if side == 'RIGHT': 
+            protocol = self.protocol_B
+            
+        child_dict['node'] =  str(protocol.nodes[protocol.nodes[item].parent['objectid']].childtype())
+        child_dict['number'] =  child_dict['node'] + ' ' + str(cnt)
+        child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+        child_dict['node_objectid'] = protocol.nodes[item]['objectid']
+        # if side == 'LEFT':
+        for attr in protocol.nodes[item].summary:
+            child_dict[attr] = [protocol.nodes[item].summary[attr], None]
+        # if side == 'RIGHT':
+        #     for attr in self.protocol_B.nodes[item].summary:        
+        #         child_dict[attr] = [None, self.protocol_B.nodes[item].summary[attr]]                      
+
+        return child_dict        
 
 
 
