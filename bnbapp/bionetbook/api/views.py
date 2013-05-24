@@ -26,8 +26,7 @@ def protocol_json(request, protocol_slug):
     'name': verb_name, 
     'objectid' : objectid,
     'URL': URL
-    },
-    ]
+    },]
     '''
     p = ProtocolPlot.objects.get(slug=protocol_slug)
     out = []
@@ -44,11 +43,29 @@ def protocol_json(request, protocol_slug):
 
 def protocol_layers_json(request, protocol_slug):
     '''
-    Very simple JSON Call example.
+    returns json with protocol data and child summaries.
     '''
     p = Protocol.objects.get(slug=protocol_slug)
-    data_dict = {'name':p.name, 'pk':p.pk}
-    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+    out = []
+    
+    for verb in p.get_actions():
+        print 'verb: ', verb
+        data_dict={}
+        data_dict['name'] = p.nodes[verb]['verb']
+        data_dict['objectid'] = p.nodes[verb]['objectid']
+        data_dict['URL'] = p.nodes[verb].action_update_url()
+        
+        nodes = p.nodes[verb].children
+        if nodes:
+            if type(nodes) is list:  
+                data_dict['node'] = [r.summary for r in p.nodes[verb].children]
+            else:
+                data_dict['node'] = p.nodes[verb].children.summary    
+        else:
+            data_dict['node'] = None                
+            
+        out.append(data_dict)
+    return HttpResponse(json.dumps(out), mimetype="application/json") 
     
 def protocol_compare_json(request, protocol_slug):
     '''
@@ -67,7 +84,7 @@ def protocol_compare_layers_json(request, protocol_slug):
     return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
 
 
-
+# def get_child_nodes(self)
 class JSONResponseMixin(object):
     # def render_to_response(self, context):
     #     "Returns a JSON response containing 'context' as payload"

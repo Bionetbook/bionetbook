@@ -457,7 +457,7 @@ class Protocol(TimeStampedModel):
 
     def protocol_tree_json(self):
         out = []
-        for step in self.get_steps:
+        for step in self.get_steps():
             step_dict={}
             step_dict[step] = []
             actions = [r['objectid'] for r in self.nodes[step].children] 
