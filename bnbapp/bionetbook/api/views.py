@@ -109,12 +109,15 @@ def protocol_compare_json(request, protocol_a_slug, protocol_b_slug):
 
     return HttpResponse(json.dumps(out), mimetype="application/json") 
 
-def protocol_compare_layers_json(request, protocol_slug):
+def protocol_diff_json(request, protocol_a_slug, protocol_b_slug):
     '''
     Very simple JSON Call example.
     '''
-    p = Protocol.objects.get(slug=protocol_slug)
-    data_dict = {'name':p.name, 'pk':p.pk}
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    G = Compare(A,B)
+
+    data_dict = G.get_aligned_diff_object()
     return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
 
 

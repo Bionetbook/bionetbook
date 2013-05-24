@@ -122,35 +122,7 @@ class Compare(object):
         if type(x) is int:
             return True
         else:
-            return False     
-    
-    def find_diff_verbs(self, **kwargs):
-
-        diffs = []
-        for verb in self.both:
-            D = DictDiffer(self.protocol_A.nodes[verb], self.protocol_B.nodes[verb])
-            changed = D.changed()
-            uniqs_a = D.uniq_a()
-            uniqs_b = D.uniq_b()
-            
-            diff_attributes = []
-            dirty = False
-
-            if changed:
-                diff_attributes.append(changed)
-                dirty = True
-            if uniqs_a:
-                diff_attributes.append(added)
-                dirty = True
-            if uniqs_b:
-                diff_attributes.append(removed)
-                dirty = True
-
-            if dirty:    
-                attributes = [item for sublist in diff_attributes for item in sublist]
-                diffs.append((verb, attributes))        
-
-        return diffs      
+            return False   
 
     def align_verbs(self):
         x = self.protocol_A.get_actions()
@@ -176,8 +148,42 @@ class Compare(object):
             if self.isint(row[2]) and not self.isint(row[1]):
                 out.append((None, row[0]))      
         
-        return out    
+        return out          
+    
+    def find_diff_verbs(self, **kwargs):
 
+        # A = self.protocol_A
+        # B = self.protocol_B
+        # verbs = list(set(A.get_actions()).union(set(B.get_actions())))
+
+        diffs = []
+        for verb in self.align_verbs():
+            if None in verb:
+                diffs.append((verb, []))
+            else:
+                D = DictDiffer(self.protocol_A.nodes[verb[0]], self.protocol_B.nodes[verb[1]])
+                changed = D.changed()
+                uniqs_a = D.uniq_a()
+                uniqs_b = D.uniq_b()
+                
+                diff_attributes = []
+                dirty = False
+
+                if changed:
+                    diff_attributes.append(changed)
+                    dirty = True
+                if uniqs_a:
+                    diff_attributes.append(added)
+                    dirty = True
+                if uniqs_b:
+                    diff_attributes.append(removed)
+                    dirty = True
+
+                if dirty:    
+                    attributes = [item for sublist in diff_attributes for item in sublist]
+                    diffs.append((verb, attributes))        
+
+        return diffs          
 
     def get_diff_attributes_all_protocol(self, **kwargs):
         child_nodes = ['machine', 'components', 'thermocycle']
@@ -186,28 +192,11 @@ class Compare(object):
 
         out = {}
         for obj in attributes:
-            print 'object=', obj
             non_children_attributes = list(set(obj[1])-set(child_nodes))
-            print 'non_ca: ', non_children_attributes
             for attr in non_children_attributes:
-                print 'attribute: ', attr
                 out[attr] = [self.protocol_A.nodes[obj[0]][attr],self.protocol_B.nodes[obj[0]][attr]]
 
-        return out  
-
-    def get_diff_attributes(self, obj, **kwargs):
-        child_nodes = ['machine', 'components', 'thermocycle']
-        attributes = self.find_diff_verbs()
-        # non_children_attributes = list(set(attributes)-set(child_nodes))
-
-        out = {}
-        non_children_attributes = list(set(obj[1])-set(child_nodes))
-        print 'non_ca: ', non_children_attributes
-        for attr in non_children_attributes:
-            print 'attribute: ', attr
-            out[attr] = [self.protocol_A.nodes[obj[0]][attr],self.protocol_B.nodes[obj[0]][attr]]
-
-        return out          
+        return out            
 
     def make_diff_object(self, **kwargs):
         
@@ -215,9 +204,7 @@ class Compare(object):
         child_nodes = ['machine', 'components', 'thermocycle']
         diff = self.find_diff_verbs()
         for obj in diff:
-            # attributes = get_diff_attributes(obj)
             node_dict = self.get_diff_attributes(obj)
-
             node_dict['node'] = "verb"
             node_dict['name'] = self.protocol_A.nodes[obj[0]]['name']
             node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
@@ -228,8 +215,68 @@ class Compare(object):
 
             out.append(node_dict)
 
-        return out    
+        return out
 
+    def get_aligned_diff_object(self, **kwargs):
+        
+        out = []
+        dirty = False
+        child_nodes = ['machine', 'components', 'thermocycle']
+        diff = self.find_diff_verbs()
+        for obj in diff:
+            if None in obj[0]:
+                dirty = True
+                if not obj[0][0]:
+                    protocol = self.protocol_B 
+                    objid = obj[0][1]
+                else:
+                    protocol = self.protocol_A
+                    objid = obj[0][0]
+            else:
+                protocol = self.protocol_A
+                objid = obj[0][0]
+            
+            node_dict = self.get_diff_attributes(obj)
+            node_dict['node'] = "verb"
+            node_dict['name'] = protocol.nodes[objid]['name']
+            node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+            # node_dict['node_objectid'] = protocol.nodes[objid]['objectid']
+            node_dict['node_objectid'] = obj[0]
+            node_dict['child_type'] = protocol.nodes[objid].childtype()
+            if node_dict['child_type'] in child_nodes:
+                if dirty:
+                    nodes = protocol.nodes[objid].children
+                    if type(nodes) is list:
+                        node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
+                    else:
+                        node_dict['child'] = [protocol.nodes[objid].children.summary]
+
+                else:    
+                    node_dict['child'] = self.get_child_diff(objid)
+
+            out.append(node_dict)
+
+        return out 
+
+    def get_node_dict(self, obj, **kwargs):
+        out = {}
+        node_dict = self.get_diff_attributes(obj)
+
+
+
+    def get_diff_attributes(self, obj, **kwargs):
+        '''obj: ((objectid_a, objectid_b), [attributes])'''
+
+        child_nodes = ['machine', 'components', 'thermocycle']
+        # attributes = self.find_diff_verbs()
+        # non_children_attributes = list(set(attributes)-set(child_nodes))
+
+        out = {}
+        non_children_attributes = list(set(obj[1])-set(child_nodes))
+        for attr in non_children_attributes:
+            out[attr] = [self.protocol_A.nodes[obj[0][0]][attr],self.protocol_B.nodes[obj[0][1]][attr]]
+
+        return out    
 
     def get_child_diff(self, parent_id, **kwargs):
         ''' this method is called knowing that the parent_id has children
