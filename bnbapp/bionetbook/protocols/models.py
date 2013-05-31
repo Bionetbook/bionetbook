@@ -301,8 +301,7 @@ class Protocol(TimeStampedModel):
 
     
     def get_machines(self):
-         return [self.nodes[r]['objectid'] for r in self.get_actions() if 'machine' in self.nodes[r].keys() ]
-
+         return [r for r in self.get_actions() if self.nodes[r].has_machine()]
     
     def get_actions(self):
         return [r[2] for r in self.get_action_tree('objectid')]    
@@ -313,8 +312,14 @@ class Protocol(TimeStampedModel):
 
     
     def get_components(self):
-        return self.get_reagents_by_action('objectid')
+        return [r for r in self.get_actions() if self.nodes[r].has_components()]
+
+    def get_thermocycle(self):
+        return [r for r in self.get_actions() if self.nodes[r].has_thermocycler()]    
  
+    def get_manual(self):
+        return [self.nodes[r]['objectid'] for r in self.get_actions() if self.nodes[r].has_manual()]    
+
     ###########
     # delete node properties:
 
@@ -360,80 +365,6 @@ class Protocol(TimeStampedModel):
                     action_tree.append([stepnum, actionnum, self.steps[stepnum]['actions'][actionnum]['verb']])
         
         return action_tree
-
-    def get_objectid(self, stepnum, actionnum):
-        step = self.steps[stepnum]['objectid']
-        action = self.steps[stepnum]['actions'][actionnum]['objectid']
-        return (step,action)
-
-    def get_reagent_data(self, display=None):
-        # function takes the display argument and returns the (step, action) display of the reagent, i.e. verb, objectid, slug etc.  
-        ''' this combiones a find technique with a return technique:
-        find = self.data['components-location']
-        return = through the self.steps accessor and not theough an objid accessor. 
-
-
-        '''
-        self.needed_reagents = []
-        
-        if self.data['components-location'][0] > 0:  # check if there are components in the protocol:
-            for l in self.data['components-location']: # iterate over all step,action locations where there are components
-                components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) 
-                for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['name']
-                    objectid = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['objectid']
-                    cur_reagent_name = []
-                    cur_reagent_name.append(reagent_name)
-                    if 'total volume' in reagent_name.lower():
-                        continue
-                    if display == 'detail':
-                        cur_reagent_name.append(l[1])
-                        cur_reagent_name.append(l[2])
-                    if display == 'all': 
-                        tmp = []
-                        tmp.append(l[1])
-                        tmp.append(l[2])
-                        tmp.append(self.steps[l[1]]['actions'][l[2]]['verb'])
-                        cur_reagent_name.append(tmp)
-                    if display =='name_objectid':
-                        cur_reagent_name = (reagent_name, objectid)
-                    if display == 'objectid':
-                        actionid = self.get_objectid(l[1], l[2])
-                        cur_reagent_name = (objectid, actionid[1])
-                            
-                    self.needed_reagents.append(cur_reagent_name)    
-
-        return self.needed_reagents   
-
-    def get_reagents_by_action(self, out_label='objectid'):
-        ''' this combiones a find technique with a return technique:
-        find = self.data['components-location']
-        return = through the self.steps accessor and not theough an objid accessor. 
-
-
-        '''
-        self.verb_reagents = {}
-        for l in self.data['components-location']: # iterate over all step,action locations where there are components 
-            components_per_cur_list = len(self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY]) # iterate over reagents
-            verb = self.steps[l[1]]['actions'][l[2]]['verb']
-            verbid = self.steps[l[1]]['actions'][l[2]]['objectid']
-            if out_label == 'literal':
-                self.verb_reagents[verbid]=[]
-            if out_label == 'objectid':
-                self.verb_reagents[verbid]=[]
-
-            for r in range(0,components_per_cur_list):
-                    reagent_name = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['name']
-                    if 'total volume' in reagent_name.lower():
-                        continue
-
-                    objectid = self.steps[l[1]]['actions'][l[2]][COMPONENT_KEY][r]['objectid']
-                    if out_label == 'literal':
-                        self.verb_reagents[verbid].append(reagent_name)
-                    if out_label == 'objectid':
-                        self.verb_reagents[verbid].append(objectid)
-        
-        return self.verb_reagents  
 
     def update_duration(self):
         pass
