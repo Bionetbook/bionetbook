@@ -57,12 +57,10 @@ def protocol_layers_json(request, protocol_slug):
         
         nodes = p.nodes[verb].children
         if nodes:
-            if type(nodes) is list:  
-                data_dict['node'] = [r.summary for r in p.nodes[verb].children]
-            else:
-                data_dict['node'] = p.nodes[verb].children.summary    
+            data_dict['node_type'] = p.nodes[verb].childtype()
+            data_dict['node'] = [r.summary for r in p.nodes[verb].children]
         else:
-            data_dict['node'] = None                
+            data_dict['node_type'] = p.nodes[verb].childtype()
 
         out.append(data_dict)
     return HttpResponse(json.dumps(out), mimetype="application/json") 

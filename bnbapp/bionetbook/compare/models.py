@@ -237,20 +237,15 @@ class Compare(object):
                 objid = obj[0][0]
             
             node_dict = self.get_diff_attributes(obj)
-            node_dict['node'] = "verb"
+            node_dict['node_type'] = "verb"
             node_dict['name'] = protocol.nodes[objid]['name']
             node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-            # node_dict['node_objectid'] = protocol.nodes[objid]['objectid']
             node_dict['node_objectid'] = obj[0]
             node_dict['child_type'] = protocol.nodes[objid].childtype()
             if node_dict['child_type'] in child_nodes:
                 if dirty:
                     nodes = protocol.nodes[objid].children
-                    if type(nodes) is list:
-                        node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
-                    else:
-                        node_dict['child'] = [protocol.nodes[objid].children.summary]
-
+                    node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
                 else:    
                     node_dict['child'] = self.get_child_diff(objid)
 
@@ -268,8 +263,6 @@ class Compare(object):
         '''obj: ((objectid_a, objectid_b), [attributes])'''
 
         child_nodes = ['machine', 'components', 'thermocycle']
-        # attributes = self.find_diff_verbs()
-        # non_children_attributes = list(set(attributes)-set(child_nodes))
 
         out = {}
         non_children_attributes = list(set(obj[1])-set(child_nodes))
@@ -286,16 +279,10 @@ class Compare(object):
         children_a = self.protocol_A.nodes[parent_id].children # either one or more children
         children_b = self.protocol_B.nodes[parent_id].children
 
-        if type(children_a) is list: 
-            children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
-        else:
-            children_A = [children_a['objectid']]
-            
-        if type(children_b) is list:      
-            children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
-        else:
-            children_B = [children_b['objectid']]
-
+        
+        children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
+        children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
+        
         both = list(set(children_A).intersection(set(children_B)))    
         unique_A = list(set(children_A)-set(children_B))
         unique_B = list(set(children_B)-set(children_A)) 
@@ -341,8 +328,8 @@ class Compare(object):
         LEFT = self.protocol_A
         RIGHT = self.protocol_B
         # child_dict['order'] = str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype()) + ' ' + str(cnt)
-        child_dict['node'] =  str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype())
-        child_dict['number'] =  child_dict['node'] + ' ' + str(cnt)
+        child_dict['node_type'] =  str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype())
+        child_dict['number'] =  child_dict['node_type'] + ' ' + str(cnt)
         child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
         child_dict['node_objectid'] = LEFT.nodes[item]['objectid']
         D = DictDiffer(LEFT.nodes[item].summary, RIGHT.nodes[item].summary)

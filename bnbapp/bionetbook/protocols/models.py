@@ -443,13 +443,12 @@ class Protocol(TimeStampedModel):
         for action in self.get_actions():
             children = self.nodes[action].children
             if children:
-                if type(children) is list:
-                    temp = []
-                    for child in children:
-                        temp.append(child['objectid'])
-                    out.append({action: temp})
-                if type(children) is not list:
-                    out.append({action: children['objectid']})
+                temp = []
+                for child in children:
+                    temp.append(child['objectid'])
+                
+                out.append({action: temp})
+                
             else: 
                 out.append({action: None})
         return out
@@ -465,10 +464,8 @@ class Protocol(TimeStampedModel):
                 action_dict = {}
                 children = self.nodes[action].children
                 if children:
-                    if type(children) is list:
-                        action_dict[action] = [r['objectid'] for r in self.nodes[action].children]
-                    else: 
-                         action_dict[action] = children['objectid']       
+                    action_dict[action] = [r['objectid'] for r in self.nodes[action].children]
+    
                 else: 
                     action_dict[action] = None
 
@@ -843,7 +840,7 @@ class Action(NodeBase):
     def children(self):
         
         if type(self.components) == 'list' or 'machine' in self:
-            return self['machine']
+            return [self['machine']]
 
         if type(self.machine) == 'NoneType' and 'components' in self:   
             return self['components']
@@ -852,7 +849,7 @@ class Action(NodeBase):
             return self['components']
 
         if 'machine' in self:
-            return self['machine']
+            return [self['machine']]
 
         if 'thermocycle' in self:
             return self['thermocycle']   
