@@ -369,9 +369,21 @@ class Protocol(TimeStampedModel):
     def update_duration(self):
         pass
 
-    def action_children_json(self):
+    def action_children_json(self, select = None, **kwargs):
         out = []
-        for action in self.get_actions():
+        switch = {
+                'components': self.get_components(),
+                'machine': self.get_machines(),  
+                'manual': self.get_steps(),
+                'thermocycle': self.get_thermocycle()  
+        }
+
+
+        selection  = self.get_actions()
+        if select:
+            selection = switch[select]
+
+        for action in selection:
             children = self.nodes[action].children
             if children:
                 temp = []
