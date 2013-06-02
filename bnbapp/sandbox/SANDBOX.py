@@ -1,53 +1,97 @@
-SANDBOX	
+SANDBOX
+out = []
+for step in c.get_steps:
+step_dict = {}
+step_dict[step] = []
+    actions = c.nodes[step].children    
+    for action in actions:
+        children = list(c.nodes[action].children)
+        if children:
+            temp = []
+            for child in children:
+                temp.append(child['objectid'])
+            out.append({action: temp})
+        else: 
+            out.append({action: None})
 
 
-	c.same_layer_objects = c.get_reagents_by_action()	
-	c.same_layer_objects_lit = c.get_reagents_by_action('literal')	
-	
-	# define the subgraph with a dict that groups objects into a single rank 
-c.rank_objects = {} 
-for i in c.same_layer_objects:
-	c.rank_objects[i] = []
-	c.rank_objects[i].append(c.same_layer_objects[i][0])
-	c.rank_objects[i].append(i)
-	c.agraph.add_edges_from([(i, c.rank_objects[i][0]) for i in c.rank_objects])
+out =[]
+for step in c.get_steps:
+    step_dict={}
+    step_dict[step] = []
+    actions = [r['objectid'] for r in c.nodes[step].children]
+    for action in actions:
+        action_dict = {}
+        action_dict[action] = []
+        children = [r['objectid'] for r in c.nodes[step].children]
+        if children:
+            temp = []
+            for child in children:
+                temp.append(child['objectid'])
+            action_dict[action].append({action: temp})
+        else: 
+            action_dict[action].append({action: None})
 
-	# build all subgraphs:
-names=['a1','a2','a3','a4','a5','a6','a7'] # automate to protName_verb for pairwise comparisson
-nc=0
-for i in c.rank_objects:
-	N = c.agraph.add_subgraph(c.rank_objects[i], name='%s'%(names[nc]), rank = 'same', rankdir='LR')
-	nc+=1
-	# label the nodes in the subgraph of the current layer:
-	for i in c.rank_objects:
-		n = c.agraph.get_node(c.rank_objects[i][0]) # get rank node that links to base node for each rank
-		# e = c.agraph.get_edge(c.rank_objects[i][0], c.rank_objects[i][1]) # fix this
-		v = c.same_layer_objects[i] # get a list of all nodes of this subgraph
-		n.attr['shape'] = 'record'
-		
-		''' assemble the label:
-		remove commas,  - done
-		attach measurement units -not yet
-		add kwargs here
-		'''	
-		label_assembly = []
+    out.append(step_dict)
 
-		for k in range(len(v)): # rename all reagents in an action
-			tmp = c.objectid2name(v[k], reagents=True, units=True)
-			name = tmp['name'].replace(',','')
-			units = tmp['units']
-			label_assembly.append(name + ' ' + units)
+_______________________________
+class ColNum(object):
+    def __init__(self,colnum):
+        self.colnum = colnum
+    def __call__(self, x):
+        return x[self.colnum]
 
-		
-		n.attr['label'] = '{' + ' | '.join(label_assembly) +'}'
+def isint(x): 
+    if type(x) is int:
+        return True
+    else:
+        return False        
 
-for step in c.steps:
-    result[step['objectid']] = step
-    print step['objectid']
-    for action in step['actions']:
-        result[action['objectid']] = action
-        print '-' + action['objectid']	
-        if 'component - list' in action:
-            for component in action['component - list']:
-                result[component['objectid']] = component
-                print '--' + component['objectid']		
+
+def align_verbs(x, y):
+    class ColNum(object):
+        def __init__(self,colnum):
+            self.colnum = colnum
+        def __call__(self, x):
+            return x[self.colnum]
+
+    def isint(x): 
+        if type(x) is int:
+            return True
+        else:
+            return False         
+
+
+    r = list(set(x).union(set(y)))
+    order = []
+    out = []
+    for (cnt, i) in enumerate(r):
+        if i in x and i in y:
+            order.append((i, x.index(i), y.index(i), x.index(i) + y.index(i)))
+        if i in x and i not in y: 
+            order.append((i, x.index(i), x.index(i) + 0.5, 2*x.index(i) + 0.5 ))
+        if i in y and i not in x: 
+            order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
+
+    order.sort(key=ColNum(3))
+    
+    for row in order:
+        if isint(row[1]) and isint(row[2]):
+            out.append((row[0], row[0]))
+        if isint(row[1]) and not isint(row[2]):
+            out.append((row[0], None))  
+        if isint(row[2]) and not isint(row[1]):
+            out.append((None, row[0]))      
+    
+    return out                  
+
+
+
+
+class tree(object):
+
+
+
+
+
+

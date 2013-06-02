@@ -4,7 +4,7 @@ import django.utils.simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
 from django import http
-from compare.models import ProtocolPlot, DictDiffer
+from compare.models import ProtocolPlot, DictDiffer, Compare
 from protocols.models import Protocol
 
 def protocol_detail(request, protocol_slug):
@@ -19,15 +19,104 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
-def json_dump(request, protocol_slug):
+def protocol_json(request, protocol_slug):
+    '''
+    returns json with basic protocol data: 
+    [{
+    'name': verb_name, 
+    'objectid' : objectid,
+    'URL': URL
+    },]
+    '''
+    p = ProtocolPlot.objects.get(slug=protocol_slug)
+    out = []
+    
+    for verb in p.get_actions():
+        print 'verb: ', verb
+        data_dict={}
+        data_dict['name'] = p.nodes[verb]['verb']
+        data_dict['objectid'] = p.nodes[verb]['objectid']
+        data_dict['URL'] = p.nodes[verb].action_update_url()
+        out.append(data_dict)
+    # data_dict = {'name':p.name, 'pk':p.pk}
+    return HttpResponse(json.dumps(out), mimetype="application/json")
+
+def protocol_layers_json(request, protocol_slug):
+    '''
+    returns json with protocol data and child summaries.
+    '''
+    p = Protocol.objects.get(slug=protocol_slug)
+    out = []
+    
+    for verb in p.get_actions():
+        print 'verb: ', verb
+        data_dict={}
+        data_dict['name'] = p.nodes[verb]['verb']
+        data_dict['objectid'] = p.nodes[verb]['objectid']
+        data_dict['URL'] = p.nodes[verb].action_update_url()
+        
+        nodes = p.nodes[verb].children
+        if nodes:
+            data_dict['node_type'] = p.nodes[verb].childtype()
+            data_dict['node'] = [r.summary for r in p.nodes[verb].children]
+        else:
+            data_dict['node_type'] = p.nodes[verb].childtype()
+
+        out.append(data_dict)
+    return HttpResponse(json.dumps(out), mimetype="application/json") 
+    
+def protocol_compare_json(request, protocol_a_slug, protocol_b_slug):
+    '''
+    returns a json aligning verbs to rows:
+    [{
+    'name': [verb_name_a, verb_name_b], 
+    'objectid': [objectid_a, objectid_b]
+    'URL': [URL_a, URL_b]
+    },
+    {
+    'name': [verb_name_a, None], 
+    'objectid': [objectid_a, None]
+    'URL': [URL_a, None]
+    }, 
+    ]
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    
+    out = []
+    G = Compare(A,B)
+    aligned = G.align_verbs()
+    for row in aligned:
+        data_dict = {}
+        if None in row:
+            if row[0]:
+                data_dict['name'] = [A.nodes[row[0]]['verb'], None]
+                data_dict['objectid'] = [A.nodes[row[0]]['objectid'], None]
+                data_dict['URL'] = [A.nodes[row[0]].action_update_url(), None]  
+            else:
+                data_dict['name'] = [None, B.nodes[row[1]]['verb']]
+                data_dict['objectid'] = [None, B.nodes[row[1]]['objectid']]
+                data_dict['URL'] = [None, B.nodes[row[1]].action_update_url()]    
+
+        else:
+            data_dict['name'] = [A.nodes[row[0]]['verb'], B.nodes[row[1]]['verb']]
+            data_dict['objectid'] = [A.nodes[row[0]]['objectid'], B.nodes[row[1]]['objectid']]
+            data_dict['URL'] = [A.nodes[row[0]].action_update_url(), B.nodes[row[1]].action_update_url()]
+
+        out.append(data_dict)        
+
+    return HttpResponse(json.dumps(out), mimetype="application/json") 
+
+def protocol_diff_json(request, protocol_a_slug, protocol_b_slug):
     '''
     Very simple JSON Call example.
     '''
-    p = Protocol.objects.get(slug=protocol_slug)
-    data_dict = {'name':p.name, 'pk':p.pk}
-    return HttpResponse(json.dumps(data_dict), mimetype="application/json")
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    G = Compare(A,B)
 
-
+    data_dict = G.get_aligned_diff_object()
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
 
 
 def json_dump_all(request):
@@ -37,6 +126,9 @@ def json_dump_all(request):
     p = Protocol.objects.filter(published=True, public=True)
     result = [{'name':x.name, 'pk':x.pk} for x in p]
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
+
+# def get_child_nodes(self)
 
 
 class JSONResponseMixin(object):
@@ -65,13 +157,13 @@ class JQTestView(JSONResponseMixin, TemplateView):
     def get_context(self):
         context = super(JQTestView, self).get_context_data()
         protocol_a = Protocol.objects.get(pk=3)
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions]
-        num_verbs = len(protocol_a.get_actions)
+        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
+        num_verbs = len(protocol_a.get_actions())
         y_height = 30
         y_spacer = 15
         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
         spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions,spacing))
+        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
 
         # add URLS and y position to action 
         for t in JSONdata:
@@ -136,15 +228,15 @@ class CompareBaseView(JSONResponseMixin, TemplateView):
             arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}
 
         # assemble JSON object for JS D3:
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions]
+        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
         
         # set position variables:
-        num_verbs = len(protocol_a.get_actions)
+        num_verbs = len(protocol_a.get_actions())
         y_height = 30
         y_spacer = 15
         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
         spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions,spacing))
+        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
 
         # add URLS and y position to action 
         for t in JSONdata:

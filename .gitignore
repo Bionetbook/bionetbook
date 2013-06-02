@@ -54,3 +54,5 @@ bnbapp/bionetbook/templates/api/test1.html
 bnbapp/bionetbook/templates/api/json_example.html
 
 *.bak2
+
+bnbapp/sandbox/SANDBOX.py
