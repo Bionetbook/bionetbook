@@ -28,6 +28,17 @@ def json_dump(request, protocol_slug):
     return HttpResponse(json.dumps(data_dict), mimetype="application/json")
 
 
+
+
+def json_dump_all(request):
+    '''
+    Very simple JSON Call example.
+    '''
+    p = Protocol.objects.filter(published=True, public=True)
+    result = [{'name':x.name, 'pk':x.pk} for x in p]
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+
+
 class JSONResponseMixin(object):
     # def render_to_response(self, context):
     #     "Returns a JSON response containing 'context' as payload"
