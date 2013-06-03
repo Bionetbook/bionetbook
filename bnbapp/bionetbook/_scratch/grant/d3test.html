@@ -9,11 +9,66 @@
 	</div>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script>
-		var data = {'bg':"blue"};
+		var data = {'bg':"white", 'verbs':[[{'name':"verb1"}, {'name':"verb1a"}],[{'name':"verb2"},{'name':"verb2a"},{'name':"verb2b"}],[{'name':"verb3"}]] };
 
-		var svgcontainer = d3.select("#svgdump").append("svg").attr("width", "400px").attr("height", "300px");
+		var svgroupContainer = d3.select("#svgdump").append("svg").attr("width", "400px").attr("height", "300px");
+		var nodeXMargin = 5;
+		var nodeYMargin = 5;
+		var nodeHeight = 30;
+		var nodeWidth = 100;
+		var nodeRow = 5;
 
-		svgcontainer.append("rect").attr("width", "100px").attr("height", "100px").attr("y", "20").attr("x", "20");
+		function build_verb_box(element, index, array) {
+
+			nodeXPos = nodeXMargin + (index * (nodeWidth + 20));
+
+			var groupContainer = svgroupContainer.append("g")
+							.attr('id',element.name)
+							.attr('class',"node");
+
+			groupContainer.append("title").text(function(d) { return element.name; }); 
+
+			var anchorContainer = groupContainer.append("a")
+							.attr('xlink:href', "http://www.google.com")
+							.attr('target',"_top");
+
+			var rectContainer = anchorContainer.append("rect")
+							.attr("width", nodeWidth)
+							.attr("height", nodeHeight)
+							.attr("y", nodeYPos)
+							.attr("x", nodeXPos)
+							.attr("rx",5)
+							.attr("style", "fill:white;stroke:pink;stroke-width:5");
+
+			var rectText = anchorContainer.append("text")
+							.attr("text-anchor", "middle")
+							.attr("font-family", "Times,serif")
+							.attr("y", nodeYPos + 20)
+							.attr("x", nodeXPos + (nodeWidth/2))
+							.attr("font-size","14.00")
+							.text(function(d) { return element.name; }); 
+		}
+
+		function build_row(element, index, array) {
+			nodeYPos = nodeYMargin + (index * (nodeHeight + 20));
+			element.forEach(build_verb_box);
+		}
+
+		data.verbs.forEach(build_row);
+
+
+
+
+	// <g id="node1" class="node"><title>ahd90y</title>
+	// <polygon fill="none" stroke="black" points="112.39,-1044 -0.389557,-1044 -0.389557,-1008 112.39,-1008 112.39,-1044"/>
+	// <text text-anchor="middle" x="56" y="-1020.4" font-family="Times,serif" font-size="14.00">call_for_protocol</text>
+	// </g>
+
+
+
+
+
+		//svgroupContainer.append("rect").attr("width", "100px").attr("height", "100px").attr("y", "20").attr("x", "20");
 
 
 		//d3.select("#svgdump").style("background-color", data.bg);
