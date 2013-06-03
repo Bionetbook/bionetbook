@@ -1,0 +1,22 @@
+<html>
+<head>
+	<title>D3 Test</title>
+</head>
+<body>
+	<h2>HERE IS WHERE THE SVG GOES</h2>
+	<div id="svgdump">
+		Loading
+	</div>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script>
+		var data = {'bg':"blue"};
+
+		var svgcontainer = d3.select("#svgdump").append("svg").attr("width", "400px").attr("height", "300px");
+
+		svgcontainer.append("rect").attr("width", "100px").attr("height", "100px").attr("y", "20").attr("x", "20");
+
+
+		//d3.select("#svgdump").style("background-color", data.bg);
+	</script>
+</body>
+</html>
