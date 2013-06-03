@@ -92,7 +92,7 @@ Object in template called without AJAX: {{object}}<hr/>
 
 		// d3.json("/api/jqtest/", function(error, json) { foodump = json };);
 
-		var dataset = d3.json("/api/jqtest/", function(error, json) {
+		var dataset = d3.json("/api/json/", function(error, json) {
 		if (error) return console.warn(error);
 			grid.selectAll(".label")
 		// d3.select('#jsdiv').selectAll("p")
