@@ -21,6 +21,14 @@ from organization.models import Organization
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
+
+#####################
+# MIXINS
+#####################
+
+
+
+
 #####################
 # BASE CLASSES
 #####################
