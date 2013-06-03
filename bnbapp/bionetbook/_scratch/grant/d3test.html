@@ -61,6 +61,26 @@
 			element.forEach(build_verb_box);
 		}
 
+		function draw_lines(element, index, array){
+			var colX = (nodeYPos * 2) + (nodeWidth/2) - (strokeWidth/2);
+
+			var colLineLength = (data.verbs.length) * (nodeHeight + nodeYMargin);
+
+			var lineDrop = svgroupContainer.append("line")
+								.attr('x1', colX)
+								.attr('y1', nodeYMargin)
+								.attr('x2', colX)
+								.attr('y2', colLineLength)
+								.attr('stroke', "blue")
+								.attr('stroke-width', 9);
+		}
+
+		function build_column(element, index, array) {
+			nodeYPos = (nodeYMargin * index) + (index * (nodeHeight + nodeYMargin)) + strokeWidth;
+			element.forEach(draw_lines);
+		}
+
+		data.verbs.forEach(build_column);
 		data.verbs.forEach(build_row);
 
 	</script>
