@@ -8,19 +8,25 @@
 		Loading
 	</div>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="http://api.jquery.com/wp-includes/js/comment-reply.min.js?ver=3.5.1"></script>
 	<script>
 		var data = {'bg':"white", 'verbs':[[{'name':"verb1"}, {}, {'name':"verb1a"}],[{'name':"verb2"},{'name':"verb2a"},{'name':"verb2b"}],[{'name':"verb3"}]] };
 
 		var svgroupContainer = d3.select("#svgdump").append("svg").attr("width", "400px").attr("height", "300px");
-		var nodeXMargin = 5;
-		var nodeYMargin = 5;
+		var nodeXMargin = 20;
+		var nodeYMargin = 20;
 		var nodeHeight = 30;
 		var nodeWidth = 100;
 		var nodeRow = 5;
+		var strokeWidth = 5;
 
 		function build_verb_box(element, index, array) {
 
-			nodeXPos = nodeXMargin + (index * (nodeWidth + 20));
+			if ( !element.name ) {	// IF IT HAS NO NAME SKIP IT
+				return;
+			}
+
+			nodeXPos = (nodeXMargin * index) + (index * (nodeWidth + nodeXMargin)) + strokeWidth;
 
 			var groupContainer = svgroupContainer.append("g")
 							.attr('id',element.name)
@@ -37,41 +43,26 @@
 							.attr("height", nodeHeight)
 							.attr("y", nodeYPos)
 							.attr("x", nodeXPos)
-							.attr("rx",5)
-							.attr("style", "fill:white;stroke:pink;stroke-width:5");
+							.attr("rx", 5)
+							.attr("style", "fill:white;stroke:pink;stroke-width:" + strokeWidth);
 
 			var rectText = anchorContainer.append("text")
 							.attr("text-anchor", "middle")
 							.attr("font-family", "Times,serif")
-							.attr("y", nodeYPos + 20)
+							.attr("y", nodeYPos + (nodeHeight/2 + 5))
 							.attr("x", nodeXPos + (nodeWidth/2))
 							.attr("font-size","14.00")
 							.text(function(d) { return element.name; }); 
+			
 		}
 
 		function build_row(element, index, array) {
-			nodeYPos = nodeYMargin + (index * (nodeHeight + 20));
+			nodeYPos = (nodeYMargin * index) + (index * (nodeHeight + nodeYMargin)) + strokeWidth;
 			element.forEach(build_verb_box);
 		}
 
 		data.verbs.forEach(build_row);
 
-
-
-
-	// <g id="node1" class="node"><title>ahd90y</title>
-	// <polygon fill="none" stroke="black" points="112.39,-1044 -0.389557,-1044 -0.389557,-1008 112.39,-1008 112.39,-1044"/>
-	// <text text-anchor="middle" x="56" y="-1020.4" font-family="Times,serif" font-size="14.00">call_for_protocol</text>
-	// </g>
-
-
-
-
-
-		//svgroupContainer.append("rect").attr("width", "100px").attr("height", "100px").attr("y", "20").attr("x", "20");
-
-
-		//d3.select("#svgdump").style("background-color", data.bg);
 	</script>
 </body>
 </html>
