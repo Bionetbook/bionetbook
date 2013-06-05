@@ -1,0 +1,151 @@
+<html>
+<head>
+	<title>D3 Test</title>
+</head>
+<body>
+	<h2>HERE IS WHERE THE SVG GOES</h2>
+	<div id="svgdump">
+		<!-- Loading -->
+	</div>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="http://api.jquery.com/wp-includes/js/comment-reply.min.js?ver=3.5.1"></script>
+	<script>
+		var data = {'bg':"white", 
+					'position': [[0, 14], [1, 15], [0, 15]],
+					'verbs':[
+					[{'name':"verb1"}, {}, {'name':"verb1a"}],
+					[{'name':"verb2"}, {'name':"verb2a"}, {'name':"verb2b"}],
+					[{'name':"verb3"}, {'name':"verb3a"}, {'name':"verb3b"}],
+					[{'name':"verb4"}, {'name':"verb4a"}, {}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}],
+					[{'name':"verb5"}, {'name':"verb5b"}, {'name':"verb5c"}]
+					] 
+				};
+
+		// var metadata = {'line_start':[0, 1, 0], 'line_end': [5, 5, 5]};
+		// var metadata = {'position': [
+		// 				{'line': "0"},
+		// 				{'line': "1"},
+		// 				{'line': "0"}
+		// 				]
+		// 			};
+						// [{'line_start':"0"}, {'line_end': "5"}],
+						// [{'line_start':"1"}, {'line_end': "5"}],
+						// [{'line_start':"0"}, {'line_end': "5"}]
+					
+
+		var svgroupContainer = d3.select("#svgdump").append("svg").attr("width", "600px").attr("height", "900px");
+		var nodeXMargin = 20;
+		var nodeYMargin = 20;
+		var nodeHeight = 30;
+		var nodeWidth = 100;
+		var nodeRow = 5;
+		var strokeWidth = 5;
+		// var columnCount = data.verbs.length;
+
+		function build_verb_box(element, index, array) {
+
+			if ( !element.name ) {	// IF IT HAS NO NAME SKIP IT
+				return;
+			}
+
+			nodeXPos = (nodeXMargin * index) + (index * (nodeWidth + nodeXMargin)) + strokeWidth;
+
+			var groupContainer = svgroupContainer.append("g")
+							.attr('id',element.name)
+							.attr('class',"node");
+
+			groupContainer.append("title").text(function(d) { return element.name; }); 
+
+			var anchorContainer = groupContainer.append("a")
+							.attr('xlink:href', "http://www.google.com")
+							.attr('target',"_top");
+
+			var rectContainer = anchorContainer.append("rect")
+							.attr("width", nodeWidth)
+							.attr("height", nodeHeight)
+							.attr("y", nodeYPos)
+							.attr("x", nodeXPos)
+							.attr("rx", 5)
+							.attr("style", "fill:white;stroke:pink;stroke-width:" + strokeWidth);
+
+			var rectText = anchorContainer.append("text")
+							.attr("text-anchor", "middle")
+							.attr("font-family", "Times,serif")
+							.attr("y", nodeYPos + (nodeHeight/2 + 5))
+							.attr("x", nodeXPos + (nodeWidth/2))
+							.attr("font-size","14.00")
+							.text(function(d) { return element.name; }); 
+			
+		};
+
+		function build_row(element, index, array) {
+			nodeYPos = (nodeYMargin * index) + (index * (nodeHeight)) + strokeWidth;
+			element.forEach(build_verb_box);
+		};
+
+		// function draw_lines(element, index, array){
+		function draw_lines(element){	
+			var colX = (nodeYPos * 2) + (nodeWidth/2) - (strokeWidth/2);
+			// console.log(element.start)
+
+			// var colLineLength = (data.verbs.length) * (nodeHeight + nodeYMargin + (2 * strokeWidth));
+			// var colLineLength = (data.verbs.length) * (nodeYMargin + nodeHeight + (2 * strokeWidth));
+			// var colLineLength = (data.verbs.length) * (( nodeYMargin) + nodeHeight) - nodeYMargin;
+			var rishon = (nodeYMargin * element[0]) + (element[0] * (nodeHeight + nodeYMargin)) + strokeWidth;
+			var acharon = (nodeYMargin * element[1]) + (element[1] * (nodeHeight + nodeYMargin)) + strokeWidth;
+			// var rishon = 5;
+			// var acharon = 355;
+			// console.log("index", index)
+			console.log("rishon", element.first)
+			console.log("acharon", element.last)
+			console.log("rishon", rishon)
+			console.log("acharon", acharon)
+			console.log(typeof(rishon))
+			console.log(typeof(acharon))
+
+			// var rishon = (nodeYMargin * 1) + (1 * (nodeHeight + nodeYMargin)) + strokeWidth;
+			// var acharon = (nodeYMargin * 5) + (5 * (nodeHeight + nodeYMargin)) + strokeWidth;
+			
+			var lineDrop = svgroupContainer.append("line")
+								.attr('x1', colX)
+								// .attr('y1', nodeYMargin)
+								.attr('y1', rishon)
+								.attr('x2', colX)
+								// .attr('y2', colLineLength)
+								.attr('y2', acharon)
+								.attr('stroke', "blue")
+								.attr('stroke-width', 9);
+		};
+
+		function build_column(element, index, array) {
+			nodeYPos = (nodeYMargin * index) + (index * (nodeHeight + nodeYMargin)) + strokeWidth;
+			console.log(element)
+			// element.forEach(draw_lines);
+			draw_lines(element);
+			// draw_lines();
+			
+		};
+
+		// function get_meta_data(element, index, array){
+		// 	// var rows = data.verbs.length
+		// 	var columns = 
+
+		// };
+
+		// data.verbs[0].forEach(build_column);
+		data.position.forEach(build_column)
+		data.verbs.forEach(build_row);
+
+	</script>
+</body>
+</html>
