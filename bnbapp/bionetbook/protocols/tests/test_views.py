@@ -6,56 +6,23 @@ from profiles.models import Profile
 from protocols.models import Protocol, Step, Action, Component
 # from steps.models import Step
 from organization.models import Organization, Membership
+from protocols.tests.core import AutoBaseTest
 
 
-class ProtocolViewTests(TestCase):
+class ProtocolViewTests(AutoBaseTest):
 
     def setUp(self):
+        super(ProtocolViewTests, self).setUp()
 
-        # USER SETUP
-        self.user = User.objects.create_user(
-            username="testuser",
-            password="password",
-            email="test@example.com"
-            )
-
-        # USER PROFILE SETUP
-        self.profile = Profile.objects.create(
-            user=self.user
-        )
-
-        # CREATE THE ORGANIZATION
-        self.org = Organization.objects.create(name="testorg")
-        self.org.save()
-
-        # ADD THE MEMBERSHIP
-        m = Membership(user=self.user, org=self.org)
-        m.save()
-
-
-        # CREATE PROTOCOL
-        self.protocol = Protocol.objects.create(
-            name = "Test Protocol",
-            owner = self.org
-        )
-
-        self.protocol.save()
-        # self.step = Step.objects.create(
-        #     name = "Test Step",
-        #     protocol=self.protocol
-        # )
-        # self.step.save()
-
-    def tearDown(self):
-        self.protocol.delete()
-        self.profile.delete()
-        self.user.delete()
-        self.org.delete()
+        self.user = self.createUserInstance(username="testuser", password="pass", email="test@example.com")        # USER SETUP
+        self.profile = self.createModelInstance(Profile, user=self.user)        # USER PROFILE SETUP
+        self.org = self.createModelInstance(Organization, name="TestOrg")        # CREATE THE ORGANIZATION
+        self.member = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org)        # CREATE PROTOCOL
 
     def test_create_protocol(self):
-
         url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
-        self.assertTrue(self.client.login(username='testuser', password='password'))
+        self.assertTrue(self.client.login(username='testuser', password='pass'))
         
         data = dict(name="Test Protoco 2l", raw="blag nlag")
         response = self.client.post(url, data, follows=True)
