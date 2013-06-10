@@ -46,6 +46,11 @@ class ProtocolViewTests(TestCase):
         # )
         # self.step.save()
 
+    def tearDown(self):
+        self.protocol.delete()
+        self.profile.delete()
+        self.user.delete()
+        self.org.delete()
 
     def test_create_protocol(self):
 
