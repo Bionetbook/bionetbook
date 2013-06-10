@@ -37,4 +37,10 @@ class ProtocolSecurityTests(AutoBaseTest):
         url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
         self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.user is the first user
 
+    # def test_user_has_access(self):
+    #     url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
+    #     self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.user is the first user
 
+    # def test_user_has_no_access(self):
+    #     url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
+    #     self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.user is the first user
