@@ -1,97 +1,50 @@
-SANDBOX
-out = []
-for step in c.get_steps:
-step_dict = {}
-step_dict[step] = []
-    actions = c.nodes[step].children    
-    for action in actions:
-        children = list(c.nodes[action].children)
-        if children:
-            temp = []
-            for child in children:
-                temp.append(child['objectid'])
-            out.append({action: temp})
-        else: 
-            out.append({action: None})
+class DiffObject(dict):
+    def __init__(self, protocol_a=None, protocol_b=None, objectid_a=None, objectid_b=None, **kwargs):
+        #self.parent = parent
+        # super(DiffObject, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+
+    child_nodes = ['machine', 'components', 'thermocycle']
+    
+    if objectid_a:
+        self.objectid = objectid_a
+        self.name = protocol_a.nodes[self.objectid]['name']
+        self.child_type = protocol_a.nodes[self.objectid].childtype()
+    else:     
+        self.objectid = objectid_b
+        self.name = protocol_b.nodes[self.objectid]['name']
+        self.child_type = protocol_b.nodes[self.objectid].childtype()
+    
+    
+    self.diff_objectid = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+    self.node_type = 'verb'
 
 
-out =[]
-for step in c.get_steps:
-    step_dict={}
-    step_dict[step] = []
-    actions = [r['objectid'] for r in c.nodes[step].children]
-    for action in actions:
-        action_dict = {}
-        action_dict[action] = []
-        children = [r['objectid'] for r in c.nodes[step].children]
-        if children:
-            temp = []
-            for child in children:
-                temp.append(child['objectid'])
-            action_dict[action].append({action: temp})
-        else: 
-            action_dict[action].append({action: None})
-
-    out.append(step_dict)
-
-_______________________________
-class ColNum(object):
-    def __init__(self,colnum):
-        self.colnum = colnum
-    def __call__(self, x):
-        return x[self.colnum]
-
-def isint(x): 
-    if type(x) is int:
-        return True
-    else:
-        return False        
+    if self.child_type in child_nodes:
+        if dirty:
+            nodes = protocol.nodes[objid].children
+            node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
+        else:    
+            node_dict['child'] = self.get_child_diff(objid)
 
 
-def align_verbs(x, y):
-    class ColNum(object):
-        def __init__(self,colnum):
-            self.colnum = colnum
-        def __call__(self, x):
-            return x[self.colnum]
 
-    def isint(x): 
-        if type(x) is int:
-            return True
+
+class childObject(dict):
+    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+
+        self.name = [protocol_a.nodes[objectid]['name'], protocol_b.nodes[object_b]['name'] ]  
+
+
+    def get_item(self, objectid, item):
+        try:
+            call = self.protocol_A.nodes[objectid]
+        except KeyError:
+            call = []
+
+        if item in call.keys()
+            temp = call['item']
         else:
-            return False         
+            temp = getattr(call, item)
 
 
-    r = list(set(x).union(set(y)))
-    order = []
-    out = []
-    for (cnt, i) in enumerate(r):
-        if i in x and i in y:
-            order.append((i, x.index(i), y.index(i), x.index(i) + y.index(i)))
-        if i in x and i not in y: 
-            order.append((i, x.index(i), x.index(i) + 0.5, 2*x.index(i) + 0.5 ))
-        if i in y and i not in x: 
-            order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
-
-    order.sort(key=ColNum(3))
-    
-    for row in order:
-        if isint(row[1]) and isint(row[2]):
-            out.append((row[0], row[0]))
-        if isint(row[1]) and not isint(row[2]):
-            out.append((row[0], None))  
-        if isint(row[2]) and not isint(row[1]):
-            out.append((None, row[0]))      
-    
-    return out                  
-
-
-
-
-class tree(object):
-
-
-
-
-
-
+                  
