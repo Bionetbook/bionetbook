@@ -10,6 +10,7 @@ urlpatterns = patterns("",
 	url(regex=r'^test/(?P<protocol_a_slug>[-\w]+)/$', view=views.TestView.as_view(), name='api_test'),				# WORKS
 	url(regex=r'^json/all/$', view='api.views.json_dump_all', name='api_json_dump_all'),
 	url(regex=r'^json/layers/(?P<protocol_slug>[-\w]+)/$', view='api.views.protocol_layers_json', name='api_protocol_layers_json'),
+	url(regex=r'^json/test/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.protocol_diff_json_aligned', name='api_protocol_compare_layers_json'),
 	url(regex=r'^json/layers/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.protocol_diff_json', name='api_protocol_compare_layers_json'),
 	url(regex=r'^json/(?P<protocol_slug>[-\w]+)/$', view='api.views.protocol_json', name='api_protocol_json'),
 	url(regex=r'^json/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.protocol_compare_json', name='api_protocol_compare_json'),

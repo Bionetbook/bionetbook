@@ -105,7 +105,7 @@ def protocol_compare_json(request, protocol_a_slug, protocol_b_slug):
 
         out.append(data_dict)        
 
-    return HttpResponse(json.dumps(out), mimetype="application/json") 
+    return HttpResponse(json.dumps(out, indent=4), mimetype="application/json") 
 
 def protocol_diff_json(request, protocol_a_slug, protocol_b_slug):
     '''
@@ -116,7 +116,18 @@ def protocol_diff_json(request, protocol_a_slug, protocol_b_slug):
     G = Compare(A,B)
 
     data_dict = G.get_aligned_diff_object()
-    return HttpResponse(json.dumps(data_dict), mimetype="application/json") 
+    return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json") 
+
+def protocol_diff_json_aligned(request, protocol_a_slug, protocol_b_slug):
+    '''
+    Very simple JSON Call example.
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    G = Compare(A,B)
+
+    data_dict = G.get_aligned_protocols()
+    return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 
 def json_dump_all(request):
