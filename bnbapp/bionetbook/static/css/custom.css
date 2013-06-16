@@ -24,6 +24,11 @@ height: 25px;
 }
 
 .navbar .nav > li > a {
+	color: #798b9a;
+	text-shadow: none;
+}
+
+.navbar .nav > li > a:hover {
 	color: black;
 	text-shadow: none;
 }
