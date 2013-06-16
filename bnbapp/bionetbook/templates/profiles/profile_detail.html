@@ -3,20 +3,24 @@
 
 {% block title %}Profile: {{ object }}{% endblock %}
 
-{% block page_title %}<a href="{% url profile_list %}">Profile</a>: {{ object }}
+{% block page_title %}{{ object }}
 {% if protocol_edit_authorization %} 
     <small><a href="{% url profile_update %}"><i class="icon-edit"></i></a></small>
 {% endif %}
 {% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li class="active">Profile</li>
+    </ul>
+{% endblock %}
 
-<div class="row">
+{% block content %}
+  <div class="row">
     <div class="span6">
         <h2>Detail</h2>
         {% object_data_table object %}
     </div>
-  
   </div>
 {% endblock %}
 
