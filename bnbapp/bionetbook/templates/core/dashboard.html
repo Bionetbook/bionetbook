@@ -14,7 +14,7 @@
 {% block content %}
 <div class="row">
     <div class="span12">
-        <ul>
+        <ul class="nav nav-tabs nav-stacked">
             <li><a href="{% url organization_list %}">Organizations</a></li>
             {% if request.user.is_superuser or request.user.is_staff %}
             <li><a href="{% url profile_list %}">Users</a></li>
