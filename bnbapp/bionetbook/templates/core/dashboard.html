@@ -5,10 +5,15 @@
 
 {% block page_title %}Dashboard{% endblock %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li>Dashboard</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="span12">
-    	<h2>Welcome to BioNetBook</h2>
         <ul>
             <li><a href="{% url organization_list %}">Organizations</a></li>
             {% if request.user.is_superuser or request.user.is_staff %}

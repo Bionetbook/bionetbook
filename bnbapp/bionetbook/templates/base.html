@@ -26,7 +26,7 @@
 
 <body>
 <div id="wrap">  
-  <div class="navbar">
+  <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
       <div class="container">
           <ul class="nav">
@@ -98,20 +98,22 @@
 </div>
 
 <footer>
-  <div class="row">
-    <div class="span3 offset1">
-      <p>&copy 2013 <span style="font-size:18pt;">Bionetbook</span></p>
-    </div>
-    <div class="span7">
-      <ul class="footer-nav">
-        <li class="menu-item "><a href="{% url tos %}">Terms of Service</a></li>
-        <li class="menu-item menu-end"><a href="{% url privacy %}">Privacy Policy</a></li>
-        {% comment %}
-        <li class="menu-item "><a href="#">Careers</a></li>
-        <li class="menu-item "><a href="#">Blog</a></li>
-        <li class="menu-item menu-end"><a href="#">Contact</a></li>
-        {% endcomment %}
-      </ul>
+  <div class="container">
+    <div class="row">
+      <div class="span4">
+        &copy 2013 <span style="font-size:18pt;">Bionetbook</span>
+      </div>
+      <div class="span8">
+        <ul class="footer-links">
+          <li class="menu-item "><a href="{% url tos %}">Terms of Service</a></li>
+          <li class="menu-item menu-end"><a href="{% url privacy %}">Privacy Policy</a></li>
+          {% comment %}
+          <li class="menu-item "><a href="#">Careers</a></li>
+          <li class="menu-item "><a href="#">Blog</a></li>
+          <li class="menu-item menu-end"><a href="#">Contact</a></li>
+          {% endcomment %}
+        </ul>
+      </div>
     </div>
   </div>
 </footer>

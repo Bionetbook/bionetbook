@@ -7,9 +7,10 @@ height: 25px;
 
 
 .navbar {
-	background-color: blue;
+	background-color: white;
 	background-image: none;
 	text-shadow: none;
+	padding-top:5px;
 }
 
 .navbar-inner {
@@ -100,7 +101,7 @@ footer li a {
 }
 
 #wrap > .container {
-	/*padding-top: 60px;*/
+	padding-top: 60px;
 }
 
 .container .credit {
