@@ -17,6 +17,12 @@ Compare Protocol Selection
 {% endblock %}
 
 {% block content %}
+<ul class="nav nav-pills">
+  <li><a href="{% url organization_list %}">List</a></li>
+  <li><a href="{% url organization_list %}">Workflows</a></li>
+  <li class="active"><a href="{% url compare_select %}">Compare</a></li>
+</ul>
+
 <form action="." method="post">{% csrf_token %}
     <div class="row">
         <div class="span5">
