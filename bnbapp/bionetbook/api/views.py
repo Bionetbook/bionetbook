@@ -190,7 +190,7 @@ class JQTestView(JSONResponseMixin, TemplateView):
         #     return self.render_to_response(self, {'one':"two"})
 
 class JsonTestView(TemplateView):
-    template_name = "compare/assets1/protocol_layout.html"
+    template_name = "compare/assets/protocol_layout.html"
 
 
 
