@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/custom.css">
+        <link rel="stylesheet" href="css/font-awesome.css">
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="wrapper">
+            <header class="flowchart-header">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h3>Process 1</h3></td>
+                        <td><h3>Process 2</h3></td>
+                    </tr>
+                </table>
+            </header>
+
+            <div class="flowchart-container">
+
+            </div>
+        </div>
+
+        <footer class="page-footer">
+            Biobetbook&trade; 2013 all rights reserved
+        </footer>
+
+
+
+        <script src="js/vendor/underscore-min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/flowchart-engine.js"></script>
+        <script src="js/main1.js"></script>
+
+        <script type="text/template" id="flowchart-table-template">
+            <table class="flowchart-table">
+                <tbody>
+
+                </tbody>
+            </table>
+        </script>
+
+        <script type="text/template" id="flowchart-row-template">
+            <% if (node_type=="verb") { %>
+            <tr>
+                <td>
+                    <div class="flowchart-card"><%= index %>. <%= name %></div>
+                </td>
+                <td<%= child_diff=="True" ? '' : ' colspan="2"' %>>
+                    <% if (duration[0]!="None") { %>
+                        <%= cardTmpl( {child: prepareChild(child, 0, child_diff, duration), index: 0} ) %>
+                    <% } %>
+                </td>
+                <% if (child_diff=="True") { %>
+                <td>
+                    <% if (duration[1]!="None") { %>
+                        <%= cardTmpl( {child: prepareChild(child, 1, child_diff, duration), index: 1} ) %>
+                    <% } %>
+                </td>
+                <% } %>
+            </tr>
+            <% } %>
+        </script>
+
+        <script type="text/template" id="flowchart-card-template">
+            <div class="flowchart-card">
+                <% _(child).each(function(item) { %>
+                <div>
+                    <% if (item.name!="None") { %>
+                        <% if (item.URL && _(item.URL).isArray() ) { %>
+                            <a href="<%= item.URL[0] %>" target="_blank"><i class="icon icon-cog"></i></a>
+                        <% } %>
+                        <%= item.name %>:
+                        <% _.chain(item).pairs().filter(function(pair){
+                            return pair[0].indexOf('_')==-1
+                                && pair[0]!='number'
+                                && pair[0]!='name'
+                                && pair[0]!='URL'
+                                && pair[0]!='comment'
+                                && pair[0]!='time';
+                            }).map(function(pair){
+                                return pair[1];
+                            }).each(function(value, i, list){ %>
+
+                            <% if (_(value).isArray()) value = _(value).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <% if (i!=list.length-1) { %>
+                                <%= $.trim(value) + ',' %>
+                            <% } else { %>
+                                <%= value %>
+                            <% } %>
+                        <% }); %>
+                        <% if (item.URL && item.URL[index]!="None") { %>
+                            <a href="<%= _(item.URL).isArray() ? item.URL[1] : item.URL %>" target="_blank"><i class="icon icon-cog"></i></a>
+                        <% } %>
+                        <% if (item.time) { %>
+                            <% if (_(item.time).isArray()) item.time = _(item.time).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Time = <%= item.time %>
+                            </div>
+                        <% } %>
+                        <% if (item.comment) { %>
+                            <% if (_(item.comment).isArray()) item.comment = _(item.comment).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Comment: <%= item.comment %>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <br/>
+                    <% } %>
+                </div>
+                <% }); %>
+            </div>
+        </script>
+
+    </body>
+</html>
