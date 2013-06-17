@@ -63,8 +63,6 @@ bnbapp/bionetbook/core/management/commands/__init__.py
 
 bnbapp/bionetbook/core/management/commands/start_compare.py
 
-bnbapp/bionetbook/templates/compare/assets/
-
 bnbapp/bionetbook/templates/compare/assets1/
 
 bnbapp/sandbox/SANDBOX.py
