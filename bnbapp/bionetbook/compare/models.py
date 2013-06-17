@@ -77,9 +77,99 @@ class DiffObject(dict):
         self.name = protocol.nodes[objectid]['name']
         self.child_type = protocol.nodes[objectid].childtype()
 
+class CompareVerbs(dict):
+    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+        '''        
+        CompareVerbs takes an objectid and compares it between the 2 protocols. 
+        The object returns a dict with attributes to be considered or displayed in a visual diff. 
+        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
+        '''
+        diff = False
+        self['name'] = [self.get_item(protocol_a, objectid, 'name'), self.get_item(protocol_b, objectid, 'name')]  
+        self['objectid'] = [self.get_item(protocol_a, objectid, 'objectid'), 
+                            self.get_item(protocol_b, objectid, 'objectid')]  
+        # self['object_type'] = 
+        self['object_type'] = [self.check_objectid(protocol_a, objectid, true = 'Verb'),   
+                            self.check_objectid(protocol_b, objectid, true = 'Verb')]  
+
+        A = self.check_objectid(protocol_a, objectid)
+        B = self.check_objectid(protocol_b, objectid)                
+
+        if A and B:
+            summary_items = list(set(A).union(set(B)))
+            D = DictDiffer(A, B)
+            if len(D.changed()) > 0:
+                diff = True    
+        if A and not B:    
+            summary_items = A.summary.keys()
+            diff = True
+        if B and not A:    
+            summary_items = B.summary.keys()    
+            diff = True
+
+        
+        delete_items = [A.childtype(), 'slug', 'temp_units', 'time_units', 'temp_comment', 'verb','max_temp','max_time', 'min_temp', 'min_time', ]    
+        summary_items = self.trim_items(summary_items, delete_items)   
 
 
-class CompareChildren(dict):
+
+        for item in summary_items:
+            # import pdb; pdb.set_trace()
+            self[item] =[self.get_item(protocol_a, objectid, item), 
+                        self.get_item(protocol_b, objectid, item)]  
+            
+        self.diff = diff 
+
+    
+
+
+    def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
+        out = []
+        try:
+            if modifier == 'summary':
+                call = protocol.nodes[objectid].summary
+            else:
+                call = protocol.nodes[objectid]
+        except KeyError:
+            return []
+
+        if item in call.keys():
+            out = call[item]
+
+        if item not in call.keys():                
+            try:
+                method = operator.methodcaller(item)
+                out = method(call)
+            except TypeError:
+                out = getattr(call, item)   
+            except AttributeError:
+                return []    
+
+        return out
+
+    def check_objectid(self, protocol, objectid, **kwargs):
+        
+        try:
+            result = protocol.nodes[objectid]
+        except KeyError:
+            result = []
+
+        if 'true' in kwargs:
+            return kwargs['true']
+        else:
+            return result       
+
+    def trim_items(self, items, delete_items):
+        
+        for erase in delete_items:
+            if erase not in items:
+                continue
+            else:
+                items.pop(items.index(erase))
+
+        return items    
+
+class CompareChildren(CompareVerbs):
     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
         '''
         CompareChildren takes an objectid and compares it between the 2 protocols. 
@@ -117,44 +207,42 @@ class CompareChildren(dict):
             
         self.diff = diff 
 
+    # def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
+    #     out = []
+    #     try:
+    #         if modifier == 'summary':
+    #             call = protocol.nodes[objectid].summary
+    #         else:
+    #             call = protocol.nodes[objectid]
+    #     except KeyError:
+    #         return []
+
+    #     if item in call.keys():
+    #         out = call[item]
+    #     else:
+    #         try:
+    #             method = operator.methodcaller(item)
+    #             out = method(call)
+    #         except TypeError:
+    #             out = getattr(call, item)   
+
+    #     return out
+
+    # def check_objectid(self, protocol, objectid, **kwargs):
         
-    def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
-        out = []
-        try:
-            if modifier == 'summary':
-                call = protocol.nodes[objectid].summary
-            else:
-                call = protocol.nodes[objectid]
-        except KeyError:
-            return []
+    #     try:
+    #         result = protocol.nodes[objectid]
+    #     except KeyError:
+    #         result = []
 
-        if item in call.keys():
-            out = call[item]
-        else:
-            try:
-                method = operator.methodcaller(item)
-                out = method(call)
-            except TypeError:
-                out = getattr(call, item)   
+    #     return result       
 
-        return out
 
-    def check_objectid(self, protocol, objectid, **kwargs):
         
-        try:
-            result = protocol.nodes[objectid]
-        except KeyError:
-            result = []
-
-        return result        
-
-
-
 
 
 class Compare(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
-        import pygraphviz as pgv
 
         self.agraph = pgv.AGraph(ranksep = '0.2')
         self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
