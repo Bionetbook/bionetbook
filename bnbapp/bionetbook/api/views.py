@@ -1,3 +1,4 @@
+from django.template import Context, loader
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 import django.utils.simplejson as json
@@ -41,29 +42,7 @@ def protocol_json(request, protocol_slug):
     # data_dict = {'name':p.name, 'pk':p.pk}
     return HttpResponse(json.dumps(out), mimetype="application/json")
 
-def protocol_layers_json(request, protocol_slug):
-    '''
-    returns json with protocol data and child summaries.
-    '''
-    p = Protocol.objects.get(slug=protocol_slug)
-    out = []
-    
-    for verb in p.get_actions():
-        print 'verb: ', verb
-        data_dict={}
-        data_dict['name'] = p.nodes[verb]['verb']
-        data_dict['objectid'] = p.nodes[verb]['objectid']
-        data_dict['URL'] = p.nodes[verb].action_update_url()
-        
-        nodes = p.nodes[verb].children
-        if nodes:
-            data_dict['node_type'] = p.nodes[verb].childtype()
-            data_dict['node'] = [r.summary for r in p.nodes[verb].children]
-        else:
-            data_dict['node_type'] = p.nodes[verb].childtype()
 
-        out.append(data_dict)
-    return HttpResponse(json.dumps(out), mimetype="application/json") 
     
 def protocol_compare_json(request, protocol_a_slug, protocol_b_slug):
     '''
@@ -139,6 +118,13 @@ def json_dump_all(request):
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
 
+def json_manual_data(request):
+    json_data = open("api/protocol_outline.json").read()
+    data = json.loads(json_data)
+    return HttpResponse(json.dumps(data), mimetype="application/json")
+    
+
+
 # def get_child_nodes(self)
 
 
@@ -203,18 +189,9 @@ class JQTestView(JSONResponseMixin, TemplateView):
         #     #return SingleObjectTemplateResponseMixin.render_to_response(self, context)
         #     return self.render_to_response(self, {'one':"two"})
 
+class JsonTestView(TemplateView):
+    template_name = "compare/assets1/protocol_layout.html"
 
-
-class TestView(TemplateView):
-    template_name = "api/protocol_basic.html"
-    
-    # def get(self, request):
-    #     # <view logic>
-    #             # self.object = self.get_object()
-    #     context = {} #self.get_context_data(object=self.object)
-    #     return self.render_to_response(context)
-
-        # return render(request,  self.template_name)
 
 
 class CompareBaseView(JSONResponseMixin, TemplateView):
@@ -262,8 +239,45 @@ class CompareBaseView(JSONResponseMixin, TemplateView):
         return HttpResponse(context) #get_json_response(self.convert_context_to_json(JSONdata))
 
 
+# def protocol_layers_json(request, protocol_slug):
+#     '''
+#     returns json with protocol data and child summaries.
+#     '''
+#     p = Protocol.objects.get(slug=protocol_slug)
+#     out = []
+    
+#     for verb in p.get_actions():
+#         print 'verb: ', verb
+#         data_dict={}
+#         data_dict['name'] = p.nodes[verb]['verb']
+#         data_dict['objectid'] = p.nodes[verb]['objectid']
+#         data_dict['URL'] = p.nodes[verb].action_update_url()
+        
+#         nodes = p.nodes[verb].children
+#         if nodes:
+#             data_dict['node_type'] = p.nodes[verb].childtype()
+#             data_dict['node'] = [r.summary for r in p.nodes[verb].children]
+#         else:
+#             data_dict['node_type'] = p.nodes[verb].childtype()
 
-class CompareLayersView(CompareBaseView, TemplateView):
-    template_name = "compare/protocol_basic.html"        
+#         out.append(data_dict)
+#     return HttpResponse(json.dumps(out), mimetype="application/json") 
+
+
+# class TestView(TemplateView):
+#     template_name = "api/protocol_basic.html"
+    
+    # def get(self, request):
+    #     # <view logic>
+    #             # self.object = self.get_object()
+    #     context = {} #self.get_context_data(object=self.object)
+    #     return self.render_to_response(context)
+
+        # return render(request,  self.template_name)
+
+
+
+# class CompareLayersView(CompareBaseView, TemplateView):
+#     template_name = "compare/protocol_basic.html"        
 
 
