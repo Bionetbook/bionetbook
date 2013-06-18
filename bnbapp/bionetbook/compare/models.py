@@ -93,7 +93,17 @@ class CompareVerbs(dict):
                             self.check_objectid(protocol_b, objectid, true = 'Verb')]  
 
         A = self.check_objectid(protocol_a, objectid)
-        B = self.check_objectid(protocol_b, objectid)                
+        B = self.check_objectid(protocol_b, objectid)  
+
+        # this should automatically add the values to all the keys / methods / properties 
+        # and not return a KeyError. this is a basic method that can be used for verb and 
+        # children objects. 
+        # Sequence: this 
+        if A:
+            self['child_type'] = [A.childtype(), B.childtype()]
+        # self.['duration'] = [A.duration(), B.duration()]
+
+
 
         if A and B:
             summary_items = list(set(A).union(set(B)))
@@ -106,7 +116,6 @@ class CompareVerbs(dict):
         if B and not A:    
             summary_items = B.summary.keys()    
             diff = True
-
         
         delete_items = [A.childtype(), 'slug', 'temp_units', 'time_units', 'temp_comment', 'verb','max_temp','max_time', 'min_temp', 'min_time', ]    
         summary_items = self.trim_items(summary_items, delete_items)   
@@ -125,9 +134,10 @@ class CompareVerbs(dict):
 
     def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
         out = []
+        modifiers = dir(protocol.nodes[objectid])
         try:
-            if modifier == 'summary':
-                call = protocol.nodes[objectid].summary
+            if modifier in modifiers:   
+                call = getattr(protocol.nodes[objectid], modifier)
             else:
                 call = protocol.nodes[objectid]
         except KeyError:

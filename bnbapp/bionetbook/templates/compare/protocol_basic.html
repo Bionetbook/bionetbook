@@ -12,11 +12,11 @@
 {% endblock %}
 
 {% block page_title %}Protocol Diagram {% endblock %}
-<!-- <title>JQuery Testing Page</title>
+<title>JQuery Testing Page</title>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
- -->
+
 {% block content %}
 Object in template called without AJAX: {{object}}<hr/>
 
@@ -29,117 +29,117 @@ Object in template called without AJAX: {{object}}<hr/>
 	<div id="jsdiv">
 		
 	</div>	
-	
-	{% block javascript %}
-		<script type="text/javascript">
-
-			var dataset;									// Create a variable to hold the data
-
-			function getData() {							// Fetch the raw JSON data from the server
-			  $.get("/api/jqtest/", function(data) {
-				dataset = data;								// Put the results in the variable
-			  });
-			}
-
-			// Now that you have the data you can do things with it
-
-			getData();										// Calling this will populate the dataset variable.
-
-			$("#jsdiv").html(dataset.name);					// Grab the "name" attribute of the dataset object and set the div's text value to it
-			
-			//d3.selectAll("p").style("color", "blue");
-			
-
-			// function send_request(){
-			//   $.get("/api/jqtest/", function(data){
-			//     $("#idName").html(data.protocols.actions[0].verb);
-			//     // $("#idBirthday").html(data.birthday);
-			//     // $("#idCake").html(data.cake);
-			//   });
-			// }
-
-// 			function toggle_components(){
-// 			  $.get("/api/jqtest/", function(data){
-// 			    $("#idName").html(data.protocols.actions[0].verb);
-// 			    // $("#idBirthday").html(data.birthday);
-// 			    // $("#idCake").html(data.cake);
-// 			  });
-// 			}
-			
-// 			var dataset = {{ data|safe }};
-// 			var posdata = {{ position_data|safe }};
-
-// 			// d3.select('body').selectAll('p').data(dataset).enter().append('p').text(function(d) { return d.verb; });
-			
-// 			var width = 100
-// 				height = posdata[0]
-// 				y_max = posdata[2]
-// 				xMargin = width/2
-// 				rx = 5
-// 				x=80
-// 				y=posdata[1];
-
-// 			// var svgObject = d3.select("body").append("svg");
-
-// 			var grid = d3.select("#jsdiv").append("svg:svg")
-// 			    .attr("width", 300)
-// 			    .attr("height", y_max + 50)
-// 			    .attr("class", "chart")
-// 			    ;
-
-// 			var line = grid.selectAll(".line")
-// 				.data([0]).enter().append("line")
-// 				.attr("class", "line")
-// 				.attr("x1", x + xMargin  )
-// 				.attr("y1", posdata[1])
-// 				.attr("x2", x + xMargin  )
-// 				.attr("y2", y_max)
-// 				// <line fill="none" stroke-width="9" x1="50" y1="50" x2="50" y2="80"/>
-// 				.style("stroke-width", 9)
-// 				.style("stroke", "#b82f03");
-// 			// var container = svg.append("g");        
-
-// 			// var row = grid.selectAll(".row")
-// 			//     .data(dataset)
-// 			//     .enter().append("g")
-// 			//     .attr("class", "row");
-
-
-// // try making a variable that accesses only the G's .
-// 			var verb = grid.selectAll(".verb")
-// 				.data(dataset)
-// 				.enter().append("rect")
-// 				// .attr("class", "verb")
-// 				.attr("id", function(d) {return d.childtype; })
-// 				.attr("x", x)
-// 				.attr("y", function(d) { return d.position + 15; })
-// 				.attr("width", width)
-// 				.attr("height", height)
-// 				.attr("rx", rx)
-// 				.style("fill", '#FFF')
-// 				.style("stroke", '#555');
-
-// 			var verb_label = grid.selectAll(".label")
-// 			    .data(dataset)
-// 			  	.enter().append("a").attr("xlink:href", function(d) {return d.url;} )
-// 			  	.append("text")
-// 			  	.attr("class", "verb_label")
-// 			    .attr("x", x + xMargin)
-// 			    .attr("y", function(d) { return d.position + 15 + y;})
-// 			    .attr("text-anchor","middle")
-// 			    .attr("dy",".35em")
-// 			    .text(function(d) {return d.verb;});	
-
-// 			// var child_label = grid.selectAll("manual").    
-
-			
-			</script>
-
-		{% endblock %}	
-
-
-
-
 {% endblock %}
+{% block javascript %}
+	<script type="text/javascript">
+
+		var dataset;									// Create a variable to hold the data
+
+		function getData() {							// Fetch the raw JSON data from the server
+		  $.get("/api/jqtest/", function(data) {
+			dataset = data;								// Put the results in the variable
+		  });
+		}
+
+		// Now that you have the data you can do things with it
+
+		getData();										// Calling this will populate the dataset variable.
+
+		$("#jsdiv").html(dataset.name);					// Grab the "name" attribute of the dataset object and set the div's text value to it
+		
+		d3.selectAll("p").style("color", "blue");
+		
+
+		function send_request(){
+		  $.get("/api/jqtest/", function(data){
+		    $("#idName").html(data.protocols.actions[0].verb);
+		    // $("#idBirthday").html(data.birthday);
+		    // $("#idCake").html(data.cake);
+		  });
+		}
+
+		function toggle_components(){
+		  $.get("/api/jqtest/", function(data){
+		    $("#idName").html(data.protocols.actions[0].verb);
+		    // $("#idBirthday").html(data.birthday);
+		    // $("#idCake").html(data.cake);
+		  });
+		}
+		
+		var dataset = {{ data|safe }};
+		var posdata = {{ position_data|safe }};
+
+		// d3.select('body').selectAll('p').data(dataset).enter().append('p').text(function(d) { return d.verb; });
+		
+		var width = 100
+			height = posdata[0]
+			y_max = posdata[2]
+			xMargin = width/2
+			rx = 5
+			x=80
+			y=posdata[1];
+
+		// var svgObject = d3.select("body").append("svg");
+
+		var grid = d3.select("#jsdiv").append("svg:svg")
+		    .attr("width", 300)
+		    .attr("height", y_max + 50)
+		    .attr("class", "chart")
+		    ;
+
+		var line = grid.selectAll(".line")
+			.data([0]).enter().append("line")
+			.attr("class", "line")
+			.attr("x1", x + xMargin  )
+			.attr("y1", posdata[1])
+			.attr("x2", x + xMargin  )
+			.attr("y2", y_max)
+			// <line fill="none" stroke-width="9" x1="50" y1="50" x2="50" y2="80"/>
+			.style("stroke-width", 9)
+			.style("stroke", "#b82f03");
+		// var container = svg.append("g");        
+
+		// var row = grid.selectAll(".row")
+		//     .data(dataset)
+		//     .enter().append("g")
+		//     .attr("class", "row");
+
+
+// try making a variable that accesses only the G's .
+		var verb = grid.selectAll(".verb")
+			.data(dataset)
+			.enter().append("rect")
+			// .attr("class", "verb")
+			.attr("id", function(d) {return d.childtype; })
+			.attr("x", x)
+			.attr("y", function(d) { return d.position + 15; })
+			.attr("width", width)
+			.attr("height", height)
+			.attr("rx", rx)
+			.style("fill", '#FFF')
+			.style("stroke", '#555');
+
+		var verb_label = grid.selectAll(".label")
+		    .data(dataset)
+		  	.enter().append("a").attr("xlink:href", function(d) {return d.url;} )
+		  	.append("text")
+		  	.attr("class", "verb_label")
+		    .attr("x", x + xMargin)
+		    .attr("y", function(d) { return d.position + 15 + y;})
+		    .attr("text-anchor","middle")
+		    .attr("dy",".35em")
+		    .text(function(d) {return d.verb;});	
+
+		// var child_label = grid.selectAll("manual").    
+
+		
+	</script>
+
+{% endblock %}	
+
+
+
+
+
 
 
