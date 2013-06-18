@@ -1,7 +1,7 @@
 [
 	{"verb_objectid": "kttj4d",
 	"child_type": "components", 
-	"name": "combine",
+	"name": "NORM",
 	"node_type": "verb", 
 	"child_diff":"True",
 	"URL": [
@@ -10,7 +10,7 @@
 	"duration": ["240", "240"],	
 	"child": [
 		{
-			"name": ["Oligo dt", "Oligo dt"],
+			"name": ["FAXCVF dt", "Oligo dt"],
             "vol": [["1.0", "ul"], ["1.0", "ul"]], 
             "URL": [
 				"/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/f5fe2d/edit/", 
