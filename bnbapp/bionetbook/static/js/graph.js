@@ -1,8 +1,5 @@
 function getFlowchartData(successCallback){
-    $.get("/api/json/manual_data/",
-        function(data) {
-            successCallback(data);
-    });
+    $.get("/api/json/manual_data/", function(data) { successCallback(data); });
 };
 
 // $(function(){
