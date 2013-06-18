@@ -19,7 +19,7 @@
 // var compare_url = "/api/json/primetest/manual_json/"
 
 function getFlowchartData(successCallback){
-    $.get("/api/json/primetest/manual_json/",
+    $.get("/api/json/manual_data/",
         function(data) {
             successCallback(data);
     });
