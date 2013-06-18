@@ -23,14 +23,6 @@
 <link rel="stylesheet" href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" >
 {% endblock %}
 
-{# JAVASCRIPT SHOULD GO IN THESE TAGS #}
-{% block extrajs %}
-<script src="{{ STATIC_URL }}js/underscore-min.js"></script>
-<script src="{{ STATIC_URL }}js/plugins.js"></script>
-<script src="{{ STATIC_URL }}js/flowchart-engine.js"></script>
-<script src="{{ STATIC_URL }}js/main.js"></script>
-{% endblock %}
-
 {# MAIN PAGE CONTENT #}
 {% block content %}
 <div class="wrapper">
@@ -48,10 +40,14 @@
 
     </div>
 </div>
-
 {% endblock %}
 
+{# JAVASCRIPT SHOULD GO IN THESE TAGS #}
 {% block extrajs %}
+    <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/flowchart-engine.js"></script>
+    <script src="{{ STATIC_URL }}js/main.js"></script>
 	<script type="text/template" id="flowchart-table-template">
         <table class="flowchart-table">
             <tbody>
