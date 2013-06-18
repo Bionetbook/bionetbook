@@ -122,10 +122,6 @@ def json_manual_data(request):
     json_data = open("api/protocol_outline.json").read()
     data = json.loads(json_data)
     return HttpResponse(json.dumps(data), mimetype="application/json")
-    
-
-
-# def get_child_nodes(self)
 
 
 class JSONResponseMixin(object):
@@ -190,7 +186,7 @@ class JQTestView(JSONResponseMixin, TemplateView):
         #     return self.render_to_response(self, {'one':"two"})
 
 class JsonTestView(TemplateView):
-    template_name = "compare/assets/protocol_layout.html"
+    template_name = "api/protocol_layout.html"
 
 
 
@@ -239,45 +235,45 @@ class CompareBaseView(JSONResponseMixin, TemplateView):
         return HttpResponse(context) #get_json_response(self.convert_context_to_json(JSONdata))
 
 
-# def protocol_layers_json(request, protocol_slug):
-#     '''
-#     returns json with protocol data and child summaries.
-#     '''
-#     p = Protocol.objects.get(slug=protocol_slug)
-#     out = []
+def protocol_layers_json(request, protocol_slug):
+    '''
+    returns json with protocol data and child summaries.
+    '''
+    p = Protocol.objects.get(slug=protocol_slug)
+    out = []
     
-#     for verb in p.get_actions():
-#         print 'verb: ', verb
-#         data_dict={}
-#         data_dict['name'] = p.nodes[verb]['verb']
-#         data_dict['objectid'] = p.nodes[verb]['objectid']
-#         data_dict['URL'] = p.nodes[verb].action_update_url()
+    for verb in p.get_actions():
+        print 'verb: ', verb
+        data_dict={}
+        data_dict['name'] = p.nodes[verb]['verb']
+        data_dict['objectid'] = p.nodes[verb]['objectid']
+        data_dict['URL'] = p.nodes[verb].action_update_url()
         
-#         nodes = p.nodes[verb].children
-#         if nodes:
-#             data_dict['node_type'] = p.nodes[verb].childtype()
-#             data_dict['node'] = [r.summary for r in p.nodes[verb].children]
-#         else:
-#             data_dict['node_type'] = p.nodes[verb].childtype()
+        nodes = p.nodes[verb].children
+        if nodes:
+            data_dict['node_type'] = p.nodes[verb].childtype()
+            data_dict['node'] = [r.summary for r in p.nodes[verb].children]
+        else:
+            data_dict['node_type'] = p.nodes[verb].childtype()
 
-#         out.append(data_dict)
-#     return HttpResponse(json.dumps(out), mimetype="application/json") 
+        out.append(data_dict)
+    return HttpResponse(json.dumps(out), mimetype="application/json") 
 
 
-# class TestView(TemplateView):
-#     template_name = "api/protocol_basic.html"
+class TestView(TemplateView):
+    template_name = "api/protocol_basic.html"
     
-    # def get(self, request):
-    #     # <view logic>
-    #             # self.object = self.get_object()
-    #     context = {} #self.get_context_data(object=self.object)
-    #     return self.render_to_response(context)
+    def get(self, request):
+        # <view logic>
+                # self.object = self.get_object()
+        context = {} #self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
-        # return render(request,  self.template_name)
+        return render(request,  self.template_name)
 
 
 
 # class CompareLayersView(CompareBaseView, TemplateView):
-#     template_name = "compare/protocol_basic.html"        
+#     template_name = "api/protocol_basic.html"        
 
 
