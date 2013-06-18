@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load core_tags %}
+
+{# PAGE TITLE #}
+{% block page_title %}Protocol Diagram {% endblock %}
+
+{# BREADCRUMBS #}
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
@@ -11,16 +16,10 @@
     </ul>
 {% endblock %}
 
-{% block page_title %}Protocol Diagram {% endblock %}
-
 {# CSS STYLE SHEETS GO HERE #}
 {% block extracss %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/normalize.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/main.css">
-<link rel="stylesheet" href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" >
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
 {% endblock %}
 
 {# MAIN PAGE CONTENT #}
