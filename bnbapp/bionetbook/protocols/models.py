@@ -369,6 +369,31 @@ class Protocol(TimeStampedModel):
     def update_duration(self):
         pass
 
+    def get_item(self, objectid, item, modifier = False, **kwargs):
+        out = None
+        
+        try:
+            modifiers = dir(self.nodes[objectid])
+            if modifier in modifiers:   
+                call = getattr(self.nodes[objectid], modifier)
+            else:
+                call = self.nodes[objectid]
+        except KeyError:
+            return None
+
+        if item in call.keys():
+            out = call[item]
+
+        if item not in call.keys():                
+            try:
+                out = getattr(call, item)()
+            except TypeError:    
+                    out = getattr(call, item)   
+            except AttributeError:
+                return None    
+
+        return out    
+
     def action_children_json(self, select = None, **kwargs):
         out = []
         switch = {
@@ -416,7 +441,7 @@ class Protocol(TimeStampedModel):
                 
             out.append(step_dict)
         return out        
-
+        
 
 class NodeBase(dict):
     """Base class for the protocol components"""
