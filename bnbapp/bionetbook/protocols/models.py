@@ -369,18 +369,9 @@ class Protocol(TimeStampedModel):
     def update_duration(self):
         pass
 
-    def get_item(self, objectid, item, modifier = False, **kwargs):
+    def get_item(self, objectid, item, key = False, **kwargs):
         out = None
-        
-        try:
-            modifiers = dir(self.nodes[objectid])
-            if modifier in modifiers:   
-                call = getattr(self.nodes[objectid], modifier)
-            else:
-                call = self.nodes[objectid]
-        except KeyError:
-            return None
-
+        call = self.nodes[objectid]
         if item in call.keys():
             out = call[item]
 
@@ -388,10 +379,13 @@ class Protocol(TimeStampedModel):
             try:
                 out = getattr(call, item)()
             except TypeError:    
-                    out = getattr(call, item)   
+                out = getattr(call, item) 
             except AttributeError:
-                return None    
-
+                out =  None    
+        # try:         
+        # if key and key in out:
+        #     out =  out[key]
+        
         return out    
 
     def action_children_json(self, select = None, **kwargs):
@@ -511,6 +505,11 @@ class NodeBase(dict):
     def graph_label(self):
         return self['name']
 
+    @property    
+    def object_type(self):
+        return self.__class__.__name__
+
+
     def update_data(self, data={}, **kwargs):
         if data:
             for key in data:
@@ -521,6 +520,7 @@ class NodeBase(dict):
 
     def __unicode__(self):
         return self['slug']
+
 
     @property
     def title(self):
@@ -879,7 +879,7 @@ class Action(NodeBase):
         if self['verb'] in MANUAL_VERBS:
             return 'manual'
         else:
-            return None
+            return None        
 
 
 class Step(NodeBase):
