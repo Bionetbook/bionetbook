@@ -1,4 +1,47 @@
 (function($){
+    var onresize = function(e){
+        // var $siblings = $(this).parents('tr').find('td:not(:first-child)>.flowchart-card');
+
+        // // clear <br>'s
+        // $siblings.each(function(){
+        //     $(this).children('div').each(function(){
+        //         $(this).children('br').remove();
+        //     });
+        // });
+
+        // $(this).children('div').each(function(){
+
+        // });
+        //
+
+        $('.flowchart-table tr').each(function(){
+            $(this).find('td:not(:first-of-type)>.flowchart-card').first().children('div').each(function(){
+                var index = $(this).index();
+                var $siblings = $(this).parents('tr').find('td:not(:first-of-type)>.flowchart-card>div:nth-child(' + index + ')');
+
+                $siblings.css({ 'height' : 'auto'});
+
+                var that = this;
+
+                // find max height
+                var maxHeight = 0;
+                $siblings.each(function(){
+                    var height = $(this).height();
+                    if (height > maxHeight) maxHeight = height;
+                });
+
+                $siblings.each(function(){
+                    console.log('height', $(this).height());
+                    if ($(this).height() >= maxHeight) return;
+
+                    if ($(this).height() < maxHeight) {
+                        $(this).height(maxHeight);
+                    }
+                });
+            });
+        });
+    };
+
     var flowchart = function(container, data){
         var tableTmpl = _.template( $('#flowchart-table-template').html() );
         var rowTmpl = _.template( $('#flowchart-row-template').html() );
@@ -30,7 +73,6 @@
                                 });
                                 newChild.push(newItem);
                             });
-                            console.log(newChild);
                             return newChild;
                         }
                         return child;
@@ -42,12 +84,18 @@
         });
 
 
-
     };
 
     $.fn.flowchart = function(data){
-        return this.each(function(){
+        var result = this.each(function(){
             flowchart(this, data);
         });
+
+        $(window).on('resize', onresize);
+        $(window).trigger('resize');
+
+        return result;
     };
+
+
 })(jQuery);

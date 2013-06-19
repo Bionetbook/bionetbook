@@ -110,7 +110,7 @@ html, body {
 }
 
 .flowchart-header {
-    width: 70%;
+    width: 90%;
     padding: 2em 2em 0;
 }
 .flowchart-header table{
@@ -130,12 +130,12 @@ html, body {
 }
 
 .flowchart-container {
-    width: 70%;
+    width: 90%;
     padding: 2em;
     /*max-height: 100%;*/
     /*overflow-y: auto;*/
     border: 1px solid lightgrey;
-    border-radius: 1em;
+    border-radius: .5em;
 }
 
 .flowchart-table {
@@ -209,7 +209,7 @@ html, body {
     position: relative;
     z-index: 20;
     background: white;
-    border-radius: 1em;
+    border-radius: .5em;
 }
 
 .flowchart-table [colspan] .flowchart-card {
