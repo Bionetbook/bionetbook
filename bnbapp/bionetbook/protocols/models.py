@@ -371,8 +371,13 @@ class Protocol(TimeStampedModel):
 
     def get_item(self, objectid, item, key = False, **kwargs):
         out = None
-        call = self.nodes[objectid]
-        if item in call.keys():
+        call = False
+        try:
+            call = self.nodes[objectid]
+        except KeyError:
+            return None 
+        
+        if call and item in call.keys():
             out = call[item]
 
         if item not in call.keys():                
@@ -382,9 +387,6 @@ class Protocol(TimeStampedModel):
                 out = getattr(call, item) 
             except AttributeError:
                 out =  None    
-        # try:         
-        # if key and key in out:
-        #     out =  out[key]
         
         return out    
 
