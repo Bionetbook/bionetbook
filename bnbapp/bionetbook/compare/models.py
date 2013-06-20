@@ -77,110 +77,82 @@ class DiffObject(dict):
         self.name = protocol.nodes[objectid]['name']
         self.child_type = protocol.nodes[objectid].childtype()
 
-class CompareVerbs(dict):
+
+ 
+
+class AddCompareVerbs(dict):
     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
         '''        
-        CompareVerbs takes an objectid and compares it between the 2 protocols. 
+        CompareVerbs takes an objectid and compares it between the N protocols. 
         The object returns a dict with attributes to be considered or displayed in a visual diff. 
         the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
         '''
-        diff = False
-        self['name'] = [self.get_item(protocol_a, objectid, 'name'), self.get_item(protocol_b, objectid, 'name')]  
-        self['objectid'] = [self.get_item(protocol_a, objectid, 'objectid'), 
-                            self.get_item(protocol_b, objectid, 'objectid')]  
-        # self['object_type'] = 
-        self['object_type'] = [self.check_objectid(protocol_a, objectid, true = 'Verb'),   
-                            self.check_objectid(protocol_b, objectid, true = 'Verb')]  
+        self.A = self.get_node(protocol_a, objectid)
+        self.B = self.get_node(protocol_b, objectid)
+        # B = self.get_node(protocol_b, objectid)  
+        self['name'] = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]  
+        self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
+        self['object_type'] = [protocol_a.get_item(objectid, 'object_type'), protocol_b.get_item(objectid, 'object_type')]  
 
-        A = self.check_objectid(protocol_a, objectid)
-        B = self.check_objectid(protocol_b, objectid)  
+    def add_to_verb(self, protocol_a, protocol_b, objectid, **kwargs):
+        self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
+        # self.['duration'] = [protocol_a(objectid, 'duration'), protocol_b(objectid, 'duration')]
+        
+        diff = (self.A, self.B)
+
+        D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
+        if len(D.changed()) > 0:
+            item = next(obj for obj in diff if obj)    
+            if item.childtype() in D.changed():
+                self['child_diff'] = True
+            else:
+                self['child_diff'] = False
+
+
+        #self.get_children(protocol_a, protocol_b, objectid, **kwargs)            
+    
 
         # this should automatically add the values to all the keys / methods / properties 
         # and not return a KeyError. this is a basic method that can be used for verb and 
         # children objects. 
         # Sequence: this 
-        if A:
-            self['child_type'] = [A.childtype(), B.childtype()]
-        # self.['duration'] = [A.duration(), B.duration()]
-
-
-
-        if A and B:
-            summary_items = list(set(A).union(set(B)))
-            D = DictDiffer(A, B)
-            if len(D.changed()) > 0:
-                diff = True    
-        if A and not B:    
-            summary_items = A.summary.keys()
-            diff = True
-        if B and not A:    
-            summary_items = B.summary.keys()    
-            diff = True
-        
-        delete_items = [A.childtype(), 'slug', 'temp_units', 'time_units', 'temp_comment', 'verb','max_temp','max_time', 'min_temp', 'min_time', ]    
-        summary_items = self.trim_items(summary_items, delete_items)   
-
-
-
-        for item in summary_items:
-            # import pdb; pdb.set_trace()
-            self[item] =[self.get_item(protocol_a, objectid, item), 
-                        self.get_item(protocol_b, objectid, item)]  
-            
+    
         self.diff = diff 
 
-    
+    def get_children(self, protocol_a, protocol_b, objectid, **kwargs):
+        self['children'] = []
+        if self.A:
+            children_a = [r['objectid'] for r in self.A.children]
+        else:
+            children_a = []
 
+        if self.B:
+            children_b = [r['objectid'] for r in self.B.children]
+        else:
+            children_b = []
 
-    def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
-        out = []
-        modifiers = dir(protocol.nodes[objectid])
-        try:
-            if modifier in modifiers:   
-                call = getattr(protocol.nodes[objectid], modifier)
-            else:
-                call = protocol.nodes[objectid]
-        except KeyError:
-            return []
+        self.both = list(set(children_a).union(set(children_b)))                    
+        for child in self.both:
+            self['children'].append(CompareChildren(protocol_a, protocol_b, child))
+        
 
-        if item in call.keys():
-            out = call[item]
-
-        if item not in call.keys():                
-            try:
-                method = operator.methodcaller(item)
-                out = method(call)
-            except TypeError:
-                out = getattr(call, item)   
-            except AttributeError:
-                return []    
-
-        return out
-
-    def check_objectid(self, protocol, objectid, **kwargs):
+    def get_node(self, protocol, objectid, **kwargs):
         
         try:
             result = protocol.nodes[objectid]
         except KeyError:
-            result = []
+            result = None
 
-        if 'true' in kwargs:
+        if 'true' in kwargs and result:
             return kwargs['true']
         else:
             return result       
 
-    def trim_items(self, items, delete_items):
-        
-        for erase in delete_items:
-            if erase not in items:
-                continue
-            else:
-                items.pop(items.index(erase))
-
-        return items    
-
-class CompareChildren(CompareVerbs):
+class CompareChildren(AddCompareVerbs):
     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+        
+        super(CompareChildren, self).__init__(protocol_a, protocol_b, objectid, **kwargs)
+        # import pdb; pdb.set_trace()
         '''
         CompareChildren takes an objectid and compares it between the 2 protocols. 
         The object returns a dict with attributes to be displayed in a visual diff. 
@@ -188,68 +160,39 @@ class CompareChildren(CompareVerbs):
         '''
         
         diff = False
-        self['name'] = [self.get_item(protocol_a, objectid, 'name'), self.get_item(protocol_b, objectid, 'name')]  
-        self['objectid'] = [self.get_item(protocol_a, objectid, 'objectid'), self.get_item(protocol_b, objectid, 'objectid')]  
-        # self['object_type'] = 
-        self['object_type'] = [protocol_a.nodes[protocol_a.nodes[objectid].parent['objectid']].childtype(), 
-                        protocol_b.nodes[protocol_b.nodes[objectid].parent['objectid']].childtype()]
-        self['URL'] = [protocol_a.nodes[protocol_a.nodes[objectid].parent['objectid']].action_update_url(), 
-                        protocol_b.nodes[protocol_b.nodes[objectid].parent['objectid']].action_update_url()]                
+        # self['name'] = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]  
+        # self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
+        # self['object_type'] = [self.get_node(protocol_a, objectid, true = 'Verb'),   
+        #                 self.get_node(protocol_b, objectid, true = 'Verb')]  
+        # self['URL'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
+        # self['URL'] = [protocol_a.nodes[protocol_a.nodes[objectid].parent['objectid']].action_update_url(), 
+        #                 protocol_b.nodes[protocol_b.nodes[objectid].parent['objectid']].action_update_url()]                
 
-        A = self.check_objectid(protocol_a, objectid)
-        B = self.check_objectid(protocol_b, objectid)
+        A = self.get_node(protocol_a, objectid)
+        B = self.get_node(protocol_b, objectid)
 
         if A and B:
             summary_items = list(set(A.summary).union(set(B.summary)))
             D = DictDiffer(A.summary, B.summary)
             if len(D.changed()) > 0:
-                diff = True    
+                diff = True 
+
+            for item in summary_items:
+                self[item] = [A.summary.get(item), B.summary.get(item)] 
+
         if A and not B:    
             summary_items = A.summary.keys()
             diff = True
+            for item in summary_items:
+                self[item] = [A.summary.get(item), []] 
         if B and not A:    
             summary_items = B.summary.keys()    
             diff = True
+            for item in summary_items:
+                self[item] = [[], B.summary.get(item)] 
 
-        for item in summary_items:
-            self[item] =[self.get_item(protocol_a, objectid, item, modifier = 'summary'), 
-                        self.get_item(protocol_b, objectid, item, modifier = 'summary')]  
             
-        self.diff = diff 
-
-    # def get_item(self, protocol, objectid, item, modifier = False, **kwargs):
-    #     out = []
-    #     try:
-    #         if modifier == 'summary':
-    #             call = protocol.nodes[objectid].summary
-    #         else:
-    #             call = protocol.nodes[objectid]
-    #     except KeyError:
-    #         return []
-
-    #     if item in call.keys():
-    #         out = call[item]
-    #     else:
-    #         try:
-    #             method = operator.methodcaller(item)
-    #             out = method(call)
-    #         except TypeError:
-    #             out = getattr(call, item)   
-
-    #     return out
-
-    # def check_objectid(self, protocol, objectid, **kwargs):
-        
-    #     try:
-    #         result = protocol.nodes[objectid]
-    #     except KeyError:
-    #         result = []
-
-    #     return result       
-
-
-        
-
+        self.diff = diff
 
 class Compare(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
