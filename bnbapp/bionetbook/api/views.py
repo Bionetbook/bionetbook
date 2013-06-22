@@ -5,7 +5,7 @@ import django.utils.simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
 from django import http
-from compare.models import ProtocolPlot, DictDiffer, Compare
+from compare.models import ProtocolPlot, DictDiffer, Compare, AddCompareVerbs, AddCompareChildren
 from protocols.models import Protocol
 
 def protocol_detail(request, protocol_slug):
@@ -20,6 +20,13 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
+def json_dump_all(request):
+    '''
+    Very simple JSON Call example.
+    '''
+    p = Protocol.objects.filter(published=True, public=True)
+    result = [{'name':x.name, 'pk':x.pk} for x in p]
+    return HttpResponse(json.dumps(result), mimetype="application/json")
 def protocol_json(request, protocol_slug):
     '''
     returns json with basic protocol data: 
@@ -97,7 +104,7 @@ def protocol_diff_json(request, protocol_a_slug, protocol_b_slug):
     data_dict = G.get_aligned_diff_object()
     return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json") 
 
-def protocol_diff_json_aligned(request, protocol_a_slug, protocol_b_slug):
+def protocols_aligned_json(request, protocol_a_slug, protocol_b_slug):
     '''
     Very simple JSON Call example.
     '''
@@ -106,23 +113,53 @@ def protocol_diff_json_aligned(request, protocol_a_slug, protocol_b_slug):
     G = Compare(A,B)
 
     data_dict = G.get_aligned_protocols()
-    return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json")     
 
 
-def json_dump_all(request):
+
+def protocols_object_aligned_json(request, protocol_a_slug, protocol_b_slug):
     '''
     Very simple JSON Call example.
     '''
-    p = Protocol.objects.filter(published=True, public=True)
-    result = [{'name':x.name, 'pk':x.pk} for x in p]
-    return HttpResponse(json.dumps(result), mimetype="application/json")
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    G = AddCompareVerbs(A, B, 'kttj4d')
+    G.add_to_verb(A, B, 'kttj4d')
+    G.get_children(A, B, 'kttj4d')
+    data_dict = []
+    data_dict.append(G)
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    return HttpResponse(json.dumps(data_dict), mimetype="application/json")     
 
 
 def json_manual_data(request):
     json_data = open("api/protocol_outline.json").read()
     data = json.loads(json_data)
-    return HttpResponse(json.dumps(data), mimetype="application/json")
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
+def json_manual_data_1_step(request):
+    json_data = open("api/protocol_outline_1_step.json").read()
+    data = json.loads(json_data)
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")    
+
+
+class JsonManualView(TemplateView):
+    template_name = "api/protocol_layout.html"
+
+class JsonControllerView(TemplateView):
+    template_name = "api/protocol_layout1.html"    
+
+class JsonObjectControllerView(TemplateView):
+    template_name = "api/protocol_layout2.html"        
+
+class JsonManual1StepView(TemplateView):
+    template_name = "api/protocol_layout3.html"            
+
+class JsonObjectController3WayView(TemplateView):
+    template_name = "api/protocol_layout_api.html"                
 
 class JSONResponseMixin(object):
     # def render_to_response(self, context):
@@ -185,8 +222,7 @@ class JQTestView(JSONResponseMixin, TemplateView):
         #     #return SingleObjectTemplateResponseMixin.render_to_response(self, context)
         #     return self.render_to_response(self, {'one':"two"})
 
-class JsonTestView(TemplateView):
-    template_name = "api/protocol_layout.html"
+
 
 
 
