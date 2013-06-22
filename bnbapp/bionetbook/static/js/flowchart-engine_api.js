@@ -2,8 +2,11 @@
 
     var lastWidths = [];
 
+    var colCount = 0;
+    var colColors = []
+
     var onresize = function(e){
-        var colCount = $('.flowchart-table tbody tr:first td').size() - 1;
+
         console.log(colCount);
         // Prevent unnecessary rendering
         var widthDifferences = 0;
@@ -61,7 +64,8 @@
             $('<div class="flowchart-line"></div>')
                 .css({
                     top : topOffset - startOffset,
-                    height: bottomOffset - topOffset
+                    height: bottomOffset - topOffset,
+                    background: 'rgba('+colColors[i-1][0]+','+colColors[i-1][1]+','+colColors[i-1][2]+',1)'
                 })
                 .appendTo( $('.flowchart-line-wrapper td:nth-child(' + (i+1) +') .flowchart-line-container') );
         }
@@ -114,6 +118,14 @@
             $tbody.append( rowTmpl(tmplData) );
         });
 
+        colCount = $('.flowchart-table tbody tr:first td').size() - 1;
+
+        for (var i=0; i < colCount; i++) {
+            var rgba = [];
+            for (var j=0; j < 3; j++)
+                rgba.push(Math.floor( Math.random()* 156 + 100));
+            colColors.push(rgba);
+        }
 
     };
 

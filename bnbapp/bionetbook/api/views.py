@@ -158,8 +158,12 @@ class JsonObjectControllerView(TemplateView):
 class JsonManual1StepView(TemplateView):
     template_name = "api/protocol_layout3.html"            
 
+# class JsonObjectController3WayView(TemplateView):
+#     template_name = "api/protocol_layout_api.html"                
+
 class JsonObjectController3WayView(TemplateView):
-    template_name = "api/protocol_layout_api.html"                
+    template_name = "api/protocol_layout_api_3.html"                
+
 
 class JSONResponseMixin(object):
     # def render_to_response(self, context):

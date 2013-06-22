@@ -8,7 +8,7 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from protocols.utils import MANUAL_VERBS
+from protocols.utils import MANUAL_VERBS, MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, settify, labeler 
 from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label #, html_label_one_protocol, add_html_cell, set_title_label,
 import itertools
 import operator
@@ -67,138 +67,9 @@ class ProtocolPlot(Protocol):
         self.agraph = pgv.AGraph(ranksep = '0.2')  
         self.pks = [self.nodes[r].pk for r in self.get_actions()] # list of actions in pk-objectid format
         
-class DiffObject(dict):
-    def __init__(self, protocol, objectid=None, **kwargs):
-        #self.parent = parent
-        # super(DiffObject, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
-
-        child_nodes = ['machine', 'components', 'thermocycle']
-        self.objectid = objectid
-        self.name = protocol.nodes[objectid]['name']
-        self.child_type = protocol.nodes[objectid].childtype()
-
-
- 
-
-class AddCompareVerbs(dict):
-    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
-        '''        
-        CompareVerbs takes an objectid and compares it between the N protocols. 
-        The object returns a dict with attributes to be considered or displayed in a visual diff. 
-        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
-        '''
-        self.A = self.get_node(protocol_a, objectid)
-        self.B = self.get_node(protocol_b, objectid)
-        # B = self.get_node(protocol_b, objectid)  
-        self['name'] = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]  
-        self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
-        self['object_type'] = [protocol_a.get_item(objectid, 'object_type'), protocol_b.get_item(objectid, 'object_type')]  
-
-    def add_to_verb(self, protocol_a, protocol_b, objectid, **kwargs):
-        self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
-        # self.['duration'] = [protocol_a(objectid, 'duration'), protocol_b(objectid, 'duration')]
-        
-        diff = (self.A, self.B)
-
-        D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
-        if len(D.changed()) > 0:
-            item = next(obj for obj in diff if obj)    
-            if item.childtype() in D.changed():
-                self['child_diff'] = True
-            else:
-                self['child_diff'] = False
-
-
-        #self.get_children(protocol_a, protocol_b, objectid, **kwargs)            
-    
-
-        # this should automatically add the values to all the keys / methods / properties 
-        # and not return a KeyError. this is a basic method that can be used for verb and 
-        # children objects. 
-        # Sequence: this 
-    
-        self.diff = diff 
-
-    def get_children(self, protocol_a, protocol_b, objectid, **kwargs):
-        self['children'] = []
-        if self.A:
-            children_a = [r['objectid'] for r in self.A.children]
-        else:
-            children_a = []
-
-        if self.B:
-            children_b = [r['objectid'] for r in self.B.children]
-        else:
-            children_b = []
-
-        self.both = list(set(children_a).union(set(children_b)))                    
-        for child in self.both:
-            self['children'].append(CompareChildren(protocol_a, protocol_b, child))
-        
-
-    def get_node(self, protocol, objectid, **kwargs):
-        
-        try:
-            result = protocol.nodes[objectid]
-        except KeyError:
-            result = None
-
-        if 'true' in kwargs and result:
-            return kwargs['true']
-        else:
-            return result       
-
-class CompareChildren(AddCompareVerbs):
-    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
-        
-        super(CompareChildren, self).__init__(protocol_a, protocol_b, objectid, **kwargs)
-        # import pdb; pdb.set_trace()
-        '''
-        CompareChildren takes an objectid and compares it between the 2 protocols. 
-        The object returns a dict with attributes to be displayed in a visual diff. 
-        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
-        '''
-        
-        diff = False
-        # self['name'] = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]  
-        # self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
-        # self['object_type'] = [self.get_node(protocol_a, objectid, true = 'Verb'),   
-        #                 self.get_node(protocol_b, objectid, true = 'Verb')]  
-        # self['URL'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
-        # self['URL'] = [protocol_a.nodes[protocol_a.nodes[objectid].parent['objectid']].action_update_url(), 
-        #                 protocol_b.nodes[protocol_b.nodes[objectid].parent['objectid']].action_update_url()]                
-
-        A = self.get_node(protocol_a, objectid)
-        B = self.get_node(protocol_b, objectid)
-
-        if A and B:
-            summary_items = list(set(A.summary).union(set(B.summary)))
-            D = DictDiffer(A.summary, B.summary)
-            if len(D.changed()) > 0:
-                diff = True 
-
-            for item in summary_items:
-                self[item] = [A.summary.get(item), B.summary.get(item)] 
-
-        if A and not B:    
-            summary_items = A.summary.keys()
-            diff = True
-            for item in summary_items:
-                self[item] = [A.summary.get(item), []] 
-        if B and not A:    
-            summary_items = B.summary.keys()    
-            diff = True
-            for item in summary_items:
-                self[item] = [[], B.summary.get(item)] 
-
-            
-        self.diff = diff
-
 class Compare(object):
     def __init__(self, protocol_a, protocol_b = None, format="svg", **kwargs):
 
-        self.agraph = pgv.AGraph(ranksep = '0.2')
-        self.agraph.graph_attr['clusterrank'] = 'local' # do not remove this line
         self.protocol_A = protocol_a
         self.A_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions()]
         self.flags = {}
@@ -206,11 +77,11 @@ class Compare(object):
         if protocol_b == None:
             self.protocol_B = protocol_a
             self.B_pk = [self.protocol_A.nodes[r].pk for r in self.protocol_A.get_actions()]
-            self.flags['steps'] = True
+            
         else:
             self.protocol_B = protocol_b    
             self.B_pk = [self.protocol_B.nodes[r].pk for r in self.protocol_B.get_actions()]
-            self.flags['steps'] = False
+
 
         # find all actions common to both protocols:    
         self.both = list(set(self.protocol_A.get_actions()).intersection(set(self.protocol_B.get_actions())))
@@ -220,7 +91,7 @@ class Compare(object):
         self.b_unique = set(self.protocol_B.get_actions())-set(self.protocol_A.get_actions())
 
         self.aligned = self.align_verbs()            
-    
+
     def isint(self, x): 
         if type(x) is int:
             return True
@@ -257,270 +128,453 @@ class Compare(object):
                 out.append((None, row[0]))  
         
         return out          
-    
-    def find_diff_verbs(self, **kwargs):
 
-        # A = self.protocol_A
-        # B = self.protocol_B
-        # verbs = list(set(A.get_actions()).union(set(B.get_actions())))
 
-        diffs = []
-        for verb in self.align_verbs():
-            if None in verb:
-                diffs.append((verb, []))
-            else:
-                D = DictDiffer(self.protocol_A.nodes[verb[0]], self.protocol_B.nodes[verb[1]])
-                changed = D.changed()
-                uniqs_a = D.uniq_a()
-                uniqs_b = D.uniq_b()
-                
-                diff_attributes = []
-                dirty = False
-
-                if changed:
-                    diff_attributes.append(changed)
-                    dirty = True
-                if uniqs_a:
-                    diff_attributes.append(added)
-                    dirty = True
-                if uniqs_b:
-                    diff_attributes.append(removed)
-                    dirty = True
-
-                if dirty:    
-                    attributes = [item for sublist in diff_attributes for item in sublist]
-                    diffs.append((verb, attributes))        
-
-        return diffs          
-
-    def get_diff_alignment(self, **kwargs):
-
-        # A = self.protocol_A
-        # B = self.protocol_B
-        # verbs = list(set(A.get_actions()).union(set(B.get_actions())))
-
-        diffs = []
-        for verb in self.align_verbs():
-            if None in verb:
-                diffs.append((verb, []))
-            else:
-                D = DictDiffer(self.protocol_A.nodes[verb[0]], self.protocol_B.nodes[verb[1]])
-                changed = D.changed()
-                uniqs_a = D.uniq_a()
-                uniqs_b = D.uniq_b()
-                
-                diff_attributes = []
-                dirty = False
-
-                if changed:
-                    diff_attributes.append(changed)
-                    dirty = True
-                if uniqs_a:
-                    diff_attributes.append(added)
-                    dirty = True
-                if uniqs_b:
-                    diff_attributes.append(removed)
-                    dirty = True
-                    
-                attributes = [item for sublist in diff_attributes for item in sublist]
-                diffs.append((verb, attributes))        
-
-        return diffs              
-
-    def get_aligned_diff_object(self, **kwargs):
+    def get_protocol_layout_json(self, protocol, aligned = False, **kwargs):
         
-        out = []
-        # dirty = False
-        child_nodes = ['machine', 'components', 'thermocycle']
-        diff = self.find_diff_verbs()
-        for obj in diff:
-            dirty = False
-            if None in obj[0]:
-                dirty = True
-                if not obj[0][0]:
-                    protocol = self.protocol_B 
-                    objid = obj[0][1]
-                else:
-                    protocol = self.protocol_A
-                    objid = obj[0][0]
-            else:
-                protocol = self.protocol_A
-                objid = obj[0][0]
-            
-            node_dict = self.get_diff_attributes(obj)
-            node_dict['node_type'] = "verb"
-            node_dict['name'] = protocol.nodes[objid]['name']
-            node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-            node_dict['verb_objectid'] = obj[0]
-            node_dict['child_type'] = protocol.nodes[objid].childtype()
-            if node_dict['child_type'] in child_nodes:
-                if dirty:
-                    nodes = protocol.nodes[objid].children
-                    node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
-                else:    
-                    node_dict['child'] = self.get_child_diff(objid)
-
-            out.append(node_dict)
-
-        return out 
+        objids = protocol.get_actions()
+        self.layout = []
+        for verb in objids:
+            temp = AddCompareVerbs(protocol, protocol, verb)
+            print 'adding', protocol.nodes[verb]['name'], protocol.nodes[verb]['objectid']
+            print temp.keys()
+            temp.add_to_verb(protocol, protocol, verb)
+            print 'stage 2', temp.keys()
+            temp.get_children(protocol, protocol, verb)
+            # print 'stage 3', temp['child'].keys()
+            self.layout.append(temp)
 
 
+        # self.layout = [AddCompareVerbs(protocol, protocol, verb) for verb in verbs]
 
-    def get_aligned_protocols(self, **kwargs):
+
+ 
+
+class AddCompareVerbs(dict):
+    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+        '''        
+        CompareVerbs takes an objectid and compares it between the N protocols. 
+        The object returns a dict with attributes to be considered or displayed in a visual diff. 
+        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
+        '''
+        self.A = self.get_node(protocol_a, objectid)
+        self.B = self.get_node(protocol_b, objectid)
+        # B = self.get_node(protocol_b, objectid) 
+
+
+        temp_name = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]  
+        self['name'] = next(obj for obj in temp_name if obj)
+
+        temp_node_type = [protocol_a.get_item(objectid, 'object_type'), protocol_b.get_item(objectid, 'object_type')]  
+
+        self['node_type'] = next(obj for obj in temp_node_type if obj)
         
-        out = []
-        # dirty = False
-        child_nodes = ['machine', 'components', 'thermocycle']
-        diff = self.get_diff_alignment()
-        for obj in diff:
-            dirty = False
-            if None in obj[0]:
-                dirty = True
-                if not obj[0][0]:
-                    protocol = self.protocol_B 
-                    objid = obj[0][1]
-                else:
-                    protocol = self.protocol_A
-                    objid = obj[0][0]
+        self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
+        
+
+    def add_to_verb(self, protocol_a, protocol_b, objectid, **kwargs):
+        self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
+        
+        # self['duration'] = [protocol_a.get_item(objectid, 'duration')[0], protocol_b.get_item(objectid, 'duration')[0]]
+        self['duration'] = [protocol_a.nodes[objectid].get('duration', "None"), protocol_b.nodes[objectid].get('duration', "None")]
+        
+        diff = (self.A, self.B)
+
+        D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
+        if len(D.changed()) > 0:
+            item = next(obj for obj in diff if obj)    
+            if item.childtype() in D.changed():
+                self['child_diff'] = "True"
             else:
-                protocol = self.protocol_A
-                objid = obj[0][0]
-            
-            node_dict = self.get_diff_attributes(obj)
-            node_dict['node_type'] = "verb"
-            node_dict['name'] = protocol.nodes[objid]['name']
-            node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-            node_dict['verb_objectid'] = obj[0]
-            node_dict['child_type'] = protocol.nodes[objid].childtype()
-            if node_dict['child_type'] in child_nodes:
-                if dirty:
-                    nodes = protocol.nodes[objid].children
-                    node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
-                else:    
-                    node_dict['child'] = self.get_child_diff(objid)
+                self['child_diff'] = "False"
 
-            out.append(node_dict)
-
-        return out     
-
+        # this should automatically add the values to all the keys / methods / properties 
+        # and not return a KeyError. this is a basic method that can be used for verb and 
+        # children objects. 
+        # Sequence: this 
     
-    def get_diff_attributes(self, obj, **kwargs):
-        '''obj: ((objectid_a, objectid_b), [attributes])'''
+        self.diff = diff 
 
-        child_nodes = ['machine', 'components', 'thermocycle']
+    def get_children(self, protocol_a, protocol_b, objectid, **kwargs):
+        self['child'] = []
+        children_a = []
+        children_b = []
+        
+        if self.A['name'] in MANUAL_VERBS:    
+            children_a = self.A.summary.keys()
+        
+        if self.B['name'] in MANUAL_VERBS:
+                children_a = self.B.summary.keys()
+        
+        self.both = list(set(children_a).union(set(children_b)))                    
+        for child in self.both:
+            self['child'].append(AddCompareChildren(protocol_a, protocol_b, child))        
+        
 
-        out = {}
-        non_children_attributes = list(set(obj[1])-set(child_nodes))
-        for attr in non_children_attributes:
-            out[attr] = [self.protocol_A.nodes[obj[0][0]][attr],self.protocol_B.nodes[obj[0][1]][attr]]
 
-        return out    
+        if self.A:
+            children_a = [r['objectid'] for r in self.A.children]
 
-    def get_child_diff(self, parent_id, **kwargs):
-        ''' this method is called knowing that the parent_id has children
+        if self.B:    
+            children_b = [r['objectid'] for r in self.B.children]
+        
+        self.both = list(set(children_a).union(set(children_b)))                    
+        for child in self.both:
+            self['child'].append(AddCompareChildren(protocol_a, protocol_b, child))
+        
+
+    def get_node(self, protocol, objectid, **kwargs):
+        
+        try:
+            result = protocol.nodes[objectid]
+        except KeyError:
+            result = None
+
+        if 'true' in kwargs and result:
+            return kwargs['true']
+        else:
+            return result       
+
+class AddCompareChildren(AddCompareVerbs):
+    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+        
+        super(AddCompareChildren, self).__init__(protocol_a, protocol_b, objectid, **kwargs)
+        # import pdb; pdb.set_trace()
+        '''
+        CompareChildren takes an objectid and compares it between the 2 protocols. 
+        The object returns a dict with attributes to be displayed in a visual diff. 
+        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
         '''
         
-        out = []
-        children_a = self.protocol_A.nodes[parent_id].children # either one or more children
-        children_b = self.protocol_B.nodes[parent_id].children
+        diff = False
+        # self['URL'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
+        # self['URL'] = [protocol_a.nodes[protocol_a.nodes[objectid].parent['objectid']].action_update_url(), 
+        #                 protocol_b.nodes[protocol_b.nodes[objectid].parent['objectid']].action_update_url()]                
+        del(self['objectid'])
+        temp_objectid = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]  
+        self['node_objectid'] = next(obj for obj in temp_objectid if obj)
 
-        
-        children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
-        children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
-        
-        both = list(set(children_A).intersection(set(children_B)))    
-        unique_A = list(set(children_A)-set(children_B))
-        unique_B = list(set(children_B)-set(children_A)) 
-        
-        if len(both) == 1:
-            temp = self.child_compare(0, both[0])        
-            if temp:
-                out.append(temp)
-            
-        if len(both) > 1:
-            for (cnt, item) in enumerate(both):    
-                temp = self.child_compare(cnt, item) 
-                if temp:
-                    out.append(temp)
-
-        if len(unique_A) == 1:
-            temp = self.child_dict(0, unique_A[0], side = 'LEFT')
-            if temp:
-                out.append(temp)
-            
-        if len(unique_A) > 1:
-            for (cnt, item) in enumerate(unique_A):    
-                temp = self.child_dict(cnt, item, side = 'LEFT') 
-                if temp:
-                    out.append(temp)
-
-        if len(unique_B) == 1:
-            temp = self.child_dict(0, unique_B[0], side = 'RIGHT')
-            if temp:
-                out.append(temp)
-            
-        if len(unique_B) > 1:
-            for (cnt, item) in enumerate(unique_B):    
-                temp = self.child_dict(cnt, item, side = 'RIGHT') 
-                if temp:
-                    out.append(temp)                                
-        return out             
-        
-    
-    def child_compare(self, cnt, item, **kvargs):    
-        dirty = False
-        child_dict={}
-        LEFT = self.protocol_A
-        RIGHT = self.protocol_B
-        # child_dict['order'] = str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype()) + ' ' + str(cnt)
-        
-        child_dict['name'] =  [LEFT.nodes[item]['name'], RIGHT.nodes[item]['name']] 
-        child_dict['node_type'] =  str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype())
-        child_dict['number'] =  child_dict['node_type'] + ' ' + str(cnt)
-        child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-        child_dict['node_objectid'] = LEFT.nodes[item]['objectid']
-        D = DictDiffer(LEFT.nodes[item].summary, RIGHT.nodes[item].summary)
-        
-        for attr in D.changed():  
-            if len(D.changed()) > 0:
-                dirty = True
-                child_dict[attr] = [LEFT.nodes[item].summary[attr],RIGHT.nodes[item].summary[attr]]
-    
-        for attr in D.uniq_a():
-            if len(D.uniq_a()) > 0:    
-                dirty = True
-                child_dict[attr] = [LEFT.nodes[item].summary[attr],None]
-
-        for attr in D.uniq_b():
-            if len(D.uniq_b()) > 0:    
-                dirty = True
-                child_dict[attr] = [None, RIGHT.nodes[item].summary[attr]]    
-
-        if dirty:
-            return child_dict        
+        A = self.get_node(protocol_a, objectid)
+        B = self.get_node(protocol_b, objectid)
+        # set URL function:
+        if A:
+            A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'action_update_url')()        
+            if 'Published' in protocol_a.status:
+                A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'get_absolute_url')()    
         else:
-            return {}    
+            A_url = None        
 
-    def child_dict(self, cnt, item, side = None):
-        child_dict={}
-        if side == 'LEFT':
-            protocol = self.protocol_A
-        if side == 'RIGHT': 
-            protocol = self.protocol_B
+        if B:
+            B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'action_update_url')()    
+            if 'Published' in protocol_b.status:
+                B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'get_absolute_url')()
+        else:
+            B_url = None        
+
+        self['URL'] = [A_url, B_url]    
+
+        if A and B:    
             
-        child_dict['name'] =  protocol.nodes[item]['name']
-        child_dict['node_type'] =  str(protocol.nodes[protocol.nodes[item].parent['objectid']].childtype())
-        child_dict['number'] =  child_dict['node_type'] + ' ' + str(cnt)
-        child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
-        child_dict['node_objectid'] = protocol.nodes[item]['objectid']
-        # if side == 'LEFT':
-        for attr in protocol.nodes[item].summary:
-            child_dict[attr] = [protocol.nodes[item].summary[attr], None]
-        # if side == 'RIGHT':
-        #     for attr in self.protocol_B.nodes[item].summary:        
-        #         child_dict[attr] = [None, self.protocol_B.nodes[item].summary[attr]]                      
+            summary_items = list(set(A.summary).union(set(B.summary)))
+            D = DictDiffer(A.summary, B.summary)
+            if len(D.changed()) > 0:
+                diff = True 
+            for item in summary_items:
+                self[item] = [A.summary.get(item, "None"), B.summary.get(item, "None")] 
 
-        return child_dict        
+        if A and not B:    
+            summary_items = A.summary.keys()
+            diff = True
+            for item in summary_items:
+                self[item] = [A.summary.get(item, "None"), "None"] 
+        
+        if B and not A:    
+            summary_items = B.summary.keys()    
+            diff = True
+            for item in summary_items:
+                self[item] = ["None", B.summary.get(item, "None")] 
+
+            
+        self.diff = diff
+
+        
+    
+# __________________________________________________________________________________________    
+    # def find_diff_verbs(self, **kwargs):
+
+    #     # A = self.protocol_A
+    #     # B = self.protocol_B
+    #     # verbs = list(set(A.get_actions()).union(set(B.get_actions())))
+
+    #     diffs = []
+    #     for verb in self.align_verbs():
+    #         if None in verb:
+    #             diffs.append((verb, []))
+    #         else:
+    #             D = DictDiffer(self.protocol_A.nodes[verb[0]], self.protocol_B.nodes[verb[1]])
+    #             changed = D.changed()
+    #             uniqs_a = D.uniq_a()
+    #             uniqs_b = D.uniq_b()
+                
+    #             diff_attributes = []
+    #             dirty = False
+
+    #             if changed:
+    #                 diff_attributes.append(changed)
+    #                 dirty = True
+    #             if uniqs_a:
+    #                 diff_attributes.append(added)
+    #                 dirty = True
+    #             if uniqs_b:
+    #                 diff_attributes.append(removed)
+    #                 dirty = True
+
+    #             if dirty:    
+    #                 attributes = [item for sublist in diff_attributes for item in sublist]
+    #                 diffs.append((verb, attributes))        
+
+    #     return diffs          
+
+    # def get_diff_alignment(self, **kwargs):
+
+    #     # A = self.protocol_A
+    #     # B = self.protocol_B
+    #     # verbs = list(set(A.get_actions()).union(set(B.get_actions())))
+
+    #     diffs = []
+    #     for verb in self.align_verbs():
+    #         if None in verb:
+    #             diffs.append((verb, []))
+    #         else:
+    #             D = DictDiffer(self.protocol_A.nodes[verb[0]], self.protocol_B.nodes[verb[1]])
+    #             changed = D.changed()
+    #             uniqs_a = D.uniq_a()
+    #             uniqs_b = D.uniq_b()
+                
+    #             diff_attributes = []
+    #             dirty = False
+
+    #             if changed:
+    #                 diff_attributes.append(changed)
+    #                 dirty = True
+    #             if uniqs_a:
+    #                 diff_attributes.append(uniqs_a)
+    #                 dirty = True
+    #             if uniqs_b:
+    #                 diff_attributes.append(uniqs_b)
+    #                 dirty = True
+                    
+    #             attributes = [item for sublist in diff_attributes for item in sublist]
+    #             diffs.append((verb, attributes))        
+
+    #     return diffs              
+
+    # def get_aligned_diff_object(self, **kwargs):
+        
+    #     out = []
+    #     # dirty = False
+    #     child_nodes = ['machine', 'components', 'thermocycle']
+    #     diff = self.find_diff_verbs()
+    #     for obj in diff:
+    #         dirty = False
+    #         if None in obj[0]:
+    #             dirty = True
+    #             if not obj[0][0]:
+    #                 protocol = self.protocol_B 
+    #                 objid = obj[0][1]
+    #             else:
+    #                 protocol = self.protocol_A
+    #                 objid = obj[0][0]
+    #         else:
+    #             protocol = self.protocol_A
+    #             objid = obj[0][0]
+            
+    #         node_dict = self.get_diff_attributes(obj)
+    #         node_dict['node_type'] = "Action"
+    #         node_dict['name'] = protocol.nodes[objid]['name']
+    #         node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+    #         node_dict['verb_objectid'] = obj[0]
+    #         node_dict['child_type'] = protocol.nodes[objid].childtype()
+    #         if node_dict['child_type'] in child_nodes:
+    #             if dirty:
+    #                 nodes = protocol.nodes[objid].children
+    #                 node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
+    #             else:    
+    #                 node_dict['child'] = self.get_child_diff(objid)
+
+    #         out.append(node_dict)
+
+    #     return out 
+
+
+
+    # def get_aligned_protocols(self, **kwargs):
+        
+    #     out = []
+    #     # dirty = False
+    #     child_nodes = ['machine', 'components', 'thermocycle']
+    #     diff = self.get_diff_alignment()
+    #     for obj in diff:
+    #         dirty = False
+    #         if None in obj[0]:
+    #             dirty = True
+    #             if not obj[0][0]:
+    #                 protocol = self.protocol_B 
+    #                 objid = obj[0][1]
+    #             else:
+    #                 protocol = self.protocol_A
+    #                 objid = obj[0][0]
+    #         else:
+    #             protocol = self.protocol_A
+    #             objid = obj[0][0]
+            
+    #         node_dict = self.get_diff_attributes(obj)
+    #         node_dict['node_type'] = "Action"
+    #         node_dict['name'] = protocol.nodes[objid]['name']
+    #         # node_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+    #         node_dict['objectid'] = obj[0]
+    #         node_dict['child_type'] = protocol.nodes[objid].childtype()
+    #         node_dict['child_diff'] = False
+    #         print str(protocol.nodes[objid].childtype())
+    #         print obj[1]
+    #         print str(protocol.nodes[objid].childtype()) in obj[1]
+    #         if str(protocol.nodes[objid].childtype()) in obj[1]:
+    #             node_dict['child_diff'] = True                
+        
+    #         if node_dict['child_type'] in child_nodes:
+    #             if dirty:
+    #                 print 
+    #                 nodes = protocol.nodes[objid].children
+    #                 node_dict['child'] = [r.summary for r in protocol.nodes[objid].children]
+    #             else:    
+    #                 node_dict['child'] = self.get_child_diff(objid)
+
+    #         out.append(node_dict)
+
+    #     return out     
+
+    
+    # def get_diff_attributes(self, obj, **kwargs):
+    #     '''obj: ((objectid_a, objectid_b), [attributes])'''
+
+    #     child_nodes = ['machine', 'components', 'thermocycle']
+    #     exclude = ['duration', u'physical_commitment']
+    #     exclude_all = child_nodes + exclude
+    #     out = {}
+    #     non_children_attributes = list(set(obj[1])-set(exclude_all))
+        
+
+
+    #     for attr in non_children_attributes:
+    #         out[attr] = [getattr(self.protocol_A.nodes[obj[0][0]], attr), getattr(self.protocol_B.nodes[obj[0][1]], attr)]
+
+    #     return out    
+
+    # def get_child_diff(self, parent_id, **kwargs):
+    #     ''' this method is called knowing that the parent_id has children
+    #     '''
+        
+    #     out = []
+    #     children_a = self.protocol_A.nodes[parent_id].children # either one or more children
+    #     children_b = self.protocol_B.nodes[parent_id].children
+
+        
+    #     children_A = [r['objectid'] for r in self.protocol_A.nodes[parent_id].children if self.protocol_A.nodes[parent_id].childtype() is not None ]
+    #     children_B = [r['objectid'] for r in self.protocol_B.nodes[parent_id].children if self.protocol_B.nodes[parent_id].childtype() is not None ]
+        
+    #     both = list(set(children_A).intersection(set(children_B)))    
+    #     unique_A = list(set(children_A)-set(children_B))
+    #     unique_B = list(set(children_B)-set(children_A)) 
+        
+    #     if len(both) == 1:
+    #         temp = self.child_compare(0, both[0])        
+    #         if temp:
+    #             out.append(temp)
+            
+    #     if len(both) > 1:
+    #         for (cnt, item) in enumerate(both):    
+    #             temp = self.child_compare(cnt, item) 
+    #             if temp:
+    #                 out.append(temp)
+
+    #     if len(unique_A) == 1:
+    #         temp = self.child_dict(0, unique_A[0], side = 'LEFT')
+    #         if temp:
+    #             out.append(temp)
+            
+    #     if len(unique_A) > 1:
+    #         for (cnt, item) in enumerate(unique_A):    
+    #             temp = self.child_dict(cnt, item, side = 'LEFT') 
+    #             if temp:
+    #                 out.append(temp)
+
+    #     if len(unique_B) == 1:
+    #         temp = self.child_dict(0, unique_B[0], side = 'RIGHT')
+    #         if temp:
+    #             out.append(temp)
+            
+    #     if len(unique_B) > 1:
+    #         for (cnt, item) in enumerate(unique_B):    
+    #             temp = self.child_dict(cnt, item, side = 'RIGHT') 
+    #             if temp:
+    #                 out.append(temp)                                
+    #     return out             
+        
+    
+    # def child_compare(self, cnt, item, **kvargs):    
+    #     dirty = False
+    #     child_dict={}
+    #     LEFT = self.protocol_A
+    #     RIGHT = self.protocol_B
+    #     # child_dict['order'] = str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype()) + ' ' + str(cnt)
+        
+    #     child_dict['name'] =  [LEFT.nodes[item]['name'], RIGHT.nodes[item]['name']] 
+    #     child_dict['node_type'] =  str(LEFT.nodes[LEFT.nodes[item].parent['objectid']].childtype())
+    #     child_dict['number'] =  child_dict['node_type'] + ' ' + str(cnt)
+    #     child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+    #     child_dict['node_objectid'] = LEFT.nodes[item]['objectid']
+    #     D = DictDiffer(LEFT.nodes[item].summary, RIGHT.nodes[item].summary)
+        
+    #     for attr in D.changed():  
+    #         if len(D.changed()) > 0:
+    #             dirty = True
+    #             child_dict[attr] = [LEFT.nodes[item].summary[attr],RIGHT.nodes[item].summary[attr]]
+    
+    #     for attr in D.uniq_a():
+    #         if len(D.uniq_a()) > 0:    
+    #             dirty = True
+    #             child_dict[attr] = [LEFT.nodes[item].summary[attr],None]
+
+    #     for attr in D.uniq_b():
+    #         if len(D.uniq_b()) > 0:    
+    #             dirty = True
+    #             child_dict[attr] = [None, RIGHT.nodes[item].summary[attr]]    
+
+    #     if dirty:
+    #         return child_dict        
+    #     else:
+    #         return {}    
+
+    # def child_dict(self, cnt, item, side = None):
+    #     child_dict={}
+    #     if side == 'LEFT':
+    #         protocol = self.protocol_A
+    #     if side == 'RIGHT': 
+    #         protocol = self.protocol_B
+            
+    #     child_dict['name'] =  protocol.nodes[item]['name']
+    #     child_dict['node_type'] =  str(protocol.nodes[protocol.nodes[item].parent['objectid']].childtype())
+    #     child_dict['number'] =  child_dict['node_type'] + ' ' + str(cnt)
+    #     child_dict['diff_objectid'] = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
+    #     child_dict['node_objectid'] = protocol.nodes[item]['objectid']
+    #     # if side == 'LEFT':
+    #     for attr in protocol.nodes[item].summary:
+    #         child_dict[attr] = [protocol.nodes[item].summary[attr], None]
+    #     # if side == 'RIGHT':
+    #     #     for attr in self.protocol_B.nodes[item].summary:        
+    #     #         child_dict[attr] = [None, self.protocol_B.nodes[item].summary[attr]]                      
+
+    #     return child_dict        
 
 
     # def get_node_dict(self, obj, **kwargs):
@@ -565,270 +619,270 @@ class Compare(object):
     
 
 
-    def draw_two_protocols(self, **kwargs):
-        ''' this function draws out 2 base protocols as a sequence of actions. 
-            add_layers_routine(layers = 'none-manual') adds the specified layers that a user wants to compare'''
+    # def draw_two_protocols(self, **kwargs):
+    #     ''' this function draws out 2 base protocols as a sequence of actions. 
+    #         add_layers_routine(layers = 'none-manual') adds the specified layers that a user wants to compare'''
 
-        # Draw out the first protocol:
-        self.layers = []    
-        for i in range(1, len(self.A_pk)):
+    #     # Draw out the first protocol:
+    #     self.layers = []    
+    #     for i in range(1, len(self.A_pk)):
             
-            self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
-            e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
-            e.attr['style'] = 'setlinewidth(9)' 
-            e.attr['color'] = COLOR_A
-            n=self.agraph.get_node(self.A_pk[i])
-            n.attr['shape']='box'
-            n.attr['fontsize'] = FONT_SIZE
-            n.attr['style'] = NODE_STYLE
-            n.attr['height'] = '0.2'
-            node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[i]]
-            n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions()[i]].pk
-            # n.attr['URL'] = node_object.get_absolute_url()
-            # n.attr['target'] = HTML_TARGET
+    #         self.agraph.add_edge(self.A_pk[i-1], self.A_pk[i])
+    #         e = self.agraph.get_edge(self.A_pk[i-1], self.A_pk[i])
+    #         e.attr['style'] = 'setlinewidth(9)' 
+    #         e.attr['color'] = COLOR_A
+    #         n=self.agraph.get_node(self.A_pk[i])
+    #         n.attr['shape']='box'
+    #         n.attr['fontsize'] = FONT_SIZE
+    #         n.attr['style'] = NODE_STYLE
+    #         n.attr['height'] = '0.2'
+    #         node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[i]]
+    #         n.attr['label']= node_object['verb'] #+ '_' + self.protocol_A.nodes[self.protocol_A.get_actions()[i]].pk
+    #         # n.attr['URL'] = node_object.get_absolute_url()
+    #         # n.attr['target'] = HTML_TARGET
                 
-        # Set the 0'th node and title in protocol_A 
-        n = self.agraph.get_node(self.A_pk[0])
-        n.attr['shape']='box'
-        n.attr['fontsize'] = FONT_SIZE
-        n.attr['style'] = NODE_STYLE
-        n.attr['height'] = '0.2'
-        node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[0]]
-        n.attr['label']=node_object['verb'] 
-        # n.attr['URL'] = node_object.get_absolute_url()
-        # n.attr['target'] = HTML_TARGET
+    #     # Set the 0'th node and title in protocol_A 
+    #     n = self.agraph.get_node(self.A_pk[0])
+    #     n.attr['shape']='box'
+    #     n.attr['fontsize'] = FONT_SIZE
+    #     n.attr['style'] = NODE_STYLE
+    #     n.attr['height'] = '0.2'
+    #     node_object = self.protocol_A.nodes[self.protocol_A.get_actions()[0]]
+    #     n.attr['label']=node_object['verb'] 
+    #     # n.attr['URL'] = node_object.get_absolute_url()
+    #     # n.attr['target'] = HTML_TARGET
         
-        # add base of second protocol:
-        for i in range(1, len(self.B_pk)):
-            self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
-            # print 'drawing protocol %s'% self.protocol_B.name
-            e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
-            e.attr['style'] = 'setlinewidth(9)' 
-            e.attr['color'] = COLOR_B
-            n=self.agraph.get_node(self.B_pk[i])
-            n.attr['shape']='box'
-            n.attr['fontsize'] = FONT_SIZE
-            n.attr['style'] = NODE_STYLE
-            n.attr['height'] = '0.2'
-            node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[i]]
-            n.attr['label']= node_object['verb'] 
-            # n.attr['URL'] = node_object.get_absolute_url()    
-            # n.attr['target'] = HTML_TARGET
-        # Set the 0'th node in  protocol_A  
-        n = self.agraph.get_node(self.B_pk[0])
-        n.attr['shape']='box'
-        n.attr['fontsize'] = FONT_SIZE
-        n.attr['style'] = NODE_STYLE
-        n.attr['height'] = '0.2'
-        node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[0]]
-        n.attr['label']= node_object['verb'] 
-        # n.attr['URL'] = node_object.get_absolute_url()
-        # n.attr['target'] = HTML_TARGET
+    #     # add base of second protocol:
+    #     for i in range(1, len(self.B_pk)):
+    #         self.agraph.add_edge(self.B_pk[i-1], self.B_pk[i])
+    #         # print 'drawing protocol %s'% self.protocol_B.name
+    #         e = self.agraph.get_edge(self.B_pk[i-1], self.B_pk[i])
+    #         e.attr['style'] = 'setlinewidth(9)' 
+    #         e.attr['color'] = COLOR_B
+    #         n=self.agraph.get_node(self.B_pk[i])
+    #         n.attr['shape']='box'
+    #         n.attr['fontsize'] = FONT_SIZE
+    #         n.attr['style'] = NODE_STYLE
+    #         n.attr['height'] = '0.2'
+    #         node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[i]]
+    #         n.attr['label']= node_object['verb'] 
+    #         # n.attr['URL'] = node_object.get_absolute_url()    
+    #         # n.attr['target'] = HTML_TARGET
+    #     # Set the 0'th node in  protocol_A  
+    #     n = self.agraph.get_node(self.B_pk[0])
+    #     n.attr['shape']='box'
+    #     n.attr['fontsize'] = FONT_SIZE
+    #     n.attr['style'] = NODE_STYLE
+    #     n.attr['height'] = '0.2'
+    #     node_object = self.protocol_B.nodes[self.protocol_B.get_actions()[0]]
+    #     n.attr['label']= node_object['verb'] 
+    #     # n.attr['URL'] = node_object.get_absolute_url()
+    #     # n.attr['target'] = HTML_TARGET
 
-        for j in self.pairs:
-            N = self.agraph.add_subgraph(j, name =str(j[0][j[0].index('-')+1:]), rank='same', rankdir='LR')
+    #     for j in self.pairs:
+    #         N = self.agraph.add_subgraph(j, name =str(j[0][j[0].index('-')+1:]), rank='same', rankdir='LR')
     
-        # return self
+    #     # return self
 
     
-    def add_layers_routine(self, **kwargs):
-        ''' this function adds layers on the three groups of subgraphs that control the verb alignment in this view: 
-        paired --> verb_a.pk -- diff_object.pk -- verb_b.pk
-        single_left --> verb_a.pk -- diff_object.pk 
-        single_right -->  diff_object.pk -- verb_b.pk
-        it currently adds these layers:
-            'manual',
-            'machines'
-            'components'
-            'thermocycle'
-            'steps' - displays verbatim text. '''
+    # def add_layers_routine(self, **kwargs):
+    #     ''' this function adds layers on the three groups of subgraphs that control the verb alignment in this view: 
+    #     paired --> verb_a.pk -- diff_object.pk -- verb_b.pk
+    #     single_left --> verb_a.pk -- diff_object.pk 
+    #     single_right -->  diff_object.pk -- verb_b.pk
+    #     it currently adds these layers:
+    #         'manual',
+    #         'machines'
+    #         'components'
+    #         'thermocycle'
+    #         'steps' - displays verbatim text. '''
 
-        if 'layers' in kwargs.keys():
-            self.layers = kwargs['layers'].split('-')
+    #     if 'layers' in kwargs.keys():
+    #         self.layers = kwargs['layers'].split('-')
 
-        self.add_node_object(self.both, ref_protocol = self.protocol_A)
+    #     self.add_node_object(self.both, ref_protocol = self.protocol_A)
 
-        # these lists contain a few or no nodes:
-        if self.a_unique:
-            self.flags['position'] = 'right'
-            self.add_node_object(self.a_unique, ref_protocol = self.protocol_A, position = 'right')
-        if self.b_unique:
-            self.flags['position'] = 'left'
-            self.add_node_object(self.b_unique, ref_protocol = self.protocol_B, position = 'left')
+    #     # these lists contain a few or no nodes:
+    #     if self.a_unique:
+    #         self.flags['position'] = 'right'
+    #         self.add_node_object(self.a_unique, ref_protocol = self.protocol_A, position = 'right')
+    #     if self.b_unique:
+    #         self.flags['position'] = 'left'
+    #         self.add_node_object(self.b_unique, ref_protocol = self.protocol_B, position = 'left')
 
 
-    def add_node_object(self, node_group, ref_protocol = None, **kwargs): # , machines = True, components = True, thermocycle = True
+    # def add_node_object(self, node_group, ref_protocol = None, **kwargs): # , machines = True, components = True, thermocycle = True
         
-        if 'position' in kwargs:
-            pass
+    #     if 'position' in kwargs:
+    #         pass
 
-        for j in node_group:
-            # identify the type of layer
-            if 'machine' in ref_protocol.nodes[j] and 'machine' in self.layers:
-                if not self.add_machine_layer(j, ref_protocol):
-                    continue
+    #     for j in node_group:
+    #         # identify the type of layer
+    #         if 'machine' in ref_protocol.nodes[j] and 'machine' in self.layers:
+    #             if not self.add_machine_layer(j, ref_protocol):
+    #                 continue
 
-            if ref_protocol.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:    
-                if not self.add_manual_layer(j, ref_protocol):
-                    continue
+    #         if ref_protocol.nodes[j]['verb'] in MANUAL_VERBS and 'manual' in self.layers:    
+    #             if not self.add_manual_layer(j, ref_protocol):
+    #                 continue
 
-            if 'components' in ref_protocol.nodes[j] and 'components' in self.layers:     
-                if not self.add_components_layer(j, ref_protocol):
-                    continue
+    #         if 'components' in ref_protocol.nodes[j] and 'components' in self.layers:     
+    #             if not self.add_components_layer(j, ref_protocol):
+    #                 continue
 
-            if 'thermocycle' in ref_protocol.nodes[j] and 'thermo' in self.layers:                 
-                if not self.add_thermocycle_layer(j, ref_protocol):
-                    continue
+    #         if 'thermocycle' in ref_protocol.nodes[j] and 'thermo' in self.layers:                 
+    #             if not self.add_thermocycle_layer(j, ref_protocol):
+    #                 continue
 
-    def add_machine_layer(self, j, ref_protocol):
-        layer = 'machine'
-        node_object = ref_protocol.nodes[j]['machine']
-        URL = node_object.get_update_url()
-        diff_object = ref_protocol.nodes[j]['machine'].pk
-        if 'position' in self.flags:
-            if self.flags['position'] == 'right':
-                x = ref_protocol.nodes[j]['machine'].summary
-                y = x
+    # def add_machine_layer(self, j, ref_protocol):
+    #     layer = 'machine'
+    #     node_object = ref_protocol.nodes[j]['machine']
+    #     URL = node_object.get_update_url()
+    #     diff_object = ref_protocol.nodes[j]['machine'].pk
+    #     if 'position' in self.flags:
+    #         if self.flags['position'] == 'right':
+    #             x = ref_protocol.nodes[j]['machine'].summary
+    #             y = x
 
-            if self.flags['position'] == 'left':
-                y =  ref_protocol.nodes[j]['machine'].summary   
-                x = y
+    #         if self.flags['position'] == 'left':
+    #             y =  ref_protocol.nodes[j]['machine'].summary   
+    #             x = y
         
-        else: 
-            x = self.protocol_A.nodes[j]['machine'].summary
-            y = self.protocol_B.nodes[j]['machine'].summary
+    #     else: 
+    #         x = self.protocol_A.nodes[j]['machine'].summary
+    #         y = self.protocol_B.nodes[j]['machine'].summary
         
-        d = DictDiffer (x, y)
-        content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
-        self.style_content(j, URL, diff_object, content)
+    #     d = DictDiffer (x, y)
+    #     content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer = layer) 
+    #     self.style_content(j, URL, diff_object, content)
 
-    def add_manual_layer(self, j, ref_protocol):
-        layer = 'manual'
-        node_object = ref_protocol.nodes[j]
-        URL = node_object.action_update_url()
-        diff_object = ref_protocol.nodes[j].pk + '_manual'
-        if 'position' in self.flags:
-            if self.flags['position'] == 'right':
-                x = ref_protocol.nodes[j].summary
-                y = x
+    # def add_manual_layer(self, j, ref_protocol):
+    #     layer = 'manual'
+    #     node_object = ref_protocol.nodes[j]
+    #     URL = node_object.action_update_url()
+    #     diff_object = ref_protocol.nodes[j].pk + '_manual'
+    #     if 'position' in self.flags:
+    #         if self.flags['position'] == 'right':
+    #             x = ref_protocol.nodes[j].summary
+    #             y = x
 
-            if self.flags['position'] == 'left':
-                y =  ref_protocol.nodes[j].summary   
-                x = y    
+    #         if self.flags['position'] == 'left':
+    #             y =  ref_protocol.nodes[j].summary   
+    #             x = y    
         
-        else:        
-            x = self.protocol_A.nodes[j].summary
-            y = self.protocol_B.nodes[j].summary  
+    #     else:        
+    #         x = self.protocol_A.nodes[j].summary
+    #         y = self.protocol_B.nodes[j].summary  
         
-        d = DictDiffer (x, y)
-        content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
-        self.style_content(j, URL, diff_object, content)
+    #     d = DictDiffer (x, y)
+    #     content = html_label_two_protocols(x,y,d.changed(name = True, objectid = True, slug = True), d.unchanged(), current_layer=layer)   
+    #     self.style_content(j, URL, diff_object, content)
 
-    def add_components_layer(self, j, ref_protocol):
-        layer = 'components'
+    # def add_components_layer(self, j, ref_protocol):
+    #     layer = 'components'
 
-        # Validate that reagent objectids are the same:
+    #     # Validate that reagent objectids are the same:
 
-        if len(ref_protocol.nodes[j]['components']) == 0:
-            return None
-        else:
-            node_object = ref_protocol.nodes[j]
-            URL ='None'
+    #     if len(ref_protocol.nodes[j]['components']) == 0:
+    #         return None
+    #     else:
+    #         node_object = ref_protocol.nodes[j]
+    #         URL ='None'
 
-            if 'position' in self.flags:
-                if self.flags['position'] == 'right':
-                    x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
-                    y = x
+    #         if 'position' in self.flags:
+    #             if self.flags['position'] == 'right':
+    #                 x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+    #                 y = x
 
-                if self.flags['position'] == 'left':
-                    y = [r['objectid'] for r in self.protocol_B.nodes[j].children] 
-                    x = y 
+    #             if self.flags['position'] == 'left':
+    #                 y = [r['objectid'] for r in self.protocol_B.nodes[j].children] 
+    #                 x = y 
 
-            else:        
-            # generate the diff content:   
-                x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
-                y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+    #         else:        
+    #         # generate the diff content:   
+    #             x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+    #             y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
             
-            diff_object = ref_protocol.nodes[x[0]].pk 
-            scores = [] # tracks the error rate of a matching components
-            content = [] # gets the html strings
-            for m,n in zip(x,y): 
-                d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
-                scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-                # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
-                content.append(tmp)      
+    #         diff_object = ref_protocol.nodes[x[0]].pk 
+    #         scores = [] # tracks the error rate of a matching components
+    #         content = [] # gets the html strings
+    #         for m,n in zip(x,y): 
+    #             d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+    #             scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+    #             # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+    #             tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
+    #             content.append(tmp)      
             
-            self.style_content(j, URL, diff_object, content, current_layer = layer)    
+    #         self.style_content(j, URL, diff_object, content, current_layer = layer)    
 
-    def add_thermocycle_layer(self, j, ref_protocol):
-        layer = 'thermocycle'
-        if len(ref_protocol.nodes[j]['thermocycle']) == 0:
-            return None
-        else:
-            # generate the diff content:   
-            x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
-            y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
+    # def add_thermocycle_layer(self, j, ref_protocol):
+    #     layer = 'thermocycle'
+    #     if len(ref_protocol.nodes[j]['thermocycle']) == 0:
+    #         return None
+    #     else:
+    #         # generate the diff content:   
+    #         x = [r['objectid'] for r in self.protocol_A.nodes[j].children]
+    #         y = [r['objectid'] for r in self.protocol_B.nodes[j].children]
             
-            scores = [] # tracks the error rate of a matching components
-            content = [] # gets the html strings
-            for m,n in zip(x,y): 
-                d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
-                scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
-                # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
-                tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
-                content.append(tmp)
+    #         scores = [] # tracks the error rate of a matching components
+    #         content = [] # gets the html strings
+    #         for m,n in zip(x,y): 
+    #             d = DictDiffer (self.protocol_A.nodes[m].summary, self.protocol_B.nodes[n].summary)
+    #             scores.append((len(d.added()) + len(d.removed()) + len(d.changed())))
+    #             # print self.protocol_A.nodes[m]['objectid'], self.protocol_A.nodes[n]['objectid'], d.changed()
+    #             tmp = html_label_two_protocols(self.protocol_A.nodes[m].summary,self.protocol_B.nodes[n].summary,d.changed(), d.unchanged(), current_layer = layer) 
+    #             content.append(tmp)
 
-            diff_object = ref_protocol.nodes[x[0]].pk 
-            URL = None
-            self.style_content(j, URL, diff_object, content, current_layer = layer)  
+    #         diff_object = ref_protocol.nodes[x[0]].pk 
+    #         URL = None
+    #         self.style_content(j, URL, diff_object, content, current_layer = layer)  
 
-        # for j in self.a_unique:               
+    #     # for j in self.a_unique:               
                     
 
                 
-    def style_content(self, j, URL, diff_object, content, current_layer = None):
+    # def style_content(self, j, URL, diff_object, content, current_layer = None):
 
-        try:
-            N = self.agraph.get_subgraph(str(j))
-            if len(N.nodes()) == 2:
-                (verb_object_a, verb_object_b) = N.nodes()
-                N.add_node(diff_object)        
-                self.agraph.add_edge(verb_object_a,diff_object)
-                self.agraph.add_edge(diff_object, verb_object_b)    
+    #     try:
+    #         N = self.agraph.get_subgraph(str(j))
+    #         if len(N.nodes()) == 2:
+    #             (verb_object_a, verb_object_b) = N.nodes()
+    #             N.add_node(diff_object)        
+    #             self.agraph.add_edge(verb_object_a,diff_object)
+    #             self.agraph.add_edge(diff_object, verb_object_b)    
 
-        except AttributeError:
-            if self.flags['position'] == 'right':
-                verb_object_a = self.protocol_A.nodes[j].pk
-                self.agraph.add_edge(verb_object_a,diff_object)
-                subgraph = [verb_object_a, diff_object]
+    #     except AttributeError:
+    #         if self.flags['position'] == 'right':
+    #             verb_object_a = self.protocol_A.nodes[j].pk
+    #             self.agraph.add_edge(verb_object_a,diff_object)
+    #             subgraph = [verb_object_a, diff_object]
 
-            if self.flags['position'] == 'left':    
-                verb_object_b = self.protocol_B.nodes[j].pk
-                self.agraph.add_edge(diff_object, verb_object_b)
-                subgraph = [diff_object, verb_object_b]
+    #         if self.flags['position'] == 'left':    
+    #             verb_object_b = self.protocol_B.nodes[j].pk
+    #             self.agraph.add_edge(diff_object, verb_object_b)
+    #             subgraph = [diff_object, verb_object_b]
 
-            N = self.agraph.add_subgraph(subgraph, name =str(j), rank='same', rankdir='LR')    
+    #         N = self.agraph.add_subgraph(subgraph, name =str(j), rank='same', rankdir='LR')    
           
-        s = self.agraph.get_node(diff_object)
-        s.attr['shape'] = 'box'
-        s.attr['color'] = '#C0C0C0'
-        s.attr['style'] = NODE_STYLE
-        s.attr['fontsize'] = FONT_SIZE  
+    #     s = self.agraph.get_node(diff_object)
+    #     s.attr['shape'] = 'box'
+    #     s.attr['color'] = '#C0C0C0'
+    #     s.attr['style'] = NODE_STYLE
+    #     s.attr['fontsize'] = FONT_SIZE  
 
-        # set label:
-        s.attr['label'] = merge_table_pieces(content, current_layer)
+    #     # set label:
+    #     s.attr['label'] = merge_table_pieces(content, current_layer)
 
-        # if current_layer == 'manual':
-        #     node_object = self.protocol_A.nodes[j]
-        #     s.attr['URL'] = node_object.action_update_url()
+    #     # if current_layer == 'manual':
+    #     #     node_object = self.protocol_A.nodes[j]
+    #     #     s.attr['URL'] = node_object.action_update_url()
 
-        # else:
-        #     node_object = self.protocol_A.nodes[j][current_layer]
-        #     s.attr['URL'] = node_object.get_update_url()    
-        s.attr['URL'] = URL
+    #     # else:
+    #     #     node_object = self.protocol_A.nodes[j][current_layer]
+    #     #     s.attr['URL'] = node_object.get_update_url()    
+    #     s.attr['URL'] = URL
 
-        s.attr['target'] = HTML_TARGET      
+    #     s.attr['target'] = HTML_TARGET      
 
 
 

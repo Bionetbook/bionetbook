@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{# PAGE TITLE #}
+{% block page_title %}Protocol Diagram {% endblock %}
+
+{# BREADCRUMBS #}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> <<  to >> </li>
+      <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li>
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
+
+{# CSS STYLE SHEETS GO HERE #}
+{% block extracss %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
+{% endblock %}
+
+{# MAIN PAGE CONTENT #}
+{% block content %}
+    <div class="wrapper">
+            <div class="flowchart-container">
+
+            </div>
+        </div>
+    <div class="flowchart-container">
+
+    
+{% endblock %}
+
+{# JAVASCRIPT SHOULD GO IN THESE TAGS #}
+{% block extrajs %}
+    <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
+    <script src="{{ STATIC_URL }}js/graph_api.js"></script>
+    <script>$(document).ready(function(){
+            getFlowchartData( "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", "19-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
+        });</script>
+
+	<script type="text/template" id="flowchart-table-template">
+        <table class="flowchart-table">
+            <tbody>
+                <tr class="flowchart-header">
+                <td><div></div></td>
+                <% for (var i=1; i <= objectid.length; i++) { %>
+                    <td>
+                        <div><h3>Process <%= i %></h3></div>
+                    </td>
+                <% } %>
+                </tr>
+                <tr class="flowchart-line-wrapper">
+                  <% for (var i=0; i <= objectid.length; i++) { %>
+                    <td>
+                        <div class="flowchart-line-container"></div>
+                    </td>
+                  <% } %>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/template" id="flowchart-row-template">
+        <% if (node_type=="verb" || node_type=="Action") { %>
+        <tr>
+            <td>
+                <div class="flowchart-card"><%= index %>. <%= name %></div>
+            </td>
+
+            <td<%= child_diff=="True" ? '' : ' colspan="' + objectid.length + '"' %>>
+                <% if (objectid[0]!="None") { %>
+                    <%= cardTmpl( {child: prepareChild(child, 0, child_diff, objectid), index: 0} ) %>
+                <% } %>
+            </td>
+            <% if (child_diff=="True") { %>
+              <% for (var i=1; i < objectid.length; i++) { %>
+                <td>
+                    <% if (objectid[i]!="None") { %>
+                        <%= cardTmpl( {child: prepareChild(child, i, child_diff, objectid), index: i} ) %>
+                    <% } %>
+                 </td>
+              <% } %>
+            <% } %>
+        </tr>
+        <% } %>
+    </script>
+
+    <script type="text/template" id="flowchart-card-template">
+        <div class="flowchart-card">
+            <% _(child).each(function(item) { %>
+            <div>
+                <% if (item.name!="None") { %>
+                    <% if (item.URL && _(item.URL).isArray() ) { %>
+                        <a href="<%= item.URL[0] %>" target="_blank"><i class="icon icon-cog"></i></a>
+                    <% } %>
+                    <%= item.name %>:
+                    <% _.chain(item).pairs().filter(function(pair){
+                        return pair[0].indexOf('_')==-1
+                            && pair[0]!='number'
+                            && pair[0]!='name'
+                            && pair[0]!='URL'
+                            && pair[0]!='comment'
+                            && pair[0]!='time';
+                        }).map(function(pair){
+                            return pair[1];
+                        }).each(function(value, i, list){ %>
+
+                        <% if (_(value).isArray()) value = _(value).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                        <% if (i!=list.length-1) { %>
+                            <%= $.trim(value) + ',' %>
+                        <% } else { %>
+                            <%= value %>
+                        <% } %>
+                    <% }); %>
+                    <% if (item.URL && item.URL[index]!="None") { %>
+                        <a href="<%= _(item.URL).isArray() ? item.URL[1] : item.URL %>" target="_blank"><i class="icon icon-cog"></i></a>
+                    <% } %>
+                    <% if (item.time) { %>
+                        <% if (_(item.time).isArray()) item.time = _(item.time).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                        <div>
+                            Time = <%= item.time %>
+                        </div>
+                    <% } %>
+                    <% if (item.comment) { %>
+                        <% if (_(item.comment).isArray()) item.comment = _(item.comment).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                        <div>
+                            Comment: <%= item.comment %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <br/>
+                <% } %>
+            </div>
+            <% }); %>
+        </div>
+    </script>
+
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
