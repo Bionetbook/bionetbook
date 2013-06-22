@@ -200,23 +200,17 @@ class AddCompareVerbs(dict):
         children_a = []
         children_b = []
         
-        if self.A['name'] in MANUAL_VERBS:    
-            children_a = self.A.summary.keys()
-        
-        if self.B['name'] in MANUAL_VERBS:
-                children_a = self.B.summary.keys()
-        
-        self.both = list(set(children_a).union(set(children_b)))                    
-        for child in self.both:
-            self['child'].append(AddCompareChildren(protocol_a, protocol_b, child))        
-        
-
-
         if self.A:
-            children_a = [r['objectid'] for r in self.A.children]
+            if self.A['name'] in MANUAL_VERBS:
+                children_a = self.A.summary.keys()
+            else:
+                children_a = [r['objectid'] for r in self.A.children]
 
-        if self.B:    
-            children_b = [r['objectid'] for r in self.B.children]
+        if self.B:
+            if self.B['name'] in MANUAL_VERBS:
+                children_a = self.B.summary.keys()
+            else:
+                children_b = [r['objectid'] for r in self.B.children]
         
         self.both = list(set(children_a).union(set(children_b)))                    
         for child in self.both:
