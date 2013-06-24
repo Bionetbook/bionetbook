@@ -1,7 +1,7 @@
 [
     {"objectid": ["kttj4d", "kttj4d"],
     "child_type": "components", 
-    "name": "NORM",
+    "name": "FLAKE",
     "node_type": "Action",
     "child_diff":"True",
     "URL": [

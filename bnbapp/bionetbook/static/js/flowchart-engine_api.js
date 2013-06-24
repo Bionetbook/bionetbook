@@ -84,7 +84,9 @@
                 {
                     index : index+1,
                     cardTmpl : cardTmpl,
-                    prepareChild : function(child, index, diff, objectids) {
+                    prepareChild : function(child, index, parent) {
+                        var diff = parent.child_diff;
+                        var objectids = parent.objectid;
                         var newChild = [];
                         var nonesCount = 0;
                         for (var i in objectids) {
@@ -106,10 +108,14 @@
                                         newItem[key] = item[key];
                                     }
                                 });
+                                newItem.child_type = parent.child_type[index];
                                 newChild.push(newItem);
                             });
                             return newChild;
                         }
+                        _(child).each(function(item, i){
+                            child[i].child_type = parent.child_type[index];
+                        });
                         return child;
                     }
                 },
