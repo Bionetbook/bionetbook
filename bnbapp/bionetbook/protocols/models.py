@@ -369,7 +369,7 @@ class Protocol(TimeStampedModel):
     def update_duration(self):
         pass
 
-    def get_item(self, objectid, item, key = False, **kwargs):
+    def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
         call = False
         try:
@@ -386,7 +386,10 @@ class Protocol(TimeStampedModel):
             except TypeError:    
                 out = getattr(call, item) 
             except AttributeError:
-                out =  None    
+                if return_default:
+                    out = None
+                else:
+                    out =  []    
         
         return out    
 
@@ -508,7 +511,7 @@ class NodeBase(dict):
         return self['name']
 
     @property    
-    def object_type(self):
+    def node_type(self):
         return self.__class__.__name__
 
 
@@ -562,7 +565,6 @@ class NodeBase(dict):
         if 'duration' in self.summary:
             print 'duration is in summary'
             time = [self.summary['duration'], self.summary['duration_units']] 
-
 
         if time:     
             return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
