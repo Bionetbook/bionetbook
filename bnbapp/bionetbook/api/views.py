@@ -113,8 +113,7 @@ def protocols_aligned_json(request, protocol_a_slug, protocol_b_slug):
     G = Compare(A,B)
 
     data_dict = G.get_aligned_protocols()
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    
     return HttpResponse(json.dumps(data_dict), mimetype="application/json")     
 
 
@@ -130,8 +129,7 @@ def protocols_object_aligned_json(request, protocol_a_slug, protocol_b_slug):
     G.get_children(A, B, 'kttj4d')
     data_dict = []
     data_dict.append(G)
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    
     return HttpResponse(json.dumps(data_dict), mimetype="application/json")     
 
 
@@ -145,8 +143,7 @@ def get_protocol_layout_json(request, protocol_a_slug):
     G = Compare(A,B)
     G.get_protocol_layout_json(A)
     data = list(G.layout)
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
@@ -158,90 +155,78 @@ def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     G = Compare(A,B)
     G.get_layout_compare_json()
     data = list(G.layout)
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
-    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 
-def json_manual_data(request):
+def json_data_dynamic(request):
     json_data = open("api/protocol_outline_double.json").read()
     data = json.loads(json_data)
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
-# def json_manual_data_1_step(request):
-#     json_data = open("api/protocol_outline_1_step.json").read()
-#     data = json.loads(json_data)
-#     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")    
+
+class JsonStaticView(TemplateView):
+    template_name = "api/protocol_layout_3_static.html"
+
+class AjaxDynamicView(TemplateView):
+    template_name = "api/protocol_layout_3_dynamic.html"                
+
+class AjaxView(TemplateView):
+    template_name = "api/protocol_layout_3_ajax.html"       
 
 
-class JsonManualView(TemplateView):
-    template_name = "api/protocol_layout_api_3.html"
 
-# class JsonControllerView(TemplateView):
-#     template_name = "api/protocol_layout1.html"    
+#________________________________________________________________________________________________________________             
 
-# class JsonObjectControllerView(TemplateView):
-#     template_name = "api/protocol_layout2.html"        
+# class JSONResponseMixin(object):
+#     # def render_to_response(self, context):
+#     #     "Returns a JSON response containing 'context' as payload"
+#     #     return self.get_json_response(self.convert_context_to_json(context))
 
-# class JsonManual1StepView(TemplateView):
-#     template_name = "api/protocol_layout3.html"            
+#     def get_json_response(self, content, **httpresponse_kwargs):
+#         "Construct an HttpResponse object."
+#         return http.HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
 
-# class JsonObjectController3WayView(TemplateView):
-#     template_name = "api/protocol_layout_api.html"                
-
-class JsonObjectController3WayView(TemplateView):
-    template_name = "api/protocol_layout_api_3.html"                
-
-
-class JSONResponseMixin(object):
-    # def render_to_response(self, context):
-    #     "Returns a JSON response containing 'context' as payload"
-    #     return self.get_json_response(self.convert_context_to_json(context))
-
-    def get_json_response(self, content, **httpresponse_kwargs):
-        "Construct an HttpResponse object."
-        return http.HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
-
-    def convert_context_to_json(self, context):
-        "Convert the context dictionary into a JSON object"
-        # Note: This is *EXTREMELY* naive; in reality, you'll need
-        # to do much more complex handling to ensure that arbitrary
-        # objects -- such as Django model instances or querysets
-        # -- can be serialized as JSON.
-        return json.dumps(context)
+#     def convert_context_to_json(self, context):
+#         "Convert the context dictionary into a JSON object"
+#         # Note: This is *EXTREMELY* naive; in reality, you'll need
+#         # to do much more complex handling to ensure that arbitrary
+#         # objects -- such as Django model instances or querysets
+#         # -- can be serialized as JSON.
+#         return json.dumps(context)
 
 
 # class JQTestView(TemplateView):
 #     template_name = "api/test.html"
 
-class JQTestView(JSONResponseMixin, TemplateView):
+# class JQTestView(JSONResponseMixin, TemplateView):
 
-    def get_context(self):
-        context = super(JQTestView, self).get_context_data()
-        protocol_a = Protocol.objects.get(pk=3)
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
-        num_verbs = len(protocol_a.get_actions())
-        y_height = 30
-        y_spacer = 15
-        y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
-        spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
+#     def get_context(self):
+#         context = super(JQTestView, self).get_context_data()
+#         protocol_a = Protocol.objects.get(pk=3)
+#         JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
+#         num_verbs = len(protocol_a.get_actions())
+#         y_height = 30
+#         y_spacer = 15
+#         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
+#         spacing = range(0,y_max, y_height + y_spacer)
+#         y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
 
-        # add URLS and y position to action 
-        for t in JSONdata:
-            t[u'url']= protocol_a.nodes[t['objectid']].action_update_url()
-            t[u'position'] = y_position[t['objectid']]
+#         # add URLS and y position to action 
+#         for t in JSONdata:
+#             t[u'url']= protocol_a.nodes[t['objectid']].action_update_url()
+#             t[u'position'] = y_position[t['objectid']]
        
-        # context['data'] = json.dumps(JSONdata)    
-        return JSONdata
-        # return [{'name': "BOB", 'birthday':"now", 'cake':"none"}]
+#         # context['data'] = json.dumps(JSONdata)    
+#         return JSONdata
+#         # return [{'name': "BOB", 'birthday':"now", 'cake':"none"}]
 
-    def render_to_response(self, context, **httpresponse_kwargs):
-        context = self.get_context()
+#     def render_to_response(self, context, **httpresponse_kwargs):
+#         context = self.get_context()
 
-        #if self.request.is_ajax():
-        return self.get_json_response(self.convert_context_to_json(context))
-        #return JSONResponseMixin.render_to_response(self, context)
+#         #if self.request.is_ajax():
+#         return self.get_json_response(self.convert_context_to_json(context))
+#         #return JSONResponseMixin.render_to_response(self, context)
 
         #return self.render_to_response(self, {'one':"two"})
 
@@ -258,49 +243,6 @@ class JQTestView(JSONResponseMixin, TemplateView):
 
 
 
-class CompareBaseView(JSONResponseMixin, TemplateView):
-    # template_name = "compare/compare_default.html"
-
-    def get(self, request, *args, **kwargs):
-        '''Gets the context data'''
-        arguments={}
-        context = self.get_context_data()
-        nodes = ['thermo', 'machine', 'component', 'steps', 'manual']
-
-        protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        # context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        display = 'single'
-        arguments={'protocol_a_slug':context['protocol_a'].slug}              
-        
-        if 'protocol_b_slug' in kwargs and kwargs['protocol_b_slug'] != 'layers':
-            
-            context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-            display = 'double'
-            arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}
-
-        # assemble JSON object for JS D3:
-        JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
-        
-        # set position variables:
-        num_verbs = len(protocol_a.get_actions())
-        y_height = 30
-        y_spacer = 15
-        y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
-        spacing = range(0,y_max, y_height + y_spacer)
-        y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
-
-        # add URLS and y position to action 
-        for t in JSONdata:
-            t[u'url']= protocol_a.nodes[t['objectid']].action_update_url()
-            t[u'position'] = y_position[t['objectid']]
-            
-
-        context['data'] = json.dumps(JSONdata)
-        context['steps'] = context['protocol_a'].steps 
-        context['position_data'] = json.dumps([y_height, y_spacer, y_max ])               
-        
-        return HttpResponse(context) #get_json_response(self.convert_context_to_json(JSONdata))
 
 
 def protocol_layers_json(request, protocol_slug):
@@ -328,16 +270,16 @@ def protocol_layers_json(request, protocol_slug):
     return HttpResponse(json.dumps(out), mimetype="application/json") 
 
 
-class TestView(TemplateView):
-    template_name = "api/protocol_basic.html"
+# class TestView(TemplateView):
+#     template_name = "api/protocol_basic.html"
     
-    def get(self, request):
-        # <view logic>
-                # self.object = self.get_object()
-        context = {} #self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+#     def get(self, request):
+#         # <view logic>
+#                 # self.object = self.get_object()
+#         context = {} #self.get_context_data(object=self.object)
+#         return self.render_to_response(context)
 
-        return render(request,  self.template_name)
+#         return render(request,  self.template_name)
 
 
 
@@ -345,3 +287,46 @@ class TestView(TemplateView):
 #     template_name = "api/protocol_basic.html"        
 
 
+# class CompareBaseView(JSONResponseMixin, TemplateView):
+#     # template_name = "compare/compare_default.html"
+
+#     def get(self, request, *args, **kwargs):
+#         '''Gets the context data'''
+#         arguments={}
+#         context = self.get_context_data()
+#         nodes = ['thermo', 'machine', 'component', 'steps', 'manual']
+
+#         protocol_a = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+#         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+#         # context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+#         display = 'single'
+#         arguments={'protocol_a_slug':context['protocol_a'].slug}              
+        
+#         if 'protocol_b_slug' in kwargs and kwargs['protocol_b_slug'] != 'layers':
+            
+#             context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+#             display = 'double'
+#             arguments={'protocol_a_slug':context['protocol_a'].slug, 'protocol_b_slug':context['protocol_b'].slug}
+
+#         # assemble JSON object for JS D3:
+#         JSONdata = [protocol_a.nodes[r] for r in protocol_a.get_actions()]
+        
+#         # set position variables:
+#         num_verbs = len(protocol_a.get_actions())
+#         y_height = 30
+#         y_spacer = 15
+#         y_max = num_verbs * y_height + (num_verbs-1) * y_spacer
+#         spacing = range(0,y_max, y_height + y_spacer)
+#         y_position = dict((x,y) for x,y in zip(protocol_a.get_actions(),spacing))
+
+#         # add URLS and y position to action 
+#         for t in JSONdata:
+#             t[u'url']= protocol_a.nodes[t['objectid']].action_update_url()
+#             t[u'position'] = y_position[t['objectid']]
+            
+
+#         context['data'] = json.dumps(JSONdata)
+#         context['steps'] = context['protocol_a'].steps 
+#         context['position_data'] = json.dumps([y_height, y_spacer, y_max ])               
+        
+#         return HttpResponse(context) #get_json_response(self.convert_context_to_json(JSONdata))
