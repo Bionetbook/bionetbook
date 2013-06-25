@@ -29,6 +29,7 @@
 
             </div>
     </div>
+    
 
     
 {% endblock %}
@@ -38,11 +39,11 @@
     <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
-    <script src="{{ STATIC_URL }}js/main_static.js"></script>
+    <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
     <script>
-    // $(document).ready(function(){
-    //     getFlowchartData( "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", "19-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
-    //     });
+    $(document).ready(function(){
+        getFlowchartData( "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
+        });
     </script>
 
 	<script type="text/template" id="flowchart-table-template">
@@ -52,7 +53,7 @@
                     <td><div></div></td>
                     <% for (var i=1; i <= objectid.length; i++) { %>
                         <td>
-                            <div><h3>Process <%= i %></h3></div>
+                            <div><h3>protocol <%= i %></h3></div>
                         </td>
                     <% } %>
                     </tr>
