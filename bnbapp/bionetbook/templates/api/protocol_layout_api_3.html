@@ -19,6 +19,7 @@
 {# CSS STYLE SHEETS GO HERE #}
 {% block extracss %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome.css">
 {% endblock %}
 
 {# MAIN PAGE CONTENT #}
@@ -27,8 +28,7 @@
             <div class="flowchart-container">
 
             </div>
-        </div>
-    <div class="flowchart-container">
+    </div>
 
     
 {% endblock %}
@@ -39,9 +39,11 @@
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
     <script src="{{ STATIC_URL }}js/main_static.js"></script>
-    {# <script>$(document).ready(function(){ #}
-            // getFlowchartData( "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", "19-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
-        {# });</script> #}
+    <script>
+    // $(document).ready(function(){
+    //     getFlowchartData( "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", "19-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
+    //     });
+    </script>
 
 	<script type="text/template" id="flowchart-table-template">
             <table class="flowchart-table">
@@ -157,56 +159,7 @@
             </div>
         </script>
 
-    <script type="text/template" id="flowchart-card-template">
-        <div class="flowchart-card">
-            <% _(child).each(function(item) { %>
-            <div>
-                <% if (item.name!="None") { %>
-                    <% if (item.URL && _(item.URL).isArray() ) { %>
-                        <a href="<%= item.URL[0] %>" target="_blank"><i class="icon icon-cog"></i></a>
-                    <% } %>
-                    <%= item.name %>:
-                    <% _.chain(item).pairs().filter(function(pair){
-                        return pair[0].indexOf('_')==-1
-                            && pair[0]!='number'
-                            && pair[0]!='name'
-                            && pair[0]!='URL'
-                            && pair[0]!='comment'
-                            && pair[0]!='time';
-                        }).map(function(pair){
-                            return pair[1];
-                        }).each(function(value, i, list){ %>
-
-                        <% if (_(value).isArray()) value = _(value).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
-                        <% if (i!=list.length-1) { %>
-                            <%= $.trim(value) + ',' %>
-                        <% } else { %>
-                            <%= value %>
-                        <% } %>
-                    <% }); %>
-                    <% if (item.URL && item.URL[index]!="None") { %>
-                        <a href="<%= _(item.URL).isArray() ? item.URL[1] : item.URL %>" target="_blank"><i class="icon icon-cog"></i></a>
-                    <% } %>
-                    <% if (item.time) { %>
-                        <% if (_(item.time).isArray()) item.time = _(item.time).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
-                        <div>
-                            Time = <%= item.time %>
-                        </div>
-                    <% } %>
-                    <% if (item.comment) { %>
-                        <% if (_(item.comment).isArray()) item.comment = _(item.comment).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
-                        <div>
-                            Comment: <%= item.comment %>
-                        </div>
-                    <% } %>
-                <% } else { %>
-                    <br/>
-                <% } %>
-            </div>
-            <% }); %>
-        </div>
-    </script>
-
+    
 {%endblock%}
 
 

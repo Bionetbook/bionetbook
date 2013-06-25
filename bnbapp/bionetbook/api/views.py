@@ -135,28 +135,56 @@ def protocols_object_aligned_json(request, protocol_a_slug, protocol_b_slug):
     return HttpResponse(json.dumps(data_dict), mimetype="application/json")     
 
 
+
+def get_protocol_layout_json(request, protocol_a_slug):
+    '''
+    Very simple JSON Call example.
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_a_slug)
+    G = Compare(A,B)
+    G.get_protocol_layout_json(A)
+    data = list(G.layout)
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+
+def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
+    '''
+    JSON call of a 2-protocol compare
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    G = Compare(A,B)
+    G.get_layout_compare_json()
+    data = list(G.layout)
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")
+    # return HttpResponse(json.dumps(data_dict, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+
+
 def json_manual_data(request):
-    json_data = open("api/protocol_outline.json").read()
+    json_data = open("api/protocol_outline_double.json").read()
     data = json.loads(json_data)
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
-def json_manual_data_1_step(request):
-    json_data = open("api/protocol_outline_1_step.json").read()
-    data = json.loads(json_data)
-    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")    
+# def json_manual_data_1_step(request):
+#     json_data = open("api/protocol_outline_1_step.json").read()
+#     data = json.loads(json_data)
+#     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")    
 
 
 class JsonManualView(TemplateView):
-    template_name = "api/protocol_layout.html"
+    template_name = "api/protocol_layout_api_3.html"
 
-class JsonControllerView(TemplateView):
-    template_name = "api/protocol_layout1.html"    
+# class JsonControllerView(TemplateView):
+#     template_name = "api/protocol_layout1.html"    
 
-class JsonObjectControllerView(TemplateView):
-    template_name = "api/protocol_layout2.html"        
+# class JsonObjectControllerView(TemplateView):
+#     template_name = "api/protocol_layout2.html"        
 
-class JsonManual1StepView(TemplateView):
-    template_name = "api/protocol_layout3.html"            
+# class JsonManual1StepView(TemplateView):
+#     template_name = "api/protocol_layout3.html"            
 
 # class JsonObjectController3WayView(TemplateView):
 #     template_name = "api/protocol_layout_api.html"                

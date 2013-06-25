@@ -543,8 +543,31 @@ class NodeBase(dict):
     def children(self):
         print 'object does not have children'    
 
-    def update_duration(self):
-            pass
+    # def update_duration(self):
+    #         pass
+
+
+    def update_duration(self, desired_unit = 'sec'):
+
+        factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
+        'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
+        'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
+        'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
+            
+        time = False        
+        if 'time' in self.summary:
+            print 'time is in summary'
+            time = self.summary['time']
+
+        if 'duration' in self.summary:
+            print 'duration is in summary'
+            time = [self.summary['duration'], self.summary['duration_units']] 
+
+
+        if time:     
+            return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
+        else:
+            return  None
         
 class Component(NodeBase):
 
@@ -869,7 +892,7 @@ class Action(NodeBase):
             return self['verb'] in MANUAL_VERBS
         return False    
 
-    def update_duration(self, desired_unit):
+    def update_duration(self, desired_unit = 'sec'):
 
         factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
         'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
@@ -885,7 +908,7 @@ class Action(NodeBase):
 
 
         if time:     
-            return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
+            self['duration']  = ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
         else:
             return  None
     
