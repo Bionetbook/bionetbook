@@ -7,7 +7,7 @@ function getFlowchartData(){
             slugs += arguments[i] + '/';
     }
 
-    $.get("/api/json/manual_data/" + slugs, function(data) { successCallback(data); });
+    $.get("/api/json/aligned/" + slugs, function(data) { successCallback(data); });
 };
 
 function callback(data) {
