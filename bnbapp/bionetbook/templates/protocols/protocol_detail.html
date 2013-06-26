@@ -17,7 +17,7 @@
 {% if not protocol.published %}
   {% if protocol_edit_authorization %}
     <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
-    <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a>  {% endif %}
+    <small><a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i> outline</a></small>  {% endif %}
 {% endif %}
 {% endblock %}
 
