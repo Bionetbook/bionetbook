@@ -37,6 +37,7 @@
                     ["None"],
                     [
                         "100-1000",
+
                         "ng"
                     ]
                 ]
@@ -741,6 +742,54 @@
                     ],
                     [
                         "1",
+                        "min"
+                    ]
+                ]
+            }
+        ],
+        "duration": [
+            "None",
+            "None"
+        ]
+    },
+    {
+        "child_diff": "True",
+        "name": "incubate",
+        "objectid": [
+            "None",
+            "ya985z"
+        ],
+        "child_type": [
+            [],
+            "machine"
+        ],
+        "node_type": "Action",
+        "child": [
+            {
+                "name": [
+                    "None",
+                    "sc1jls"
+                ],
+                "temp": [
+                    "None",
+                    [
+                        "42",
+                        "C"
+                    ]
+                ],
+                "URL": [
+                    "None",
+                    "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/vmjuqs/ya985z/sc1jls/edit/"
+                ],
+                "node_type": "Machine",
+                "objectid": [
+                    "None",
+                    "sc1jls"
+                ],
+                "time": [
+                    "None",
+                    [
+                        "50",
                         "min"
                     ]
                 ]
