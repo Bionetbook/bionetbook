@@ -158,6 +158,18 @@ def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
+def get_layout_compare_json_v2(request, protocol_a_slug ,protocol_b_slug):
+    '''
+    JSON call of a 2-protocol compare
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    protocols = [A,B]
+    G = Compare(protocols)
+    G.get_layout_by_objectid()
+    data = list(G.layout)
+    
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 def json_data_dynamic(request):
     json_data = open("api/protocol_outline_double.json").read()
