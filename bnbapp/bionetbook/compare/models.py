@@ -152,9 +152,6 @@ class Compare(object):
             self.alignment.append(line) 
 
 
-    
-
-
     def get_layout_by_object(self, protocols, **kwargs):
         
         self.layout = []
@@ -189,6 +186,7 @@ class CompareVerb(dict):
 
     # def add_verb_from_protocols(self, objectid, **kwargs):
         dirty = False
+        diff = "False"
         # for obj in compare_row:
         for protocol in self.protocols:
             # if protocol.nodes[objectid]:
@@ -198,7 +196,7 @@ class CompareVerb(dict):
                 self['name'].append(node['name'])
                 self['node_type'].append(node.node_type)
                 self['objectid'].append(node['objectid'])
-                self['duration'].append(None)
+                self['duration'].append("None")
                 self['child_type'].append(node.childtype())
                 
                 
@@ -207,19 +205,21 @@ class CompareVerb(dict):
                     dirty = True
                 # self['child'].append(self.add_children(node))
             else:
+                diff = "True"
                 self['name'].append([])
                 self['node_type'].append([])
                 self['objectid'].append([])
                 self['child_type'].append([])
-                self['duration'].append(None)
-                self['child_diff'].append(True)
+                self['duration'].append("None")
+                self['child_diff'].append("True")
                 self['child'].append([])   
 
         if dirty:
-            self['child'].append(self.add_children())  
-
-        self['child_diff'] = self.child_diff(objectid)
+            self['child'] = self.add_children()  
+     
+        self['child_diff'] = self.child_diff(objectid, diff)
         self['node_type'] = next(obj for obj in self['node_type'] if obj)
+        self['name'] = next(obj for obj in self['name'] if obj)
 
     def get_node(self, protocol, objectid, **kwargs):
 
@@ -244,39 +244,29 @@ class CompareVerb(dict):
             
         return output        
         
-    def child_diff(self, objectid, **kwargs):
-        diff = False
+    def child_diff(self, objectid, prev_diff, **kwargs):
+        diff = prev_diff
 
         node1 = self.get_node(self.protocols[0], self.objectid)    
         node2 = self.get_node(self.protocols[1], self.objectid)
 
         if node1 and node2: 
-            D = DictDiffer(node1, node2)
+            D = DictDiffer(node1.summary, node2.summary)
             if len(D.changed()) > 0:
-                diff = True
+                diff = "True"
 
             if len(D.uniq_a()) > 0:
-                diff = True    
+                diff = "True"    
 
             if len(D.uniq_b()) > 0:
-                diff = True        
+                diff = "True"        
 
         return diff
 
         
 
 
-        # if node['name'] in MANUAL_VERBS:
-        #     temp_child = {}
-        #     children_a = self.A.summary.keys()
-
-            
-        #     self.both = list(set(children_a).union(set(children_b)))                    
-        #     for fchild in self.both:
-        #         temp_child[fchild] = [protocol_a.nodes[objectid].get(fchild, "None"), protocol_b.nodes[objectid].get(fchild, "None")]
-
-        #     self['child'].append(temp_child)        
-
+        
         
 class CompareChildren(CompareVerb):
     ''' this function take a list of protocols and objectids specified by the parent caller 
@@ -308,11 +298,12 @@ class CompareChildren(CompareVerb):
                 
             else:
                 self['node_type'].append([])
-                self['objectid'].append(None)
-                self['URL'].append(None)
+                self['objectid'].append("None")
+                self['URL'].append("None")
                 for item in self.get_summary_attributes():
-                    self[item].append(None)        
+                    self[item].append("None")        
 
+        self['node_type'] = next(obj for obj in self['node_type'] if obj)        
     def get_summary_attributes(self, **kwargs):
 
         attribs = []
@@ -322,116 +313,133 @@ class CompareChildren(CompareVerb):
                 attribs.append(node.summary.keys()) 
 
 
-        return union(attribs)    
+        return union(attribs)   
 
-class AddCompareVerbs(dict):
-    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
-        '''        
-        CompareVerbs takes an objectid and compares it between the N protocols. 
-        The object returns a dict with attributes to be considered or displayed in a visual diff. 
-        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
-        '''
-        self.A = self.get_node(protocol_a, objectid)
-        self.B = self.get_node(protocol_b, objectid)
-        # B = self.get_node(protocol_b, objectid) 
+# if node['name'] in MANUAL_VERBS:
+        #     temp_child = {}
+        #     children_a = self.A.summary.keys()
 
-        temp_name = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]
-        self['name'] = next(obj for obj in temp_name if obj)
-
-        temp_node_type = [protocol_a.get_item(objectid, 'object_type'), protocol_b.get_item(objectid, 'object_type')]  
-
-        self['node_type'] = next(obj for obj in temp_node_type if obj)
-        
-        self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
-        
-
-    def add_to_verb(self, protocol_a, protocol_b, objectid, **kwargs):
-        
-
-        if self.A and self.B:    
-            self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
-            # self['duration'] = [protocol_a.get_item(objectid, 'duration')[0], protocol_b.get_item(objectid, 'duration')[0]]
-            self['duration'] = [protocol_a.nodes[objectid].get('duration', "None"), protocol_b.nodes[objectid].get('duration', "None")]
             
-            diff = (self.A, self.B)
-            self.diff = diff 
+        #     self.both = list(set(children_a).union(set(children_b)))                    
+        #     for fchild in self.both:
+        #         temp_child[fchild] = [protocol_a.nodes[objectid].get(fchild, "None"), protocol_b.nodes[objectid].get(fchild, "None")]
 
-            D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
-            if len(D.changed()) > 0:
-                item = next(obj for obj in diff if obj)    
-                if item.childtype() in D.changed():
-                    self['child_diff'] = True
-                else:
-                    self['child_diff'] = False
+        #     self['child'].append(temp_child)        
 
-        if self.A and not self.B:             
-            self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), None]                
-                # self['duration'] = [protocol_a.get_item(objectid, 'duration')[0], protocol_b.get_item(objectid, 'duration')[0]]
-            self['duration'] = [protocol_a.nodes[objectid].get('duration', "None"), protocol_b.nodes[objectid].get('duration', "None")]
+
+
+
+
+
+
+
+
+# class AddCompareVerbs(dict):
+#     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+#         '''        
+#         CompareVerbs takes an objectid and compares it between the N protocols. 
+#         The object returns a dict with attributes to be considered or displayed in a visual diff. 
+#         the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
+#         '''
+#         self.A = self.get_node(protocol_a, objectid)
+#         self.B = self.get_node(protocol_b, objectid)
+#         # B = self.get_node(protocol_b, objectid) 
+
+#         temp_name = [protocol_a.get_item(objectid, 'name'), protocol_b.get_item(objectid, 'name')]
+#         self['name'] = next(obj for obj in temp_name if obj)
+
+#         temp_node_type = [protocol_a.get_item(objectid, 'object_type'), protocol_b.get_item(objectid, 'object_type')]  
+
+#         self['node_type'] = next(obj for obj in temp_node_type if obj)
+        
+#         self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]
+        
+
+#     def add_to_verb(self, protocol_a, protocol_b, objectid, **kwargs):
+        
+
+#         if self.A and self.B:    
+#             self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), protocol_b.get_item(objectid, 'childtype')]                
+#             # self['duration'] = [protocol_a.get_item(objectid, 'duration')[0], protocol_b.get_item(objectid, 'duration')[0]]
+#             self['duration'] = [protocol_a.nodes[objectid].get('duration', "None"), protocol_b.nodes[objectid].get('duration', "None")]
+            
+#             diff = (self.A, self.B)
+#             self.diff = diff 
+
+#             D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
+#             if len(D.changed()) > 0:
+#                 item = next(obj for obj in diff if obj)    
+#                 if item.childtype() in D.changed():
+#                     self['child_diff'] = True
+#                 else:
+#                     self['child_diff'] = False
+
+#         if self.A and not self.B:             
+#             self['child_type'] = [protocol_a.get_item(objectid, 'childtype'), None]                
+#                 # self['duration'] = [protocol_a.get_item(objectid, 'duration')[0], protocol_b.get_item(objectid, 'duration')[0]]
+#             self['duration'] = [protocol_a.nodes[objectid].get('duration', "None"), protocol_b.nodes[objectid].get('duration', "None")]
                 
-            diff = (self.A, self.B)
-            self.diff = diff 
+#             diff = (self.A, self.B)
+#             self.diff = diff 
 
-            D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
-            if len(D.changed()) > 0:
-                item = next(obj for obj in diff if obj)    
-                if item.childtype() in D.changed():
-                    self['child_diff'] = True
-                else:
-                    self['child_diff'] = False  
+#             D = DictDiffer(protocol_a.nodes[objectid], protocol_b.nodes[objectid])
+#             if len(D.changed()) > 0:
+#                 item = next(obj for obj in diff if obj)    
+#                 if item.childtype() in D.changed():
+#                     self['child_diff'] = True
+#                 else:
+#                     self['child_diff'] = False  
 
 
-            # this should automatically add the values to all the keys / methods / properties 
-            # and not return a KeyError. this is a basic method that can be used for verb and 
-            # children objects. 
-            # Sequence: this 
+#             # this should automatically add the values to all the keys / methods / properties 
+#             # and not return a KeyError. this is a basic method that can be used for verb and 
+#             # children objects. 
+#             # Sequence: this 
         
-            # self.diff = diff 
+#             # self.diff = diff 
 
-    def get_children(self, protocol_a, protocol_b, objectid, **kwargs):
-        # self['child'] = []
-        children_a = []
-        children_b = []
+#     def get_children(self, protocol_a, protocol_b, objectid, **kwargs):
+#         # self['child'] = []
+#         children_a = []
+#         children_b = []
         
-        if self['name'] in MANUAL_VERBS:
-            temp_child = {}
-            if self.A:
-                children_a = self.A.summary.keys()
+#         if self['name'] in MANUAL_VERBS:
+#             temp_child = {}
+#             if self.A:
+#                 children_a = self.A.summary.keys()
 
-            if self.B:
-                children_b = self.B.summary.keys()    
+#             if self.B:
+#                 children_b = self.B.summary.keys()    
 
-            self.both = list(set(children_a).union(set(children_b)))                    
-            for fchild in self.both:
-                temp_child[fchild] = [protocol_a.nodes[objectid].get(fchild, "None"), protocol_b.nodes[objectid].get(fchild, "None")]
+#             self.both = list(set(children_a).union(set(children_b)))                    
+#             for fchild in self.both:
+#                 temp_child[fchild] = [protocol_a.nodes[objectid].get(fchild, "None"), protocol_b.nodes[objectid].get(fchild, "None")]
 
-            self['child'].append(temp_child)        
+#             self['child'].append(temp_child)        
 
-        else:       
-            if self.A:    
-                children_a = [r['objectid'] for r in self.A.children]
+#         else:       
+#             if self.A:    
+#                 children_a = [r['objectid'] for r in self.A.children]
 
-            if self.B:
-                children_b = [r['objectid'] for r in self.B.children]
+#             if self.B:
+#                 children_b = [r['objectid'] for r in self.B.children]
             
-            self.bothids = list(set(children_a).union(set(children_b)))                    
-            for childids in self.bothids:
-                self['child'].append(AddCompareChildren(protocol_a, protocol_b, childids))
+#             self.bothids = list(set(children_a).union(set(children_b)))                    
+#             for childids in self.bothids:
+#                 self['child'].append(AddCompareChildren(protocol_a, protocol_b, childids))
         
 
-def get_node(self, protocol, objectid, **kwargs):
+# def get_node(self, protocol, objectid, **kwargs):
     
-    try:
-        result = protocol.nodes[objectid]
-    except KeyError:
-        result = None
+#     try:
+#         result = protocol.nodes[objectid]
+#     except KeyError:
+#         result = None
 
-    if 'true' in kwargs and result:
-        return kwargs['true']
-    else:
-        return result      
-
-
+#     if 'true' in kwargs and result:
+#         return kwargs['true']
+#     else:
+#         return result      
 
 
 
@@ -441,63 +449,65 @@ def get_node(self, protocol, objectid, **kwargs):
 
 
 
-class AddCompareChildren(AddCompareVerbs):
-    def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
+
+
+# class AddCompareChildren(AddCompareVerbs):
+#     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
         
-        super(AddCompareChildren, self).__init__(protocol_a, protocol_b, objectid, **kwargs)
-        # import pdb; pdb.set_trace()
-        '''
-        CompareChildren takes an objectid and compares it between the 2 protocols. 
-        The object returns a dict with attributes to be displayed in a visual diff. 
-        the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
-        '''
+#         super(AddCompareChildren, self).__init__(protocol_a, protocol_b, objectid, **kwargs)
+#         # import pdb; pdb.set_trace()
+#         '''
+#         CompareChildren takes an objectid and compares it between the 2 protocols. 
+#         The object returns a dict with attributes to be displayed in a visual diff. 
+#         the diff method indicates wheather items should be drawn in two separate boxes or in one box. 
+#         '''
         
-        diff = False
+#         diff = False
         
-        self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]  
-        # self['objectid'] =
-        A = self.get_node(protocol_a, objectid)
-        B = self.get_node(protocol_b, objectid)
-        # set URL function:
-        if A:
-            A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'action_update_url')()        
-            if 'Published' in protocol_a.status:
-                A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'get_absolute_url')()    
-        else:
-            A_url = None        
+#         self['objectid'] = [protocol_a.get_item(objectid, 'objectid'), protocol_b.get_item(objectid, 'objectid')]  
+#         # self['objectid'] =
+#         A = self.get_node(protocol_a, objectid)
+#         B = self.get_node(protocol_b, objectid)
+#         # set URL function:
+#         if A:
+#             A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'action_update_url')()        
+#             if 'Published' in protocol_a.status:
+#                 A_url = getattr(protocol_a.nodes[A.parent['objectid']], 'get_absolute_url')()    
+#         else:
+#             A_url = None        
 
-        if B:
-            B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'action_update_url')()    
-            if 'Published' in protocol_b.status:
-                B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'get_absolute_url')()
-        else:
-            B_url = None        
+#         if B:
+#             B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'action_update_url')()    
+#             if 'Published' in protocol_b.status:
+#                 B_url = getattr(protocol_b.nodes[B.parent['objectid']], 'get_absolute_url')()
+#         else:
+#             B_url = None        
 
-        self['URL'] = [A_url, B_url]    
+#         self['URL'] = [A_url, B_url]    
 
-        if A and B:    
+#         if A and B:    
             
-            summary_items = list(set(A.summary).union(set(B.summary)))
-            D = DictDiffer(A.summary, B.summary)
-            if len(D.changed()) > 0:
-                diff = True 
-            for item in summary_items:
-                self[item] = [A.summary.get(item, "None"), B.summary.get(item, "None")] 
+#             summary_items = list(set(A.summary).union(set(B.summary)))
+#             D = DictDiffer(A.summary, B.summary)
+#             if len(D.changed()) > 0:
+#                 diff = True 
+#             for item in summary_items:
+#                 self[item] = [A.summary.get(item, "None"), B.summary.get(item, "None")] 
 
-        if A and not B:    
-            summary_items = A.summary.keys()
-            diff = True
-            for item in summary_items:
-                self[item] = [A.summary.get(item, "None"), "None"] 
+#         if A and not B:    
+#             summary_items = A.summary.keys()
+#             diff = True
+#             for item in summary_items:
+#                 self[item] = [A.summary.get(item, "None"), "None"] 
         
-        if B and not A:    
-            summary_items = B.summary.keys()    
-            diff = True
-            for item in summary_items:
-                self[item] = ["None", B.summary.get(item, "None")] 
+#         if B and not A:    
+#             summary_items = B.summary.keys()    
+#             diff = True
+#             for item in summary_items:
+#                 self[item] = ["None", B.summary.get(item, "None")] 
 
             
-        self.diff = diff
+#         self.diff = diff
 
 
 
