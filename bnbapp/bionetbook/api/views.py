@@ -5,7 +5,7 @@ import django.utils.simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
 from django import http
-from compare.models import ProtocolPlot, DictDiffer, Compare, AddCompareVerbs, AddCompareChildren
+from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
 
 def protocol_detail(request, protocol_slug):
@@ -27,6 +27,7 @@ def json_dump_all(request):
     p = Protocol.objects.filter(published=True, public=True)
     result = [{'name':x.name, 'pk':x.pk} for x in p]
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
 def protocol_json(request, protocol_slug):
     '''
     returns json with basic protocol data: 
