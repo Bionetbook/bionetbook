@@ -41,8 +41,10 @@
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
     <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
     <script>
+    var slug_A = '{{ params.protocol_a_slug }}';
+    var slug_B = '{{ params.protocol_b_slug }}';
     $(document).ready(function(){
-        getFlowchartData( "19-bionetbook-first-strand-cdna-synthesis-oligodt", "20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt", callback );
+        getFlowchartData( slug_A, slug_B, callback );
         });
     </script>
 
