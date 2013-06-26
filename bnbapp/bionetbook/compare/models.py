@@ -81,6 +81,7 @@ class Compare(object):
 
         self.protocols = [protocol for protocol in protocols]
 
+
         self.A = protocols[0]
         
         if not protocols[1]:
@@ -148,16 +149,28 @@ class Compare(object):
                     temp = {}
 
                 line.append(temp)   
-            self.alignment.append(line)     
+            self.alignment.append(line) 
 
 
-    def get_protocol_layout_json_v2(self, protocols, **kwargs):
+    
+
+
+    def get_layout_by_object(self, protocols, **kwargs):
         
         self.layout = []
         for row in self.alignment:
             z = CompareVerb()
             z.add_verb_from_protocols(row)
             self.layout.append(z)
+
+    def get_layout_by_objectid(self, **kwargs):
+        
+        self.layout = []
+        self.alignment = [next(obj for obj in r if obj) for r in self.aligned]
+        for objid in self.alignment:
+            z = CompareVerb(self.protocols, objid)
+            # z.add_verb_from_protocols(objid)
+            self.layout.append(z)        
 
 
         
@@ -166,80 +179,92 @@ class CompareVerb(dict):
     (get_json_align) for all protocols in the comparison. 
         
         '''
-    def __init__(self, **kwargs):
-        self.attribs = ['name', 'objectid', 'node_type', 'child_type', 'child_diff', 'child', 'time']
+    def __init__(self, protocols, objectid, **kwargs):
+        self.protocols = protocols
+        self.objectid = objectid
+        self.children = []
+        self.attribs = ['name', 'objectid', 'node_type', 'child_type', 'child_diff', 'child', 'duration']
         for item in self.attribs:
             self[item] = []
 
-    def add_verb_from_protocols(self, compare_row, **kwargs):
+    # def add_verb_from_protocols(self, objectid, **kwargs):
         dirty = False
-        self.children = []
-        for obj in compare_row:
-            if obj:
-                print obj['name']
-                self['name'].append(obj['name'])
-                self['node_type'].append(obj.node_type)
-                self['objectid'].append(obj['objectid'])
-                self['child_type'].append(obj.childtype())
-                self['time'].append([])
-                self['child_diff'].append([])
-                if obj.children:
-                    self.children.append([r for r in obj.children])
+        # for obj in compare_row:
+        for protocol in self.protocols:
+            # if protocol.nodes[objectid]:
+            node = self.get_node(protocol, self.objectid)    
+            if node:
+                print node['name']
+                self['name'].append(node['name'])
+                self['node_type'].append(node.node_type)
+                self['objectid'].append(node['objectid'])
+                self['duration'].append(None)
+                self['child_type'].append(node.childtype())
+                
+                
+                if node.children:
+                    self.children.append([r['objectid'] for r in node.children])
                     dirty = True
-                # self['child'].append(self.add_children(obj))
+                # self['child'].append(self.add_children(node))
             else:
                 self['name'].append([])
                 self['node_type'].append([])
                 self['objectid'].append([])
                 self['child_type'].append([])
-                self['time'].append([])
-                self['child_diff'].append([])
+                self['duration'].append(None)
+                self['child_diff'].append(True)
                 self['child'].append([])   
 
         if dirty:
-            self['child'].append(self.add_children())            
+            self['child'].append(self.add_children())  
 
+        self['child_diff'] = self.child_diff(objectid)
+        self['node_type'] = next(obj for obj in self['node_type'] if obj)
+
+    def get_node(self, protocol, objectid, **kwargs):
+
+        try:
+            result = protocol.nodes[objectid]
+        except KeyError:
+            result = None
+
+        if 'true' in kwargs and result:
+            return kwargs['true']
+        else:
+            return result              
 
     def add_children(self, **kwargs):
         
-        ouptut = []
-
-        all_children = []
-        for obj in self.children:
-            all_children.append([r['objectid'] for r in obj])
-
-
-        all_children = union(all_children)
-        
+        output = []
+        all_children = union(self.children)
 
         for child_id in all_children:
-            child = {}
-            child['objectid'] = child_id
-            # list all the attributes for specific child between all protocols
+            z = CompareChildren(self.protocols, child_id)
+            output.append(z)
+            
+        return output        
+        
+    def child_diff(self, objectid, **kwargs):
+        diff = False
 
-            attributes = []
-            for item in self.children:    
-                if child_id in [r['objectid'] for r in item]:
-                    attributes.append(item.summary.keys())
+        node1 = self.get_node(self.protocols[0], self.objectid)    
+        node2 = self.get_node(self.protocols[1], self.objectid)
 
-            attributes = union(attributes)
-            for attr in attributes:
-                child[attr] = []
-                for item in self.children:
-                    child[attr].append(item.summary.get(attr, "None"))
+        if node1 and node2: 
+            D = DictDiffer(node1, node2)
+            if len(D.changed()) > 0:
+                diff = True
 
-            output.append(child)        
+            if len(D.uniq_a()) > 0:
+                diff = True    
 
+            if len(D.uniq_b()) > 0:
+                diff = True        
 
-
-                    
-
-
-
-
-
+        return diff
 
         
+
 
         # if node['name'] in MANUAL_VERBS:
         #     temp_child = {}
@@ -252,62 +277,52 @@ class CompareVerb(dict):
 
         #     self['child'].append(temp_child)        
 
-        # else:       
-        #     if self.A:    
-        #         children_a = [r['objectid'] for r in self.A.children]
-
-        #     if self.B:
-        #         children_b = [r['objectid'] for r in self.B.children]
-            
-        #     self.bothids = list(set(children_a).union(set(children_b)))                    
-        #     for childids in self.bothids:
-        #         self['child'].append(AddCompareChildren(protocol_a, protocol_b, childids))         
-
-
-
-
-class CompareChildren(dict):
+        
+class CompareChildren(CompareVerb):
     ''' this function take a list of protocols and objectids specified by the parent caller 
     (get_json_align) for all protocols in the comparison. 
         
         '''
-    def __init__(self, **kwargs):
-        self.attribs = ['name', 'objectid', 'node_type', 'URL']
+    def __init__(self, protocols, objectid, **kwargs):
+        self.protocols = protocols
+        self.objectid = objectid
+        self.attribs = ['objectid', 'node_type', 'URL']
         for item in self.attribs:
             self[item] = []
-
-    def add_verb_from_protocols(self, objectids, **kwargs):
-
         
-        for i, obj in enumerate(objectids):
-            if obj:
-                self['name'].append(obj['name'])
-                self['node_type'].append(obj.node_type)
-                self['objectid'].append(obj['objectid'])
-                self['URL'].append(obj.get_update_url())
-                if 'published' in kwargs:
-                    if kwargs['published'][i]:
-                        self['URL'].append(obj.get_absolute_url())
+        for item in self.get_summary_attributes():
+            self[item] = []        
+
+        for protocol in self.protocols:
+            # if protocol.nodes[objectid]:
+            node = self.get_node(protocol, self.objectid)    
+            if node:
+                self['node_type'].append(node.node_type)
+                self['objectid'].append(node['objectid'])
+                self['URL'].append(node.get_update_url())
+                if 'published' in protocol.status:
+                    self['URL'].append(node.get_absolute_url())
+
+                for item in self.get_summary_attributes():
+                    self[item].append(node.summary.get(item, "None"))        
                 
             else:
-                self['name'].append([])
                 self['node_type'].append([])
-                self['objectid'].append([])
-                self['URL'].append([])
-                
+                self['objectid'].append(None)
+                self['URL'].append(None)
+                for item in self.get_summary_attributes():
+                    self[item].append(None)        
+
+    def get_summary_attributes(self, **kwargs):
+
+        attribs = []
+        for protocol in self.protocols:
+            node = self.get_node(protocol, self.objectid)    
+            if node:
+                attribs.append(node.summary.keys()) 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        return union(attribs)    
 
 class AddCompareVerbs(dict):
     def __init__(self, protocol_a, protocol_b, objectid, **kwargs):
@@ -404,17 +419,17 @@ class AddCompareVerbs(dict):
                 self['child'].append(AddCompareChildren(protocol_a, protocol_b, childids))
         
 
-    def get_node(self, protocol, objectid, **kwargs):
-        
-        try:
-            result = protocol.nodes[objectid]
-        except KeyError:
-            result = None
+def get_node(self, protocol, objectid, **kwargs):
+    
+    try:
+        result = protocol.nodes[objectid]
+    except KeyError:
+        result = None
 
-        if 'true' in kwargs and result:
-            return kwargs['true']
-        else:
-            return result      
+    if 'true' in kwargs and result:
+        return kwargs['true']
+    else:
+        return result      
 
 
 

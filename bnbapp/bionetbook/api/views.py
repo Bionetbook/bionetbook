@@ -141,7 +141,7 @@ def get_protocol_layout_json(request, protocol_a_slug):
     A = Protocol.objects.get(slug=protocol_a_slug)
     B = Protocol.objects.get(slug=protocol_a_slug)
     G = Compare(A,B)
-    G.get_protocol_layout_json(A)
+    G.get_layout_by_object(A)
     data = list(G.layout)
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
