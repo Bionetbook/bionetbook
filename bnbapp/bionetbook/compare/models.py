@@ -192,7 +192,8 @@ class CompareVerb(dict):
             # if protocol.nodes[objectid]:
             node = self.get_node(protocol, self.objectid)    
             if node:
-                print node['name']
+                print node['objectid']
+                print diff
                 self['name'].append(node['name'])
                 self['node_type'].append(node.node_type)
                 self['objectid'].append(node['objectid'])
@@ -206,10 +207,10 @@ class CompareVerb(dict):
                 # self['child'].append(self.add_children(node))
             else:
                 diff = "True"
-                self['name'].append([])
-                self['node_type'].append([])
-                self['objectid'].append([])
-                self['child_type'].append([])
+                self['name'].append("None")
+                self['node_type'].append("None")
+                self['objectid'].append("None")
+                self['child_type'].append("None")
                 self['duration'].append("None")
                 self['child_diff'].append("True")
                 self['child'].append([])   
@@ -251,7 +252,7 @@ class CompareVerb(dict):
         node2 = self.get_node(self.protocols[1], self.objectid)
 
         if node1 and node2: 
-            D = DictDiffer(node1.summary, node2.summary)
+            D = DictDiffer(node1, node2)
             if len(D.changed()) > 0:
                 diff = "True"
 
@@ -262,10 +263,6 @@ class CompareVerb(dict):
                 diff = "True"        
 
         return diff
-
-        
-
-
         
         
 class CompareChildren(CompareVerb):
