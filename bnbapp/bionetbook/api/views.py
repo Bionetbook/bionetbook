@@ -19,8 +19,19 @@ def protocol_detail(request, protocol_slug):
         except ObjectDoesNotExist:
             return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
+def get_layout_json(request, protocol_a_slug):
+    '''
+    JSON call of a 2-protocol compare
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    protocols = [A]
+    G = Compare(protocols)
+    G.get_layout_by_objectid()
+    data = list(G.layout)
+    
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
-def get_layout_compare_json_v2(request, protocol_a_slug ,protocol_b_slug):
+def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare
     '''
@@ -38,6 +49,8 @@ def json_data_dynamic(request):
     data = json.loads(json_data)
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
+class AjaxSingleView(TemplateView):
+    template_name = "api/protocol_layout_1_ajax.html"           
 
 class AjaxStaticView(TemplateView):
     template_name = "api/protocol_layout_3_static.html"
@@ -47,6 +60,8 @@ class AjaxDynamicView(TemplateView):
 
 class AjaxView(TemplateView):
     template_name = "api/protocol_layout_3_ajax.html"       
+
+
 
 
 

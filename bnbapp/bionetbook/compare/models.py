@@ -83,13 +83,11 @@ class Compare(object):
 
 
         self.A = protocols[0]
-        
-        if not protocols[1]:
-            self.B = protocols[0]
-            
-        else:
-            self.B = protocols[1]    
 
+        
+        if len(protocols) == 2:
+            self.B = protocols[1]
+            
         self.aligned = self.align_verbs()            
 
     def isint(self, x): 
@@ -102,9 +100,11 @@ class Compare(object):
         '''
         method to align verbs between 2 protocols. to add more protocols to the comaprison, chnage the union command to be recursive 
         '''
-
-
         x = self.A.get_actions()
+        
+        if len(self.protocols) == 1:     
+            return x
+            
         y = self.B.get_actions()
         r = list(set(x).union(set(y)))
         order = []
@@ -163,7 +163,11 @@ class Compare(object):
     def get_layout_by_objectid(self, **kwargs):
         
         self.layout = []
-        self.alignment = [next(obj for obj in r if obj) for r in self.aligned]
+        if len(self.protocols) >1:
+            self.alignment = [next(obj for obj in r if obj) for r in self.aligned]
+        else:
+             self.alignment = self.aligned   
+        # print self.alignment
         for objid in self.alignment:
             z = CompareVerb(self.protocols, objid)
             # z.add_verb_from_protocols(objid)
@@ -187,19 +191,16 @@ class CompareVerb(dict):
     # def add_verb_from_protocols(self, objectid, **kwargs):
         dirty = False
         diff = "False"
-        # for obj in compare_row:
+
         for protocol in self.protocols:
             # if protocol.nodes[objectid]:
             node = self.get_node(protocol, self.objectid)    
             if node:
-                print node['objectid']
-                print diff
                 self['name'].append(node['name'])
                 self['node_type'].append(node.node_type)
                 self['objectid'].append(node['objectid'])
                 self['duration'].append("None")
                 self['child_type'].append(node.childtype())
-                
                 
                 if node.children:
                     self.children.append([r['objectid'] for r in node.children])
@@ -218,7 +219,11 @@ class CompareVerb(dict):
         if dirty:
             self['child'] = self.add_children()  
      
-        self['child_diff'] = self.child_diff(objectid, diff)
+        if len(self.protocols) == 1:
+            self['child_diff'] = "False"    
+        else:
+            self['child_diff'] = self.child_diff(objectid, diff)
+
         self['node_type'] = next(obj for obj in self['node_type'] if obj)
         self['name'] = next(obj for obj in self['name'] if obj)
 
@@ -249,8 +254,11 @@ class CompareVerb(dict):
         diff = prev_diff
 
         node1 = self.get_node(self.protocols[0], self.objectid)    
-        node2 = self.get_node(self.protocols[1], self.objectid)
-
+        node2 = self.get_node(self.protocols[1], self.objectid)    
+        
+        if len(self.protocols) == 1:
+            return False
+        
         if node1 and node2: 
             D = DictDiffer(node1, node2)
             if len(D.changed()) > 0:

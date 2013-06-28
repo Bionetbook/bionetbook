@@ -39,12 +39,15 @@
     <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
-    <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
+    <script src="{{ STATIC_URL }}js/main_ajax_single.js"></script>
     <script>
-    var slug_A = '{{ params.protocol_a_slug }}';
-    var slug_B = '{{ params.protocol_b_slug }}';
+    var slugs = new Array();
+    slugs[0] = '{{ params.protocol_a_slug }}';
+    // slugs[1]  '{{ params.protocol_a_slug }}';
+
+    
     $(document).ready(function(){
-        getFlowchartData( slug_A, slug_B, callback );
+        getFlowchartData( slugs, callback );
         });
     </script>
 
@@ -55,7 +58,7 @@
                     <td><div></div></td>
                     <% for (var i=1; i <= objectid.length; i++) { %>
                         <td>
-                            <div><h3>protocol + 7<%= i %></h3></div>
+                            <div><h3>protocol <%= i+7 %></h3></div>
                         </td>
                     <% } %>
                     </tr>
