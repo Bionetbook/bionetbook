@@ -79,7 +79,7 @@ class Compare(object):
     # def __init__(self, protocols, protocol_a, protocol_b = None, **kwargs):
     def __init__(self, protocols, **kwargs):
 
-        self.protocols = [protocol for protocol in protocols]
+        self.protocols = protocols
 
 
         self.A = protocols[0]
@@ -295,8 +295,8 @@ class CompareChildren(CompareVerb):
                 self['node_type'].append(node.node_type)
                 self['objectid'].append(node['objectid'])
                 self['URL'].append(node.get_update_url())
-                if 'published' in protocol.status:
-                    self['URL'].append(node.get_absolute_url())
+                # if 'published' in protocol.status:
+                #     self['URL'].append(node.get_absolute_url())
 
                 for item in self.get_summary_attributes():
                     self[item].append(node.summary.get(item, "None"))        

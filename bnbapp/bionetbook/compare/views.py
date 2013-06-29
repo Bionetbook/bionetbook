@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 import django.utils.simplejson as json
-from compare.models import ProtocolPlot, DictDiffer
+from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from django import http
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView, View
@@ -17,6 +17,17 @@ COLOR_A = '#B82F3'
 COLOR_B = '#015666' 
 NODE_STYLE = 'solid' # "rounded" produces a longer svg filled with polylines. 
 
+class AjaxSingleView(TemplateView):
+    template_name = "api/protocol_layout_1_ajax.html"           
+
+class AjaxView(TemplateView):
+    template_name = "api/protocol_layout_3_ajax.html"           
+
+
+
+
+
+
 class CompareSelectView(TemplateView):
     template_name = "compare/compare_select.html"
 
@@ -29,12 +40,13 @@ class CompareSelectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
-        protocol_a = Protocol.objects.get(pk=request.POST['protocol_a'][0])
-        protocol_b = Protocol.objects.get(pk=request.POST['protocol_b'][0])
+        protocol_a = Protocol.objects.get(pk=int(request.POST['protocol_a']))
+        protocol_b = Protocol.objects.get(pk=int(request.POST['protocol_b']))
 
         # NEED TO ADD CHECK TO MAKE SURE USER CAN SEE THESE PROTOCOLS
 
-        url = reverse("compare_layers", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug, 'layers':'none'})
+        # url = reverse("compare_layers", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug, 'layers':'none'})
+        url = reverse("ajax_view", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug})
         return HttpResponseRedirect(url)
 
 class CompareBaseView(TemplateView):

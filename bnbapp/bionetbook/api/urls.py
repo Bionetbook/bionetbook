@@ -14,7 +14,7 @@ urlpatterns = patterns("",
 	url(regex=r'^view/single_ajax/(?P<protocol_a_slug>[-\w]+)/$', view=views.AjaxSingleView.as_view(), name='AjaxSinlgeView'),
 
 	url(regex=r'^json/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.get_layout_compare_json', name='get_layout_compare_json'),
-	url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='AjaxView'),
+	# url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
 	
 	
 )
