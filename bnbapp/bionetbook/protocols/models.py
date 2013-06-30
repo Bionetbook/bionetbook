@@ -145,7 +145,7 @@ class Protocol(TimeStampedModel):
         return reverse("protocol_duplicate", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
     def protocol_outline_url(self):
-        return reverse("ajax_sinlge_view", kwargs={'protocol_a_slug':self.slug})
+        return reverse("layout_sinlge_view", kwargs={'protocol_a_slug':self.slug})
 
     ##########
     # Generators

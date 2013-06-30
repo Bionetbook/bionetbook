@@ -111,7 +111,7 @@ html, body {
 
 .flowchart-container {
     width: 100%;
-    padding:  4em 2em 2em;
+    padding:  4em 0em 0em;
 }
 
 .flowchart-table {

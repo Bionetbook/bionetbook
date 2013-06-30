@@ -2,7 +2,7 @@
 {% load core_tags %}
 
 {# PAGE TITLE #}
-{% block title %}Compare: {{ object.name }}{% endblock %}
+{% block page_title %}Protocol Diagram {% endblock %}
 
 {# BREADCRUMBS #}
 {% block breadcrumbs %}
@@ -24,12 +24,9 @@
 
 {# MAIN PAGE CONTENT #}
 {% block content %}
+    
 <div class="row">
-    <!-- <div class="span1">
-         <div class="well">
-         </div>  
-    </div>     -->
-    <div class="span5">
+    <div class="span6">
         <div class="well">
             <h3>{{ protocol_a }}</h3>
             <table class="table table-striped table-condensed" style="font-size:10pt">
@@ -48,26 +45,7 @@
             </table>
         </div>
     </div> 
-    <div class="span5">
-        <div class="well">
-            <h3>{{ protocol_b }}</h3>
-            <table class="table table-striped table-condensed" style="font-size:10pt">
-                <tr>
-                    <td>Parent: {{protocol_b.parent }}</td>
-                    <td>Children: {{protocol_b.children }} </td>
-                </tr>
-                <tr>
-                    <td>Author: {{protocol_b.owner.name }}</td>
-                    <td>PubMed: {{protocol_b.data.Reference_PMID }} </td>
-                </tr>
-                 <tr>
-                    <td>Created: {{protocol_b.created|date:"M d, Y H:i" }}</td>
-                    <td>Duration: {{protocol_b.duration_in_seconds }}</td>
-                </tr>
-            </table>
-        </div>
-    </div> 
-</div>    
+</div>
 
 <div class="wrapper">
         <div class="flowchart-container">
@@ -84,14 +62,16 @@
     <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
-    <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
+    <script src="{{ STATIC_URL }}js/main_ajax_single.js"></script>
     <script>
-    var slug_A = '{{ protocol_a.slug }}';
-    var slug_B = '{{ protocol_b.slug }}';
-    // var slug_A = '{{ params.protocol_a_slug }}';
-    // var slug_B = '{{ params.protocol_b_slug }}';
+    var slugs = new Array();
+    slugs[0] = '{{ protocol_a.slug }}';
+    // slugs[0] = '{{ params.protocol_a_slug }}';
+    // slugs[1]  '{{ params.protocol_a_slug }}';
+
+    
     $(document).ready(function(){
-        getFlowchartData( slug_A, slug_B, callback );
+        getFlowchartData( slugs, callback );
         });
     </script>
 
@@ -101,7 +81,9 @@
                     <tr class="flowchart-header">
                     <td><div></div></td>
                     <% for (var i=1; i <= objectid.length; i++) { %>
-                    
+                        <td>
+                            
+                        </td>
                     <% } %>
                     </tr>
                     <tr class="flowchart-line-wrapper">
