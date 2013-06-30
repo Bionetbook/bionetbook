@@ -20,11 +20,10 @@ NODE_STYLE = 'solid' # "rounded" produces a longer svg filled with polylines.
 class AjaxSingleView(TemplateView):
     template_name = "api/protocol_layout_1_ajax.html"           
 
-class AjaxView(TemplateView):
-    template_name = "api/protocol_layout_3_ajax.html"           
+    # class AjaxView(TemplateView):
+    #     template_name = "api/protocol_layout_3_ajax.html"           
 
-
-
+# !!!!!! SWITCH THE NAMES OF THE METHODS AND TEMPLATE FOLDERS !!!!!!!!
 
 
 
@@ -40,14 +39,39 @@ class CompareSelectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         '''This is done to handle the two forms'''
+        
         protocol_a = Protocol.objects.get(pk=int(request.POST['protocol_a']))
         protocol_b = Protocol.objects.get(pk=int(request.POST['protocol_b']))
+        
+        # DEPRECATED
+        # context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        # context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
 
         # NEED TO ADD CHECK TO MAKE SURE USER CAN SEE THESE PROTOCOLS
 
         # url = reverse("compare_layers", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug, 'layers':'none'})
-        url = reverse("ajax_view", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug})
+        url = reverse("compare_display_view", kwargs={'protocol_a_slug':protocol_a.slug, 'protocol_b_slug':protocol_b.slug})
         return HttpResponseRedirect(url)
+
+
+class CompareDisplayView(CompareSelectView, TemplateView):          
+    template_name = "compare/protocol_layout_api_headers.html"           
+
+    def get_context_data(self, **kwargs):
+
+        context = super(CompareDisplayView, self).get_context_data(**kwargs)
+        return context 
+        
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        # context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        # context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        
+
+        return self.render_to_response(context)    
+
 
 class CompareBaseView(TemplateView):
     # template_name = "compare/compare_default.html"

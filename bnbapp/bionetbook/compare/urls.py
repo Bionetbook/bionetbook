@@ -4,11 +4,14 @@ from compare import views
 
 urlpatterns = patterns("",
     url(regex=r'^select/$', view=views.CompareSelectView.as_view(), name='compare_select'),
-    
+
     url(regex=r'^view/single_ajax/(?P<protocol_a_slug>[-\w]+)/$', view=views.AjaxSingleView.as_view(), name='ajax_sinlge_view'),
-    url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
+    # url(regex=r'^view/single_ajax/(?P<protocol_a_slug>[-\w]+)/$', view=views.AjaxSingleView.as_view(), name='ajax_sinlge_view'),
     
+    # url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
+    url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.CompareDisplayView.as_view(), name='compare_display_view'),
     
+    # url(regex=r'^(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.CompareBaseView.as_view(), name='compare_protocols'),
 
 
 

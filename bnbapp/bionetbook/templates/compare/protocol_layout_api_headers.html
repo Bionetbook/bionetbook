@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{# PAGE TITLE #}
+{% block title %}Compare: {{ object.name }}{% endblock %}
+
+{# BREADCRUMBS #}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a> <<  to >> </li>
+      <li><a href="{{ protocol_b.get_absolute_url }}">{{ protocol_b.name }}</a> <span class="divider">/</span></li>
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
+
+{# CSS STYLE SHEETS GO HERE #}
+{% block extracss %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome.css">
+{% endblock %}
+
+{# MAIN PAGE CONTENT #}
+{% block content %}
+<div class="row">
+    <div class="span5">
+        <div class="well">
+            <h3>{{ protocol_a }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    <td>Parent: {{protocol_a.parent }}</td>
+                    <td>Children: {{protocol_a.children }} </td>
+                </tr>
+                <tr>
+                    <td>Author: {{protocol_a.owner.name }}</td>
+                    <td>PubMed: {{protocol_a.data.Reference_PMID }} </td>
+                </tr>
+                 <tr>
+                    <td>Created: {{protocol_a.created|date:"M d, Y H:i" }}</td>
+                    <td>Duration: {{protocol_a.duration_in_seconds }}</td>
+                </tr>
+            </table>
+        </div>
+    </div> 
+    <div class="span5">
+        <div class="well">
+            <h3>{{ protocol_b }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    <td>Parent: {{protocol_b.parent }}</td>
+                    <td>Children: {{protocol_b.children }} </td>
+                </tr>
+                <tr>
+                    <td>Author: {{protocol_b.owner.name }}</td>
+                    <td>PubMed: {{protocol_b.data.Reference_PMID }} </td>
+                </tr>
+                 <tr>
+                    <td>Created: {{protocol_b.created|date:"M d, Y H:i" }}</td>
+                    <td>Duration: {{protocol_b.duration_in_seconds }}</td>
+                </tr>
+            </table>
+        </div>
+    </div> 
+</div>    
+
+<div class="wrapper">
+        <div class="flowchart-container">
+
+        </div>
+</div>
+    
+
+    
+{% endblock %}
+
+{# JAVASCRIPT SHOULD GO IN THESE TAGS #}
+{% block extrajs %}
+    <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
+    <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
+    <script>
+    var slug_A = '{{ protocol_a.slug }}';
+    var slug_B = '{{ protocol_b.slug }}';
+    // var slug_A = '{{ params.protocol_a_slug }}';
+    // var slug_B = '{{ params.protocol_b_slug }}';
+    $(document).ready(function(){
+        getFlowchartData( slug_A, slug_B, callback );
+        });
+    </script>
+
+	<script type="text/template" id="flowchart-table-template">
+            <table class="flowchart-table">
+                <tbody>
+                    <tr class="flowchart-header">
+                    <td><div></div></td>
+                    <% for (var i=1; i <= objectid.length; i++) { %>
+                    
+                    <% } %>
+                    </tr>
+                    <tr class="flowchart-line-wrapper">
+                      <% for (var i=0; i <= objectid.length; i++) { %>
+                        <td>
+                            <div class="flowchart-line-container"></div>
+                        </td>
+                      <% } %>
+                    </tr>
+                </tbody>
+            </table>
+        </script>
+
+        <script type="text/template" id="flowchart-row-template">
+            <% if (node_type=="verb" || node_type=="Action") { %>
+            <tr>
+                <td>
+                    <div class="flowchart-card"><%= index %>. <%= name %></div>
+                </td>
+
+                <td<%= child_diff=="True" ? '' : ' colspan="' + objectid.length + '"' %>>
+                    <% if (objectid[0]!="None") { %>
+                        <%= cardTmpl( {child: prepareChild(child, 0, {objectid : objectid, child_diff : child_diff, child_type : child_type}), index: 0} ) %>
+                    <% } %>
+                </td>
+                <% if (child_diff=="True") { %>
+                  <% for (var i=1; i < objectid.length; i++) { %>
+                    <td>
+                        <% if (objectid[i]!="None") { %>
+                            <%= cardTmpl( {child: prepareChild(child, i, {objectid : objectid, child_diff : child_diff, child_type : child_type}), index: i} ) %>
+                        <% } %>
+                     </td>
+                  <% } %>
+                <% } %>
+            </tr>
+            <% } %>
+        </script>
+
+        <script type="text/template" id="flowchart-card-template">
+            <div class="flowchart-card">
+                <% _(child).each(function(item) { %>
+                <div>
+                    <% if (item.name!="None") { %>
+                        <% if (item.URL && _(item.URL).isArray() ) { %>
+                            <a href="<%= item.URL[0] %>" target="_blank"><i class="icon icon-cog"></i></a>
+                        <% } %>
+                        <% if (item.child_type!="manual") { %><%= item.name %>:<% } %>
+                        <% _.chain(item).pairs().filter(function(pair){
+                            return pair[0].indexOf('_')==-1
+                                && pair[0]!='number'
+                                && pair[0]!='name'
+                                && pair[0]!='verb'
+                                && pair[0]!='URL'
+                                && pair[0]!='comment'
+                                && pair[0]!='technique_comment'
+                                && pair[0]!='time'
+                                && pair[0]!='duration'
+                                && pair[0]!='objectid';
+                            }).map(function(pair){
+                                return pair[1];
+                            }).each(function(value, i, list){ %>
+
+                            <% if (_(value).isArray()) value = _(value).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <% if (i!=list.length-1) { %>
+                                <%= $.trim(value) + ',' %>
+                            <% } else { %>
+                                <%= value %>
+                            <% } %>
+                        <% }); %>
+                        <% if (item.URL && item.URL[index]!="None") { %>
+                            <a href="<%= _(item.URL).isArray() ? item.URL[1] : item.URL %>" target="_blank"><i class="icon icon-cog"></i></a>
+                        <% } %>
+                        <% if (item.time) { %>
+                            <% if (_(item.time).isArray()) item.time = _(item.time).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Time = <%= item.time %>
+                            </div>
+                        <% } %>
+                        <% if (item.duration) { %>
+                            <% if (_(item.duration).isArray()) item.duration = _(item.duration).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <% if (_(item.duration_units).isArray()) item.duration_units = _(item.duration_units).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Time = <%= item.duration %> <%= item.duration_units %>
+                            </div>
+                        <% } %>
+                        <% if (item.comment) { %>
+                            <% if (_(item.comment).isArray()) item.comment = _(item.comment).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Comment: <%= item.comment %>
+                            </div>
+                        <% } %>
+                        <% if (item.technique_comment) { %>
+                            <% if (_(item.technique_comment).isArray()) item.technique_comment = _(item.technique_comment).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Comment: <%= item.technique_comment %>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <br/>
+                    <% } %>
+                </div>
+                <% }); %>
+            </div>
+        </script>
+
+    
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
