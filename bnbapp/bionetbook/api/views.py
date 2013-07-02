@@ -56,11 +56,11 @@ def json_data_dynamic(request):
 # class AjaxSingleView(TemplateView):
 #     template_name = "api/protocol_layout_1_ajax.html"           
 
-# class AjaxStaticView(TemplateView):
-#     template_name = "api/protocol_layout_3_static.html"
+class AjaxStaticView(TemplateView):
+    template_name = "api/protocol_layout_3_static.html"
 
-# class AjaxDynamicView(TemplateView):
-#     template_name = "api/protocol_layout_3_dynamic.html"                
+class AjaxDynamicView(TemplateView):
+    template_name = "api/protocol_layout_3_dynamic.html"                
 
 # class AjaxView(TemplateView):
 #     template_name = "api/protocol_layout_3_ajax.html"       
