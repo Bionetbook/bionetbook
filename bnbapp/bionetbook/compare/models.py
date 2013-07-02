@@ -177,7 +177,7 @@ class Compare(object):
 
 
         
-class CompareVerb(dict):
+class CompareVerb(dict, Compare):
     ''' this function take a list of protocols and objectids specified by the parent caller 
     (get_json_align) for all protocols in the comparison. 
         
@@ -250,14 +250,56 @@ class CompareVerb(dict):
     def add_children(self, manual = False, **kwargs):
         
         output = []
-        all_children = union(self.children)
-        print 'union of all children:', all_children
+
+        # !!! NEW STUFF!!!
+        # all_children = union(self.children)
+        all_children = self.align_children(self.children)
+        
+        # print 'union of all children:', all_children
         for child_id in all_children:
             z = CompareChildren(self.protocols, child_id, manual)
             output.append(z)
             
         return output        
         
+    # !!! NEW STUFF!!!
+    def align_children(self, children):
+        '''
+        method to align verbs between 2 protocols. to add more protocols to the comaprison, chnage the union command to be recursive 
+        '''
+        x = children[0]
+        
+        if len(self.protocols) == 1:     
+            return x
+            
+        y = children[1]
+        r = list(set(x).union(set(y)))
+        order = []
+        out = []
+        for i in r:
+            if i in x and i in y:
+                order.append((i, x.index(i), y.index(i), x.index(i) + y.index(i)))
+            if i in x and i not in y: 
+                order.append((i, x.index(i), x.index(i) + 0.5, 2*x.index(i) + 0.5 ))
+            if i in y and i not in x: 
+                order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
+
+        order.sort(key=ColNum(3))
+        
+        for row in order:
+            if self.isint(row[1]) and self.isint(row[2]):
+                out.append((row[0], row[0]))
+            if self.isint(row[1]) and not self.isint(row[2]):
+                out.append((row[0], None))  
+            if self.isint(row[2]) and not self.isint(row[1]):
+                out.append((None, row[0]))  
+        
+        if len(self.protocols) >1:
+            self.alignment = [next(obj for obj in r if obj) for r in out]         
+
+        return out    
+
+
     def child_diff(self, objectid, prev_diff, **kwargs):
         diff = prev_diff
 
@@ -324,6 +366,8 @@ class CompareChildren(CompareVerb):
                     self[item].append("None")        
 
         self['node_type'] = next(obj for obj in self['node_type'] if obj)        
+        # if 'link' in self.keys():
+        #     del(self['link'])
     
     def get_summary_attributes(self, manual = False, **kwargs):
 
