@@ -200,10 +200,20 @@ def labeler(object_dict):
             output = settify(object_dict, summary=True)
         else:
             for item in display_order:
+
                 if item in object_dict.keys():
                     output[item] = object_dict[item]
+                if 'duration' in object_dict.keys() and 'duration_units' in object_dict.keys():
+                    output['duration'] = [object_dict['duration'], object_dict['duration_units']]    
+                if 'duration' in object_dict.keys() and 'duration_units' not in object_dict.keys():
+                    output['duration'] = [object_dict['duration'], 'sec']    
+                if 'name' in object_dict.keys():
+                    output['name'] = object_dict['name']
+        if 'duration_units' in output.keys():
+            del(output['duration_units'])            
+
+        # output['verb'] = object_dict['verb']
         
-        output['verb'] = object_dict['verb']
 
     return output 
         

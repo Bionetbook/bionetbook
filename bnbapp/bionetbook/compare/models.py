@@ -22,6 +22,8 @@ NODE_STYLE = 'solid' # "rounded" produces a longer svg filled with polylines.
 
 def union(lists):
     output = set()
+    # if len(lists) == 1:
+    #     return lists
     for item in lists:
         output = set(output).union(set(item))
 
@@ -196,6 +198,7 @@ class CompareVerb(dict):
             # if protocol.nodes[objectid]:
             node = self.get_node(protocol, self.objectid)    
             if node:
+                
                 self['name'].append(node['name'])
                 self['node_type'].append(node.node_type)
                 self['objectid'].append(node['objectid'])
@@ -205,6 +208,11 @@ class CompareVerb(dict):
                 if node.children:
                     self.children.append([r['objectid'] for r in node.children])
                     dirty = True
+                    manual = False
+                if node['verb'] in MANUAL_VERBS:
+                    self.children.append([self.objectid])                    
+                    dirty = True
+                    manual = True
                 # self['child'].append(self.add_children(node))
             else:
                 diff = "True"
@@ -217,7 +225,7 @@ class CompareVerb(dict):
                 self['child'].append([])   
 
         if dirty:
-            self['child'] = self.add_children()  
+            self['child'] = self.add_children(manual)  
      
         if len(self.protocols) == 1:
             self['child_diff'] = "False"    
@@ -239,13 +247,13 @@ class CompareVerb(dict):
         else:
             return result              
 
-    def add_children(self, **kwargs):
+    def add_children(self, manual = False, **kwargs):
         
         output = []
         all_children = union(self.children)
-
+        print 'union of all children:', all_children
         for child_id in all_children:
-            z = CompareChildren(self.protocols, child_id)
+            z = CompareChildren(self.protocols, child_id, manual)
             output.append(z)
             
         return output        
@@ -278,23 +286,30 @@ class CompareChildren(CompareVerb):
     (get_json_align) for all protocols in the comparison. 
         
         '''
-    def __init__(self, protocols, objectid, **kwargs):
+    def __init__(self, protocols, objectid, manual = False, **kwargs):
         self.protocols = protocols
         self.objectid = objectid
         self.attribs = ['objectid', 'node_type', 'URL']
         for item in self.attribs:
             self[item] = []
         
-        for item in self.get_summary_attributes():
+        for item in self.get_summary_attributes(manual):
             self[item] = []        
 
         for protocol in self.protocols:
             # if protocol.nodes[objectid]:
             node = self.get_node(protocol, self.objectid)    
             if node:
+                 
                 self['node_type'].append(node.node_type)
+                print (node['name'], node['objectid'], manual)
                 self['objectid'].append(node['objectid'])
-                self['URL'].append(node.get_update_url())
+                if manual:
+                    self['URL'].append(node.action_update_url())
+
+                    self['verb'].append(node['name'])
+                else:
+                    self['URL'].append(node.get_update_url())
                 # if 'published' in protocol.status:
                 #     self['URL'].append(node.get_absolute_url())
 
@@ -309,15 +324,17 @@ class CompareChildren(CompareVerb):
                     self[item].append("None")        
 
         self['node_type'] = next(obj for obj in self['node_type'] if obj)        
-    def get_summary_attributes(self, **kwargs):
+    
+    def get_summary_attributes(self, manual = False, **kwargs):
 
         attribs = []
         for protocol in self.protocols:
             node = self.get_node(protocol, self.objectid)    
             if node:
                 attribs.append(node.summary.keys()) 
-
-
+                if manual:
+                    attribs.append(['verb'])
+        print union(attribs)            
         return union(attribs)   
 
 # if node['name'] in MANUAL_VERBS:
