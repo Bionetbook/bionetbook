@@ -177,7 +177,7 @@ class Compare(object):
 
 
         
-class CompareVerb(dict, Compare):
+class CompareVerb(dict):
     ''' this function take a list of protocols and objectids specified by the parent caller 
     (get_json_align) for all protocols in the comparison. 
         
@@ -285,7 +285,7 @@ class CompareVerb(dict, Compare):
                 order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
 
         order.sort(key=ColNum(3))
-        
+
         for row in order:
             if self.isint(row[1]) and self.isint(row[2]):
                 out.append((row[0], row[0]))
@@ -295,11 +295,15 @@ class CompareVerb(dict, Compare):
                 out.append((None, row[0]))  
         
         if len(self.protocols) >1:
-            self.alignment = [next(obj for obj in r if obj) for r in out]         
+            return [next(obj for obj in r if obj) for r in out]         
 
         return out    
 
-
+    def isint(self, x): 
+        if type(x) is int:
+            return True
+        else:
+            return False 
     def child_diff(self, objectid, prev_diff, **kwargs):
         diff = prev_diff
 
@@ -344,7 +348,7 @@ class CompareChildren(CompareVerb):
             if node:
                  
                 self['node_type'].append(node.node_type)
-                print (node['name'], node['objectid'], manual)
+                # print (node['name'], node['objectid'], manual)
                 self['objectid'].append(node['objectid'])
                 if manual:
                     self['URL'].append(node.action_update_url())
@@ -354,7 +358,7 @@ class CompareChildren(CompareVerb):
                     self['URL'].append(node.get_update_url())
                 # if 'published' in protocol.status:
                 #     self['URL'].append(node.get_absolute_url())
-
+                print self.get_summary_attributes()
                 for item in self.get_summary_attributes():
                     self[item].append(node.summary.get(item, "None"))        
                 
@@ -365,7 +369,7 @@ class CompareChildren(CompareVerb):
                 for item in self.get_summary_attributes():
                     self[item].append("None")        
 
-        self['node_type'] = next(obj for obj in self['node_type'] if obj)        
+        # self['node_type'] = next(obj for obj in self['node_type'] if obj)        
         # if 'link' in self.keys():
         #     del(self['link'])
     
@@ -378,7 +382,7 @@ class CompareChildren(CompareVerb):
                 attribs.append(node.summary.keys()) 
                 if manual:
                     attribs.append(['verb'])
-        print union(attribs)            
+        # print union(attribs)            
         return union(attribs)   
 
 # if node['name'] in MANUAL_VERBS:

@@ -77,7 +77,8 @@ def settify(settings_dict, shorthand = True, summary = False, action = False, co
                 numbers = str(data['cycles']) 
                 units = plural
             if summary:
-                output[item] = [numbers, data.get('cycle_back_to', '')]
+                output['cycles'] = numbers
+                output['cycle_back_to'] = data.get('cycle_back_to', None)
             else:    
                 settings.append(out)
 
