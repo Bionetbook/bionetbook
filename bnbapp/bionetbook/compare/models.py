@@ -13,12 +13,6 @@ from compare.utils import html_label_two_protocols, merge_table_pieces, add_step
 import itertools
 import operator
 
-FONT_SIZE = '10'
-HTML_TARGET = '_top'
-COLOR_A = '#B82F3'
-COLOR_B = '#015666' 
-NODE_STYLE = 'solid' # "rounded" produces a longer svg filled with polylines. 
-
 
 def union(lists):
     output = set()
@@ -174,8 +168,6 @@ class Compare(object):
             z = CompareVerb(self.protocols, objid)
             # z.add_verb_from_protocols(objid)
             self.layout.append(z)        
-
-
         
 class CompareVerb(dict):
     ''' this function take a list of protocols and objectids specified by the parent caller 
@@ -262,7 +254,6 @@ class CompareVerb(dict):
             
         return output        
         
-    # !!! NEW STUFF!!!
     def align_children(self, children):
         '''
         method to align verbs between 2 protocols. to add more protocols to the comaprison, chnage the union command to be recursive 

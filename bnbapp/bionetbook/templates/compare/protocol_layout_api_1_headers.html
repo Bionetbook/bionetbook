@@ -156,6 +156,12 @@
                         <% if (item.URL && item.URL[index]!="None") { %>
                             <a href="<%= _(item.URL).isArray() ? item.URL[1] : item.URL %>" target="_blank"><i class="icon icon-cog"></i></a>
                         <% } %>
+                        <% if (item.item_to_act) { %>
+                            <% if (_(item.item_to_act).isArray()) item.item_to_act = _(item.item_to_act).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
+                            <div>
+                                Item to aliquote: <%= item.item_to_act %>
+                            </div>
+                        <% } %>
                         <% if (item.time) { %>
                             <% if (_(item.time).isArray()) item.time = _(item.time).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
                             <div>
