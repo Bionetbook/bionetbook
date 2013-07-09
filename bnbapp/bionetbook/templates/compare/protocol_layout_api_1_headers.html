@@ -159,7 +159,7 @@
                         <% if (item.item_to_act) { %>
                             <% if (_(item.item_to_act).isArray()) item.item_to_act = _(item.item_to_act).reduce(function(memo, value){ return memo + value + ' '; }, ''); %>
                             <div>
-                                Item to aliquote: <%= item.item_to_act %>
+                                <%= item.item_to_act %> <%= item.aliquot_vol %> <%= item.vol_units %> <%= item.aliquot_conc %> <%= item.conc_units %>
                             </div>
                         <% } %>
                         <% if (item.time) { %>

@@ -1,5 +1,5 @@
 from protocols.forms import forms
-VOLUME_UNITS = (("l","liter"),("ml","Mililiter"), ("ul","microliter"), )
+from core.utils import  VOLUME_UNITS
 
 class TransferForm(forms.VerbForm):
 
