@@ -260,7 +260,7 @@ class CompareVerb(dict):
         '''
         x = children[0]
         
-        if len(self.protocols) == 1:     
+        if len(children) == 1:         
             return x
             
         y = children[1]
@@ -349,7 +349,6 @@ class CompareChildren(CompareVerb):
                     self['URL'].append(node.get_update_url())
                 # if 'published' in protocol.status:
                 #     self['URL'].append(node.get_absolute_url())
-                print self.get_summary_attributes()
                 for item in self.get_summary_attributes():
                     self[item].append(node.summary.get(item, "None"))        
                 
