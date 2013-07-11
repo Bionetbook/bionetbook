@@ -1,6 +1,57 @@
 from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
+class ColNum(object):
+    def __init__(self,colnum):
+        self.colnum = colnum
+    def __call__(self, x):
+        return x[self.colnum]
+
+def isint(x): 
+    if type(x) is int:
+        return True
+    else:
+        return False   
+
+
+def align_verbs(x, y):
+    '''
+    method to align names between 2 lists. to add more protocols to the comaprison, chnage the union command to be recursive
+     
+    '''
+    
+    r = list(set(x).union(set(y)))
+    order = []
+    out = []
+    for i in r:
+        if i in x and i in y:
+            order.append((i, x.index(i), y.index(i), x.index(i) + y.index(i)))
+        if i in x and i not in y: 
+            order.append((i, x.index(i), x.index(i) + 0.5, 2*x.index(i) + 0.5 ))
+        if i in y and i not in x: 
+            order.append((i, y.index(i) + 0.5, y.index(i), 2*y.index(i) + 0.5)) 
+
+    order.sort(key=ColNum(3))
+    
+    for row in order:
+        if isint(row[1]) and isint(row[2]):
+            out.append((row[0], row[0]))
+        if isint(row[1]) and not isint(row[2]):
+            out.append((row[0], None))  
+        if isint(row[2]) and not isint(row[1]):
+            out.append((None, row[0]))  
+    
+    return out
+
+
+
+
+
+
+
+
+
+
 def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwargs):
     stack = []
     if 'machine' in current_layer:
