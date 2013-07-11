@@ -34,25 +34,53 @@ class DictDiffer(object):
     """
 
 
-    def __init__(self, current_dict, past_dict):
-        self.current_dict, self.past_dict = current_dict, past_dict
-        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
-        self.intersect = self.set_current.intersection(self.set_past)
+    # def __init__(self, current_dict, past_dict):
+    #     self.current_dict, self.past_dict = current_dict, past_dict
+    #     self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+    #     self.intersect = self.set_current.intersection(self.set_past)
+    # def uniq_a(self):
+    #     return list(self.set_current - self.intersect)
+    # def uniq_b(self):
+    #     return list(self.set_past - self.intersect)
+    # def changed(self, **kwargs):
+    #     delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+    #     # if 'name' in delta and 'name' in kwargs:
+    #     #     delta.pop(delta.index('name'))
+    #     # if 'objectid' in delta and 'objectid' in kwargs:
+    #     #     delta.pop(delta.index('objectid'))
+    #     if 'slug' in delta and 'slug' in kwargs:
+    #         delta.pop(delta.index('slug'))
+    #     return delta
+    # def unchanged(self):
+    #     return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
+    def __init__(self, data_a, data_b, **kwargs):
+        
+        switch = {'schedule': ['physical_commitment', 'duration', 'duration_units'],
+                  'experiment': ['tube_label', 'tracking_object', ],
+                  'for_deletion': ['remarks', 'comment_why', 'add_to_what', 'other_settings'],
+                  'short_term':['output_to_track', 'why', 'vessel_type', 'input_notes', 'describe_where', 'output_notes', 'slug', 'input_to_track', 'technique_comment', 'temp_units', 'min_temp', 'max_temp', 'speed_units', 'max_speed', 'min_speed']
+                }
+
+        self.data_a, self.data_b = data_a, data_b
+        self.list_a, self.list_b = list(self.data_a.keys()), list(self.data_b.keys())
+        if 'switches' in kwargs:   
+            for item in kwargs['switches']: 
+                [self.list_a.pop(self.list_a.index(r)) for r in switch[item] if r in self.list_a]
+                [self.list_b.pop(self.list_b.index(r)) for r in switch[item] if r in self.list_b]
+
+        self.set_a, self.set_b = set(self.list_a), set(self.list_b)        
+        self.intersect = self.set_a.intersection(self.set_b)
+        
+                
     def uniq_a(self):
-        return list(self.set_current - self.intersect)
+        return list(self.set_a - self.intersect)
     def uniq_b(self):
-        return list(self.set_past - self.intersect)
-    def changed(self, **kwargs):
-        delta = list(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
-        # if 'name' in delta and 'name' in kwargs:
-        #     delta.pop(delta.index('name'))
-        # if 'objectid' in delta and 'objectid' in kwargs:
-        #     delta.pop(delta.index('objectid'))
-        if 'slug' in delta and 'slug' in kwargs:
-            delta.pop(delta.index('slug'))
+        return list(self.set_b - self.intersect)
+    def changed(self):
+        delta = list(o for o in self.intersect if self.data_b[o] != self.data_a[o])
         return delta
     def unchanged(self):
-        return list(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
+        return list(o for o in self.intersect if self.data_b[o] == self.data_a[o])
 
 class ColNum(object):
     def __init__(self,colnum):
@@ -163,7 +191,7 @@ class Compare(object):
             self.alignment = [next(obj for obj in r if obj) for r in self.aligned]
         else:
              self.alignment = self.aligned   
-        # print self.alignment
+    
         for objid in self.alignment:
             z = CompareVerb(self.protocols, objid)
             # z.add_verb_from_protocols(objid)
@@ -236,6 +264,10 @@ class CompareVerb(dict):
 
         if 'true' in kwargs and result:
             return kwargs['true']
+
+        if 'summary' in kwargs.keys() and result:
+            return result.summary
+
         else:
             return result              
 
@@ -247,7 +279,7 @@ class CompareVerb(dict):
         # all_children = union(self.children)
         all_children = self.align_children(self.children)
         
-        # print 'union of all children:', all_children
+        
         for child_id in all_children:
             z = CompareChildren(self.protocols, child_id, manual)
             output.append(z)
@@ -305,16 +337,16 @@ class CompareVerb(dict):
             return False
         
         if node1 and node2: 
-            D = DictDiffer(node1, node2)
+            D = DictDiffer(node1, node2, switches = ['experiment','for_deletion','schedule','short_term'])
             if len(D.changed()) > 0:
                 diff = "True"
-
+                print 'parent:', self.objectid, D.changed()
             if len(D.uniq_a()) > 0:
                 diff = "True"    
-
+                print 'parent:', self.objectid, D.uniq_a()
             if len(D.uniq_b()) > 0:
                 diff = "True"        
-
+                print 'parent:', self.objectid, D.uniq_b()
         return diff
         
         
@@ -327,19 +359,20 @@ class CompareChildren(CompareVerb):
         self.protocols = protocols
         self.objectid = objectid
         self.attribs = ['objectid', 'node_type', 'URL']
+        self.nodes = []
         for item in self.attribs:
             self[item] = []
         
         for item in self.get_summary_attributes(manual):
             self[item] = []        
 
-        for protocol in self.protocols:
+        for i, protocol in enumerate(self.protocols):
             # if protocol.nodes[objectid]:
             node = self.get_node(protocol, self.objectid)    
+            # self.nodes.append(node)
             if node:
                  
                 self['node_type'].append(node.node_type)
-                # print (node['name'], node['objectid'], manual)
                 self['objectid'].append(node['objectid'])
                 if manual:
                     self['URL'].append(node.action_update_url())
@@ -358,6 +391,21 @@ class CompareChildren(CompareVerb):
                 self['URL'].append("None")
                 for item in self.get_summary_attributes():
                     self[item].append("None")        
+        
+        # node1 = self.nodes[0].summary 
+        # node2 = self.nodes[1].summary
+
+        # if node1 and node2: 
+        #     D = DictDiffer(node1, node2, switches = ['experiment','for_deletion','schedule','short_term'])
+        #     if len(D.changed()) > 0:
+        #         diff = "True"
+        #         print 'changed:', self.objectid, D.changed()
+        #     if len(D.uniq_a()) > 0:
+        #         diff = "True"    
+        #         print 'changed:', self.objectid, D.uniq_a()
+        #     if len(D.uniq_b()) > 0:
+        #         diff = "True"        
+        #         print 'changed:', self.objectid, D.uniq_b()            
 
         # self['node_type'] = next(obj for obj in self['node_type'] if obj)        
         # if 'link' in self.keys():
@@ -367,12 +415,30 @@ class CompareChildren(CompareVerb):
 
         attribs = []
         for protocol in self.protocols:
-            node = self.get_node(protocol, self.objectid)    
+            node = self.get_node(protocol, self.objectid, summary= True)    
             if node:
-                attribs.append(node.summary.keys()) 
+                self.nodes.append(node)
+                # attribs.append(node.summary.keys()) 
+                attribs.append(node.keys()) 
                 if manual:
                     attribs.append(['verb'])
-        # print union(attribs)            
+
+
+        # node1 = self.nodes[0]
+        # self.nodes[1] = self.nodes[1]
+        if self.nodes:
+            if self.nodes[0] and self.nodes[1]: 
+                D = DictDiffer(self.nodes[0], self.nodes[1], switches = ['experiment','for_deletion','schedule','short_term'])
+                if len(D.changed()) > 0:
+                    diff = "True"
+                    print 'child:', self.objectid, D.changed()
+                if len(D.uniq_a()) > 0:
+                    diff = "True"    
+                    print 'child:', self.objectid, D.uniq_a()
+                if len(D.uniq_b()) > 0:
+                    diff = "True"        
+                    print 'child:', self.objectid, D.uniq_b()            
+            
         return union(attribs)   
 
 # if node['name'] in MANUAL_VERBS:
