@@ -1,6 +1,33 @@
 from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
+MASKS = {
+        'schedule': 
+            ['physical_commitment', 'duration', 'duration_units', 'time_comment',],
+        'experiment': 
+            ['tube_label', 'tracking_object', ],
+        'for_deletion': 
+            ['remarks', 'comment_why', 'add_to_what', 'other_settings'],
+        'short_term':
+            ['output_to_track', 'why', 'vessel_type', 'input_notes', 'describe_where', 
+            'output_notes', 'slug', 'input_to_track', 'technique_comment', 'temp_units', 'min_temp', 
+            'max_temp', 'speed_units', 'max_speed', 'min_speed', 'model', 'temp_comment',],
+        'children_keys': 
+            ['speed','tube_label', 'tracking_object', 'duration', 'duration_units', 'time_comment', 
+            'comment_why', 'add_to_what', 'other_settings', 'output_to_track', 'why', 'vessel_type', 
+            'input_notes', 'describe_where', 'output_notes', 'slug', 'input_to_track','technique_comment',
+            'model', 'temp_comment',
+            ]
+        }
+
+
+OUTPUT_MASKS = {
+                    'manual': ['duration', 'time']
+                }
+
+
+
+
 class ColNum(object):
     def __init__(self,colnum):
         self.colnum = colnum
@@ -42,14 +69,6 @@ def align_verbs(x, y):
             out.append((None, row[0]))  
     
     return out
-
-
-
-
-
-
-
-
 
 
 def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwargs):
