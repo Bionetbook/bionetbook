@@ -49,7 +49,7 @@ def settify(settings_dict, shorthand = True, summary = False, action = False, co
     #     if 'time_units' not in settings_dict or not settings_dict['time_units']: 
     #         settings_dict['time_units'] = settings_dict['duration_units']            
 
-    # items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link', 'technique']
+    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link', 'technique']
 
     for item in items:
         data = dict((k, v) for k, v in settings_dict.iteritems() if item in k and v != None)
