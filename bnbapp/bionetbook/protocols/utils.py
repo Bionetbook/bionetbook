@@ -41,13 +41,13 @@ def settify(settings_dict, shorthand = True, summary = False, action = False, co
     # Duration replaces min_time if None, or not present. 
 
 
-    if 'duration' in settings_dict:
-        if 'min_time' not in settings_dict or not settings_dict['min_time']:
-            settings_dict['min_time'] = settings_dict['duration']
+    # if 'duration' in settings_dict:
+    #     if 'min_time' not in settings_dict or not settings_dict['min_time']:
+    #         settings_dict['min_time'] = settings_dict['duration']
 
-    if 'duration_units' in settings_dict:
-        if 'time_units' not in settings_dict or not settings_dict['time_units']: 
-            settings_dict['time_units'] = settings_dict['duration_units']            
+    # if 'duration_units' in settings_dict:
+    #     if 'time_units' not in settings_dict or not settings_dict['time_units']: 
+    #         settings_dict['time_units'] = settings_dict['duration_units']            
 
     items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link', 'technique']
 
