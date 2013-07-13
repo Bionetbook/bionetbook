@@ -49,7 +49,7 @@ def settify(settings_dict, shorthand = True, summary = False, action = False, co
         if 'time_units' not in settings_dict or not settings_dict['time_units']: 
             settings_dict['time_units'] = settings_dict['duration_units']            
 
-    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link']
+    items = ['temp', 'time', 'speed', 'cycle', 'comment', 'conc', 'vol', 'mass', 'link', 'technique']
 
     for item in items:
         data = dict((k, v) for k, v in settings_dict.iteritems() if item in k and v != None)
@@ -86,7 +86,11 @@ def settify(settings_dict, shorthand = True, summary = False, action = False, co
             if summary:
                 output['link'] = data['protocol_link']        
 
+        if item == 'technique':
+            if 'technique_comment' in settings_dict:
+                output['technique_comment'] = settings_dict['technique_comment']
 
+                
         else:        
             max_item = 'max_' + item
             min_item = 'min_' + item  
@@ -197,21 +201,22 @@ def labeler(object_dict):
     if object_dict['verb'] in MANUAL_VERBS:
         display_order = MANUAL_LAYER[object_dict['verb']]
         
-        if len(display_order) == 1 and display_order[0] == 'settify':
-            output = settify(object_dict, summary=True)
-        else:
-            for item in display_order:
-
-                if item in object_dict.keys():
-                    output[item] = object_dict[item]
-                if 'duration' in object_dict.keys() and 'duration_units' in object_dict.keys():
-                    output['duration'] = [object_dict['duration'], object_dict['duration_units']]    
-                if 'duration' in object_dict.keys() and 'duration_units' not in object_dict.keys():
-                    output['duration'] = [object_dict['duration'], 'sec']    
-                if 'name' in object_dict.keys():
-                    output['name'] = object_dict['name']
-        if 'duration_units' in output.keys():
-            del(output['duration_units'])            
+        # if len(display_order) == 1 and display_order[0] == 'settify':
+        #     output = settify(object_dict, summary=True)
+        # else:
+        for item in display_order:
+            if 'name' in object_dict.keys():
+                output['name'] = object_dict['name']
+            if item in object_dict.keys():
+                output[item] = object_dict[item]
+            if 'time' in object_dict.keys() and 'time_units' in object_dict.keys():
+                output['time'] = [object_dict['time'], object_dict['time_units']]    
+            if 'time' in object_dict.keys() and 'time_units' not in object_dict.keys():
+                output['time'] = [object_dict['time'], 'sec']    
+            if 'settify' in item:
+                output.update(settify(object_dict, summary=True))    
+        if 'time_units' in output.keys():
+            del(output['time_units'])            
 
         # output['verb'] = object_dict['verb']
         

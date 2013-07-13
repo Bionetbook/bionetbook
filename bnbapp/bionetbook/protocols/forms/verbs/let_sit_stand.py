@@ -8,10 +8,10 @@ class LetSitStandForm(forms.VerbForm):
     has_manual = True
     layers = ['settify']
     
-    min_temp = forms.FloatField(required=False)#, initial = 22.0)
-    max_temp = forms.FloatField(required=False)#, initial = 22.0)
-    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
-    temp_comment = forms.CharField(required=False)
+    # min_temp = forms.FloatField(required=False)#, initial = 22.0)
+    # max_temp = forms.FloatField(required=False)#, initial = 22.0)
+    # temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
+    # temp_comment = forms.CharField(required=False)
     # min_time = forms.FloatField(required=False)
     # max_time = forms.FloatField(required=False)
     # time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )

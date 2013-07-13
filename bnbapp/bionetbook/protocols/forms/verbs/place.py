@@ -6,9 +6,9 @@ class PlaceForm(forms.VerbForm):
     name = "Place"
     slug = "place"
     has_manual = True
-    layers = ['item_to_place','target','conditional_statement','technique_comment','duration','duration_units']
+    layers = ['item_to_act','target','conditional_statement','settify']
     
-    item_to_place = forms.CharField(required=False, help_text='what are you placing')
+    item_to_act = forms.CharField(required=False, label='what are you placing')
     target = forms.CharField(required=False, help_text='where are you placing it')
     conditional_statement = forms.CharField(required=False)
 '''

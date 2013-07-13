@@ -825,9 +825,7 @@ class Action(NodeBase):
 
     @property
     def summary(self):
-        ''' takes self.label as a list and turns it into a dict:
-            u'25 degrees Celsius', u'2 minutes' -> 
-            {temp: '25C', time: '2 min'}'''
+        ''' returns a summary for manual objects'''
 
         return labeler(self)
 
