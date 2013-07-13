@@ -195,7 +195,8 @@ class CompareVerb(dict):
                     dirty = True
                     manual = False
                 if node['verb'] in MANUAL_VERBS:
-                    self.children.append([self.objectid])                    
+                    self.children.append([self.objectid])
+                    self['display_order'] = MANUAL_LAYER[node['verb']]
                     dirty = True
                     manual = True
                 # self['child'].append(self.add_children(node))
