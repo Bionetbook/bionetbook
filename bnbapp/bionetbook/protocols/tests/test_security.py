@@ -95,19 +95,19 @@ class ProtocolSecurityTests(AutoBaseTest):
 
     # FIRST USER CAN ACCESS THIER PRIVATE DRAFT PROTOCOL
     def test_first_user_has_access_to_own_private_draft_protocol(self):
-        pass
+        self.assertTrue( self.firstPrivateDraftProtocol.user_has_access( self.firstUser ), "First User access to own Private Draft Protocol failed." )
 
     # FIRST USER CAN ACCESS THIER PRIVATE PUBLISHED PROTOCOL
     def test_first_user_has_access_to_own_private_published_protocol(self):
-        pass
+        self.assertTrue( self.firstPrivatePublishedProtocol.user_has_access( self.firstUser ), "First User access to own Private Published Protocol failed."  )
 
     # FIRST USER CAN ACCESS THIER PUBLIC DRAFT PROTOCOL
     def test_first_user_has_access_to_own_public_draft_protocol(self):
-        pass
+        self.assertTrue( self.firstPublicDraftProtocol.user_has_access( self.firstUser ), "First User access to own Public Draft Protocol failed."  )
 
     # FIRST USER CAN ACCESS THIER PUBLIC PUBLISHED PROTOCOL
     def test_first_user_has_access_to_own_public_published_protocol(self):
-        pass
+        self.assertTrue( self.firstPublicPublishedProtocol.user_has_access( self.firstUser ), "First User access to own Public Published Protocol failed."  )
 
 
     #---------------
@@ -116,19 +116,19 @@ class ProtocolSecurityTests(AutoBaseTest):
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PRIVATE DRAFT PROTOCOL
     def test_first_user_has_no_access_to_second_user_private_draft_protocol(self):
-        pass
+        self.assertFalse( self.secondPrivateDraftProtocol.user_has_access( self.firstUser ), "First User has access to Second User Private Draft Protocol." )
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PRIVATE PUBLISHED PROTOCOL
     def test_first_user_has_no_access_to_second_user_private_draft_protocol(self):
-        pass
+        self.assertFalse( self.secondPrivatePublishedProtocol.user_has_access( self.firstUser ), "First User has access to Second User Private Published Protocol."  )
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PUBLIC DRAFT PROTOCOL
     def test_first_user_has_no_access_to_second_user_public_draft_protocol(self):
-        pass
+        self.assertFalse( self.secondPublicDraftProtocol.user_has_access( self.firstUser ), "First User has access to Second User Public Draft Protocol."  )
 
     # FIRST USER CAN ACCESS SECOND USER'S PUBLIC PUBLISHED PROTOCOL
     def test_first_user_has_access_to_second_user_public_published_protocol(self):
-        pass
+        self.assertTrue( self.secondPublicPublishedProtocol.user_has_access( self.firstUser ), "First User access to Second User Public Published Protocol failed."  )
 
 
     #---------------
@@ -137,19 +137,19 @@ class ProtocolSecurityTests(AutoBaseTest):
 
     # FIRST USER CAN NOT ACCESS THIRD USER'S PRIVATE DRAFT PROTOCOL 
     def test_first_user_has_no_access_to_third_user_private_draft_protocol(self):
-        pass
+        self.assertFalse( self.thirdPrivateDraftProtocol.user_has_access( self.firstUser ), "First User has access to Third User Private Draft Protocol." )
 
     # FIRST USER CAN ACCESS THIRD USER'S PRIVATE PUBLISHED PROTOCOL
     def test_first_user_has_access_to_third_user_private_draft_protocol(self):
-        pass
+        self.assertTrue( self.thirdPrivatePublishedProtocol.user_has_access( self.firstUser ), "First User access to Third User Private Published Protocol failed."  )
 
     # FIRST USER CAN NOT ACCESS THIRD USER'S PUBLIC DRAFT PROTOCOL
     def test_first_user_has_no_access_to_third_user_public_draft_protocol(self):
-        pass
+        self.assertFalse( self.thirdPublicDraftProtocol.user_has_access( self.firstUser ), "First User has access to Third User Public Draft Protocol."  )
 
     # FIRST USER CAN ACCESS THIRD USER'S PUBLIC PUBLISHED PROTOCOL
     def test_first_user_has_access_to_third_user_public_published_protocol(self):
-        pass
+        self.assertTrue( self.thirdPublicPublishedProtocol.user_has_access( self.firstUser ), "First User access to Third User Public Published Protocol failed."  )
 
 
     # def test_user_has_access(self):

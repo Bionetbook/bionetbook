@@ -128,14 +128,14 @@ class Protocol(TimeStampedModel):
 
     def user_has_access(self, user):
 
-        if user.pk == author.pk:        # IF THEY ARE THE AUTHOR THEN YES
+        if user.pk == self.author.pk:        # IF THEY ARE THE AUTHOR THEN YES
             return True
 
         if self.published:
             if self.public:             # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
                 return True
 
-            return bool( user.organization_set.filter( pk=self.owner.pk )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
+            return bool( user.organization_set.filter( pk=self.owner.pk ) )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
 
         return False
 
