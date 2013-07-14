@@ -126,6 +126,19 @@ class Protocol(TimeStampedModel):
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
+    def user_has_access(self, user):
+
+        if user.pk == author.pk:        # IF THEY ARE THE AUTHOR THEN YES
+            return True
+
+        if self.published:
+            if self.public:             # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
+                return True
+
+            return bool( user.organization_set.filter( pk=self.owner.pk )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
+
+        return False
+
     ##########
     # URLs
 
