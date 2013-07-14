@@ -65,20 +65,20 @@ class ProtocolSecurityTests(AutoBaseTest):
         self.thirdMember = self.createModelInstance(Membership, user=self.thirdUser, org=self.firstOrg)
 
         # CREATE PROTOCOL
-        self.firstPrivateDraftProtocol = self.createModelInstance(Protocol, name="firstPrivateDraftProtocol", owner=self.firstOrg, published=False, public=False)
-        self.firstPrivatePublishedProtocol = self.createModelInstance(Protocol, name="firstPrivatePublishedProtocol", owner=self.firstOrg, published=True, public=False)
-        self.firstPublicDraftProtocol = self.createModelInstance(Protocol, name="firstPublicDraftProtocol", owner=self.firstOrg, published=False, public=True)
-        self.firstPublicPublishedProtocol = self.createModelInstance(Protocol, name="firstPublicPublishedProtocol", owner=self.firstOrg, published=True, public=True)
+        self.firstPrivateDraftProtocol = self.createModelInstance(Protocol, name="firstPrivateDraftProtocol", owner=self.firstOrg, published=False, public=False, author=self.firstUser )
+        self.firstPrivatePublishedProtocol = self.createModelInstance(Protocol, name="firstPrivatePublishedProtocol", owner=self.firstOrg, published=True, public=False, author=self.firstUser )
+        self.firstPublicDraftProtocol = self.createModelInstance(Protocol, name="firstPublicDraftProtocol", owner=self.firstOrg, published=False, public=True, author=self.firstUser )
+        self.firstPublicPublishedProtocol = self.createModelInstance(Protocol, name="firstPublicPublishedProtocol", owner=self.firstOrg, published=True, public=True, author=self.firstUser )
 
-        self.secondPrivateDraftProtocol = self.createModelInstance(Protocol, name="secondPrivateDraftProtocol", owner=self.secondOrg, published=False, public=False)
-        self.secondPrivatePublishedProtocol = self.createModelInstance(Protocol, name="secondPrivatePublishedProtocol", owner=self.secondOrg, published=True, public=False)
-        self.secondPublicDraftProtocol = self.createModelInstance(Protocol, name="secondPublicDraftProtocol", owner=self.secondOrg, published=False, public=True)
-        self.secondPublicPublishedProtocol = self.createModelInstance(Protocol, name="secondPublicPublishedProtocol", owner=self.secondOrg, published=True, public=True)
+        self.secondPrivateDraftProtocol = self.createModelInstance(Protocol, name="secondPrivateDraftProtocol", owner=self.secondOrg, published=False, public=False, author=self.secondUser )
+        self.secondPrivatePublishedProtocol = self.createModelInstance(Protocol, name="secondPrivatePublishedProtocol", owner=self.secondOrg, published=True, public=False, author=self.secondUser )
+        self.secondPublicDraftProtocol = self.createModelInstance(Protocol, name="secondPublicDraftProtocol", owner=self.secondOrg, published=False, public=True, author=self.secondUser )
+        self.secondPublicPublishedProtocol = self.createModelInstance(Protocol, name="secondPublicPublishedProtocol", owner=self.secondOrg, published=True, public=True, author=self.secondUser )
 
-        self.thirdPrivateDraftProtocol = self.createModelInstance(Protocol, name="thirdPrivateDraftProtocol", owner=self.firstOrg, published=False, public=False)
-        self.thirdPrivatePublishedProtocol = self.createModelInstance(Protocol, name="thirdPrivatePublishedProtocol", owner=self.firstOrg, published=True, public=False)
-        self.thirdPublicDraftProtocol = self.createModelInstance(Protocol, name="thirdPublicDraftProtocol", owner=self.firstOrg, published=False, public=True)
-        self.thirdPublicPublishedProtocol = self.createModelInstance(Protocol, name="thirdPublicPublishedProtocol", owner=self.firstOrg, published=True, public=True)
+        self.thirdPrivateDraftProtocol = self.createModelInstance(Protocol, name="thirdPrivateDraftProtocol", owner=self.firstOrg, published=False, public=False, author=self.thirdUser )
+        self.thirdPrivatePublishedProtocol = self.createModelInstance(Protocol, name="thirdPrivatePublishedProtocol", owner=self.firstOrg, published=True, public=False, author=self.thirdUser )
+        self.thirdPublicDraftProtocol = self.createModelInstance(Protocol, name="thirdPublicDraftProtocol", owner=self.firstOrg, published=False, public=True, author=self.thirdUser )
+        self.thirdPublicPublishedProtocol = self.createModelInstance(Protocol, name="thirdPublicPublishedProtocol", owner=self.firstOrg, published=True, public=True, author=self.thirdUser )
 
     # def test_login(self):
     #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
