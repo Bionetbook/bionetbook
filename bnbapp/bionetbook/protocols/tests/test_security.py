@@ -167,18 +167,17 @@ class ProtocolSecurityTests(AutoBaseTest):
         user = AnonymousUser
         self.assertTrue( self.thirdPublicPublishedProtocol.user_has_access( user ), "Anonymous User has access to Third User Public Published Protocol." )
 
+
     #---------------
-    # URL TESTS
+    # URL TESTS - ANONYMOUS
     #---------------
 
     def test_anonymous_user_has_web_access_to_public_published_protocol(self):
         url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPublicPublishedProtocol.slug})
         c = Client()
         response = c.get(url)
-        # print response.status_code
-        self.assertEqual(response.status_code, 302)     # GETS A REDIRECT INSTEAD OF A 200
+        self.assertEqual(response.status_code, 302)     # GETS A REDIRECT INSTEAD OF A 200 - THIS IS FROM NOT BEING LOGGED IN
         # self.assertEqual(response.status_code, 200)
-
 
     def test_anonymous_user_has_no_web_access_to_private_draft_protocol(self):
         url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
@@ -187,25 +186,32 @@ class ProtocolSecurityTests(AutoBaseTest):
         # print response.status_code
         self.assertEqual(response.status_code, 404)
 
-    # def test_first_user_has_web_access_to_protocol(self):
-    #     url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
 
-    #     self.firstUser.save()
+    #---------------
+    # URL TESTS - USER
+    #---------------
 
-    #     c = Client()
-    #     print c.login(username=self.firstUser.username, password=self.firstUser.password)
-    #     # response = c.post('/login/', {'username': self.firstUser.username, 'password': self.firstUser.password }) # Login the User
+    def test_first_user_has_web_access_to_protocol(self):
+        url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
 
-    #     response = c.get(url)
-    #     print response.status_code
+        c = Client()
+        login = c.login(username="firstuser", password="pass")  # HAVE TO ENTER LOGIN WITH STRINGS AND NOT USE THE OBJECT'S ATTRIBUTES
+        self.assertTrue( login )
+
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_first_user_has_web_no_access_to_protocol(self):
+        url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.secondPrivateDraftProtocol.slug})
+
+        c = Client()
+        login = c.login(username="firstuser", password="pass")  # HAVE TO ENTER LOGIN WITH STRINGS AND NOT USE THE OBJECT'S ATTRIBUTES
+        self.assertTrue( login )
+
+        response = c.get(url)
+        self.assertEqual(response.status_code, 404)
 
 
-
-
-
-
-    # def test_first_user_has_web_no_access_to_protocol(self):
-    #     pass
 
     # def test_user_has_access(self):
     #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
