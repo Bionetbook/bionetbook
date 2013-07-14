@@ -23,7 +23,6 @@ class StepForm(NodeForm):
 
 
 class ActionForm(NodeForm):
-
     name = forms.CharField(max_length=100, required=False, help_text = 'defaults to verb')
     tracking_object = forms.CharField(required=False, help_text='Sample mix | Buffer | Other mix')
     tube_label = forms.CharField(help_text ='copy label of tube', required=False)
@@ -38,6 +37,7 @@ class ActionForm(NodeForm):
     temp_comment = forms.CharField(required=False)
     physical_commitment = forms.ChoiceField(choices = (("N/A","unknown"),("Passive","You dont have to be here"),("Active","You are here"),('Setup', 'only required to start'), ('missing','no description present'),), required=False)
 
+
 class VerbForm(forms.Form):
     has_component = False
     has_machine = False
@@ -45,11 +45,11 @@ class VerbForm(forms.Form):
     has_manual = False
     layers = []
 
+
 forms.VerbForm = VerbForm
 
 
 class ComponentForm(NodeForm):
-
     #reagent_name = forms.CharField(max_length=100, required=False)                 # THIS IS COVERED WITH THE name FIELD
     min_conc = forms.FloatField(required=False)
     max_conc = forms.FloatField(required=False)
