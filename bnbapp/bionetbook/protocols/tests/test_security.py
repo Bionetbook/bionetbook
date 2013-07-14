@@ -80,40 +80,76 @@ class ProtocolSecurityTests(AutoBaseTest):
         self.thirdPublicDraftProtocol = self.createModelInstance(Protocol, name="thirdPublicDraftProtocol", owner=self.firstOrg, published=False, public=True)
         self.thirdPublicPublishedProtocol = self.createModelInstance(Protocol, name="thirdPublicPublishedProtocol", owner=self.firstOrg, published=True, public=True)
 
-    def test_login(self):
-        url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
-        self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.firstUser is the first user
+    # def test_login(self):
+    #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
+    #     self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.firstUser is the first user
 
 
     # FIRST USER -> ORG 1
     # SECOND USER -> ORG 2
     # THIRD USER -> ORG 1
 
+    #---------------
+    # FIRST USER TESTS
+    #---------------
+
     # FIRST USER CAN ACCESS THIER PRIVATE DRAFT PROTOCOL
+    def test_first_user_has_access_to_own_private_draft_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS THIER PRIVATE PUBLISHED PROTOCOL
+    def test_first_user_has_access_to_own_private_published_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS THIER PUBLIC DRAFT PROTOCOL
+    def test_first_user_has_access_to_own_public_draft_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS THIER PUBLIC PUBLISHED PROTOCOL
+    def test_first_user_has_access_to_own_public_published_protocol(self):
+        pass
 
+
+    #---------------
+    # SECOND USER TESTS
+    #---------------
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PRIVATE DRAFT PROTOCOL
+    def test_first_user_has_no_access_to_second_user_private_draft_protocol(self):
+        pass
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PRIVATE PUBLISHED PROTOCOL
+    def test_first_user_has_no_access_to_second_user_private_draft_protocol(self):
+        pass
 
     # FIRST USER CAN NOT ACCESS SECOND USER'S PUBLIC DRAFT PROTOCOL
+    def test_first_user_has_no_access_to_second_user_public_draft_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS SECOND USER'S PUBLIC PUBLISHED PROTOCOL
+    def test_first_user_has_access_to_second_user_public_published_protocol(self):
+        pass
 
+
+    #---------------
+    # THIRD USER TESTS
+    #---------------
 
     # FIRST USER CAN NOT ACCESS THIRD USER'S PRIVATE DRAFT PROTOCOL 
+    def test_first_user_has_no_access_to_third_user_private_draft_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS THIRD USER'S PRIVATE PUBLISHED PROTOCOL
+    def test_first_user_has_access_to_third_user_private_draft_protocol(self):
+        pass
 
     # FIRST USER CAN NOT ACCESS THIRD USER'S PUBLIC DRAFT PROTOCOL
+    def test_first_user_has_no_access_to_third_user_public_draft_protocol(self):
+        pass
 
     # FIRST USER CAN ACCESS THIRD USER'S PUBLIC PUBLISHED PROTOCOL
+    def test_first_user_has_access_to_third_user_public_published_protocol(self):
+        pass
 
 
     # def test_user_has_access(self):
