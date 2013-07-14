@@ -99,7 +99,7 @@ html, body {
 }
 
 .wrapper {
-    padding: 0 50px;
+    padding: 0 10px;
 }
 
 .page-footer {
@@ -184,7 +184,8 @@ html, body {
     /*border-radius: .5em;*/
 }
 
-.flowchart-card-verb {
+.flowchart-card-verb,
+.flowchart-card-inline-layout-content {
     border-radius: .6em;
     padding: .6em;
     border: 1px grey solid;
@@ -241,7 +242,7 @@ html, body {
 .flowchart-card-inner-table-row:first-of-type .flowchart-card-inner-table-cell-content {
     text-transform: capitalize;
 }
-.flowchart-card-inner-table-cell {
+.flowchart-card-inner-table-cell{
     padding: 4px;
 }
 
@@ -255,7 +256,25 @@ html, body {
     width: 1px;
 }
 
+.flowchart-card-inline-layout {
+    width: 100%;
+}
+.flowchart-card-inline-layout td:last-child {
+    width: 1px;
+}
 
+
+.flowchart-card-inline-layout-content {
+    padding: 4px 1em;
+}
+
+.flowchart-card-inline-layout-content-url {
+    opacity: 0;
+    padding: 4px;
+}
+.flowchart-card-inline-layout:hover .flowchart-card-inline-layout-content-url {
+    opacity: 1;
+}
 
 
 

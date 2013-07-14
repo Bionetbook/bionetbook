@@ -89,6 +89,8 @@
             var row = [
             {
                 isTable : false,
+                isInline : false,
+                isVerb : true,
                 name : verb.name,
                 index : verbIndex+1,
                 span: 1,
@@ -105,7 +107,8 @@
             var cardsCount =  verb.child_diff=="True" ? verb.child_type.length : 1;
             for (var i=0; i<cardsCount; i++) {
                 row.push({
-                    isTable : true,
+                    isTable : verb.child.length > 1 ? true : false,
+                    isInline : verb.child.length == 1 ? true : false,
                     data : [
                         []
                     ],
@@ -139,29 +142,47 @@
                 // For each of cards
                 for (var cardIndex=0; cardIndex<cardsCount; cardIndex++){
                     var card = row[cardIndex+2];
-                    card.data.push([]);
-                    // and each of child properties
-                    _.chain(child).keys().each(function(key){
-                        if (_(ignoredChildFields).contains(key)) return;
-                        // If key is not ignored
-                        // Find column to put value
-                        var colIndex = _(card.data[0]).indexOf(key);
-                        // add caption to card row
-                        if (colIndex==-1) {
-                            card.data[0].push(key);
-                            colIndex = card.data[0].length-1;
-                        }
-                        card.data[childIndex+1][colIndex] = child[key][cardIndex];
-                    });
+                    if (card.isTable || _(child.display_order).isUndefined() ) {
+                        card.isTable = true;
+                        card.isInline = false;
+                        card.data.push([]);
+                        // and each of child properties
+                        _.chain(child).keys().each(function(key){
+                            if (_(ignoredChildFields).contains(key)) return;
+                            // If key is not ignored
+                            // Find column to put value
+                            var colIndex = _(card.data[0]).indexOf(key);
+                            // add caption to card row
+                            if (colIndex==-1) {
+                                card.data[0].push(key);
+                                colIndex = card.data[0].length-1;
+                            }
+                            card.data[childIndex+1][colIndex] = child[key][cardIndex];
+                        });
+                        // Fill blank fields
+                        normalizeCardData(card, keysCount, childIndex);
 
-
-
-                    // Fill blank fields
-                    normalizeCardData(card, keysCount, childIndex);
-
-                    // Add Urls
-                    card.data[childIndex+1][keysCount] = child['URL'][cardIndex];
-
+                        // Add Urls
+                        card.data[childIndex+1][keysCount] = child['URL'][cardIndex];
+                    } else if (card.isInline){
+                        if (!child.display_order) return;
+                        card.data = [];
+                        _(child.display_order).each(function(displayOrderRow){
+                            var newLine = [];
+                            _(displayOrderRow).each(function(key){
+                                var prop = child[key];
+                                if (!prop) return;
+                                var newItem = {
+                                    key : key,
+                                    value : prop[cardIndex]
+                                };
+                                newLine.push(newItem);
+                            });
+                            card.data.push(newLine);
+                        });
+                        if (child.URL)
+                            card.url = child.URL[cardIndex];
+                    }
                 }
             });
 
@@ -174,6 +195,7 @@
                 rgba.push(Math.floor( Math.random()* 156 + 100));
             colColors.push(rgba);
         }
+        console.log('rows', rows);
 
         return {
             rows : rows,

@@ -96,67 +96,101 @@
     </script>
 
 	<script type="text/template" id="new-flowchart-table-template">
-        <table class="flowchart-table">
-            <tbody class="flowchart-table-body">
-                <tr class="flowchart-header">
-                <% _(headers).each(function(header){ %>
-                    <td>
-                        
-                    </td>
-                <% }); %>
-                </tr>
-                <tr class="flowchart-line-wrapper">
-                <% _(headers).each(function(header){ %>
-                    <td>
-                        <div class="flowchart-line-container"></div>
-                    </td>
-                <% }); %>
-                </tr>
-                <% _(rows).each(function(row){ %>
-                <tr class="flowchart-table-row">
-                    <% _(row).each(function(cell){ %>
-                    <td class="flowchart-table-cell " colspan="<%=cell.span%>">
-                        <% if (cell.display) { %>
-                        <% if (cell.isTable==false) {%>
-                            <div class="flowchart-card flowchart-card-verb">
-                            <%= cell.index %>. <%=cell.name%>
-                            </div>
-                        <% } else { %>
-                            <div class="flowchart-card">
-                                <table class="flowchart-card-inner-table">
-                                    <tbody>
-                                        <% _(cell.data).each(function(crow, crowIndex){%>
-                                        <tr class="flowchart-card-inner-table-row">
-                                            <%_(crow).each(function(ccell, ccellIndex){%>
-                                                <td class="flowchart-card-inner-table-cell">
-                                                <div class="flowchart-card-inner-table-cell-content">
-                                                    <% if (_(ccell).isArray()){%>
-                                                    <%=ccell.join(' ')%>
-                                                    <%} else {%>
-                                                        <% if (ccellIndex!=0 && crowIndex!=0 && ccellIndex==crow.length-1) { %>
-                                                            <a href="<%=ccell%>" target="_blank"><i class="icon icon-cog"></i></a>
-                                                        <% } else { %>
-                                                            <%=ccell.toString().replace(/_/gi, " ")%>
-                                                        <%}%>
-                                                    <%}%>
-                                                </div>
-                                                </td>
-                                            <%})%>
-                                        </tr>
-                                        <%});%>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } %>
-                        </div>
-                        <% } %>
-                    </td>
-                    <% });%>
-                </tr>
-                <%});%>
-            </tbody>
-        </table>
-    </script>
+                <table class="flowchart-table">
+                    <tbody class="flowchart-table-body">
+                        <tr class="flowchart-header">
+                        <% _(headers).each(function(header){ %>
+                            <td>
+                                <div><h3><%= header %></h3></div>
+                            </td>
+                        <% }); %>
+                        </tr>
+                        <tr class="flowchart-line-wrapper">
+                        <% _(headers).each(function(header){ %>
+                            <td>
+                                <div class="flowchart-line-container"></div>
+                            </td>
+                        <% }); %>
+                        </tr>
+                        <% _(rows).each(function(row){ %>
+                        <tr class="flowchart-table-row">
+                            <% _(row).each(function(cell){ %>
+                            <td class="flowchart-table-cell " colspan="<%=cell.span%>">
+                                <% if (cell.display) { %>
+                                <% if (cell.isVerb==true) {%>
+                                    <div class="flowchart-card flowchart-card-verb">
+                                    <%= cell.index %>. <%=cell.name%>
+                                    </div>
+                                <% } else { %>
+                                    <% if (cell.isTable==true) {%>
+                                    <div class="flowchart-card">
+                                        <table class="flowchart-card-inner-table">
+                                            <tbody>
+                                                <% _(cell.data).each(function(crow, crowIndex){%>
+                                                <tr class="flowchart-card-inner-table-row">
+                                                    <%_(crow).each(function(ccell, ccellIndex){%>
+                                                        <td class="flowchart-card-inner-table-cell">
+                                                        <div class="flowchart-card-inner-table-cell-content">
+                                                            <% if (_(ccell).isArray()){%>
+                                                            <%=ccell.join(' ')%>
+                                                            <%} else {%>
+                                                                <% if (ccellIndex!=0 && crowIndex!=0 && ccellIndex==crow.length-1) { %>
+                                                                    <a href="<%=ccell%>" target="_blank"><i class="icon icon-cog"></i></a>
+                                                                <% } else { %>
+                                                                    <%=ccell.toString().replace(/_/gi, " ")%>
+                                                                <%}%>
+                                                            <%}%>
+                                                        </div>
+                                                        </td>
+                                                    <%})%>
+                                                </tr>
+                                                <%});%>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } else if (cell.isInline==true) {%>
+                                    <div class="flowchart-card">
+                                        <table class="flowchart-card-inline-layout">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="flowchart-card-inline-layout-cell">
+                                                    <div class="flowchart-card-inline-layout-content">
+                                                    <% _(cell.data).each(function(crow, crowIndex){ %>
+                                                        <div>
+                                                        <%_(crow).each(function(cobject,cobjectIndex){%>
+                                                            <%=cobject.key.toString().replace(/_/gi, " ")%>:
+                                                            <%=_(cobject.value).isArray() ? cobject.value.join(' ') : cobject.value %><%= cobjectIndex==crow.length-1 ? ';' : ',' %>
+                                                        <%});%>
+                                                        </div>
+                                                    <% }) %>
+                                                    </div>
+                                                    </td>
+                                                    <td class="flowchart-card-inline-layout-cell">
+                                                        <div class="flowchart-card-inline-layout-content-url">
+                                                            <% if (cell.url) { %>
+                                                                <a href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
+                                                            <%} else {%>
+                                                                <i class="icon icon-cog" style="opacity: 0;"></i>
+                                                            <%}%>
+                                                        </div>
+
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                    <% } %>
+                                <% } %>
+                                </div>
+                                <% } %>
+                            </td>
+                            <% });%>
+                        </tr>
+                        <%});%>
+                    </tbody>
+                </table>
+            </script>
 
 
 {%endblock%}
