@@ -1,14 +1,10 @@
-# from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-# from django.test import TestCase
 from django.test.client import Client
-
 from django.contrib.auth.models import AnonymousUser
 
 from profiles.models import Profile
 from protocols.models import Protocol, Step, Action, Component
 from protocols.tests.core import AutoBaseTest
-# from steps.models import Step
 from organization.models import Organization, Membership
 
 
@@ -177,13 +173,11 @@ class ProtocolSecurityTests(AutoBaseTest):
         c = Client()
         response = c.get(url)
         self.assertEqual(response.status_code, 302)     # GETS A REDIRECT INSTEAD OF A 200 - THIS IS FROM NOT BEING LOGGED IN
-        # self.assertEqual(response.status_code, 200)
 
     def test_anonymous_user_has_no_web_access_to_private_draft_protocol(self):
         url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
         c = Client()
         response = c.get(url)
-        # print response.status_code
         self.assertEqual(response.status_code, 404)
 
 
@@ -211,12 +205,3 @@ class ProtocolSecurityTests(AutoBaseTest):
         response = c.get(url)
         self.assertEqual(response.status_code, 404)
 
-
-
-    # def test_user_has_access(self):
-    #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
-    #     self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.firstUser is the first user
-
-    # def test_user_has_no_access(self):
-    #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})
-    #     self.assertTrue(self.client.login(username='testuser', password='pass'))    # Confirm that self.firstUser is the first user
