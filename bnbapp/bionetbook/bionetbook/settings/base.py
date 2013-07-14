@@ -63,18 +63,19 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'profiletools.middleware.LazyProfileMiddleware',
     'profiles.middleware.ConfirmProfile',
+    'protocols.middleware.ProtocolAccess',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = [
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'profiletools.context_processors.fetch_profile',
-    "core.context_processors.registration_enabled",
+    'core.context_processors.registration_enabled',
 ]
 
 ROOT_URLCONF = 'bionetbook.urls'
@@ -164,17 +165,17 @@ REGISTRATION_ENABLED = False
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 3
 
-CRISPY_TEMPLATE_PACK = "bootstrap"
+CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 THUMBNAIL_DEBUG = True
 
 
-LOGIN_REDIRECT_URL = "/dashboard/"
-LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_URL = '/login/'
 
-AUTH_PROFILE_MODULE = "profiles.Profile"
+AUTH_PROFILE_MODULE = 'profiles.Profile'
 
 DJANGO_WYSIWYG_FLAVOR = 'ckeditor'
-DJANGO_WYSIWYG_MEDIA_URL = "%sckeditor/" % STATIC_URL
+DJANGO_WYSIWYG_MEDIA_URL = '%sckeditor/' % STATIC_URL
 
 

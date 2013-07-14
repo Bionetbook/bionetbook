@@ -1,6 +1,9 @@
 # from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 # from django.test import TestCase
+from django.test.client import Client
+
+from django.contrib.auth.models import AnonymousUser
 
 from profiles.models import Profile
 from protocols.models import Protocol, Step, Action, Component
@@ -151,6 +154,58 @@ class ProtocolSecurityTests(AutoBaseTest):
     def test_first_user_has_access_to_third_user_public_published_protocol(self):
         self.assertTrue( self.thirdPublicPublishedProtocol.user_has_access( self.firstUser ), "First User access to Third User Public Published Protocol failed."  )
 
+
+    #---------------
+    # ANONYMOUS USER TESTS
+    #---------------
+
+    def test_anonymous_user_has_no_access_to_user_private_draft_protocol(self):
+        user = AnonymousUser
+        self.assertFalse( self.thirdPrivateDraftProtocol.user_has_access( user ), "Anonymous User has access to Third User Private Draft Protocol." )
+
+    def test_anonymous_user_has_access_to_third_user_public_published_protocol(self):
+        user = AnonymousUser
+        self.assertTrue( self.thirdPublicPublishedProtocol.user_has_access( user ), "Anonymous User has access to Third User Public Published Protocol." )
+
+    #---------------
+    # URL TESTS
+    #---------------
+
+    def test_anonymous_user_has_web_access_to_public_published_protocol(self):
+        url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPublicPublishedProtocol.slug})
+        c = Client()
+        response = c.get(url)
+        # print response.status_code
+        self.assertEqual(response.status_code, 302)     # GETS A REDIRECT INSTEAD OF A 200
+        # self.assertEqual(response.status_code, 200)
+
+
+    def test_anonymous_user_has_no_web_access_to_private_draft_protocol(self):
+        url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
+        c = Client()
+        response = c.get(url)
+        # print response.status_code
+        self.assertEqual(response.status_code, 404)
+
+    # def test_first_user_has_web_access_to_protocol(self):
+    #     url = reverse("protocol_detail", kwargs={'owner_slug': self.firstOrg.slug, 'protocol_slug': self.firstPrivateDraftProtocol.slug})
+
+    #     self.firstUser.save()
+
+    #     c = Client()
+    #     print c.login(username=self.firstUser.username, password=self.firstUser.password)
+    #     # response = c.post('/login/', {'username': self.firstUser.username, 'password': self.firstUser.password }) # Login the User
+
+    #     response = c.get(url)
+    #     print response.status_code
+
+
+
+
+
+
+    # def test_first_user_has_web_no_access_to_protocol(self):
+    #     pass
 
     # def test_user_has_access(self):
     #     url = reverse("protocol_create", kwargs={'owner_slug': self.firstOrg.slug})

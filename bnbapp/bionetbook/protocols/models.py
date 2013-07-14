@@ -127,14 +127,19 @@ class Protocol(TimeStampedModel):
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def user_has_access(self, user):
+        if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
+            # print "PUBLISHED-PUBLIC"
+            return True
 
-        if user.pk == self.author.pk:        # IF THEY ARE THE AUTHOR THEN YES
+        pk = getattr(user, "pk", None)                  
+
+        if not pk:                              # NO ANONYMOUS USER ACCESS EXCEPT FOR PUBLIC PROTOCOLS?
+            return False
+
+        if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
             return True
 
         if self.published:
-            if self.public:             # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
-                return True
-
             return bool( user.organization_set.filter( pk=self.owner.pk ) )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
 
         return False
