@@ -49,11 +49,13 @@
                 <tr>
                     <td>
                         {% if not protocol.published %}
-                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                            <!-- <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a> -->
+                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-th-list"></i></a>
                         {% endif %}
-                        <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a>
+                        <!-- <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a> -->
                     </td>
-                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
+                    <!-- <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td> -->
+                    <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
                     <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
                     <td>{{ protocol.steps|length }}</td>
                     <td>{{ protocol.actions.count }}</td>
