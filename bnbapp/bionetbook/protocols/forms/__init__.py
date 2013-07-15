@@ -98,6 +98,7 @@ class ThermocyclerForm(NodeForm):
     phase_name = forms.CharField(required=False, help_text='example: Initiaion denaturation')
     min_temp = forms.FloatField()
     max_temp = forms.FloatField(required=False)
+    temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
     min_time = forms.FloatField()
     max_time = forms.FloatField(required=False)
     time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, initial='sec' )
