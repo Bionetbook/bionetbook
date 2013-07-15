@@ -200,7 +200,7 @@ def labeler(object_dict):
     
     if object_dict['verb'] in MANUAL_VERBS:
         display_order = MANUAL_LAYER[object_dict['verb']]
-        
+        output['display_order'] = display_order
         # if len(display_order) == 1 and display_order[0] == 'settify':
         #     output = settify(object_dict, summary=True)
         # else:
@@ -209,17 +209,19 @@ def labeler(object_dict):
                 output['name'] = object_dict['name']
             if item in object_dict.keys():
                 output[item] = object_dict[item]
-            if 'time' in object_dict.keys() and 'time_units' in object_dict.keys():
-                output['time'] = [object_dict['time'], object_dict['time_units']]    
-            if 'time' in object_dict.keys() and 'time_units' not in object_dict.keys():
-                output['time'] = [object_dict['time'], 'sec']    
+            if 'duration' in object_dict.keys() and 'duration_units' in object_dict.keys():
+                output['time'] = [object_dict['duration'], object_dict['duration_units']]    
+            if 'duration' in object_dict.keys() and 'duration_units' not in object_dict.keys():
+                output['time'] = [object_dict['duration'], 'sec']    
             if 'settify' in item:
                 output.update(settify(object_dict, summary=True))    
-        if 'time_units' in output.keys():
-            del(output['time_units'])            
 
-        # output['verb'] = object_dict['verb']
-        
+
+
+        if 'settify' in display_order:
+            output['display_order'].pop(output['display_order'].index('settify'))
+            settify_order = ['temp', 'speed', 'conc', 'vol', 'mass', 'time', 'technique_comment', 'link']
+            [output['display_order'].append(r) for r in settify_order if r in output.keys()]
 
     return output 
         

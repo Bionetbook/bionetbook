@@ -9,7 +9,7 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 from protocols.utils import MANUAL_VERBS, MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, settify, labeler 
-from compare.utils import MASKS, OUTPUT_MASKS
+from compare.utils import LAYERS, OUTPUT_MASKS
 import itertools
 import operator
 
@@ -196,7 +196,6 @@ class CompareVerb(dict):
                     manual = False
                 if node['verb'] in MANUAL_VERBS:
                     self.children.append([self.objectid])
-                    self['display_order'] = MANUAL_LAYER[node['verb']]
                     dirty = True
                     manual = True
                 # self['child'].append(self.add_children(node))
@@ -218,7 +217,7 @@ class CompareVerb(dict):
         else:
 
         ##### ALL THE FILTERING AND MASKING HAPPENS HERE  ###########
-            self['child_diff'] = self.child_diff(objectid, diff, masks = MASKS, child_eval_method = True, output_key_masking = None)
+            self['child_diff'] = self.child_diff(objectid, diff, masks = LAYERS, child_eval_method = True, output_key_masking = None)
 
         self['node_type'] = next(obj for obj in self['node_type'] if obj)
         self['name'] = next(obj for obj in self['name'] if obj)
@@ -238,6 +237,17 @@ class CompareVerb(dict):
 
         else:
             return result              
+
+    
+    def convert_settify(self, node):
+        temp = settify(node, summary = True)
+        print temp
+        settify_display_order = ['temp', 'speed', 'time', 'conc', 'vol', 'mass', 'comment', 'technique', 'link']
+        
+        [self['display_order'].append(item) for item in settify_display_order if item in temp.keys()]
+        self['display_order'].pop(self['display_order'].index('settify'))
+
+
 
     def add_children(self, manual = False, **kwargs):
         

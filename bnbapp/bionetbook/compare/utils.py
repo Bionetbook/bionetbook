@@ -1,7 +1,7 @@
 from protocols.utils import MANUAL_LAYER
 # from core.utils import TIME_UNITS
 
-MASKS = {
+LAYERS = {
         'schedule': 
             ['physical_commitment', 'duration', 'duration_units', 'time_comment',],
         'experiment': 
@@ -22,7 +22,7 @@ MASKS = {
 
 
 OUTPUT_MASKS = {
-                    'manual': ['duration', 'time']
+                    'manual': ['duration', 'time'],
                 }
 
 
