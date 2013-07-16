@@ -238,17 +238,6 @@ class CompareVerb(dict):
         else:
             return result              
 
-    
-    def convert_settify(self, node):
-        temp = settify(node, summary = True)
-        print temp
-        settify_display_order = ['temp', 'speed', 'time', 'conc', 'vol', 'mass', 'comment', 'technique', 'link']
-        
-        [self['display_order'].append(item) for item in settify_display_order if item in temp.keys()]
-        self['display_order'].pop(self['display_order'].index('settify'))
-
-
-
     def add_children(self, manual = False, **kwargs):
         
         output = []
@@ -377,7 +366,7 @@ class CompareChildren(CompareVerb):
     def __init__(self, protocols, objectid, manual = False, display = False, **kwargs):
         self.protocols = protocols
         self.objectid = objectid
-        self.attribs = ['objectid', 'node_type', 'URL']
+        self.attribs = ['objectid', 'node_type', 'URL', 'comparator','diff']
         self.nodes = []
         diff = False
         for item in self.attribs:
@@ -393,6 +382,7 @@ class CompareChildren(CompareVerb):
             if node:
                 self.nodes.append(self.get_node(protocol, self.objectid, summary = True)) 
                 self['node_type'].append(node.node_type)
+                self['comparator'].append(node.summary)
                 self['objectid'].append(node['objectid'])
                 if manual:
                     self['URL'].append(node.action_update_url())
@@ -413,7 +403,12 @@ class CompareChildren(CompareVerb):
                     self[item].append("None")        
         
         
-        self['node_type'] = next(obj for obj in self['node_type'] if obj)        
+        self['node_type'] = next(obj for obj in self['node_type'] if obj)  
+
+        if len(self['comparator']) == 2 :
+            D = DictDiffer(self['comparator'][0], self['comparator'][1])
+            self['diff'] = D.changed()
+            del(self['comparator'])      
         # if 'link' in self.keys():
         #     del(self['link'])
                         
