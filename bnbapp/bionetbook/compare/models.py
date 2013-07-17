@@ -408,7 +408,8 @@ class CompareChildren(CompareVerb):
         if len(self['comparator']) == 2 :
             D = DictDiffer(self['comparator'][0], self['comparator'][1])
             self['diff'] = D.changed()
-            del(self['comparator'])      
+
+        del(self['comparator'])      
         # if 'link' in self.keys():
         #     del(self['link'])
                         
