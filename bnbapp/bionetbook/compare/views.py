@@ -33,7 +33,7 @@ class CompareSelectView(TemplateView):
 
 
 class CompareDisplayView(CompareSelectView, TemplateView):          
-    template_name = "compare/protocol_layout_api_headers_temp.html"           
+    template_name = "compare/protocol_layout_api_headers.html"           
 
     def get_context_data(self, **kwargs):
         context = super(CompareDisplayView, self).get_context_data(**kwargs)
@@ -47,7 +47,7 @@ class CompareDisplayView(CompareSelectView, TemplateView):
         return self.render_to_response(context)    
 
 class LayoutSingleView(TemplateView):
-    template_name = "compare/protocol_layout_api_1_headers_temp.html"           
+    template_name = "compare/protocol_layout_api_1_headers.html"           
     
     def get_context_data(self, **kwargs):
 
