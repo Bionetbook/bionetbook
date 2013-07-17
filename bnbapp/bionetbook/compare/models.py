@@ -404,6 +404,8 @@ class CompareChildren(CompareVerb):
         
         
         self['node_type'] = next(obj for obj in self['node_type'] if obj)  
+        if 'display_order' in self:
+            self.set_display_order()
 
         if len(self['comparator']) == 2 :
             D = DictDiffer(self['comparator'][0], self['comparator'][1])
@@ -412,7 +414,25 @@ class CompareChildren(CompareVerb):
         del(self['comparator'])      
         # if 'link' in self.keys():
         #     del(self['link'])
-                        
+    
+
+    def set_display_order(self): 
+
+        self['display_order'] = next(obj for obj in self['display_order'] if obj)  
+        
+        # if 'time' in self['display_order'] or 'technique_comment' in self['display_order']:
+        temp = list(self['display_order'])
+        
+        self['display_order'] = []
+        self['display_order'].append(temp)
+        
+        if 'time' in temp:
+            self['display_order'][0].pop(self['display_order'][0].index('time'))
+            self['display_order'].append(['time'])
+        if 'technique_comment' in temp:
+            self['display_order'][0].pop(self['display_order'][0].index('technique_comment'))    
+            self['display_order'].append(['technique_comment'])   
+
     def get_summary_attributes(self, manual = False, **kwargs):
 
         attribs = []

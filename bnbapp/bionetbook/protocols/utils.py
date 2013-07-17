@@ -199,12 +199,10 @@ def labeler(object_dict):
     output = {}
     
     if object_dict['verb'] in MANUAL_VERBS:
-        display_order = list(MANUAL_LAYER[object_dict['verb']]) # if this is not deep copied, the pop(settify) messes it up
-        output['display_order'] = display_order
-        # if len(display_order) == 1 and display_order[0] == 'settify':
-        #     output = settify(object_dict, summary=True)
-        # else:
-        for item in display_order:
+        verb_attrib_order = list(MANUAL_LAYER[object_dict['verb']]) # if this is not deep copied, the pop(settify) messes it up
+        output['display_order'] = verb_attrib_order
+        
+        for item in verb_attrib_order:
             if 'name' in object_dict.keys():
                 output['name'] = object_dict['name']
             if item in object_dict.keys():
@@ -216,20 +214,12 @@ def labeler(object_dict):
             if 'settify' in item:
                 output.update(settify(object_dict, summary=True))    
 
-        if 'settify' in display_order:
+        if 'settify' in verb_attrib_order:
             
             settify_order = ['temp', 'speed', 'conc', 'vol', 'mass', 'time', 'technique_comment', 'link']
             [output['display_order'].append(r) for r in settify_order if r in output.keys()]
             output['display_order'].pop(output['display_order'].index('settify'))
-            # for item in settify_order:
-            #     if item in output.keys():
-            #         output['display_order'].append(item)
-
-    
-    # if 'settify' in output['display_order']:                 
-    #     output['display_order'].pop(output['display_order'].index('settify'))        
         
-
     return output 
         
 
