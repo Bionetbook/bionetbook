@@ -110,7 +110,7 @@ html, body {
 }
 
 .flowchart-container {
-    width: 70%;
+    width: 100%;
     padding:  4em 0em 0em;
 }
 
@@ -184,12 +184,14 @@ html, body {
     /*border-radius: .5em;*/
 }
 
+.flowchart-card-verb {
+    white-space: nowrap;
+}
 .flowchart-card-verb,
 .flowchart-card-inline-layout-content {
     border-radius: .6em;
     padding: .6em;
     border: 1px grey solid;
-    white-space: nowrap;
     text-transform: capitalize;
 }
 
@@ -203,6 +205,7 @@ html, body {
 
 .flowchart-card div {
     margin: 0;
+    text-align: center;
 }
 
 .flowchart-card>div {
@@ -281,7 +284,7 @@ html, body {
 .flowchart-card-inline-layout-content-url a {
     position: absolute;
     top: 2px;
-    left: 6px;
+    right: 27px;
 }
 
 

@@ -9,15 +9,15 @@
         // Add lines
         $('.flowchart-table .flowchart-table-cell:not(:first-of-type) .flowchart-line').remove();
 
-        var colCount = $('.flowchart-table-row:first .flowchart-table-cell').size();
+        var colCount = $('.flowchart-line-wrapper:first .flowchart-line-container').size();
         for (var i=2; i < colCount; i++){
             var $filledCells = $('.flowchart-table .flowchart-table-cell:nth-child('+ (i+1) +'), .flowchart-table .flowchart-table-cell[colspan="' + (colCount-2) + '"]')
                 .has('.flowchart-card');
 
 
             var startOffset = $('.flowchart-line-wrapper').offset().top;
-            var topOffset = $filledCells.first().offset().top;
-            var bottomOffset = $filledCells.last().offset().top;
+            var topOffset = $filledCells.first().find('.flowchart-card').offset().top;
+            var bottomOffset = $filledCells.last().find('.flowchart-card').offset().top;
 
             $('<div class="flowchart-line"></div>')
                 .css({
@@ -79,6 +79,9 @@
             headers.push('Process '+(i+1));
         }
         return headers;
+    };
+    var keySortRule = function(key){
+        return key=="technique_comment" ? 1 : 0;
     };
 
     var prepareData = function(json){
@@ -147,7 +150,7 @@
 
                         card.data.push([]);
                         // and each of child properties
-                        _.chain(child).keys().each(function(key){
+                        _.chain(child).keys().sortBy(keySortRule).each(function(key){
                             if (_(ignoredChildFields).contains(key)) return;
                             // If key is not ignored
                             // Find column to put value
@@ -169,8 +172,9 @@
                         card.data = [];
                         if (_(child.display_order).isUndefined()) {
                             var newLine = [];
-                            _(child).each( function( value, key ) {
+                            _.chain(child).keys().sortBy(keySortRule).each( function( key ) {
                                 if (_(ignoredChildFields).contains(key)) return;
+                                var value = child[key];
                                 if (!value || value[cardIndex]=="" || value[cardIndex]=="None") return;
                                 var newItem = {
                                     key : key,
@@ -225,7 +229,6 @@
                 rgba.push(Math.floor( Math.random()* 156 + 100));
             colColors.push(rgba);
         }
-        console.log('rows', rows);
 
         return {
             rows : rows,
