@@ -56,9 +56,9 @@
                     </td>
                     <!-- <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td> -->
                     <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
-                    <td><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></td>
+                    <td>{{ protocol.author.get_full_name }}</td>
                     <td>{{ protocol.steps|length }}</td>
-                    <td>{{ protocol.actions.count }}</td>
+                    <td>{{ protocol.get_actions|length }}</td>
                     <td>{{ protocol.status }}</td>
                     <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
                 </tr>
