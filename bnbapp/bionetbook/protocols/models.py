@@ -84,7 +84,8 @@ class Protocol(TimeStampedModel):
         if name:
             self.name = self.generate_name(name)
         else:
-            self.name = self.generate_name(self.owner.name + " " + self.name)
+            # self.name = self.generate_name(self.owner.name + " " + self.name)
+            self.name = self.generate_name(self.name)
 
         self.slug = self.generate_slug()
 
