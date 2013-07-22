@@ -406,8 +406,6 @@ class CompareChildren(CompareVerb):
                 self['URL'].append("None")
                 for item in self.get_summary_attributes():
                     self[item].append("None")        
-
-            print self['URL']        
         
         
         self['node_type'] = next(obj for obj in self['node_type'] if obj)  
