@@ -121,11 +121,12 @@ class Protocol(TimeStampedModel):
         
         new_slug = self.generate_slug()
 
-        if not new_slug == self.slug:
+        if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
             #self.slug = self.generate_slug()
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+            self.created = self.modified    
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
