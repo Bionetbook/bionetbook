@@ -25,10 +25,34 @@
 {# MAIN PAGE CONTENT #}
 {% block content %}
 <div class="row">
-    <!-- <div class="span1">
-         <div class="well">
-         </div>
-    </div>     -->
+    <div class="span2" id="graph_switches">
+
+        {% if protocol_a.published %}
+        <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
+        {% else %}
+        <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn" style="width:100%;margin-bottom:10px;">Clone</button></a>
+        {% endif %}
+
+        {% if machine_layer %}
+        <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Full Text</button></a>
+        {% else %}
+        <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Full Text</button></a>
+        {% endif %}
+
+        {% if steps_layer %}
+        <a href="{{steps_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Comments</button></a>
+        {% else %}
+        <a href="{{steps_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Comments</button></a>
+        {% endif %}
+
+        {% if thermo_layer %}
+        <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Differences</button></a>
+        {% else %}
+        <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Differences</button></a>
+        {% endif %}
+
+
+    </div>
     <div class="span5">
         <div class="well">
             <h3>{{ protocol_a }}</h3>
