@@ -443,14 +443,14 @@ class CompareChildren(CompareVerb):
                 self['display_order'][0].pop(self['display_order'][0].index('technique_comment'))    
                 self['display_order'].append(['technique_comment'])   
 
-        if self['node_type'] == 'Component':        
-            self['display_order'] = ['conc', 'mass', 'vol', 'time', 'technique_comment', 'link']
+        # if self['node_type'] == 'Component':        
+        #     self['display_order'] = ['conc', 'mass', 'vol', 'time', 'technique_comment', 'link']
 
-        if self['node_type'] == 'Machine':        
-            self['display_order'] = ['speed', 'temp', 'time', 'technique_comment', 'link']    
+        # if self['node_type'] == 'Machine':        
+        #     self['display_order'] = ['speed', 'temp', 'time', 'technique_comment', 'link']    
 
-        if self['node_type'] == 'Thermocycle':        
-            self['display_order'] = ['temp', 'time', 'cycles', 'cycle_back_to', 'technique_comment']        
+        # if self['node_type'] == 'Thermocycle':        
+        #     self['display_order'] = ['temp', 'time', 'cycles', 'cycle_back_to', 'technique_comment']        
 
 
 
