@@ -84,7 +84,13 @@
     <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
-    <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
+    
+    {% if clone %}
+        <script src="{{ STATIC_URL }}js/main_clone_ajax.js"></script>
+    {% else %}
+        <script src="{{ STATIC_URL }}js/main_ajax.js"></script>
+    {% endif %}
+    
     <script>
     var slug_A = '{{ protocol_a.slug }}';
     var slug_B = '{{ protocol_b.slug }}';

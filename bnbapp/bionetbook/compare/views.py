@@ -7,6 +7,7 @@ from django.views.generic.detail import View, BaseDetailView, SingleObjectTempla
 from django.views.generic import TemplateView, View
 from compare.utils import html_label_two_protocols, merge_table_pieces, add_step_label  
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from protocols.models import Protocol
 import itertools
 from protocols.utils import MANUAL_VERBS
@@ -65,3 +66,53 @@ class LayoutSingleView(TemplateView):
         context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
 
         return self.render_to_response(context)    
+
+class CloneLayoutSingleView(TemplateView):
+    # template_name = "compare/protocol_layout_api_1_headers.html"           
+
+    # template_name = "compare/protocol_layout_api_1_headers_temp_17.html"           
+    # template_name = "compare/protocol_layout_compare.html"           
+    
+    def get_context_data(self, **kwargs):
+
+        context = super(CloneLayoutSingleView, self).get_context_data(**kwargs)
+        context['clone'] = True
+        return context 
+        
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        protocol = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        slug_a = str(protocol.slug)
+        protocol.clone()
+        protocol.save()
+        slug_b = str(protocol.slug)
+
+        messages.add_message(self.request, messages.INFO, "Your protocol has been cloned.")
+        
+        url = reverse('clone_display_view', kwargs={'protocol_a_slug': slug_a, 'protocol_b_slug': slug_b})
+
+        return http.HttpResponseRedirect(url)
+
+
+# class 
+class CloneDisplayView(TemplateView):          
+    # template_name = "compare/protocol_layout_api_headers.html"           
+    # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
+    template_name = "compare/protocol_layout_compare.html"           
+
+
+    def get_context_data(self, **kwargs):
+        context = super(CloneDisplayView, self).get_context_data(**kwargs)
+        context['clone'] = True
+        return context 
+        
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        
+        return self.render_to_response(context)    
+
+
+
+

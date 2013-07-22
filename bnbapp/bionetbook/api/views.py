@@ -17,7 +17,7 @@ def protocol_detail(request, protocol_slug):
             else:
                 return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
         except ObjectDoesNotExist:
-            return HttpResponse(json.dumps({'error':'ObjectDoesNotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
+            return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 def get_layout_json(request, protocol_a_slug):
     '''
@@ -41,7 +41,20 @@ def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     G = Compare(protocols)
     G.get_layout_by_objectid()
     data = list(G.layout)
-    
+    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+
+def get_layout_clone_json(request, protocol_a_slug ,protocol_b_slug):
+    '''
+    JSON call of a 2-protocol compare
+    '''
+    A = Protocol.objects.get(slug=protocol_a_slug)
+    B = Protocol.objects.get(slug=protocol_b_slug)
+    protocols = [A,B]
+    G = Compare(protocols)
+    G.get_layout_by_objectid()
+    [r.update(child_diff = "True") for r in G.layout]
+    data = list(G.layout)
+
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 def json_data_dynamic(request):
