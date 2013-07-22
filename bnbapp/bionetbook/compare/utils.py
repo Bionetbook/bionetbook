@@ -70,6 +70,22 @@ def align_verbs(x, y):
     
     return out
 
+def set_display_order(indict):
+
+    temp = next(obj for obj in indict if obj)
+    print temp  
+    temp = list(temp)
+    out = {}
+    out['display_order'] = []
+    out['display_order'].append(temp)
+    if 'time' in temp:
+        out['display_order'][0].pop(out['display_order'][0].index('time'))
+        out['display_order'].append(['time'])
+    if 'technique_comment' in temp:
+        out['display_order'][0].pop(out['display_order'][0].index('technique_comment'))    
+        out['display_order'].append(['technique_comment'])
+
+    return out    
 
 def html_label_two_protocols(x,y,changed, unchanged, current_layer=None, **kwargs):
     stack = []

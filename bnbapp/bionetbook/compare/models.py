@@ -220,6 +220,10 @@ class CompareVerb(dict):
             self['child_diff'] = self.child_diff(objectid, diff, masks = LAYERS, child_eval_method = True, output_key_masking = None)
 
         self['node_type'] = next(obj for obj in self['node_type'] if obj)
+        
+        if 'None' in self['name']:
+            self['name'].pop(self['name'].index('None'))
+            
         self['name'] = next(obj for obj in self['name'] if obj)
 
     def get_node(self, protocol, objectid, **kwargs):
@@ -409,8 +413,8 @@ class CompareChildren(CompareVerb):
         
         
         self['node_type'] = next(obj for obj in self['node_type'] if obj)  
-        if 'display_order' in self:
-            self.set_display_order()
+        
+        self.set_display_order()
 
         if len(self['comparator']) == 2 :
             D = DictDiffer(self['comparator'][0], self['comparator'][1])
@@ -422,21 +426,33 @@ class CompareChildren(CompareVerb):
     
 
     def set_display_order(self): 
+        if self['node_type'] == 'Action':
 
-        self['display_order'] = next(obj for obj in self['display_order'] if obj)  
-        
-        # if 'time' in self['display_order'] or 'technique_comment' in self['display_order']:
-        temp = list(self['display_order'])
-        
-        self['display_order'] = []
-        self['display_order'].append(temp)
-        
-        if 'time' in temp:
-            self['display_order'][0].pop(self['display_order'][0].index('time'))
-            self['display_order'].append(['time'])
-        if 'technique_comment' in temp:
-            self['display_order'][0].pop(self['display_order'][0].index('technique_comment'))    
-            self['display_order'].append(['technique_comment'])   
+            if 'None' in self['display_order']:
+                self['display_order'].pop(self['display_order'].index('None'))
+            
+            self['display_order'] = next(obj for obj in self['display_order'] if obj)  
+            temp = list(self['display_order'])
+            self['display_order'] = []
+            self['display_order'].append(temp)
+            
+            if 'time' in temp:
+                self['display_order'][0].pop(self['display_order'][0].index('time'))
+                self['display_order'].append(['time'])
+            if 'technique_comment' in temp:
+                self['display_order'][0].pop(self['display_order'][0].index('technique_comment'))    
+                self['display_order'].append(['technique_comment'])   
+
+        if self['node_type'] == 'Component':        
+            self['display_order'] = ['conc', 'mass', 'vol', 'time', 'technique_comment', 'link']
+
+        if self['node_type'] == 'Machine':        
+            self['display_order'] = ['speed', 'temp', 'time', 'technique_comment', 'link']    
+
+        if self['node_type'] == 'Thermocycle':        
+            self['display_order'] = ['temp', 'time', 'cycles', 'cycle_back_to', 'technique_comment']        
+
+
 
     def get_summary_attributes(self, manual = False, **kwargs):
 
