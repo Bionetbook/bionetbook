@@ -36,7 +36,7 @@ class CompareSelectView(TemplateView):
 class CompareDisplayView(CompareSelectView, TemplateView):          
     # template_name = "compare/protocol_layout_api_headers.html"           
     # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
-    template_name = "compare/protocol_layout_compare.html"           
+    template_name = "compare/protocol_layout_compare_temp.html"           
 
 
     def get_context_data(self, **kwargs):
@@ -54,7 +54,7 @@ class LayoutSingleView(TemplateView):
     # template_name = "compare/protocol_layout_api_1_headers.html"           
 
     # template_name = "compare/protocol_layout_api_1_headers_temp_17.html"           
-    template_name = "compare/protocol_layout_single.html"           
+    template_name = "compare/protocol_layout_single_temp.html"           
     
     def get_context_data(self, **kwargs):
 
@@ -98,12 +98,30 @@ class CloneLayoutSingleView(TemplateView):
 class CloneDisplayView(TemplateView):          
     # template_name = "compare/protocol_layout_api_headers.html"           
     # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
-    template_name = "compare/protocol_layout_compare.html"           
+    template_name = "compare/protocol_layout_compare_temp.html"           
 
 
     def get_context_data(self, **kwargs):
         context = super(CloneDisplayView, self).get_context_data(**kwargs)
         context['clone'] = True
+        return context 
+        
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
+        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
+        
+        return self.render_to_response(context)    
+
+
+class CompareDisplayView(CompareSelectView, TemplateView):          
+    # template_name = "compare/protocol_layout_api_headers.html"           
+    # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
+    template_name = "compare/protocol_layout_compare_temp.html"           
+
+
+    def get_context_data(self, **kwargs):
+        context = super(CompareDisplayView, self).get_context_data(**kwargs)
         return context 
         
     def get(self, request, *args, **kwargs):
