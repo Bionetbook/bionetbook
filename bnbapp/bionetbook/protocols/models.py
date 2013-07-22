@@ -163,8 +163,12 @@ class Protocol(TimeStampedModel):
     def protocol_duplicate_url(self):
         return reverse("protocol_duplicate", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
+    def protocol_clone_url(self):
+        return reverse("clone_layout_single_view", kwargs={'protocol_a_slug':self.slug})    
+
     def protocol_outline_url(self):
         return reverse("layout_sinlge_view", kwargs={'protocol_a_slug':self.slug})
+
 
     ##########
     # Generators

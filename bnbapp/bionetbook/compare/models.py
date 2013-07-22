@@ -385,13 +385,18 @@ class CompareChildren(CompareVerb):
                 self['comparator'].append(node.summary)
                 self['objectid'].append(node['objectid'])
                 if manual:
-                    self['URL'].append(node.action_update_url())
+                    url_tmp = node.action_update_url()
+                    # self['URL'].append(node.action_update_url())
 
                     self['verb'].append(node['name'])
                 else:
-                    self['URL'].append(node.get_update_url())
-                # if 'published' in protocol.status:
-                #     self['URL'].append(node.get_absolute_url())
+                    url_tmp = node.get_update_url()
+                    # self['URL'].append(node.get_update_url())
+                if protocol.published:
+                    url_tmp = node.get_absolute_url()
+                    # self['URL'].append(node.get_absolute_url())
+                self['URL'].append(url_tmp)    
+
                 for item in self.get_summary_attributes():
                     self[item].append(node.summary.get(item, "None"))        
                 
@@ -401,6 +406,8 @@ class CompareChildren(CompareVerb):
                 self['URL'].append("None")
                 for item in self.get_summary_attributes():
                     self[item].append("None")        
+
+            print self['URL']        
         
         
         self['node_type'] = next(obj for obj in self['node_type'] if obj)  

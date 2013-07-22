@@ -8,7 +8,7 @@ function getFlowchartData(){
     }
 
     // $.get("/api/json/manual_data/" + slugs, function(data) { successCallback(data); });
-    $.get("/api/json/ajax/" + slugs, function(data) { successCallback(data); });
+    $.get("/api/json/clone_ajax/" + slugs, function(data) { successCallback(data); });
 };
 
 function callback(data) {
