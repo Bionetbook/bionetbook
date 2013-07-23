@@ -3,6 +3,7 @@ import random
 import math
 import itertools
 import re
+import datetime
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -91,6 +92,8 @@ class Protocol(TimeStampedModel):
 
         self.published = False
         self.private = True
+        self.created = datetime.datetime.now()
+        self.modified = datetime.datetime.now()
 
         # NEED TO SET THE ORGANIZATION
         if owner:
@@ -126,7 +129,7 @@ class Protocol(TimeStampedModel):
             #self.slug = self.generate_slug()
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-            self.created = self.modified    
+            
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
@@ -574,26 +577,31 @@ class NodeBase(dict):
     #         pass
 
 
-    def update_duration(self, desired_unit = 'sec'):
 
-        factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
-        'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
-        'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
-        'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
+    def get_duration(self):
+        items = ['time' ,'physical_commitment']
+        time_vars = dict((k, v) for k, v in settings_dict.iteritems() if items in k and v != None and len(str(v)) != 0)
+
+    # def update_duration(self, desired_unit = 'sec'):
+
+    #     factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
+    #     'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
+    #     'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
+    #     'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
             
-        time = False        
-        if 'time' in self.summary:
-            print 'time is in summary'
-            time = self.summary['time']
+    #     time = False        
+    #     if 'time' in self.summary:
+    #         print 'time is in summary'
+    #         time = self.summary['time']
 
-        if 'duration' in self.summary:
-            print 'duration is in summary'
-            time = [self.summary['duration'], self.summary['duration_units']] 
+    #     if 'duration' in self.summary:
+    #         print 'duration is in summary'
+    #         time = [self.summary['duration'], self.summary['duration_units']] 
 
-        if time:     
-            return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
-        else:
-            return  None
+    #     if time:     
+    #         return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
+    #     else:
+    #         return  None
         
 class Component(NodeBase):
 
