@@ -27,6 +27,12 @@
 <div class="row">
     <div class="span2" id="graph_switches">
 
+        {% if not protocol_a.published %}
+        <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Publish</button></a>
+        {% else %}
+        <a href="{{protocol_a.protocol_publish_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Publish</button></a>
+        {% endif %}
+        
         {% if protocol_a.published %}
         <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
         {% else %}
@@ -56,6 +62,8 @@
         {% else %}
         <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Schedule</button></a>
         {% endif %}
+
+        
 
 
     </div>
