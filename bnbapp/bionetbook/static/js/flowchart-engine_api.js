@@ -7,7 +7,7 @@
 
     var addLines = function(){
         // Add lines
-        $('.flowchart-table .flowchart-table-cell:not(:first-of-type) .flowchart-line').remove();
+        $('.flowchart-table .flowchart-line').remove();
 
         var colCount = $('.flowchart-line-wrapper:first .flowchart-line-container').size();
         for (var i=2; i < colCount; i++){
@@ -143,6 +143,16 @@
             _(verb.child).each(function(child, childIndex){
                 if (child.name)
                     row[1].data.push([_(child.name).find(function(name){ return name!="None"})]);
+                if (verb.child_type[childIndex]=="thermocycle") {
+                    child.display_order = [
+                        [
+                            "temp",
+                            "time",
+                            "cycles",
+                            "cycle_back_to"
+                        ]
+                    ]
+                }
                 // For each of cards
                 for (var cardIndex=0; cardIndex<cardsCount; cardIndex++){
                     var card = row[cardIndex+2];

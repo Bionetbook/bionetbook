@@ -25,7 +25,7 @@
 {% block content %}
 
 <div class="row">
-        <div class="span2" id="graph_switches">
+    <div class="span2" id="graph_switches">
 
         {% if protocol_a.published %}
         <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
@@ -51,31 +51,39 @@
         <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Differences</button></a>
         {% endif %}
 
+        {% if thermo_layer %}
+        <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Schedule</button></a>
+        {% else %}
+        <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Schedule</button></a>
+        {% endif %}
+
 
     </div>
     <div class="span10">
         <div class="well">
             <h3>{{ protocol_a }}</h3>
-            <hr>
-            <h5>{{ protocol_a.description }} </h5>
-            </br>
             <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr> 
+                    </br>
+                    <b>Description:</b> {{ protocol_a.description }}
+                    </br>
+                    </br>
+                </tr> 
                 <tr>
-                    <td>Parent: {{protocol_a.parent }}</td>
-                    <td>Children: {{protocol_a.children }} </td>
+                    <td>Organization: {{protocol_a.owner }}</td>
+                    <td>Author: {{protocol_a.author.get_full_name  }}</td>
                 </tr>
                 <tr>
-                    <td>Author: {{protocol_a.author.get_full_name }}</td>
-                    <td>PubMed: {{protocol_a.data.Reference_PMID }} </td>
+                    <td>Created: {{protocol_a.created|date:"M d, Y H:i" }}</td>
+                    <td>Last modified: {{protocol_a.modified|date:"M d, Y H:i" }}</td>
                 </tr>
                  <tr>
-                    <td>Created: {{protocol_a.created|date:"M d, Y H:i" }}</td>
+                    <td></td>
                     <td>Duration: {{protocol_a.duration_in_seconds }}</td>
                 </tr>
             </table>
         </div>
     </div>
-
 </div>
 
 <div class="wrapper">
@@ -168,16 +176,11 @@
                                                         </div>
                                                     <% }) %>
                                                     </div>
-                                                    </td>
-                                                    <td class="flowchart-card-inline-layout-cell">
-                                                        <div class="flowchart-card-inline-layout-content-url">
-                                                            <% if (cell.url) { %>
-                                                                <a href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
-                                                            <%} else {%>
-                                                                <i class="icon icon-cog" style="opacity: 0;"></i>
-                                                            <%}%>
-                                                        </div>
-
+                                                        <% if (cell.url) { %>
+                                                            <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
+                                                        <%} else {%>
+                                                            <i class="icon icon-cog" style="opacity: 0;"></i>
+                                                        <%}%>
                                                     </td>
                                                 </tr>
                                             </tbody>
