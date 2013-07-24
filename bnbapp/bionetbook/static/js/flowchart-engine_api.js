@@ -58,16 +58,23 @@
 
     var normalizeCardData = function(card, keysCount, rowIndex){
         if (card.data[0].length==keysCount) {
-            card.data[0].push('');
+            card.data[0].push({value : ''});
         }
         var initialRowLength = card.data[rowIndex+1].length;
         for (var i=0; i<keysCount-initialRowLength; i++) {
-            card.data[rowIndex+1].push("None");
+            card.data[rowIndex+1].push({ value : "None" });
         }
         for (var cellIndex=0; cellIndex<keysCount; cellIndex++) {
             cell = card.data[rowIndex+1][cellIndex];
-            if (!cell ||cell=="None")
-                card.data[rowIndex+1][cellIndex] = " ";
+            if (!cell) {
+                card.data[rowIndex+1][cellIndex] = { value : " "};
+            } else if (!cell.value || cell.value=="None") {
+                card.data[rowIndex+1][cellIndex].value = " ";
+            }
+
+            if (_(card.data[rowIndex+1][cellIndex].value).isArray()) {
+                card.data[rowIndex+1][cellIndex].value = card.data[rowIndex+1][cellIndex].value.join(' ');
+            }
         }
 
         return card;
@@ -84,7 +91,7 @@
         return key=="technique_comment" ? 1 : 0;
     };
 
-    var prepareData = function(json){
+    var prepareData = function(json, options){
         var headers = generateHeaders(json);
         var rows = [];
         _(json).each(function(verb, verbIndex){
@@ -100,7 +107,7 @@
             }, {
                 isTable : true,
                 data : [
-                    ["Name"]
+                    [{value: "Name"}]
                 ],
                 span : 1,
                 display: true
@@ -142,17 +149,8 @@
 
             _(verb.child).each(function(child, childIndex){
                 if (child.name)
-                    row[1].data.push([_(child.name).find(function(name){ return name!="None"})]);
-                if (verb.child_type[childIndex]=="thermocycle") {
-                    child.display_order = [
-                        [
-                            "temp",
-                            "time",
-                            "cycles",
-                            "cycle_back_to"
-                        ]
-                    ]
-                }
+                    row[1].data.push([{value: _(child.name).find(function(name){ return name!="None"})}]);
+
                 // For each of cards
                 for (var cardIndex=0; cardIndex<cardsCount; cardIndex++){
                     var card = row[cardIndex+2];
@@ -160,24 +158,40 @@
 
                         card.data.push([]);
                         // and each of child properties
-                        _.chain(child).keys().sortBy(keySortRule).each(function(key){
+                        var childKeys = child.display_order ? _(child.display_order).flatten() : _.chain(child).keys().sortBy(keySortRule);
+                        if (child.display_order) keysCount=childKeys.length;
+
+                        _(childKeys).each(function(key){
                             if (_(ignoredChildFields).contains(key)) return;
                             // If key is not ignored
                             // Find column to put value
-                            var colIndex = _(card.data[0]).indexOf(key);
+                            var colIndex = -1;
+                            _(card.data[0]).each(function(currentKey, currentIndex){
+                                if (currentKey.value == key)
+                                    colIndex = currentIndex;
+                            });
                             // add caption to card row
                             if (colIndex==-1) {
-                                card.data[0].push(key);
+                                card.data[0].push({
+                                    value: key,
+                                    color: options.displayDiff && _(child.diff).contains(key) ? 'red' : ''
+                                });
                                 colIndex = card.data[0].length-1;
                             }
-                            card.data[childIndex+1][colIndex] = child[key][cardIndex];
+                            card.data[childIndex+1][colIndex] = {
+                                value: child[key] ? child[key][cardIndex] : "",
+                                isLink: key=="link"
+                            };
 
                         });
                         // Fill blank fields
                         normalizeCardData(card, keysCount, childIndex);
 
                         // Add Urls
-                        card.data[childIndex+1][keysCount] = child['URL'][cardIndex];
+                        card.data[childIndex+1][keysCount] = {
+                            value: child['URL'][cardIndex],
+                            isUrl: true
+                        };
                     } else if (card.isInline){
                         card.data = [];
                         if (_(child.display_order).isUndefined()) {
@@ -194,7 +208,7 @@
                             });
                             card.data.push(newLine);
                         } else {
-                            _(child.display_order).each(function(displayOrderRow){
+                            var processDisplayOrderItem = function(displayOrderRow){
                                 var newLine = [];
                                 _(displayOrderRow).each(function(key){
                                     var value = child[key];
@@ -206,7 +220,16 @@
                                     newLine.push(newItem);
                                 });
                                 card.data.push(newLine);
-                            });
+                            };
+
+                            if (_(child.display_order).any(function(item){
+                                return _(item).isArray();
+                            })) {
+                                _(child.display_order).each(processDisplayOrderItem);
+                            } else {
+                                processDisplayOrderItem(child.display_order);
+                            }
+
                         }
 
                         if (child.URL)
@@ -215,11 +238,12 @@
                 }
             });
 
+            // Remove empty columns
             _(row).each(function(card, index){
                 if (index>1 && card.isTable) {
                     for (var keyIndex=card.data[0].length-2; keyIndex>=0; keyIndex--) {
                         var isEmpty = _(card.data).all(function(row, index){
-                            return index===0 || row[keyIndex]==" ";
+                            return index===0 || row[keyIndex].value==" ";
                         });
                         if (isEmpty)
                             _(card.data).each(function(value, index){
@@ -246,15 +270,22 @@
         };
     };
 
-    var flowchart = function(container, data){
+    var flowchart = function(container, data, options){
         var tableTmpl = _.template( $('#new-flowchart-table-template').html() );
-        var preparedData = prepareData(data)
+        var preparedData = prepareData(data, options);
         $(container).html( tableTmpl(preparedData) );
     };
 
-    $.fn.flowchart = function(data){
+    var defaults = {
+        displayDiff : true
+    };
+
+    $.fn.flowchart = function(data, options){
+        options = options || {};
+        var o = _.extend({}, defaults, options);
+
         var result = this.each(function(){
-            flowchart(this, data);
+            flowchart(this, data, o);
         });
 
         $(window).on('resize', onresize);
