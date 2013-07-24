@@ -15,10 +15,10 @@
 {% endblock %}
 
 {% block content %}
-<ul class="nav nav-pills">
-  <li class="active"><a href="{% url organization_protocol_list organization.slug %}">My Protocols</a></li>
-  <li><a href="{% url workflow_list organization.slug %}">My Workflows</a></li>
-  <li><a href="{% url compare_select %}">Compare My Protocols</a></li>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="{% url organization_protocol_list organization.slug %}">Protocol List</a></li>
+  <li><a href="{% url workflow_list organization.slug %}">Workflows</a></li>
+  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create organization.slug %}">New Protocol</a></li>
     {% endif %}
