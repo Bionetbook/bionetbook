@@ -1,5 +1,7 @@
 (function($){
 
+    var lastData;
+
     var lastWidths = [];
 
 
@@ -90,10 +92,30 @@
     var keySortRule = function(key){
         return key=="technique_comment" ? 1 : 0;
     };
+    var getDiff = function(childKey){
+        var diff = false;
+        if (childKey) {
+            _(childKey).each(function(cardValue){
+                if (cardValue && cardValue!=childKey[0])
+                    diff = true;
+            });
+        }
+        return diff;
+    }
 
     var prepareData = function(json, options){
         var headers = generateHeaders(json);
         var rows = [];
+
+        // Generate colors
+        if (colColors.length==0)
+            for (var i=0; i < headers.length-1; i++) {
+                var rgba = [];
+                for (var j=0; j < 3; j++)
+                    rgba.push(Math.floor( Math.random()* 156 + 100));
+                colColors.push(rgba);
+            }
+
         _(json).each(function(verb, verbIndex){
             var row = [
             {
@@ -173,14 +195,21 @@
                             // add caption to card row
                             if (colIndex==-1) {
                                 card.data[0].push({
-                                    value: key,
-                                    color: options.displayDiff && _(child.diff).contains(key) ? 'red' : ''
+                                    value: key
                                 });
                                 colIndex = card.data[0].length-1;
                             }
+
+                            // Figure out if value differs from another card
+                            var diff = _(child.diff).contains(key) ? getDiff(child[key]) : false;
+
+                            var value = child[key] ? child[key][cardIndex] : "";
+
                             card.data[childIndex+1][colIndex] = {
-                                value: child[key] ? child[key][cardIndex] : "",
-                                isLink: key=="link"
+                                value: !options.displayComments && key=="technique_comment" ? "" : value,
+                                isLink: key=="link",
+                                // color: options.displayDiff && diff ? 'rgba('+colColors[cardIndex][0]+','+colColors[cardIndex][1]+','+colColors[cardIndex][2]+',1)' : ''
+                                color: options.displayDiff && diff ? 'red' : ''
                             };
 
                         });
@@ -195,41 +224,36 @@
                     } else if (card.isInline){
                         card.data = [];
                         if (_(child.display_order).isUndefined()) {
+                            child.display_order = _.chain(child).keys().sortBy(keySortRule).filter(function(key){
+                                return !_(ignoredChildFields).contains(key);
+                            }).value();
+                        }
+
+                        var processDisplayOrderItem = function(displayOrderRow){
                             var newLine = [];
-                            _.chain(child).keys().sortBy(keySortRule).each( function( key ) {
-                                if (_(ignoredChildFields).contains(key)) return;
+                            _(displayOrderRow).each(function(key){
                                 var value = child[key];
-                                if (!value || value[cardIndex]=="" || value[cardIndex]=="None") return;
-                                var newItem = {
-                                    key : key,
-                                    value : value[cardIndex]
-                                };
-                                newLine.push(newItem);
-                            });
-                            card.data.push(newLine);
-                        } else {
-                            var processDisplayOrderItem = function(displayOrderRow){
-                                var newLine = [];
-                                _(displayOrderRow).each(function(key){
-                                    var value = child[key];
-                                    if (!value || value[cardIndex]=="" ||value[cardIndex]=="None") return;
+                                if (!value || value[cardIndex]=="" ||value[cardIndex]=="None") return;
+                                if (key!="technique_comment" || options.displayComments) {
+                                    // Figure out if value differs from another card
+                                    var diff = _(child.diff).contains(key) ? getDiff(child[key]) : false;
                                     var newItem = {
                                         key : key,
-                                        value : value[cardIndex]
+                                        value : value[cardIndex],
+                                        color: diff ? 'red' : ''
                                     };
                                     newLine.push(newItem);
-                                });
-                                card.data.push(newLine);
-                            };
+                                }
+                            });
+                            card.data.push(newLine);
+                        };
 
-                            if (_(child.display_order).any(function(item){
-                                return _(item).isArray();
-                            })) {
-                                _(child.display_order).each(processDisplayOrderItem);
-                            } else {
-                                processDisplayOrderItem(child.display_order);
-                            }
-
+                        if (_(child.display_order).any(function(item){
+                            return _(item).isArray();
+                        })) {
+                            _(child.display_order).each(processDisplayOrderItem);
+                        } else {
+                            processDisplayOrderItem(child.display_order);
                         }
 
                         if (child.URL)
@@ -257,13 +281,6 @@
             rows.push(row);
         });
 
-        for (var i=0; i < headers.length-1; i++) {
-            var rgba = [];
-            for (var j=0; j < 3; j++)
-                rgba.push(Math.floor( Math.random()* 156 + 100));
-            colColors.push(rgba);
-        }
-
         return {
             rows : rows,
             headers : headers
@@ -277,10 +294,16 @@
     };
 
     var defaults = {
-        displayDiff : true
+        displayDiff : false,
+        displayComments : false
     };
 
     $.fn.flowchart = function(data, options){
+
+        data = data || lastData;
+        lastData = data;
+        if (!data) return;
+
         options = options || {};
         var o = _.extend({}, defaults, options);
 
