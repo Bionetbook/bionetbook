@@ -17,8 +17,13 @@
 {% block page_title %}
 Action: {{ action.title }}
 {% if protocol_edit_authorization %} 
-    <div><small><a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a></small></div>
-    <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a>
+    <div class="btn-toolbar">
+      <div class="btn-group">
+        <a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+        <a class="btn btn-primary" href="{{ protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a>
+      </div>
+    </div>  
+
 {% endif %}
 {% endblock %}
 

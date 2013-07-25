@@ -18,7 +18,13 @@
 {% block page_title %}
 <p>{{action.protocol.name}} {{action.parent.name}} {{action.name}}</p> Machine: {{ action.machine.name }}
 {% if protocol_edit_authorization %} 
-    <div><small><a href="{{ action.machine.get_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
+<div class="btn-toolbar">
+      <div class="btn-group">
+      <a class="btn btn-primary" href="{{ action.machine.get_update_url }}"><i class="icon-edit"></i>edit </a>
+      <a class="btn btn-primary" href="{{ action.protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a>
+    </div>
+</div>    
+
 {% endif %}
 {% endblock %}
 
