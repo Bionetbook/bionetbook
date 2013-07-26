@@ -27,8 +27,8 @@
 <ul class="nav nav-tabs">
   <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
   <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
-<!--   <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
- -->  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
+  <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
+  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner %}">New Protocol</a></li>
     {% endif %}
@@ -38,7 +38,7 @@
 <div class="row">
     <div class="span2" id="graph_switches">
 
-        <!-- {% if not protocol_a.published %}
+        {% if not protocol_a.published %}
         <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Save</button></a>
         {% else %}
         <a href="{{protocol_a.protocol_publish_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Saved</button></a>
@@ -48,24 +48,24 @@
         <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
         {% else %}
         <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn" style="width:100%;margin-bottom:10px;">Clone</button></a>
-        {% endif %} -->
+        {% endif %}
 
-<!--         {% if machine_layer %}
+        {% if machine_layer %}
         <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Full Text</button></a>
         {% else %}
         <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Full Text</button></a>
-        {% endif %} -->
+        {% endif %}
 
 
         <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
         <button class="btn btn-success btn-toggle-differences" style="width:100%;margin-bottom:10px;">Differences</button>
-        
 
-        <!-- {% if thermo_layer %}
+
+        {% if thermo_layer %}
         <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Schedule</button></a>
         {% else %}
         <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Schedule</button></a>
-        {% endif %} -->
+        {% endif %}
     </div>
     <div class="span5">
         <div class="well">
@@ -153,11 +153,11 @@
         displayComments: false
     }
 
-    $(window).on('click', '.btn-toggle-differences', function(){
+    $('body').on('click', '.btn-toggle-differences', function(){
         options.displayDiff = !options.displayDiff;
         $('.flowchart-container').flowchart( null, options );
     });
-    $(window).on('click', '.btn-toggle-comments', function(){
+    $('body').on('click', '.btn-toggle-comments', function(){
         options.displayComments = !options.displayComments;
         $('.flowchart-container').flowchart( null, options );
     });

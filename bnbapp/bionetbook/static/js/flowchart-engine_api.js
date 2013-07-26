@@ -240,7 +240,7 @@
                                     var newItem = {
                                         key : key,
                                         value : value[cardIndex],
-                                        color: diff ? 'red' : ''
+                                        color: options.displayDiff && diff ? 'red' : ''
                                     };
                                     newLine.push(newItem);
                                 }

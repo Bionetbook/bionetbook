@@ -267,6 +267,10 @@ html, body {
 .flowchart-card-inner-table-row:last-child .flowchart-card-inner-table-cell {
     border-bottom: 0;
 }
+.flowchart-card-inner-table-cell:last-child:not(:first-child) {
+    padding: 4px 8px;
+    width: 1px;
+}
 
 
 .flowchart-card-inline-layout {

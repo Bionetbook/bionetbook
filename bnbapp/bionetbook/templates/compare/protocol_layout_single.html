@@ -126,11 +126,11 @@
         displayComments: false
     }
 
-    $(window).on('click', '.btn-toggle-differences', function(){
+    $('body').on('click', '.btn-toggle-differences', function(){
         options.displayDiff = !options.displayDiff;
         $('.flowchart-container').flowchart( null, options );
     });
-    $(window).on('click', '.btn-toggle-comments', function(){
+    $('body').on('click', '.btn-toggle-comments', function(){
         options.displayComments = !options.displayComments;
         $('.flowchart-container').flowchart( null, options );
     });
