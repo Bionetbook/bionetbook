@@ -59,7 +59,7 @@
 
         <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
         <button class="btn btn-success btn-toggle-differences" style="width:100%;margin-bottom:10px;">Differences</button>
-        
+
 
         {% if thermo_layer %}
         <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Schedule</button></a>
@@ -153,11 +153,11 @@
         displayComments: false
     }
 
-    $(window).on('click', '.btn-toggle-differences', function(){
+    $('body').on('click', '.btn-toggle-differences', function(){
         options.displayDiff = !options.displayDiff;
         $('.flowchart-container').flowchart( null, options );
     });
-    $(window).on('click', '.btn-toggle-comments', function(){
+    $('body').on('click', '.btn-toggle-comments', function(){
         options.displayComments = !options.displayComments;
         $('.flowchart-container').flowchart( null, options );
     });

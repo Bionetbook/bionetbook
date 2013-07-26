@@ -26,7 +26,7 @@
 <ul class="nav nav-tabs">
   <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
   <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
-  <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
+  <!-- <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li> -->
   <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner %}">New Protocol</a></li>
@@ -49,23 +49,10 @@
         <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn" style="width:100%;margin-bottom:10px;">Clone</button></a>
         {% endif %}
 
-        <!-- {% if machine_layer %}
-        <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Full Text</button></a>
-        {% else %}
-        <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Full Text</button></a>
-        {% endif %}
-
         
         <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
         
 
-
-        {% if thermo_layer %}
-        <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Schedule</button></a>
-        {% else %}
-        <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Schedule</button></a>
-        {% endif %} -->
-    
     </div>
 
     <div class="span10">
@@ -127,11 +114,11 @@
         displayComments: false
     }
 
-    $(window).on('click', '.btn-toggle-differences', function(){
+    $('body').on('click', '.btn-toggle-differences', function(){
         options.displayDiff = !options.displayDiff;
         $('.flowchart-container').flowchart( null, options );
     });
-    $(window).on('click', '.btn-toggle-comments', function(){
+    $('body').on('click', '.btn-toggle-comments', function(){
         options.displayComments = !options.displayComments;
         $('.flowchart-container').flowchart( null, options );
     });
