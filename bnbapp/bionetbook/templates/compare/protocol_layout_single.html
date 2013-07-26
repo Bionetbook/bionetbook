@@ -26,7 +26,7 @@
 <ul class="nav nav-tabs">
   <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
   <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
-  <!-- <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li> -->
+  <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
   <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner %}">New Protocol</a></li>
@@ -42,43 +42,42 @@
         {% else %}
         <a href="{{protocol_a.protocol_publish_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Saved</button></a>
         {% endif %}
-        
+
         {% if protocol_a.published %}
         <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
         {% else %}
         <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn" style="width:100%;margin-bottom:10px;">Clone</button></a>
         {% endif %}
 
-        {% if machine_layer %}
+        <!-- {% if machine_layer %}
         <a href="{{machine_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Full Text</button></a>
         {% else %}
         <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Full Text</button></a>
         {% endif %}
 
-        {% if steps_layer %}
-        <a href="{{steps_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Comments</button></a>
-        {% else %}
-        <a href="{{steps_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Comments</button></a>
-        {% endif %}
+        
+        <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
+        
 
 
         {% if thermo_layer %}
         <a href="{{thermo_link}}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Schedule</button></a>
         {% else %}
         <a href="{{thermo_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Schedule</button></a>
-        {% endif %}
+        {% endif %} -->
+    
     </div>
 
     <div class="span10">
         <div class="well">
             <h3>{{ protocol_a }}</h3>
             <table class="table table-striped table-condensed" style="font-size:10pt">
-                <tr> 
+                <tr>
                     </br>
                     <b>Description:</b> {{ protocol_a.description }}
                     </br>
                     </br>
-                </tr> 
+                </tr>
                 <tr>
                     <td>Organization: {{protocol_a.owner }}</td>
                     <td>Author: {{protocol_a.author.get_full_name  }}</td>
@@ -96,7 +95,6 @@
     </div>
 </div>
 
-<!-- <li><option value="{{ protocol.pk }}">{{ protocol.name }}</option></li> -->
 <div class="wrapper">
         <div class="flowchart-container">
 
@@ -123,90 +121,104 @@
     $(document).ready(function(){
         getFlowchartData( slugs, callback );
         });
+
+    var options = {
+        displayDiff: false,
+        displayComments: false
+    }
+
+    $(window).on('click', '.btn-toggle-differences', function(){
+        options.displayDiff = !options.displayDiff;
+        $('.flowchart-container').flowchart( null, options );
+    });
+    $(window).on('click', '.btn-toggle-comments', function(){
+        options.displayComments = !options.displayComments;
+        $('.flowchart-container').flowchart( null, options );
+    });
     </script>
 
 	<script type="text/template" id="new-flowchart-table-template">
-                <table class="flowchart-table">
-                    <tbody class="flowchart-table-body">
-                        <tr class="flowchart-line-wrapper">
-                        <% _(headers).each(function(header){ %>
-                            <td>
-                                <div class="flowchart-line-container"></div>
-                            </td>
-                        <% }); %>
-                        </tr>
-                        <% _(rows).each(function(row){ %>
-                        <tr class="flowchart-table-row">
-                            <% _(row).each(function(cell){ %>
-                            <td class="flowchart-table-cell " colspan="<%=cell.span%>">
-                                <% if (cell.display) { %>
-                                <% if (cell.isVerb==true) {%>
-                                    <div class="flowchart-card flowchart-card-verb">
-                                    <%= cell.index %>. <%=cell.name%>
-                                    </div>
-                                <% } else { %>
-                                    <% if (cell.isTable==true && cell.data.length>1) {%>
-                                    <div class="flowchart-card">
-                                        <table class="flowchart-card-inner-table">
-                                            <tbody>
-                                                <% _(cell.data).each(function(crow, crowIndex){%>
-                                                <tr class="flowchart-card-inner-table-row">
-                                                    <%_(crow).each(function(ccell, ccellIndex){%>
-                                                        <td class="flowchart-card-inner-table-cell">
-                                                        <div class="flowchart-card-inner-table-cell-content" style="<% if (ccell.color && ccell.color!='') { %>color:<%=ccell.color%><% } %>">
-                                                            <% if (ccell.isUrl) { %>
-                                                                <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-cog"></i></a>
-                                                            <% } else if (ccell.isLink && ccell.value!=" ") { %>
-                                                                <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-th-list"></i></a>
-                                                            <% } else { %>
-                                                                <%=ccell.value.toString().replace(/_/gi, " ")%>
-                                                            <%}%>
-                                                        </div>
-                                                        </td>
-                                                    <%})%>
-                                                </tr>
+        <table class="flowchart-table">
+            <tbody class="flowchart-table-body">
+                <tr class="flowchart-line-wrapper">
+                <% _(headers).each(function(header){ %>
+                    <td>
+                        <div class="flowchart-line-container"></div>
+                    </td>
+                <% }); %>
+                </tr>
+                <% _(rows).each(function(row){ %>
+                <tr class="flowchart-table-row">
+                    <% _(row).each(function(cell){ %>
+                    <td class="flowchart-table-cell " colspan="<%=cell.span%>">
+                        <% if (cell.display) { %>
+                        <% if (cell.isVerb==true) {%>
+                            <div class="flowchart-card flowchart-card-verb">
+                            <%= cell.index %>. <%=cell.name%>
+                            </div>
+                        <% } else { %>
+                            <% if (cell.isTable==true && cell.data.length>1) {%>
+                            <div class="flowchart-card">
+                                <table class="flowchart-card-inner-table">
+                                    <tbody>
+                                        <% _(cell.data).each(function(crow, crowIndex){%>
+                                        <tr class="flowchart-card-inner-table-row">
+                                            <%_(crow).each(function(ccell, ccellIndex){%>
+                                                <td class="flowchart-card-inner-table-cell">
+                                                <div class="flowchart-card-inner-table-cell-content" style="<% if (ccell.color && ccell.color!='') { %>color:<%=ccell.color%><% } %>">
+                                                    <% if (ccell.isUrl) { %>
+                                                        <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-cog"></i></a>
+                                                    <% } else if (ccell.isLink && ccell.value!=" ") { %>
+                                                        <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-th-list"></i></a>
+                                                    <% } else { %>
+                                                        <%=ccell.value.toString().replace(/_/gi, " ")%>
+                                                    <%}%>
+                                                </div>
+                                                </td>
+                                            <%})%>
+                                        </tr>
+                                        <%});%>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <% } else if (cell.isInline==true) {%>
+                            <div class="flowchart-card">
+                                <table class="flowchart-card-inline-layout">
+                                    <tbody>
+                                        <tr class="flowchart-card-inline-layout-row">
+                                            <td class="flowchart-card-inline-layout-cell">
+                                            <div class="flowchart-card-inline-layout-content">
+                                            <% _(cell.data).each(function(crow, crowIndex){ %>
+                                                <div>
+                                                <%_(crow).each(function(cobject,cobjectIndex){%>
+                                                    <span style="<% if (cobject.color && cobject.color!='') { %>color:<%=cobject.color%><% } %>"><%=cobject.key.toString().replace(/_/gi, " ")%>:
+                                                    <%=_(cobject.value).isArray() ? cobject.value.join(' ') : cobject.value %><%= cobjectIndex==crow.length-1 ? ';' : ',' %></span>
                                                 <%});%>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <% } else if (cell.isInline==true) {%>
-                                    <div class="flowchart-card">
-                                        <table class="flowchart-card-inline-layout">
-                                            <tbody>
-                                                <tr class="flowchart-card-inline-layout-row">
-                                                    <td class="flowchart-card-inline-layout-cell">
-                                                    <div class="flowchart-card-inline-layout-content">
-                                                    <% _(cell.data).each(function(crow, crowIndex){ %>
-                                                        <div>
-                                                        <%_(crow).each(function(cobject,cobjectIndex){%>
-                                                            <%=cobject.key.toString().replace(/_/gi, " ")%>:
-                                                            <%=_(cobject.value).isArray() ? cobject.value.join(' ') : cobject.value %><%= cobjectIndex==crow.length-1 ? ';' : ',' %>
-                                                        <%});%>
-                                                        </div>
-                                                    <% }) %>
-                                                    </div>
-                                                        <% if (cell.url) { %>
-                                                            <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
-                                                        <%} else {%>
-                                                            <i class="icon icon-cog" style="opacity: 0;"></i>
-                                                        <%}%>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                </div>
+                                            <% }) %>
+                                            </div>
+                                                <% if (cell.url) { %>
+                                                    <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
+                                                <%} else {%>
+                                                    <i class="icon icon-cog" style="opacity: 0;"></i>
+                                                <%}%>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
-                                    </div>
-                                    <% } %>
-                                <% } %>
-                                </div>
-                                <% } %>
-                            </td>
-                            <% });%>
-                        </tr>
-                        <%});%>
-                    </tbody>
-                </table>
-            </script>
+                            </div>
+                            <% } %>
+                        <% } %>
+                        </div>
+                        <% } %>
+                    </td>
+                    <% });%>
+                </tr>
+                <%});%>
+            </tbody>
+        </table>
+    </script>
 
 
 {%endblock%}
