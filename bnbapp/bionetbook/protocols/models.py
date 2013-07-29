@@ -580,7 +580,7 @@ class NodeBase(dict):
 
     def get_duration(self):
         items = ['time' ,'physical_commitment']
-        time_vars = dict((k, v) for k, v in settings_dict.iteritems() if items in k and v != None and len(str(v)) != 0)
+        time_vars = dict((k, v) for k, v in self.iteritems() if items in k and v != None )
 
     # def update_duration(self, desired_unit = 'sec'):
 
