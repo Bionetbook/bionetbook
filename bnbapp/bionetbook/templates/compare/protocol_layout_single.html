@@ -38,6 +38,13 @@
     <div class="span2" id="graph_switches">
 
         {% if not protocol_a.published %}
+        <a href="{{ protocol_a.get_absolute_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Edit</button></a>
+        {% else %}
+        <a href="{{protocol_a.get_absolute_url}}"><button class="btn" style="width:100%;margin-bottom:10px;">Edit</button></a>
+        {% endif %}
+
+
+        {% if not protocol_a.published %}
         <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Save</button></a>
         {% else %}
         <a href="{{protocol_a.protocol_publish_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Saved</button></a>
