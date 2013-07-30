@@ -19,7 +19,7 @@ textarea {
 }
 
 body {
-    font-size: 1em;
+    
     line-height: 1.4;
 }
 
@@ -192,7 +192,7 @@ html, body {
     border-radius: .6em;
     padding: .6em;
     border: 1px grey solid;
-    text-transform: capitalize;
+    /*text-transform: capitalize;*/
 }
 
 .flowchart-table .flowchart-card {
