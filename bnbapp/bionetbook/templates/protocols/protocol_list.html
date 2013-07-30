@@ -36,7 +36,8 @@
                     {% endif %}
                     <th>Title</th>
                     <th>Author</th>
-                    <th>Steps</th>
+                    <!-- <th>Steps</th> -->
+                    <th>Duration</th>
                     <th>Actions</th>
                     {% if request.user.is_authenticated %}
                         <th>Status</th>
@@ -57,7 +58,8 @@
                     <!-- <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td> -->
                     <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
                     <td>{{ protocol.author.get_full_name }}</td>
-                    <td>{{ protocol.steps|length }}</td>
+                    <!-- <td>{{ protocol.steps|length }}</td> -->
+                    <td>{{ protocol.update_duration }}</td>
                     <td>{{ protocol.get_actions|length }}</td>
                     <td>{{ protocol.status }}</td>
                     <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>

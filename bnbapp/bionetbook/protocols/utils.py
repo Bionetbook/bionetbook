@@ -222,6 +222,43 @@ def labeler(object_dict):
         
     return output 
         
+def get_timeunit(time_var, desired_unit = 'sec'):
+    ''' time_var = [value_str, 'units']
+    return (float(min_value), [,float(max_value)], 'units', 'original units')
+    '''
+    factor = {
+        'sec' : {'sec': 1, 'min': 60, 'hrs': 3600, 'd' : 86400, 'yrs':  31536000},
+        'min' : {'sec': 1/60, 'min': 1, 'hrs': 60, 'd' : 1440, 'yrs':  525600},
+        'hrs' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'd' : 24, 'yrs':  8760},
+        'd' : {'sec': 1/86400, 'min': 1/3600, 'hrs': 1/60, 'd' : 1, 'yrs':  365},
+        'yrs' : {'sec': 1/31536000, 'min': 1/525600, 'hrs': 1/8760, 'd' : 1/365, 'yrs':  1},
+        }
+    if isinstance(time_var[0], str) and '-' in time_var[0]:    
+
+        min_time = str(time_var[0][:time_var[0].index('-')])
+        max_time = str(time_var[0][time_var[0].index('-')+1:])
+
+        return ((float(factor[desired_unit][time_var[1]]) * float(min_time)), 
+                (float(factor[desired_unit][time_var[1]]) * float(max_time)), 
+                desired_unit, 
+                time_var[1])
+    else:
+        return ((float(factor[desired_unit][time_var[1]]) * float(time_var[0])),
+                desired_unit, 
+                time_var[1])
+
+# def fit_closest_time_unit(time_var, input_unit = 'sec'):
+    
+#     m,s = divmod(time_var, 60)
+#     if m> 60:
+#         h,m = divmod(m, 60)
+#         if h > 24:
+#             d,h = divmod(h, 24)
+#             return "%dd:%02dh:%02dm:%02ds" % (d, h, m, s)        
+#         else:
+#             return "%dh:%02dm:%02ds" % (h, m, s)        
+#     else:        
+#         return "%dm:%02ds" % (m, s)
 
 
 

@@ -20,7 +20,7 @@ from organization.models import Organization
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler 
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -394,7 +394,25 @@ class Protocol(TimeStampedModel):
         return action_tree
 
     def update_duration(self):
-        pass
+        
+        min_time = []
+        max_time = []    
+        for item in self.get_actions():
+            if self.nodes[item]['name'] =='store':
+                continue
+            action_time = self.nodes[item].get_times()
+            min_time.append(action_time[0])
+            max_time.append(action_time[0])
+            if len(action_time) >3:
+                max_time.append(action_time[1])
+
+        min_duration = sum(min_time)        
+        max_duration = sum(max_time)        
+
+        if min_duration == max_duration:
+            return str(datetime.timedelta(seconds = min_duration))
+        else:    
+            return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
@@ -575,34 +593,7 @@ class NodeBase(dict):
 
     # def update_duration(self):
     #         pass
-
-
-
-    def get_duration(self):
-        items = ['time' ,'physical_commitment']
-        time_vars = dict((k, v) for k, v in self.iteritems() if items in k and v != None )
-
-    # def update_duration(self, desired_unit = 'sec'):
-
-    #     factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
-    #     'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
-    #     'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
-    #     'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
-            
-    #     time = False        
-    #     if 'time' in self.summary:
-    #         print 'time is in summary'
-    #         time = self.summary['time']
-
-    #     if 'duration' in self.summary:
-    #         print 'duration is in summary'
-    #         time = [self.summary['duration'], self.summary['duration_units']] 
-
-    #     if time:     
-    #         return ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
-    #     else:
-    #         return  None
-        
+    
 class Component(NodeBase):
 
     def __init__(self, protocol, parent=None, data=None, **kwargs):
@@ -924,36 +915,48 @@ class Action(NodeBase):
             return self['verb'] in MANUAL_VERBS
         return False    
 
-    def update_duration(self, desired_unit = 'sec'):
+    def get_times(self, desired_unit = 'sec'):
 
-        factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
-        'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
-        'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
-        'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
-            
-        time = False        
-        if 'time' in self.summary:
-            time = self.summary['time']
-
-        if 'duration' in self.summary:
-            time = [self.summary['duration'], self.summary['duration_units']] 
+        ''' method returns a tuple for each action:
+        (float(min_time), [,float(max_time)], output_untis, input_units)
+        In further versions the time related items will be integrated into a get_time object. 
+        ''' 
 
 
-        if time:     
-            self['duration']  = ((float(factor[desired_unit][time[1]]) * float(time[0])), desired_unit)  
-        else:
-            return  None
-    
+        # items = ['time' ,'physical_commitment', "duration", 'duration_comment', ]
+        # time_vars={}
+        # for item in items:
+        #     if item in self.keys():
+        #         time_vars[item] = self[item]
 
-    def convert_time(input_list, desired_unit):
+        # get children times:       
         
-        factor = {'sec' : {'sec': 1, 'min': 60, 'hr': 3600, 'day' : 86400},
-        'min' : {'sec': 1/60, 'min': 1, 'hr': 60, 'day' : 1440},
-        'hr' : {'sec': 1/3600, 'min': 1/60, 'hr': 1, 'day' : 24},
-        'd' : {'sec': 1/86400, 'min': 1/3600, 'hr': 1/60, 'day' : 1}}
+        if self.childtype() == "components":
+            children_time = (len(self.children) * 30, 'sec', 'sec')
 
+        if self.childtype() == "manual":
+            children_time = get_timeunit(self.summary['time'])
 
-        return factor[desired_unit][input_list[1]] * input_list[0]  
+        if self.childtype() == "machine":
+            children_time = get_timeunit(self.children[0].summary['time'])   
+
+        
+        if self.childtype() == "thermocycle":    
+            tmp_time =[0, 'sec']
+            cycles = [r.summary['cycles'] for r in self.children]
+            cycle_back_to = [r.summary['cycle_back_to'] for r in self.children]
+            for cnt, (cycle, cycle_back_to) in enumerate(zip(cycles, cycle_back_to)):
+                if cycle and not cycle_back_to:
+                    tmp = get_timeunit(self.children[cnt].summary['time'])
+                    tmp_time[0] = tmp_time[0] + tmp[0]
+
+                if cycle and cycle_back_to:
+                    phases_in_cycle = [get_timeunit(r.summary['time']) for r in self.children[int(cycle_back_to)-1:int(cnt)]] 
+                    sum_of_cycles = sum(t[0] for t in phases_in_cycle)
+                    tmp_time[0] = tmp_time[0] + (float(sum_of_cycles) * float(cycle))
+
+            children_time = tuple(tmp_time)        
+        return children_time
     
 
     def childtype(self):
