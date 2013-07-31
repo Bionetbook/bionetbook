@@ -23,14 +23,14 @@ class StepForm(NodeForm):
 
 
 class ActionForm(NodeForm):
-    name = forms.CharField(max_length=100, required=False, help_text = 'defaults to verb')
+    name = forms.CharField(max_length=100, required=False, help_text = 'This will autofill')
     tracking_object = forms.CharField(required=False, help_text='Sample mix | Buffer | Other mix')
     # tube_label = forms.CharField(help_text ='copy label of tube', required=False)
     # describe_where = forms.CharField(required = False, help_text = 'bench, desktop, rotator, etc')
-    min_time = forms.FloatField(required=False, help_text='this is the minimal time this should take', widget=forms.NumberInput(attrs={'step':'any'}))
-    max_time = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
-    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )
-    time_comment = forms.CharField(required=False)
+    # min_time = forms.FloatField(required=False, help_text='this is the minimal time this should take', widget=forms.NumberInput(attrs={'step':'any'}))
+    # max_time = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
+    # time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )
+    # time_comment = forms.CharField(required=False)
     min_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)
     max_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)
     temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
@@ -50,6 +50,7 @@ forms.VerbForm = VerbForm
 
 
 class ComponentForm(NodeForm):
+
     #reagent_name = forms.CharField(max_length=100, required=False)                 # THIS IS COVERED WITH THE name FIELD
     min_conc = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
     max_conc = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))

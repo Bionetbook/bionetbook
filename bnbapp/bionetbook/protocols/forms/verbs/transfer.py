@@ -1,5 +1,5 @@
 from protocols.forms import forms
-from core.utils import  VOLUME_UNITS
+from core.utils import  VOLUME_UNITS, TIME_UNITS
 
 class TransferForm(forms.VerbForm):
 
@@ -17,7 +17,10 @@ class TransferForm(forms.VerbForm):
     max_vol = forms.FloatField(required=False)
     vol_units = forms.ChoiceField(required=False, choices=VOLUME_UNITS )
     vol_comment = forms.CharField(required=False)
-
+    min_time = forms.FloatField(required=False, help_text='this is the minimal time this should take', widget=forms.NumberInput(attrs={'step':'any'}))
+    max_time = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
+    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )
+    time_comment = forms.CharField(required=False)
 
 '''
 Transfer the transparent liquid above the lipid layer (middle of tube) to a fresh tube to separate RNA from DNA
