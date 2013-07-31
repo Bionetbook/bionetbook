@@ -31,37 +31,46 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    {% if request.user.is_authenticated %}
-                        <th></th>
-                    {% endif %}
                     <th>Title</th>
+                    {% if request.user.is_authenticated %}
+                        <th>Status</th>
+                    {% endif %}
                     <th>Author</th>
                     <!-- <th>Steps</th> -->
                     <th>Duration</th>
                     <th>Actions</th>
-                    {% if request.user.is_authenticated %}
+                    <!-- {% if request.user.is_authenticated %}
                         <th>Status</th>
-                    {% endif %}
+                    {% endif %} -->
                     <th>Last Modified</th>
                 </tr>
             </thead>
             <tbody>
                 {% for protocol in object.protocol_set.all %}
                 <tr>
+                    <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
                     <td>
                         {% if not protocol.published %}
                             <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% else %}
+                            <a href="#"><i class="icon-lock"></i></a>    
+                        {% endif %}
+                        {% if protocol.public %}
+                            <a href ="#"><i class="icon-globe"></i></a>
+                        {% else %}
+                            <a href ="#"><i class="icon-user"></i></a>
                             <!-- <a href="{{ protocol.get_absolute_url }}"><i class="icon-th-list"></i></a> -->
                         {% endif %}
+
                         <!-- <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a> -->
                     </td>
                     <!-- <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td> -->
-                    <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
+                    
                     <td>{{ protocol.author.get_full_name }}</td>
                     <!-- <td>{{ protocol.steps|length }}</td> -->
                     <td>{{ protocol.update_duration }}</td>
                     <td>{{ protocol.get_actions|length }}</td>
-                    <td>{{ protocol.status }}</td>
+                    <!-- <td>{{ protocol.status }}</td> -->
                     <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
                 </tr>
                 {% endfor %}
