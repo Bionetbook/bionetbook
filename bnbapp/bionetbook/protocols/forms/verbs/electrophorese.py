@@ -11,4 +11,3 @@ class ElectrophoreseForm(forms.VerbForm):
     min_voltage = forms.IntegerField(required = False)
     max_voltage = forms.IntegerField(required = False)
     voltage_units = forms.CharField(initial ='volts')
-    remarks = forms.CharField(required = False)

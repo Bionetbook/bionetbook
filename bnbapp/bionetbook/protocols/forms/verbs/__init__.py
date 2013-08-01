@@ -20,7 +20,7 @@ from decant import DecantForm
 # from digest import DigestForm
 from discard import DiscardForm
 # from drain import DrainForm
-from dry import DryForm
+from dry import DryFormB
 from electrophorese import ElectrophoreseForm
 from elute import EluteForm
 # from equilibrate import EquilibrateForm
