@@ -1,7 +1,6 @@
 import string
 import random
 from django.db import models
-import pygraphviz as pgv 
 from protocols.models import Protocol, Action, Step
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
@@ -65,7 +64,6 @@ class ProtocolPlot(Protocol):
     def __init__(self, *args, **kwargs):
         super(ProtocolPlot, self).__init__(*args, **kwargs)
 
-        self.agraph = pgv.AGraph(ranksep = '0.2')  
         self.pks = [self.nodes[r].pk for r in self.get_actions()] # list of actions in pk-objectid format
         
 class Compare(object):
