@@ -96,7 +96,8 @@ class CloneLayoutSingleView(TemplateView):
         protocol = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
         context['organization'] = protocol.owner
         slug_a = str(protocol.slug)
-        protocol.clone()
+        protocol.clone(author=self.request.user)
+#        protocol.clone()
         protocol.save()
         slug_b = str(protocol.slug)
 
