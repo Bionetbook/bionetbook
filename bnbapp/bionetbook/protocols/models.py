@@ -164,6 +164,9 @@ class Protocol(TimeStampedModel):
     def protocol_publish_url(self):
         return reverse("protocol_publish", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 
+    def protocol_public_url(self):
+        return reverse("protocol_public", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
+        
     def protocol_duplicate_url(self):
         return reverse("protocol_duplicate", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
 

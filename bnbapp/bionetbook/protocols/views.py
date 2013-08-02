@@ -482,8 +482,27 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedOrganizationMixin, Autho
         self.object = self.get_object()
         self.object.published = True
         self.object.save()
-        messages.add_message(self.request, messages.INFO, "Your protocol is publushed.")
+        messages.add_message(self.request, messages.INFO, "Your protocol is published.")
         url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+class ProtocolPublicView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+
+    model = Protocol
+    slug_url_kwarg = "protocol_slug"
+    template_name = "protocols/protocol_public_form.html"
+
+    def cancel(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        url = self.object.get_absolute_url()
+        return http.HttpResponseRedirect(url)
+
+    def confirm(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.public = True
+        self.object.save()
+        messages.add_message(self.request, messages.INFO, "Your protocol is now public.")
+        url = self.object.protocol_outline_url()
         return http.HttpResponseRedirect(url)
 
 
