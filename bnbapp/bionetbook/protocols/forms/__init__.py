@@ -5,7 +5,7 @@ from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNIT
 
 class NodeForm(forms.Form):
     name = forms.CharField(max_length=100, required=False)
-    technique_comment = forms.CharField(required=False, help_text='describe technique tips, help, comments, dont describe chemistry or biology')
+    technique_comment = forms.CharField(required=False, help_text='describe technique tips, or help')
     why = forms.CharField(required=False, help_text='scientific reason you\'re doing this?')
 
 
