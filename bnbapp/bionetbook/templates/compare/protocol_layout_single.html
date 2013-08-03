@@ -38,34 +38,43 @@
     <div class="span2" id="graph_switches">
 
         {% if not protocol_a.published %}
-        <a href="{{ protocol_a.get_absolute_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Edit</button></a>
+        <!-- <a href="{{ protocol_a.get_absolute_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Edit</button></a> -->
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.get_absolute_url }}"><i class="icon-edit icon-white"></i> Edit</a>
         {% else %}
-        <a href="{{protocol_a.get_absolute_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Edit</button></a>
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-edit icon-white"></i> Edit</a>
+        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Edit</button></a> -->
         {% endif %}
 
 
         {% if not protocol_a.published %}
-        <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Save</button></a>
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_publish_url }}"><i class="icon-unlock-alt icon-white"></i> Lock</a>
+        <!-- <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Save</button></a> -->
         {% else %}
-        <a href="{{protocol_a.protocol_publish_error}}"><button class="btn" style="width:100%;margin-bottom:10px;">Saved</button></a>
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-lock icon-white"></i> Locked</a>
+        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Saved</button></a> -->
         {% endif %}
 
         {% if protocol_a.published and not protocol_a.public %}
-        <a href="{{ protocol_a.protocol_public_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Make Public</button></a>
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_public_url }}"><i class="icon-eye-open icon-white"></i> Make Public</a>
+        <!-- <a href="{{ protocol_a.protocol_public_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Make Public</button></a> -->
         {% elif protocol_a.public %}
-        <a href="#"><button class="btn" style="width:100%;margin-bottom:10px;">Public</button></a>
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Public</a>
+        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Public</button></a> -->
         {% else %}
-        <a href="#"><button class="btn" style="width:100%;margin-bottom:10px;">Make Public</button></a>
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Make Public</a>
+        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Make Public</button></a> -->
         {% endif %}
 
         {% if protocol_a.published %}
-        <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-success" style="width:100%;margin-bottom:10px;">Clone</button></a>
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_clone_url }}"><i class="icon-copy icon-white"></i> Clone</a>
+        <!-- <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Clone</button></a> -->
         {% else %}
-        <a href="{{ protocol_a.protocol_clone_error }}"><button class="btn" style="width:100%;margin-bottom:10px;">Clone</button></a>
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-copy icon-white"></i> Clone</a>
+        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Clone</button></a> -->
         {% endif %}
 
-        
-        <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
+        <a class="btn btn-info btn-toggle-comments" style="width:85%;margin-bottom:10px;"><i class="icon-comment-alt icon-white"></i> Comments</a>
+        <!-- <button class="btn btn-info btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button> -->
         
 
     </div>
@@ -75,8 +84,12 @@
             <h3>{{ protocol_a }}</h3>
             <table class="table table-striped table-condensed" style="font-size:10pt">
                 <tr>
+                    {% if not protocol_a.published %}
                     </br>
+                    <b>Description:</b> {{ protocol_a.description }}  <a href="{{ protocol_a.protocol_update_url }}"><i class="icon-edit"></i></a>
+                    {% else %}
                     <b>Description:</b> {{ protocol_a.description }}
+                    {% endif %}
                     </br>
                     </br>
                 </tr>
@@ -101,6 +114,11 @@
         <div class="flowchart-container">
 
         </div>
+</div>
+
+<div class="btn-group">
+
+
 </div>
 
 

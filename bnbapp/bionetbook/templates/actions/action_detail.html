@@ -16,15 +16,9 @@
 
 {% block page_title %}
 Action: {{ action.title }}
-{% if protocol_edit_authorization %} 
-    <div class="btn-toolbar">
-      <div class="btn-group">
-        <a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
-        <a class="btn btn-primary" href="{{ protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a>
-      </div>
-    </div>  
+<a class="btn btn-primary" href="{{ protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a>
 
-{% endif %}
+
 {% endblock %}
 
 {% block content %}
@@ -32,10 +26,11 @@ Action: {{ action.title }}
 <div class="row">
     <div class="span6">
       <h2>Action Attributes</h2>
-        {% object_data_table action %}
-        {% if protocol_edit_authorization %} 
+      {% if protocol_edit_authorization %} 
+        <a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
         <a class="btn btn-danger" href="{{ action.action_delete_url }}"><i class="icon-trash icon-white"></i> Delete Action</a>
-        {% endif %}
+      {% endif %}
+        {% object_data_table action %}
         <p></p>
     </div>
     <!-- <div class "span3.5">

@@ -27,8 +27,8 @@
 <ul class="nav nav-tabs">
   <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
   <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
-  <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
-  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
+<!--   <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>
+ -->  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner %}">New Protocol</a></li>
     {% endif %}
@@ -56,9 +56,10 @@
         <a href="{{machine_link}}"><button class="btn" style="width:100%;margin-bottom:10px;">Full Text</button></a>
         {% endif %}
  -->
-
-        <button class="btn btn-success btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button>
-        <button class="btn btn-success btn-toggle-differences" style="width:100%;margin-bottom:10px;">Differences</button>
+        <a class="btn btn-info btn-toggle-comments" style="width:85%;margin-bottom:10px;"><i class="icon-comment-alt icon-white"></i> Comments</a>
+        <!-- <button class="btn btn-info btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button> -->
+        <a class="btn btn-info btn-toggle-differences" style="width:85%;margin-bottom:10px;"><i class="icon-columns icon-white"></i> Differences</a>
+        <!-- <button class="btn btn-info btn-toggle-differences" style="width:100%;margin-bottom:10px;">Differences</button> -->
 
 
 <!--         {% if thermo_layer %}

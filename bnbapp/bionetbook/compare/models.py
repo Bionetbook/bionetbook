@@ -439,10 +439,13 @@ class CompareChildren(CompareVerb):
                 self['display_order'].append(['time'])
             if 'technique_comment' in temp:
                 self['display_order'][0].pop(self['display_order'][0].index('technique_comment'))    
-                self['display_order'].append(['technique_comment'])   
+                self['display_order'].append(['technique_comment'])
+            if 'item_to_act' in self:
+                self['display_order'][0].pop(self['display_order'][0].index('item_to_act'))
+                self['name'] = self['item_to_act']           
 
         if self['node_type'] == 'Component':        
-            self['display_order'] = ['conc', 'mass', 'vol', 'time', 'technique_comment', 'link']
+            self['display_order'] = ['conc', 'vol', 'mass', 'time', 'technique_comment', 'link']
 
         if self['node_type'] == 'Machine':        
             self['display_order'] = ['speed', 'temp', 'time', 'technique_comment', 'link']    
