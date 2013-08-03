@@ -72,7 +72,7 @@ class Protocol(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-    def clone(self, name=None, owner=None):
+    def clone(self, name=None, owner=None, author=None):
         '''Turns the current instance into a clone of the previous.
         This instance still need to be saved to be committed.'''
 
@@ -98,6 +98,9 @@ class Protocol(TimeStampedModel):
         # NEED TO SET THE ORGANIZATION
         if owner:
             self.owner = owner
+
+        if author:
+            self.author = author
 
         self.parent = Protocol.objects.get(pk=parentid)
 
