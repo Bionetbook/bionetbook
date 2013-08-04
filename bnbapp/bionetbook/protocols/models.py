@@ -40,7 +40,8 @@ class Protocol(TimeStampedModel):
     owner = models.ForeignKey(Organization)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-    duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
+    duration_in_seconds = models.IntegerField(_("Old Duration in seconds"), blank=True, null=True)
+    duration = models.CharField(_("Duration in seconds"), blank=True, null=True, max_length=30)
     raw = models.TextField(blank=True, null=True)
     data = JSONField(blank=True, null=True)
     description = models.TextField(_("Description"), blank=True, null=True)
@@ -123,9 +124,13 @@ class Protocol(TimeStampedModel):
             if self.data['Name']:
                 self.name = self.data['Name']
 
+        self.duration = self.update_duration()
+
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()
+        
 
         if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
@@ -399,13 +404,14 @@ class Protocol(TimeStampedModel):
         
         return action_tree
 
-    def update_duration(self):
+    def update_duration(self, units = 'sec'):
         
         min_time = []
         max_time = []    
         for item in self.get_actions():
             if self.nodes[item]['name'] =='store':
                 continue
+            print item
             action_time = self.nodes[item].get_times()
             min_time.append(action_time[0])
             max_time.append(action_time[0])
@@ -416,9 +422,11 @@ class Protocol(TimeStampedModel):
         max_duration = sum(max_time)        
 
         if min_duration == max_duration:
-            return str(datetime.timedelta(seconds = min_duration))
+            return str(min_duration)
+            # return datetime.timedelta(seconds = min_duration)
         else:    
-            return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
+            return str(min_duration) + '-' + str(max_duration)
+        #     return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
