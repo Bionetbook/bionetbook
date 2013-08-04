@@ -3,7 +3,7 @@
 
 {% block title %}Dashboard{% endblock %}
 
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}{{ request.user.first_name }}'s Dashboard{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
@@ -13,13 +13,49 @@
 
 {% block content %}
 <div class="row">
-    <div class="span12">
-        <ul class="nav nav-tabs nav-stacked">
-            <li><a href="{% url organization_list %}">Organizations</a></li>
-            {% if request.user.is_superuser or request.user.is_staff %}
-            <li><a href="{% url profile_list %}">Users</a></li>
-            {% endif %}
-        </ul>
+    <div class="span4">
+        <div class="thumbnail">
+          <img data-src="holder.js/300x200" alt="300x200" style="width: 300px; height: 200px; " src="">
+          <div class="caption">
+            <h3>Who Am I?</h3>
+            <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            <hr>
+            <p>Cool Stats</p>
+          </div>
+        </div>
     </div>
-  </div>
+
+    <div class="span8">
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label">Draft Protocols</li>
+          {% for protocol in request.user.get_profile.get_private_draft_protocols %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+          {% endfor %}
+        </ul>
+
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label">Private Protocols</li>
+          {% for protocol in request.user.get_profile.get_private_protocols %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+          {% endfor %}
+        </ul>
+
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label">Public Protocols</li>
+        {% for protocol in request.user.get_profile.get_public_protocols %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+        {% endfor %}
+        </ul>
+        
+        {% if request.user.is_superuser or request.user.is_staff %}
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label">Admin Tools</li>
+            <li><a href="{% url organization_list %}">All Protocols</a></li>
+            <li><a href="{% url profile_list %}">Users</a></li>
+        </ul>
+        {% endif %}
+
+    </div>
+</div>
+
 {% endblock %}
