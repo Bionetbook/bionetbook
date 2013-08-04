@@ -41,6 +41,8 @@
           </ul>
           {% if request.user.is_authenticated %}
             <ul class="nav pull-right">
+              <li><a href="#">Feedback</a></li>
+              <li><a href="#">Help</a></li>
                 {% if request.my_profile == None %}
                     <li><a>{{ request.user }}</a></li>
                 {% else %}
@@ -50,6 +52,7 @@
             </ul>
           {% else %}
               <ul class="nav pull-right">
+                <li><a href="#">Contact</a></li>
                 {% if REGISTRATION_ENABLED %}
                 <li><a href="{% url registration_register %}">Register</a></li>
                 {% endif %}
