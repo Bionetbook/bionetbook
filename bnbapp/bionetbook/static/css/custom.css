@@ -51,6 +51,11 @@ body {
 	/* The html and body elements cannot have any padding or margin. */
 }
 
+body {
+	padding-top: 25px;
+	padding-bottom: 100px;
+}
+
 /* Wrapper for page content to push down footer */
 #wrap {
 	min-height: 100%;

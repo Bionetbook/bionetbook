@@ -32,7 +32,7 @@
     <div class="navbar-inner">
       <div class="container">
           <ul class="nav">
-            <li class="active">
+            <li>
               {% if request.user.is_authenticated %}            
                 <a class="brand" href="{% url dashboard %}"><img src="{{ STATIC_URL }}img/bnb_logo.png"></a>
               {% else %}
@@ -99,14 +99,14 @@
   </div>
 </div>
 
-<footer>
+<footer class="navbar navbar-fixed-bottom"  style="background-color:#eee">
   <div class="container">
     <div class="row">
       <div class="span4">
-        &copy 2013 <img height="20px" src="{{ STATIC_URL }}img/bnb_logo.png" alt="BioNetBook">
+        &copy 2013 BioNetBook
       </div>
       <div class="span8">
-        <ul class="footer-links">
+        <ul class="nav nav-pills">
           <li class="menu-item "><a href="{% url tos %}">Terms of Service</a></li>
           <li class="menu-item menu-end"><a href="{% url privacy %}">Privacy Policy</a></li>
           {% comment %}
