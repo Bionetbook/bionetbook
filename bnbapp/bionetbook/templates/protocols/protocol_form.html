@@ -9,7 +9,6 @@
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_protocol_list organization.slug %}">{{ organization.name }}</a> <span class="divider">/</span></li>
       {% if object %}
       <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>

@@ -144,8 +144,9 @@ class Protocol(TimeStampedModel):
         if not pk:                              # NO ANONYMOUS USER ACCESS EXCEPT FOR PUBLIC PROTOCOLS?
             return False
 
-        if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
-            return True
+        if self.author:
+            if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
+                return True
 
         if self.published:
             return bool( user.organization_set.filter( pk=self.owner.pk ) )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
@@ -156,7 +157,7 @@ class Protocol(TimeStampedModel):
     # URLs
 
     def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
+        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_a_slug': self.slug})
 
     def protocol_update_url(self):
         return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})

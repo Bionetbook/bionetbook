@@ -51,6 +51,11 @@ body {
 	/* The html and body elements cannot have any padding or margin. */
 }
 
+body {
+	padding-top: 25px;
+	padding-bottom: 100px;
+}
+
 /* Wrapper for page content to push down footer */
 #wrap {
 	min-height: 100%;
@@ -113,5 +118,29 @@ footer li a {
 	margin: 20px 0;
 }
 
+.nav-stacked .nav-label {
+	color: #555555;
+	cursor: default;
+	background-color: rgb(250, 250, 250);
+  	border: 1px solid #ddd;
+	border-bottom-color: transparent;
+	padding:5px;
+	-webkit-border-radius: 4px 4px 0 0;
+	   -moz-border-radius: 4px 4px 0 0;
+       		border-radius: 4px 4px 0 0;
+
+	background-image: -webkit-linear-gradient(top, 
+	rgb(250, 250, 250), 
+	rgb(234, 234, 234));
+	background-repeat: repeat-x;
+
+}
+
+/*  color: #555555;
+  cursor: default;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+*/
 
 
