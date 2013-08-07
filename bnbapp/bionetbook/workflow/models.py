@@ -5,74 +5,92 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from jsonfield import JSONField
+from core.models import SlugStampMixin
 
 from protocols.models import Protocol
 from organization.models import Organization
 # Create your models here.
 
-class Workflow(TimeStampedModel):
-    '''Collection of Protocols for working doing an experiment with'''
-    name = models.CharField(_("Name"), max_length=255, unique=True)
-    author = models.ForeignKey(User, blank=True, null=True)
-    owner = models.ForeignKey(Organization)
-    protocols = models.ManyToManyField(Protocol, through='WorkflowProtocol')
+
+
+class Workflow(SlugStampMixin, TimeStampedModel):
+    '''
+    An Worflow is an ordered collection of a Protocols
+    '''
+    user = models.ForeignKey(User)
+    start = models.DateTimeField()
+    name = models.CharField(_("Calendar Name"), max_length=255)
+    data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-    duration = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
-    description = models.TextField(_("Description"), blank=True, null=True)
-    note = models.TextField(_("Notes"), blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        super(Workflow, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-        if not self.slug:
-            self.slug = self.generate_slug()
-            self.save()
 
 
-    def generate_slug(self):
-        slug = slugify(self.name)
-        try:
-            Protocol.objects.get(slug=slug)
-            return "%s-%d" % (slug, self.pk)
-        except ObjectDoesNotExist:
-            return slug
-
-    def __unicode__(self):
-        return self.name
-
-    ##########
-    # URLs
-
-    def get_absolute_url(self):
-        return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
-
-    def get_update_url(self):
-        return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
-
-    def get_delete_url(self):
-        return reverse("workflow_delete", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
-
-    ##########
-    # Methods
-
-    def ordered_protocols(self):
-        return [x.protocol for x in self.workflowprotocol_set.all()]       # THERE MIGHT BE A BETTER WAY TO DO THIS
-
-    ##########
-    # Properties
-
-    @property
-    def protocol_count(self):
-        return self.protocols.count()                # THIS IS TEMP FOR CODING
 
 
-class WorkflowProtocol(TimeStampedModel):
-    '''Connection model between Protocols and Workflows'''
-    protocol = models.ForeignKey(Protocol)
-    workflow = models.ForeignKey(Workflow)
-    order = models.IntegerField(_("Order or Protocols"), default=0)
 
-    class Meta:
-        ordering = ('order',)
+# class Workflow(TimeStampedModel):
+#     '''Collection of Protocols for working doing an experiment with'''
+#     name = models.CharField(_("Name"), max_length=255, unique=True)
+#     author = models.ForeignKey(User, blank=True, null=True)
+#     owner = models.ForeignKey(Organization)
+#     protocols = models.ManyToManyField(Protocol, through='WorkflowProtocol')
+#     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+#     duration = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
+#     description = models.TextField(_("Description"), blank=True, null=True)
+#     note = models.TextField(_("Notes"), blank=True, null=True)
 
-    def __unicode__(self):
-        return self.workflow.name + " - " + self.protocol.name
+#     def save(self, *args, **kwargs):
+#         super(Workflow, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+#         if not self.slug:
+#             self.slug = self.generate_slug()
+#             self.save()
+
+
+#     def generate_slug(self):
+#         slug = slugify(self.name)
+#         try:
+#             Protocol.objects.get(slug=slug)
+#             return "%s-%d" % (slug, self.pk)
+#         except ObjectDoesNotExist:
+#             return slug
+
+#     def __unicode__(self):
+#         return self.name
+
+#     ##########
+#     # URLs
+
+#     def get_absolute_url(self):
+#         return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+#     def get_update_url(self):
+#         return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+#     def get_delete_url(self):
+#         return reverse("workflow_delete", kwargs={'owner_slug':self.owner.slug, 'workflow_slug': self.slug})
+
+#     ##########
+#     # Methods
+
+#     def ordered_protocols(self):
+#         return [x.protocol for x in self.workflowprotocol_set.all()]       # THERE MIGHT BE A BETTER WAY TO DO THIS
+
+#     ##########
+#     # Properties
+
+#     @property
+#     def protocol_count(self):
+#         return self.protocols.count()                # THIS IS TEMP FOR CODING
+
+
+# class WorkflowProtocol(TimeStampedModel):
+#     '''Connection model between Protocols and Workflows'''
+#     protocol = models.ForeignKey(Protocol)
+#     workflow = models.ForeignKey(Workflow)
+#     order = models.IntegerField(_("Order or Protocols"), default=0)
+
+#     class Meta:
+#         ordering = ('order',)
+
+#     def __unicode__(self):
+#         return self.workflow.name + " - " + self.protocol.name
