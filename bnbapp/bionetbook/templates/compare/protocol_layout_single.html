@@ -28,7 +28,7 @@
   <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner.slug %}">New Protocol</a></li>
-    {% endif %}
+    {% endif %}  
 </ul>
 
 
