@@ -20,6 +20,7 @@
   <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create organization.slug %}">New Protocol</a></li>
+  <li><a href="{% url schedule_protocol organization.slug %}">Schedule Protocol</a></li>
     {% endif %}
 </ul>
 

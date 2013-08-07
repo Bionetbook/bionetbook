@@ -4,13 +4,14 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from profiles.models import Profile
+from protocols.models import Protocol, Step, Action, Component
+from organization.models import Organization, Membership
 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+class ScheduleViewTests(TestCase):
+	def test_default(self):
+		self.assertEqual(1,1)
