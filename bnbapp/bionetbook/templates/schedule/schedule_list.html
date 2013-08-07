@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Schedule List{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li class="active">{{ organization.name }}</li>
+    </ul>
+{% endblock %}
+
+{% block page_title %}{{ organization.name|possesive }} Schedule List
+{% endblock %}
+
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li><a href="{% url organization_protocol_list organization.slug %}">Protocol List</a></li>
+  <!-- <li><a href="{% url workflow_list organization.slug %}">Workflows</a></li> -->
+  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
+    {% if request.user.is_authenticated %}
+  <li><a href="{% url protocol_create organization.slug %}">New Protocol</a></li>
+  <li class="active"><a href="{% url schedule_protocol organization.slug %}">Schedule Protocol</a></li>
+  	{% endif %}  
+</ul>
+
+{% for object in object_list %}
+{% with profile=object.owner.get_profile %}
+<div class="row">
+    <div class="span3">
+        <div class="box">
+          <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label">Protocols</li>
+            {% for protocol in organization.protocol_set.all %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ organization.name }}/{{ protocol.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+    </div>
+</div>
+
+{% endwith %}
+{% endfor %}
+
+{% endblock %}
