@@ -77,7 +77,7 @@
                     
                     <td>{{ protocol.author.last_name }}</td>
                     <!-- <td>{{ protocol.steps|length }}</td> -->
-                    <td>{{ protocol.duration }}</td>
+                    <td>{{ protocol.duration|protocol_time_round_up }}</td>
                     <td>{{ protocol.get_actions|length }}</td>
                     <!-- <td>{{ protocol.status }}</td> -->
                     <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>

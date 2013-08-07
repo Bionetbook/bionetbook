@@ -40,7 +40,8 @@ class Protocol(TimeStampedModel):
     owner = models.ForeignKey(Organization)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-    duration_in_seconds = models.IntegerField(_("Duration in seconds"), blank=True, null=True)
+    duration_in_seconds = models.IntegerField(_("old Duration in seconds"), blank=True, null=True)
+    duration = models.CharField(_("Duration in seconds"), blank=True, null=True, max_length=30)
     raw = models.TextField(blank=True, null=True)
     data = JSONField(blank=True, null=True)
     description = models.TextField(_("Description"), blank=True, null=True)
@@ -122,6 +123,8 @@ class Protocol(TimeStampedModel):
         if not self.name:
             if self.data['Name']:
                 self.name = self.data['Name']
+
+        self.duration = self.update_duration()        
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -417,9 +420,11 @@ class Protocol(TimeStampedModel):
         max_duration = sum(max_time)        
 
         if min_duration == max_duration:
-            return str(datetime.timedelta(seconds = min_duration))
+            # return str(datetime.timedelta(seconds = min_duration))
+            return str(min_duration)
         else:    
-            return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
+            # return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
+            return str(min_duration) + '-' + str(max_duration)
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
