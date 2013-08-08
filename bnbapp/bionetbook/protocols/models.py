@@ -160,7 +160,7 @@ class Protocol(TimeStampedModel):
     # URLs
 
     def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_a_slug': self.slug})
+        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
 
     def protocol_update_url(self):
         return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
