@@ -63,22 +63,8 @@
           </ul>
           {% if request.user.is_authenticated %}
             <ul class="nav pull-right">
-              <div id="feedback_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: block;">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3>We Love Feedback</h3>
-                  </div>
-                  <div class="modal-body">
-                    <p>Please enter your comments</p>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <button class="btn btn-primary">Save changes</button>
-                  </div>
-              </div>  
-              <li><a href="#feedback_modal" role="button" data-toggle="modal">Feedback</a></li>
-              
-
+              <li><a href="{% url feedback-form %}">Feedback</a></li>
+              <li><a href="#">Help</a></li>
                 {% if request.my_profile == None %}
                     <li><a>{{ request.user }}</a></li>
                 {% else %}
