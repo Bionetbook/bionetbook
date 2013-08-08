@@ -471,7 +471,8 @@ class Protocol(TimeStampedModel):
                 # print "\tAction: %s" % action['name']
 
                 if 'duration' in action:
-                    action_times = action['duration'].split("-")
+                    action_times = action['duration'].split("-")              # May need to correct any existing duration values first
+                    # action_times = str(int(action['duration'])).split("-")  
                     action_min_time = int( action_times[0] )
                     action_max_time = int( action_times[ len(action_times) - 1 ] )
                 
