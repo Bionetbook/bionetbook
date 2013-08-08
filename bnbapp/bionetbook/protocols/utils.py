@@ -227,11 +227,12 @@ def get_timeunit(time_var, desired_unit = 'sec'):
     return (float(min_value), [,float(max_value)], 'units', 'original units')
     '''
     factor = {
-        'sec' : {'sec': 1, 'min': 60, 'hrs': 3600, 'd' : 86400, 'yrs':  31536000},
-        'min' : {'sec': 1/60, 'min': 1, 'hrs': 60, 'd' : 1440, 'yrs':  525600},
-        'hrs' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'd' : 24, 'yrs':  8760},
-        'd' : {'sec': 1/86400, 'min': 1/3600, 'hrs': 1/60, 'd' : 1, 'yrs':  365},
-        'yrs' : {'sec': 1/31536000, 'min': 1/525600, 'hrs': 1/8760, 'd' : 1/365, 'yrs':  1},
+        'sec' : {'sec': 1, 'min': 60, 'hrs': 3600,'h': 3600, 'd' : 86400, 'yrs':  31536000},
+        'min' : {'sec': 1/60, 'min': 1, 'hrs': 60, 'h': 60,'d' : 1440, 'yrs':  525600},
+        'hrs' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'h': 1, 'd' : 24, 'yrs':  8760},
+        'h' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'h': 1, 'd' : 24, 'yrs':  8760},
+        'd' : {'sec': 1/86400, 'min': 1/3600, 'hrs': 1/60, 'h': 1/60, 'd' : 1, 'yrs':  365},
+        'yrs' : {'sec': 1/31536000, 'min': 1/525600, 'hrs': 1/8760, 'h': 1/8760, 'd' : 1/365, 'yrs':  1},
         }
     if isinstance(time_var[0], str) and '-' in time_var[0]:    
 

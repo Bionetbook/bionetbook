@@ -29,21 +29,21 @@
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label">Draft Protocols</li>
           {% for protocol in request.user.get_profile.get_private_draft_protocols %}
-            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
           {% endfor %}
         </ul>
 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label">Private Protocols</li>
           {% for protocol in request.user.get_profile.get_private_protocols %}
-            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
           {% endfor %}
         </ul>
 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label">Public Protocols</li>
         {% for protocol in request.user.get_profile.get_public_protocols %}
-            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.owner.name }}/{{ protocol.name }}</a></li>
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i>{{ protocol.name }}-{{ protocol.owner.name }}/</a></li>
         {% endfor %}
         </ul>
         
