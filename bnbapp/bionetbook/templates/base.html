@@ -58,7 +58,7 @@
           </ul>
           {% if request.user.is_authenticated %}
             <ul class="nav pull-right">
-              <li><a href="#">Feedback</a></li>
+              <li><a href="{% url feedback-form %}">Feedback</a></li>
               <li><a href="#">Help</a></li>
                 {% if request.my_profile == None %}
                     <li><a>{{ request.user }}</a></li>
