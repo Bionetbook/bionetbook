@@ -124,7 +124,7 @@ class Protocol(TimeStampedModel):
             if self.data['Name']:
                 self.name = self.data['Name']
 
-        self.duration = self.update_duration()        
+        self.update_duration_steps()        
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -403,14 +403,16 @@ class Protocol(TimeStampedModel):
         
         return action_tree
 
-    def update_duration(self):
+    def update_duration_actions(self):
         
         min_time = []
         max_time = []    
+        # for step in self.steps:
+
         for item in self.get_actions():
             if self.nodes[item]['name'] =='store':
                 continue
-            action_time = self.nodes[item].get_times()
+            action_time = self.nodes[item].get_children_times()
             min_time.append(action_time[0])
             max_time.append(action_time[0])
             if len(action_time) >3:
@@ -420,11 +422,40 @@ class Protocol(TimeStampedModel):
         max_duration = sum(max_time)        
 
         if min_duration == max_duration:
-            # return str(datetime.timedelta(seconds = min_duration))
-            return str(min_duration)
+            self.duration = str(min_duration)
+            print str(min_duration) 
         else:    
-            # return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
-            return str(min_duration) + '-' + str(max_duration)
+            self.duration =  str(min_duration) + '-' + str(max_duration)
+            print str(min_duration) + '-' + str(max_duration)       
+
+    def update_duration_steps(self):
+        min_time = []
+        max_time = []    
+        
+        total = []
+        for step in self.steps:
+            value = step.duration
+
+            if '-' in value:
+                min_time.append(float(value[:value.index('-')]))
+                temp = value[value.index('-')+1:]
+                max_time.append(float(temp))
+            else:
+                min_time.append(float(value))
+                max_time.append(float(value))
+
+        min_duration = sum(min_time)        
+        max_duration = sum(max_time)        
+
+        if min_duration == max_duration:
+            self.duration = str(min_duration) 
+            print str(min_duration) 
+        else:    
+            self.duration = str(min_duration) + '-' + str(max_duration)       
+            print str(min_duration) + '-' + str(max_duration)       
+
+
+
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
@@ -927,24 +958,22 @@ class Action(NodeBase):
             return self['verb'] in MANUAL_VERBS
         return False    
 
-    def get_times(self, desired_unit = 'sec'):
+    def get_children_times(self, desired_unit = 'sec'):
 
         ''' method returns a tuple for each action:
         (float(min_time), [,float(max_time)], output_untis, input_units)
         In further versions the time related items will be integrated into a get_time object. 
         ''' 
+        if not self.children and not self.childtype()== 'manual':
+            return (0, 'sec', 'sec')
 
+        # get children times:
 
-        # items = ['time' ,'physical_commitment', "duration", 'duration_comment', ]
-        # time_vars={}
-        # for item in items:
-        #     if item in self.keys():
-        #         time_vars[item] = self[item]
-
-        # get children times:       
         
         if self.childtype() == "components":
-            children_time = (len(self.children) * 30, 'sec', 'sec')
+            if self.children:
+                children_time = (len(self.children) * 30, 'sec', 'sec')
+
 
         if self.childtype() == "manual":
             children_time = get_timeunit(self.summary['time'])
@@ -999,9 +1028,29 @@ class Step(NodeBase):
 
         # UPDATE DURATION AT THE SAME TIME
         duration = 0
+        min_time = []
+        max_time = []    
+
         for action in self['actions']:
-            if 'duration' in action:
-                duration += int(action['duration'])
+            if action['name'] =='store':
+                continue
+            if action.children:
+                action_time = action.get_children_times()
+                min_time.append(action_time[0])
+                max_time.append(action_time[0])
+
+                if len(action_time) >3:
+                    max_time.append(action_time[1])
+
+        min_duration = sum(min_time)        
+        max_duration = sum(max_time)                
+
+        if min_duration == max_duration:
+            # return str(datetime.timedelta(seconds = min_duration))
+            self.duration = str(min_duration)
+        else:    
+            # return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
+            self.duration =  str(min_duration) + '-' + str(max_duration)
 
         # self['duration'] = duration
 
@@ -1058,7 +1107,17 @@ class Step(NodeBase):
 
 
     def update_duration(self):
-        pass
+        step_sum = []
+
+        for action in self.children:
+            step_sum.append(action.get_children_times())
+
+        self.duration = step_sum    
+
+
+
+
+
 
     # NEED TO UPDATE URLS TO USE THE BELOW METHOD
     # def __getitem__(self, key):
