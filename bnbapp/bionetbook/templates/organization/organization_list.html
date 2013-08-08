@@ -17,7 +17,7 @@
   <ul class="nav nav-tabs nav-stacked">
     {% for organization in object_list %}
     {% for protocol in organization.protocol_set.all %}
-    <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ organization.name }}/{{ protocol.name }}</a></li>
+    <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ organization.name }}</a></li>
     {% endfor %}
     {% endfor %}
   </ul>
