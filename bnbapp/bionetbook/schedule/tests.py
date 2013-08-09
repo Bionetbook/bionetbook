@@ -10,6 +10,7 @@ from django.test import TestCase
 from profiles.models import Profile
 from protocols.models import Protocol, Step, Action, Component
 from organization.models import Organization, Membership
+<<<<<<< HEAD
 from schedule.models import Calendar
 
 
