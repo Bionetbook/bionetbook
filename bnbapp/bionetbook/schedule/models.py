@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 # from protocols.models import Protocol, Step, Action
 from django_extensions.db.models import TimeStampedModel
 from jsonfield import JSONField
+import collections
 
 # from experiment.models import Experiment
 
@@ -19,6 +20,30 @@ class Calendar(TimeStampedModel):
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
+
+    def save(self,*args,**kwargs):
+        # self.data = {}
+        if not self.data:
+            self.data['steps'] = []
+        super(Calendar,self).save(*args,**kwargs)
+
+    def dataToCalendar(self):
+        ret = {}    # return dict
+        stepList = self.data['steps']
+        events = collections.OrderedDict()
+        tmp = {'eventId':10,'container':'True','isStep':'False','title':'ProtocolA','allDay':'False','active':'True','length':0,'notes':"",'events':events.items()}
+        index = 0
+        for index, step in enumerate(stepList):       # step is dict
+            # index +=1
+            verb = step['actions']
+            s = {'eventId':10,'instanceId':0,'title':verb,'allDay':'False','active':'True','length':(step['min_time']+step['max_time']),'container':'False','isStep':'True','stepNumber':index}
+            st = "step%s" % index
+            tmp['events'][st] = s
+        ret['containerEvent'] = tmp
+        print ret
+
+
+
 
 
 
