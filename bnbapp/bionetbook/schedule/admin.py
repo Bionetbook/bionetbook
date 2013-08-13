@@ -6,3 +6,6 @@ class CalendarAdmin(admin.ModelAdmin):
 	list_display = ('name','user')
 
 admin.site.register(Calendar,CalendarAdmin)
+
+admin.site.register(Calendar)
+

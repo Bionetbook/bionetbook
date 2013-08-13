@@ -9,7 +9,14 @@ from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMi
 
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
+<<<<<<< HEAD
 from schedule.models import Calendar
+=======
+
+from schedule.models import Calendar
+from schedule.models import Schedule, Event
+
+>>>>>>> 354ff353735d887129640d79764e481667e132a9
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 

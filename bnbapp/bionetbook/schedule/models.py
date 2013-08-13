@@ -8,9 +8,13 @@ from django.utils.translation import ugettext_lazy as _
 # from protocols.models import Protocol, Step, Action
 from django_extensions.db.models import TimeStampedModel
 from jsonfield import JSONField
+
 from protocols.models import Protocol
 from workflow.models import Workflow
 from django.utils.datastructures import SortedDict
+
+import collections
+
 
 #from experiment.models import Experiment
 
@@ -28,6 +32,7 @@ class Calendar(TimeStampedModel):
         if not self.data:
             self.data['steps'] = []
         super(Calendar,self).save(*args,**kwargs)
+
 
     # def dataToCalendar(self):
     #     ret = {}    # return dict
