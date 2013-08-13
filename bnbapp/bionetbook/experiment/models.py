@@ -1,9 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
 from protocols.models import Protocol, Action, Step
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
+from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 #from protocols.utils import MANUAL_VERBS
 from core.models import SlugStampMixin
@@ -21,6 +23,11 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
+    def save(self,*args,**kwargs):
+    	new_slug = self.generate_slug()
+    	if self.slug != new_slug:
+    		self.slug = new_slug
+    	super(Experiment,self).save(*args,**kwargs)	
 
 
 

@@ -26,8 +26,6 @@ class Workflow(SlugStampMixin, TimeStampedModel):
 
 
 
-
-
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''
 #     name = models.CharField(_("Name"), max_length=255, unique=True)

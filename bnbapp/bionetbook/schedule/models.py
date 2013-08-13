@@ -8,9 +8,11 @@ from django.utils.translation import ugettext_lazy as _
 # from protocols.models import Protocol, Step, Action
 from django_extensions.db.models import TimeStampedModel
 from jsonfield import JSONField
-import collections
+from protocols.models import Protocol
+from workflow.models import Workflow
+from django.utils.datastructures import SortedDict
 
-# from experiment.models import Experiment
+#from experiment.models import Experiment
 
 
 class Calendar(TimeStampedModel):
@@ -27,20 +29,40 @@ class Calendar(TimeStampedModel):
             self.data['steps'] = []
         super(Calendar,self).save(*args,**kwargs)
 
-    def dataToCalendar(self):
-        ret = {}    # return dict
-        stepList = self.data['steps']
-        events = collections.OrderedDict()
-        tmp = {'eventId':10,'container':'True','isStep':'False','title':'ProtocolA','allDay':'False','active':'True','length':0,'notes':"",'events':events.items()}
-        index = 0
-        for index, step in enumerate(stepList):       # step is dict
-            # index +=1
-            verb = step['actions']
-            s = {'eventId':10,'instanceId':0,'title':verb,'allDay':'False','active':'True','length':(step['min_time']+step['max_time']),'container':'False','isStep':'True','stepNumber':index}
-            st = "step%s" % index
-            tmp['events'][st] = s
-        ret['containerEvent'] = tmp
+    # def dataToCalendar(self):
+    #     ret = {}    # return dict
+    #     stepsList = []
+    #     index = 0
+    #     for index, step in enumerate(protocol.data['steps']):       # step is dict
+    #         # index +=1
+    #         verb = step['actions'][0]['verb']
+    #         s = SortedDict([('eventId',Protocol.slug),('instanceId',0),('verb',verb),
+    #                 ('active','true'),('length',Protocol.duration),
+    #                 ('container','false'),('stepNumber',index),('notes',step['technique_comment'])])
+    #         st = "step%s" % index
+    #         stepsList.append({st:s})
+    #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
+    #     print ret
+
+    def expToCalendar(self):  # defaulted to take only 1 experiment
+        usrExpLst = self.user.experiment_set.all()[0]
+        expData = usrExpLst.data
+        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get() 
+        protocolList = [Protocol.objects.filter(pk=p).get() for p in wrkflw.data['protocols']]
+        ret = SortedDict()
+        for protocol in protocolList:
+            stepI = 0
+            stepList = []
+            for stepI, step in enumerate(protocol.data['steps']): # list of steps 
+                action = step['actions'][0] # action as a dict
+                s = SortedDict([('eventId',protocol.pk),('instanceId',0),('verb',action['verb']),('active','true'),
+                    ('length',5),('container','false'),('stepNumber',stepI+1),('notes',step['technique_comment']),('actionID',action['objectid'])])
+                stepList.append(s)
+            ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
         print ret
+        return JSONField(ret)
+        
+
 
 
 

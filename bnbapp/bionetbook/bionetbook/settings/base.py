@@ -119,6 +119,7 @@ PROJECT_APPS = (
     'organization',
     'workflow',
     'feedback',
+    'experiment'
 )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS

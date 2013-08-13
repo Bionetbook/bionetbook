@@ -11,11 +11,11 @@ from profiles.models import Profile
 from protocols.models import Protocol, Step, Action, Component
 from organization.models import Organization, Membership
 from schedule.models import Calendar
+from workflow.models import Workflow
 
 
 class ScheduleViewTests(TestCase):
 	def CalendarModelTest(self):
-		cal = Calendar()
-		cal.data = {'steps':[{'actions':[{'name':'mix','verb':'mix'}]},{'actions':[{'name':'add','verb':'add'}]}]}
-		output = cal.dataToCalendar()
-		print output
+		cal = Calendar.objects.all()[0]
+		output = True if cal.expToCalendar() else False
+		self.assertEqual(True,output)
