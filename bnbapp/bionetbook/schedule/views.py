@@ -9,14 +9,13 @@ from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMi
 
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
-<<<<<<< HEAD
+
 from schedule.models import Calendar
-=======
+
 
 from schedule.models import Calendar
 from schedule.models import Schedule, Event
 
->>>>>>> 354ff353735d887129640d79764e481667e132a9
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
@@ -43,3 +42,8 @@ class ScheduleListView(LoginRequiredMixin, ListView):
 		context = super(ScheduleListView, self).get_context_data(**kwargs)
 		context['organization'] = self.object
 		return context
+
+class SchduleAPI(LoginRequiredMixin, View):
+
+	def get(self, request, *args, **kwargs):
+	   return HttpResponse('Hello, World!')
