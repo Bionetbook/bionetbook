@@ -65,7 +65,7 @@ class Calendar(TimeStampedModel):
                 stepList.append(s)
             ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
         print ret
-        return JSONField(ret)
+        return ret
         
 
 

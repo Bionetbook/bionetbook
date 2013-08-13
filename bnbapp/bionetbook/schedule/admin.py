@@ -7,5 +7,3 @@ class CalendarAdmin(admin.ModelAdmin):
 
 admin.site.register(Calendar,CalendarAdmin)
 
-admin.site.register(Calendar)
-

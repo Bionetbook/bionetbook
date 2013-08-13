@@ -1,7 +1,7 @@
 # Create your views here.
 from django import forms, http
 from django.http import Http404
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
@@ -12,9 +12,6 @@ from organization.models import Organization
 
 from schedule.models import Calendar
 
-
-from schedule.models import Calendar
-from schedule.models import Schedule, Event
 
 
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
@@ -43,7 +40,7 @@ class ScheduleListView(LoginRequiredMixin, ListView):
 		context['organization'] = self.object
 		return context
 
-class SchduleAPI(LoginRequiredMixin, View):
+# class SchduleAPI(LoginRequiredMixin, View):
 
-	def get(self, request, *args, **kwargs):
-	   return HttpResponse('Hello, World!')
+# 	def get(self, request, *args, **kwargs):
+# 	   return HttpResponse('Hello, World!')

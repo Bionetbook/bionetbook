@@ -14,8 +14,6 @@ from organization.models import Organization, Membership
 from schedule.models import Calendar
 from workflow.models import Workflow
 
-from schedule.models import Calendar
-
 
 
 class ScheduleViewTests(TestCase):
