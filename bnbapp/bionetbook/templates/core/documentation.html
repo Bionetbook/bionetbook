@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block page_title %} Documentation {% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li class="active"><i class="icon-book"></i> Help</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span12">
+        <h3>General Navigation</h3>
+        <p> <u>Dashboard</u>: Summarizes all of your protocols and in the future, your workflows and schedules. The Bionetbook Icon and the <i class="icon-home"></i> icon will bring you back to your dashboard</p>
+        
+        <p> <u>Organizations</u>, A drop down list will show a list of all the organizations that you are a member of, or have access to their protocols. Organizations can be labs, groups, companies etc. You can be associated with multiple organizations, letting you view and edit the Organizations protocols. When you sign up, you automatically gain access to the Public Organization which is open to all users. Clicking on an Organization opens a Protocol List </p>
+
+        <p><u> Protocol List:</u> Shows the Protocols that you are authorized to browse and edit. The Protocol List displays information about the protocol:</p>
+            
+        <ul> 
+            <li> Status: </li>
+                <ul>
+                    <li> <i class="icon-edit"></i> Protocol can be edited, cannot be cloned or made public.</li>
+                    <li> <i class="icon-lock icon-white"></i> Locked Protocol; can not be edited, can be cloned and made public. </li>
+                    <li> <i class="icon-globe icon-white"></i> Public Protocol:  can not be edited, can be cloned and is public. </li>
+                    
+                </ul>
+            <li>Duration indicates the estimated amount of time for executing the protocol. In some cases there will be a range, its reflected from the protocol.
+        </ul>
+
+        <p> Clicking on a Protocol Title will open up a diagram of a protocol. See Protocol Navigation for details about these features. </p>
+
+        <p><u>  Navigation Breadcrumbs:</u> Breadcrumbs will guide you through your location in protocol editing and navigation. </p>
+
+        <p> <u>Feedback:</u> We love feedback, please comment on bugs ,features and general tid-bits. </p> 
+
+    </div>
+</div>
+<hr>  
+
+<div class="row">
+    <div class="span6">
+    <h3> Protocols</h3>         
+        <p> <u>Overview:</u> Protocols can be represented as text or as a Protocol  Diagram. A text representation typically describes steps, steps include actions and actions include all of the details. The Protocol Diagram is an abstraction layer, it displays only the actions that an experimentalist is to perform and each action is expanded into the details like reagents, mechine settings, timing requirements and comments. The Protocol Diagram representation makes protocols visually easier to look at, compare, schedule, and organize</p>
+
+        <p><u> Protocol Diagram:</u> A diagram of the protocol displays the Actions on the left, and details will be displayed left to right. The colored line in the center indicates that the actions are all part of the same protocol. In the future, this line will be used to track protocol and workflow bifurcations. </p>
+
+        <p><u> Toggling Text and Diagram:</u> You can toggle between Text and Diagram display by right-clicking when the cursor is over the diagram. </p>
+
+        <p><u>Protocol Buttons:</u> Protocols can be Edited, Locked for editing, made Public and Cloned.<p>
+
+        <p><u>Locking a protocol:</u></p>
+        <p>Protocols can be edited until locked. Locking protocols makes them visible to other people in your Organization, marks them for version control, protocol cloning, and publishing. 
+
+        <p><u>Publishing a protocol:</u></p>
+        <p> Publishing means that you are sharing the protocol with all Bionetbook users and not only your Organization.</p>
+
+
+        <h4>Cloning a protocol:</h4> 
+        <p>This will copy the protocol and display two protocols; the original on the left, and an unsaved copy on the right, click on the <i class="icon-edit"></i> icon to edit different fields. Note: if the Lock Button is Blue, you won't be able to clone until the Protocol is Locked (the Clone button is Blue).  </p>
+
+
+
+
+    </div>    
+    <div class="span6">
+        <div class="thumbnail">
+          <img src="{{ STATIC_URL }}img/graph_doc.png" style="width: 600px; height: 400px; " src="">
+          <div class="caption">
+            <h4>Caption</h4>
+          </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div class="row">
+    <div class="span6">
+        <h3>Protocol Editing</h3>
+        <!-- <p> We believe that documentation of complex experiments should be simple and intuitive. Therefore, protocols are diagrammed as a sequence of actions that experimentalists perform and not by Steps usually seen in protocols (see below how we treat them in protocol entry). </p> -->
+
+        <p>Click on <a class="btn btn-info" style="margin-bottom:10px;"><i class="icon-edit icon-white"></i> Edit</a> to access the protcol editing page. A Protocol is a list of Steps, a Step is a list of Actions and an Action is a collection of details and comments. 
+
+        <!-- <p><u>Editing a Step:</u></p> -->
+        <p><b>Editing a Step:</b> Click on the step number to edit and add an Action.</p>
+
+        <p><b>Editing an Action:</b> Click on the Action name, to edit and add an Action.</p>
+        
+        <p><b>Adding an action:</b> Click 'Add Action' and choose the action. If you can't find an exact match, enter the closest verb. Choosing an action from a conserved list is important for version control. Fill out the details for the Action and click submit. After submitting you will be able to add Reagents (Components), a Machine or Thermocycler.<p>      
+        
+        <p><b>Navigating the protocol:</b> The breadcrumbs will indicate what page you are looking at, for example the breadcrumb 
+
+        <ul class="breadcrumb">
+          <li>Dashboard<span class="divider">/</span></li>
+          <li>Bionetbook<span class="divider">/</span></li>
+          <li>Protocol: Isolation of RNA</a> <span class="divider">/</span></li>
+          <li>Step 1</a> <span class="divider">/</span></li>
+          <li class="active">Add</li>
+        </ul>
+
+        <p> indicates that you are looking at the action 'Add' of Step 1 in a Isolation of RNA protocol, owned by the organization Bionetbook. Clicking on any of these links will take you to that page.  
+        Click 'Submit' to save changes. Note: This does not Lock the Protocol, it only saves the changes to the database.  
+
+        
+        <h4>Comparing protocols:</h4> <p>click on the tab 'compare protocols'. Select 2 protocols from a dropdown list, and click on the Compare button to see a diagram of both protocols aligned in diagram form. Note: currently we can compare protocol clones. In the future you will be able to compare protocols from different sources. </p>
+
+
+    </div>    
+    <div class="span6">
+        <div class="thumbnail">
+          <img src="{{ STATIC_URL }}img/edit_page.png" style="width: 600px; height: 250px; " src="">
+          <div class="caption">
+            <h4>Caption for Browsing and Editing</h4>
+          </div>
+        </div>
+    </div>
+
+    
+</div>
+<hr>
+
+<div class="row">
+    <div class="span8">
+        <h3>Protocol Entry</h3>
+        <p> In order to utilize the applications that Bionetbook provides, protocols have to be indexed correctly. Currently we cannot add new protocols throught the diagrams (in a few more releases), but to help with this process, we created a data entry 'wizard' that will aid in data entry: </p>
+        <ol>         
+
+            <li>Click on the New Protocol tab. Enter the protocol metadata, click submit.</li>
+            <li>Adding steps: Protocols are usually written as steps, to add a step click on the 'add step' link. Fill in the metadata about the step. In the verbatim text field paste the original text from the protocol: this teaches the software how to identify structure so that in the future you won't have to enter protocols manually. </li>
+            <li>Adding actions to steps: After submitting you will be prompted with a list of steps and the actions in each step. 
+            Click on the step number. </li>
+            <li>Click 'Add Action' and choose the action. If you can't find an exact match, enter the closest verb. Choosing an action from a conserved list is important for version control.</li>
+            <li>Fill out the details for the Action and click submit. After submitting you will be able to add Reagents (Components), a Machine or Thermocycler. </li>  
+        </ol>    
+<a class="btn btn-info" style="margin-bottom:10px;"><i class="icon-edit icon-white"></i> Edit</a>
+
+    </div>    
+    <div class="span4">
+        <div class="thumbnail">
+          <img data-src="holder.js/300x200" alt="300x200" style="width: 300px; height: 200px; " src="">
+          <div class="caption">
+            <h4>Caption for Protocol Data Entry</h4>
+          </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+{% endblock %}

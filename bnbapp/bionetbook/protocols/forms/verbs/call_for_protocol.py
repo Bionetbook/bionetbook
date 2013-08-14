@@ -1,4 +1,6 @@
 from protocols.forms import forms
+from django.db.models.query import EmptyQuerySet
+# from protocols.models import Protocol
 
 
 class CallForProtocolForm(forms.VerbForm):
@@ -7,9 +9,8 @@ class CallForProtocolForm(forms.VerbForm):
     slug = "call-for-protocol"
     has_component = True
 
-    # protocol_type = forms.CharField(required = False, help_text = 'describe the basic chemistry')
     protocol_name = forms.CharField(required = False, help_text = 'kit or protocol name')
-    # protocol_link = forms.CharField(required=False, help_text='enter the protocol URL, add both / at the beginning and end')
+    protocol_link = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet())
     # protocol_id = forms.ChoiceField(required=False, help_text='Select a protocol to link to', choices=[])
     input_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
     input_notes = forms.CharField(required = False, help_text = 'concentration, volume, mass etc')

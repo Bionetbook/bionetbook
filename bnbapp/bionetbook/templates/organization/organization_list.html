@@ -13,10 +13,14 @@
 {% endblock %}
 
 {% block content %}
-{% for object in object_list %}
-<div class="well">
-        <h2><a href="{{ object.organization_protocol_list }}">{{ object.name }}</a></h2>
+<div class="box">
+  <ul class="nav nav-tabs nav-stacked">
+    {% for organization in object_list %}
+    {% for protocol in organization.protocol_set.all %}
+    <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ organization.name }}</a></li>
+    {% endfor %}
+    {% endfor %}
+  </ul>
 </div>
-{% endfor %}
 {% endblock %}
 

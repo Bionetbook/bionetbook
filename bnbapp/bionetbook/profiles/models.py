@@ -85,6 +85,21 @@ class Profile(TimeStampedModel):
     def get_all_published_protocol_choices(self):
         return [(protocol.pk, protocol.owner.name + " - " + protocol.name) for protocol in self.get_published_protocols()]
 
+    def get_private_draft_protocols(self):
+        # return self.get_published_protocols()
+        return Protocol.objects.filter(owner__in=self.user.organization_set.all(), published=False, public=False, author=self.user)
+
+            # context['events'] = Event.objects.filter( project__in=Project.objects.filter( org__in=self.request.user.organization_set.all() ) ).exclude( eventType="LOG" )
+
+
+
+    def get_public_protocols(self):
+        return Protocol.objects.filter(published=True, public=True)
+        # return self.get_published_protocols()
+
+    def get_private_protocols(self):
+        return self.get_published_protocols(public=False)
+
     #**************
     # Organization Caching
     

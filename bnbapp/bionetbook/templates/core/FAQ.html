@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block page_title %} Documentation {% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li class="active"><i class="icon-question-sign"></i> Frequently Asked Questions</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span8">
+        <h3>General Navigation</h3>
+        <p> The Bionetbook Icon will always take you back to the Dashboard. Below the Bionetbook Icon there are navigation breadcrumbs. Click on them to navigate to other pages.</p>
+        
+        <p>  Click on Organizations, you will see a list of all the organizations that you are a member of, or have access to their protocols (public protocols). Organizations can be labs, groups, companies etc. You can be associated with multiple organizations, letting you view and edit the Organizations protocols. When you sign up, you automatically gain access to the public Organization which is open to all users. </p>
+        
+        <p>Click on the Public Organization, you will see a list of protocols and 3 tabs above the list: 
+            <ul>
+                <li> Protocols - the current list that you're looking at </li>
+                <li> Compare Protocols- a link for comparing 2 protocols </li>
+                <li> New Protocol</li>
+            </ul>    
+        </p>
+        
+        <p>Each Protocol has fields associated with it:
+        <ul> 
+            <li> Status: </li>
+                <ul>
+                    <li> <i class="icon-edit"></i> Protocol can be edited, cannot be cloned or made public.</li>
+                    <li> <i class="icon-lock icon-white"></i>: Locked Protocol; can not be edited, can be cloned and made public. </li>
+                    <li> <i class="icon-globe icon-white"></i>: Public Protocol:  can not be edited, can be cloned and is public. </li>
+                    
+                </ul>
+            <li>Duration indicates the estimated amount of time for executing the protocol. In some cases there will be a range, its reflected from the protocol.
+        </ul>
+        </p>
+
+
+    </div>    
+    <div class="span4">
+        <div class="thumbnail">
+          <img data-src="holder.js/300x200" alt="300x200" style="width: 300px; height: 200px; " src="">
+          <div class="caption">
+            <h4>Caption</h4>
+          </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div class="row">
+    <div class="span8">
+        <h3>Protocol Browsing and Editing</h3>
+        <p> We believe that documentation of complex experiments should be simple and intuitive. Therefore, protocols are diagrammed as a sequence of actions that experimentalists perform and not by Steps usually seen in protocols (see below how we treat them in protocol entry). </p>
+
+        <h4> Viewing a protocol:</h4>
+        <p> Click on the title to see a diagram of the protocol. Actions will appear on the left, and details will be displayed left to right. The colored line in the center indicates that the actions are all part of the same protocol. In the future, this line will be used to track protocol and workflow bifurcations. </p>
+        <h4>Editing a protocol:</h4>  
+        <p>click on the Edit button to add steps and actions, see details in the protocol entry section. The gear icon will open a form for editing / data entry.Click 'Save' to save changes to the database. Note: after saving no more changes can be made. </p>
+        <h4>Cloning a protocol:</h4> 
+        <p>This will copy the protocol and display two protocols; the original on the left, and an unsaved copy on the right, click on the gear icon to edit different fields. Note: if the Save Button is Green, you won't be able to clone until the version is saved (the Clone button is green).  </p>
+        <h4>Comparing protocols:</h4> <p>click on the tab 'compare protocols'. Select 2 protocols from a dropdown list, and click on the Compare button to see a diagram of both protocols aligned in diagram form. Note: currently we can compare protocol clones. In the future you will be able to compare protocols from different sources. </p>
+
+
+    </div>    
+    <div class="span4">
+        <div class="thumbnail">
+          <img data-src="holder.js/300x200" alt="300x200" style="width: 300px; height: 200px; " src="">
+          <div class="caption">
+            <h4>Caption for Browsing and Editing</h4>
+          </div>
+        </div>
+    </div>
+
+    
+</div>
+<hr>
+
+<div class="row">
+    <div class="span8">
+        <h3>Protocol Entry</h3>
+        <p> In order to utilize the applications that Bionetbook provides, protocols have to be indexed correctly. Currently we cannot add new protocols throught the diagrams, but to help with this process, we created a data entry 'wizard' that will aid in data entry: </p>
+        <ol>         
+
+            <li>Click on the New Protocol tab. Enter the protocol metadata, click submit.</li>
+            <li>Adding steps: Protocols are usually written as steps, to add a step click on the 'add step' link. Fill in the metadata about the step. In the verbatim text field paste the original text from the protocol: this teaches the software how to identify structure so that in the future you won't have to enter protocols manually. </li>
+            <li>Adding actions to steps: After submitting you will be prompted with a list of steps and the actions in each step. 
+            Click on the step number. </li>
+            <li>Click 'Add Action' and a list of verbs will appear.</li>
+            <li>Choose the action that you would like to enter. If you can't find an exact match, enter the closest verb. Choosing an action from a conserved list is important for version control. </li>
+        </ol>    
+
+
+    </div>    
+    <div class="span4">
+        <div class="thumbnail">
+          <img data-src="holder.js/300x200" alt="300x200" style="width: 300px; height: 200px; " src="">
+          <div class="caption">
+            <h4>Caption for Protocol Data Entry</h4>
+          </div>
+        </div>
+    </div>
+
+    
+</div>
+
+{% endblock %}

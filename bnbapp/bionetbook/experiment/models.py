@@ -5,7 +5,30 @@ from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
-from protocols.utils import MANUAL_VERBS
+#from protocols.utils import MANUAL_VERBS
+from core.models import SlugStampMixin
+
+from schedule.models import Calendar
+
+
+class Experiment(SlugStampMixin, TimeStampedModel):
+    '''
+    An Experiment is an execution of Workflows
+    '''
+    user = models.ForeignKey(User)
+    calendar = models.ForeignKey(Calendar)
+    name = models.CharField(_("Experiment Name"), max_length=255)
+    data = JSONField(blank=True, null=True)
+    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+
+
+
+
+
+
+
+
+
 # Create your models here.
 
 #   Commenting out for now until this is formally ready to be added and all the fields are worked out
@@ -35,4 +58,8 @@ from protocols.utils import MANUAL_VERBS
 
 
 # class Stoichieometry(Protocol, Experiment):
-# 	number_of_tubes = 
+#   number_of_tubes = 
+
+
+
+

@@ -18,7 +18,7 @@ from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, Component
 from protocols.forms.baseforms import ProtocolForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
-
+from compare.models import ProtocolPlot
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
 
@@ -307,15 +307,31 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedOrganizationMixin, Authorized
 # PROTOCOLS
 #####################
 
-class ProtocolDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, DetailView):
+# class ProtocolDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, DetailView):
 
-    model = Protocol
-    slug_url_kwarg = "protocol_slug"
+#     model = Protocol
+#     slug_url_kwarg = "protocol_slug"
 
+#     def get_context_data(self, **kwargs):
+#         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
+#         context['steps'] = self.object.steps
+#         return context
+
+
+class ProtocolDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+    template_name = "compare/protocol_layout_single.html"           
+    
     def get_context_data(self, **kwargs):
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
-        context['steps'] = self.object.steps
-        return context
+        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
+        return context 
+        
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        context['protocol_a'] = Protocol.objects.get(slug=kwargs['protocol_slug'])
+        context['organization'] = context['protocol_a'].owner
+
+        return self.render_to_response(context)    
 
 
 class ProtocolListView(LoginRequiredMixin, ListView):

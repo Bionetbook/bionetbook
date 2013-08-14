@@ -40,7 +40,7 @@ class Protocol(TimeStampedModel):
     owner = models.ForeignKey(Organization)
     name = models.CharField(_("Name"), max_length=255, unique=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-    duration_in_seconds = models.IntegerField(_("Old Duration in seconds"), blank=True, null=True)
+    duration_in_seconds = models.IntegerField(_("old Duration in seconds"), blank=True, null=True)
     duration = models.CharField(_("Duration in seconds"), blank=True, null=True, max_length=30)
     raw = models.TextField(blank=True, null=True)
     data = JSONField(blank=True, null=True)
@@ -124,13 +124,11 @@ class Protocol(TimeStampedModel):
             if self.data['Name']:
                 self.name = self.data['Name']
 
-        self.duration = self.update_duration()
-
+        # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()
-        
 
         if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
@@ -149,8 +147,9 @@ class Protocol(TimeStampedModel):
         if not pk:                              # NO ANONYMOUS USER ACCESS EXCEPT FOR PUBLIC PROTOCOLS?
             return False
 
-        if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
-            return True
+        if self.author:
+            if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
+                return True
 
         if self.published:
             return bool( user.organization_set.filter( pk=self.owner.pk ) )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
@@ -404,29 +403,121 @@ class Protocol(TimeStampedModel):
         
         return action_tree
 
-    def update_duration(self, units = 'sec'):
+    def update_duration_actions(self):
         
         min_time = []
-        max_time = []    
+        delta_time = []    
+
         for item in self.get_actions():
             if self.nodes[item]['name'] =='store':
                 continue
-            print item
-            action_time = self.nodes[item].get_times()
+            action_time = self.nodes[item].get_children_times()
             min_time.append(action_time[0])
-            max_time.append(action_time[0])
             if len(action_time) >3:
-                max_time.append(action_time[1])
+                delta_time.append(action_time[1]-action_time[0])
 
         min_duration = sum(min_time)        
-        max_duration = sum(max_time)        
+        delta_duration = sum(delta_time)        
 
-        if min_duration == max_duration:
-            return str(min_duration)
-            # return datetime.timedelta(seconds = min_duration)
+        if delta_duration == 0:
+            return str(min_duration) 
         else:    
-            return str(min_duration) + '-' + str(max_duration)
-        #     return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
+            return str(min_duration) + '-' + str(min_duration + delta_duration)
+
+# min_time = []
+# delta_time = []    
+
+# for item in self.children:
+#     if item['name'] =='store':
+#         continue
+#     action_time = item.get_children_times()
+#     min_time.append(action_time[0])
+#     if len(action_time) >3:
+#         delta_time.append(action_time[1]-action_time[0])
+
+# min_duration = sum(min_time)        
+# delta_duration = sum(delta_time)        
+
+# if delta_duration == 0:
+#     # self.duration = str(min_duration)
+#     return str(min_duration) 
+# else:    
+#     # self.duration =  str(min_duration) + '-' + str(min_duration + delta_duration)
+#     return str(min_duration) + '-' + str(min_duration + delta_duration)
+
+
+    def update_duration_steps(self):
+        min_time = []
+        delta_time = []    
+        
+        total = []
+        for step in self.steps:
+            value = step.update_duration()
+
+            if '-' in value:
+                min_time_temp = float(value[:value.index('-')])
+                min_time.append(min_time_temp)
+                max_time_temp = float(value[value.index('-')+1:])
+                # max_time.append(float(temp))
+                delta_time.append(max_time_temp - min_time_temp)
+            else:
+                min_time.append(float(value))
+                # max_time.append(float(value))
+
+        min_duration = sum(min_time)        
+        delta_duration = sum(delta_time)        
+
+        # if min_duration == max_duration:
+        if delta_duration == 0:
+            # self.duration = str(min_duration) 
+            return str(min_duration) 
+        else:    
+            # self.duration = str(min_duration) + '-' + str(max_duration)       
+            # print str(min_duration) + '-' + str(max_duration)       
+            return str(min_duration) + '-' + str(min_duration + delta_duration)
+
+
+
+    def update_duration_strip(self):
+        min_time = 0
+        max_time = 0    
+
+        for step in self.steps:
+            step_min_time = 0
+            step_max_time = 0
+            # print "Step: %s" % step['name']
+
+            for action in step["actions"]:
+                action_min_time = 0
+                action_max_time = 0
+                # print "\tAction: %s" % action['name']
+
+                # if 'duration' in action:
+                if action.children or action.childtype()== 'manual':
+                    action_times = action.get_children_times()
+                    # action_times = action['duration'].split("-")              # May need to correct any existing duration values first
+                    # action_times = str(int(action['duration'])).split("-")  
+                    action_min_time = int( action_times[0] )
+                    if len(action_times) >3: 
+                        action_min_time = int( action_times[0] )
+                        action_max_time = int( action_times[1] )
+                        # action_max_time = int( action_times[ len(action_times) - 1 ] )
+                
+                action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
+
+                # print "\t\tAction Duration: %s" % action['duration']
+                step_min_time += action_min_time
+                step_max_time += action_max_time
+
+            step['duration'] = "%d-%d" % ( step_min_time, step_min_time+step_max_time )
+            # print "\tStep Duration: %s" % step['duration']
+
+            min_time += step_min_time
+            max_time += step_max_time
+
+        self.duration = "%d-%d" % ( min_time, min_time+max_time )
+        print self.duration
+
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
@@ -929,24 +1020,23 @@ class Action(NodeBase):
             return self['verb'] in MANUAL_VERBS
         return False    
 
-    def get_times(self, desired_unit = 'sec'):
+    def get_children_times(self, desired_unit = 'sec'):
 
         ''' method returns a tuple for each action:
         (float(min_time), [,float(max_time)], output_untis, input_units)
         In further versions the time related items will be integrated into a get_time object. 
         ''' 
+        if not self.children and not self.childtype()== 'manual':
+            return (0, 'sec', 'sec')
 
+        # get children times:
+        children_time = 0
 
-        # items = ['time' ,'physical_commitment', "duration", 'duration_comment', ]
-        # time_vars={}
-        # for item in items:
-        #     if item in self.keys():
-        #         time_vars[item] = self[item]
-
-        # get children times:       
         
         if self.childtype() == "components":
-            children_time = (len(self.children) * 30, 'sec', 'sec')
+            if self.children:
+                children_time = (len(self.children) * 30, 'sec', 'sec')
+
 
         if self.childtype() == "manual":
             children_time = get_timeunit(self.summary['time'])
@@ -971,7 +1061,22 @@ class Action(NodeBase):
 
             children_time = tuple(tmp_time)        
         return children_time
-    
+
+
+    def update_duration(self):
+        max_duration = None
+        value = self.get_children_times()
+
+        min_duration = str(value[0])
+        if len(value) >3:
+            max_duration = str(value[1])    
+
+        if max_duration:
+            # self['duration'] = str(min_duration) + '-' + str(max_duration)    
+            return str(min_duration) + '-' + str(max_duration)    
+        else:    
+            # self['duration'] = str(min_duration) 
+            return str(min_duration) 
 
     def childtype(self):
         if self['verb'] in COMPONENT_VERBS: 
@@ -1000,13 +1105,7 @@ class Step(NodeBase):
             self['actions'] = []
 
         # UPDATE DURATION AT THE SAME TIME
-        duration = 0
-        for action in self['actions']:
-            if 'duration' in action:
-                duration += int(action['duration'])
-
         # self['duration'] = duration
-
 
         #print self.protocol.nodes
 
@@ -1058,9 +1157,28 @@ class Step(NodeBase):
         else:
             return None
 
-
     def update_duration(self):
-        pass
+        min_time = []
+        delta_time = []    
+
+        for item in self.children:
+            if item['name'] =='store':
+                continue
+            action_time = item.get_children_times()
+            min_time.append(action_time[0])
+            if len(action_time) >3:
+                delta_time.append(action_time[1]-action_time[0])
+
+        min_duration = sum(min_time)        
+        delta_duration = sum(delta_time)        
+
+        if delta_duration == 0:
+            return str(min_duration) 
+        else:    
+            return str(min_duration) + '-' + str(min_duration + delta_duration)    
+
+
+
 
     # NEED TO UPDATE URLS TO USE THE BELOW METHOD
     # def __getitem__(self, key):

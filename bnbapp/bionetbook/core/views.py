@@ -22,6 +22,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class DocumentationView(TemplateView):
+
+    template_name = "core/documentation.html"
+
+class FAQView(TemplateView):
+
+    template_name = "core/FAQ.html"    
+
+
 class AuthorizedOrganizationMixin(object):
     '''Checks to see if the user has the right to see the given protocol'''
 

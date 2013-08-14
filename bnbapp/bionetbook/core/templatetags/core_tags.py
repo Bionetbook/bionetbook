@@ -68,18 +68,20 @@ def protocoltree(value):
     #    text = '<span class="badge badge-important"><i class="icon-ok icon-white"></i></span>'
     return mark_safe("<b>PROTOCOL TREE</b>")
 
+
 @register.filter(name='protocol_time')
 def protocol_time(value):
     # def fit_closest_time_unit(time_var, input_unit = 'sec'):
+    max_time = None
+    if not value:
+        return None
+
     if '-' in value:
         min_time = float(value[:value.index('-')])
         max_time = float(value[value.index('-')+1:])
     else:
         min_time = float(value)
 
-    if not value:
-        return None
-    
     value1 = format_time(min_time)
 
     if max_time:
@@ -91,25 +93,28 @@ def protocol_time(value):
 
 @register.filter(name='protocol_time_round_up')
 def protocol_time_round_up(value):
-    # def fit_closest_time_unit(time_var, input_unit = 'sec'):
+    if not value:
+        return None    
+
+    max_time = None    
+
     if '-' in value:
         min_time = float(value[:value.index('-')])
-        max_time = float(value[value.index('-')+1:])
+        max_temp = value[value.index('-')+1:]
+        max_time = float(max_temp)
     else:
         min_time = float(value)
 
-    if not value:
-        return None
-    
     value1 = format_time(min_time, rounding=True)
 
     if max_time:
         value2 = format_time(max_time, rounding=True)
-        return str(value1) + '-' + str(value2)
+        if value1 != value2:
+            return str(value1) + '-' + str(value2)
+        else:     
+            return str(value1)
     else:
         return str(value1)
-
-
 
 def format_time(value, rounding = False):
 

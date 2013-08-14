@@ -7,11 +7,9 @@
 {# BREADCRUMBS #}
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
       <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{ protocol_a.get_absolute_url }}">{{ protocol_a.name }}</a></li>
-      <li class="active">{{object.name}}</li>
+      <li class="active">{{ protocol_a.name }}</li>
     </ul>
 {% endblock %}
 
@@ -38,43 +36,33 @@
     <div class="span2" id="graph_switches">
 
         {% if not protocol_a.published %}
-        <!-- <a href="{{ protocol_a.get_absolute_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Edit</button></a> -->
-        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.get_absolute_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
         {% else %}
         <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-edit icon-white"></i> Edit</a>
-        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Edit</button></a> -->
         {% endif %}
 
 
         {% if not protocol_a.published %}
         <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_publish_url }}"><i class="icon-unlock-alt icon-white"></i> Lock</a>
-        <!-- <a href="{{ protocol_a.protocol_publish_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Save</button></a> -->
         {% else %}
         <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-lock icon-white"></i> Locked</a>
-        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Saved</button></a> -->
         {% endif %}
 
         {% if protocol_a.published and not protocol_a.public %}
         <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_public_url }}"><i class="icon-eye-open icon-white"></i> Make Public</a>
-        <!-- <a href="{{ protocol_a.protocol_public_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Make Public</button></a> -->
         {% elif protocol_a.public %}
         <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Public</a>
-        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Public</button></a> -->
         {% else %}
         <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Make Public</a>
-        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Make Public</button></a> -->
         {% endif %}
 
         {% if protocol_a.published %}
         <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_clone_url }}"><i class="icon-copy icon-white"></i> Clone</a>
-        <!-- <a href="{{ protocol_a.protocol_clone_url }}"><button class="btn btn-info" style="width:100%;margin-bottom:10px;">Clone</button></a> -->
         {% else %}
         <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-copy icon-white"></i> Clone</a>
-        <!-- <a href="#"><button class="btn disabled" style="width:100%;margin-bottom:10px;">Clone</button></a> -->
         {% endif %}
 
         <a class="btn btn-info btn-toggle-comments" style="width:85%;margin-bottom:10px;"><i class="icon-comment-alt icon-white"></i> Comments</a>
-        <!-- <button class="btn btn-info btn-toggle-comments" style="width:100%;margin-bottom:10px;">Comments</button> -->
         
 
     </div>
@@ -103,7 +91,7 @@
                 </tr>
                  <tr>
                     <td></td>
-                    <td>Duration: {{protocol_a.duration|protocol_time }}</td>
+                    <td>Duration: {{protocol_a.duration|protocol_time_round_up }}</td>
                 </tr>
             </table>
         </div>
