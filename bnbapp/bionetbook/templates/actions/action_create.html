@@ -17,9 +17,9 @@
 {% block title %}Create Action => {{step.title}}{% endblock %}
 
 {% block page_title %}
-Create Action => {{step.title}}
+Create Action in Step {{step.name}}
 {% if protocol_edit_authorization %} 
-    <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small>
+    <!-- <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small> -->
 {% endif %}
 {% endblock %}
 
@@ -28,13 +28,17 @@ Create Action => {{step.title}}
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
+        {% if protocol_edit_authorization %} 
+          <a class="btn btn-primary" href="{{ step.step_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+          <a class="btn btn-danger" href="{{ step.step_delete_url }}"><i class="icon-trash icon-white"></i> Delete Step</a>
+      {% endif %}
         {% object_data_table step %}
     </div>
 
     <div class="span6">
       <h2>Actions</h2>
       {% if protocol_edit_authorization %}       
-          <p><a class="btn btn-success" href="{{ step.action_verb_list_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ step.action_verb_list_url }}">Add Action</a></p>      
+          <p><a class="btn btn-success" href="{{ step.action_verb_list_url }}"><i class="icon-plus-sign icon-white"></i> Add Action</a></p>      
       {% endif %}
 
       {% if step.actions|length %}
@@ -43,17 +47,17 @@ Create Action => {{step.title}}
               <tr>
                   <th>Action</th>
                   <th>Duration</th>
-                  <th>Verb</th>
-                  <th>Last Modified</th>
+                  <th>Commitment</th>
+                  
               </tr>
             </thead>
             <tbody>
                 {% for item in step.actions %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
-                    <td>{{ item.duration_in_seconds|default:"0" }} seconds</td>
-                    <td>{{ item.verb }}</td>
-                    <td>{{ item.modified }}</td>
+                    <td>{{ item.update_duration|protocol_time }} </td>
+                    <td>{{ item.physical_commitment }}</td>
+                    
                 </tr>
                 {% endfor%}
             </tbody>

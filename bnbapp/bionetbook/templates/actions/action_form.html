@@ -19,7 +19,7 @@
 
 {% block page_title %}
 {% if object %}
-  Editing Action: {{ object }} -> {{ step.name }} -> {{ action.name }}
+  Editing Action: {{ action.name }}
 {% else %}
   Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}</a>
 {% endif %}
