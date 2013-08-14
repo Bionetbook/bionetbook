@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load core_tags %}
 {% load crispy_forms_tags %}
 {% load wysiwyg %}
 
@@ -8,10 +9,10 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_protocol_list organization.slug %}">{{ organization.name }}</a> <span class="divider">/</span></li>
       {% if object %}
-      <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>
+      <li><a href="{{ object.get_absolute_url }}"><i class="icon-th-list"></i> Protocol:{{object.name}}</a><span class="divider">/</span></li>
       <li class="active">Protocol Edit</li>
       {% else %}
       <li class="active">Protocol Create</li>
@@ -37,14 +38,15 @@
     {% if object %}
     <div class="span6">
       <h2>Steps</h2>
-      <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.step_create_url }}">Add step</a></p>
+      <p><small><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"> Add step</i></a> </small></p>
 
       {% if steps|length %}
         <table class="table table-striped table-condensed">
             <thead>
               <tr>
-                  <th nowrap></th>
+                  <!-- <th nowrap></th> -->
                   <th>Step</th>
+                  <th>Duration</th>
                   <th>Actions</th>
                   <th>Last Modified</th>
               </tr>
@@ -52,15 +54,20 @@
             <tbody>
                 {% for item in steps %}
                 <tr>
-                    <td nowrap>
+                    <!-- <td nowrap>
                         <div class="btn-group" id="item-{{ item.pk }}">
                             <button class="btn btn-warning {% if forloop.first %}disabled{% else %}up{% endif %}"><i class="icon-arrow-up icon-white"></i></button>
                             <button class="btn btn-warning {% if forloop.last %}disabled{% else %}down{% endif %}"><i class="icon-arrow-down icon-white"></i></button>
                             <button class="btn btn-danger delete"><i class="icon-minus icon-white"></i></button>                            
                         </div>
-                    </td>
+                    </td> -->
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name|truncatewords:"3" }}</a></td>
-                    <td>{{ item.actions|length }}</td>
+                    <td>{{ item.update_duration|protocol_time }}</td>     
+                    <td>
+                    {% for a in item.actions %}
+                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
+                    {% endfor %}
+                    </td>
                     <td>{{ object.modified }}</td>
                 </tr>
                 {% endfor%}
