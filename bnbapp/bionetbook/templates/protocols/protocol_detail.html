@@ -7,8 +7,8 @@
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
       <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}"><i class="icon-th-list"></i> Protocol: {{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li class="active">{{object.name}}</li>
+      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
+      <li class="active">Protocol: {{object.name}}</li>
     </ul>
 {% endblock %}
 
