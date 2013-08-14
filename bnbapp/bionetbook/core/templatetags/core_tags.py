@@ -82,8 +82,6 @@ def protocol_time(value):
     else:
         min_time = float(value)
 
-    
-    
     value1 = format_time(min_time)
 
     if max_time:
@@ -95,10 +93,10 @@ def protocol_time(value):
 
 @register.filter(name='protocol_time_round_up')
 def protocol_time_round_up(value):
-    # def fit_closest_time_unit(time_var, input_unit = 'sec'):
-    max_time = None
     if not value:
         return None    
+
+    max_time = None    
 
     if '-' in value:
         min_time = float(value[:value.index('-')])
@@ -117,8 +115,6 @@ def protocol_time_round_up(value):
             return str(value1)
     else:
         return str(value1)
-
-
 
 def format_time(value, rounding = False):
 
