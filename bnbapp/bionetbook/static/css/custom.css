@@ -144,3 +144,233 @@ footer li a {
 */
 
 
+	#external-events {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		border: 1px solid #ccc;
+		background: #eee;
+		text-align: left;
+		}
+		
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+		}
+		
+	.external-event, .custom-event { /* try to mimick the look of a real event */
+		margin: 10px 0;
+		padding: 2px 4px;
+		background: #3366CC;
+		color: #fff;
+		font-size: .85em;
+		cursor: pointer;
+		}
+		
+	#external-events p {
+		margin: 1.5em 0;
+		font-size: 11px;
+		color: #666;
+		}
+		
+	#external-events p input {
+		margin: 0;
+		vertical-align: middle
+		}
+
+	#calendar {
+		float: right;
+		width: 760px;
+		}
+	/* Edit Notes Popup */
+.edit-notes{
+    display:none;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    position: absolute;
+    bottom: .2em;
+    right: .2em;
+    z-index: 10;
+}
+.fc-event:hover .edit-notes{
+    display:block;
+}
+.edit-notes-form{
+    position:absolute;
+    top:-.6em;
+    right:-17.5em;
+    z-index:100;
+    width:16em;
+    background-color:#444;
+    border-radius: .4em;
+    text-align:left;
+}
+.edit-notes-form:before{
+    border: solid transparent;
+    border-color: rgba(136, 183, 213, 0);
+    border-width: .6em;
+    border-right-color: #444;
+    position: absolute;
+    top: 0.6em;
+    left: -1.6em;
+    width: 0.5em;
+    height: 0;
+    content: " ";
+    pointer-events: none;
+}
+.edit-notes-form.fri:before, .edit-notes-form.sat:before{
+    border-right-color: transparent;
+    border-left-color: #444;
+    left: 16em;
+}
+.edit-notes-form h3{
+    color:#fff;
+    margin: .7em 0 0 5%;
+}
+.edit-notes-form textarea{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    margin: .5em 0 .3em 5%;
+    min-height:5em;
+    width:83%;
+    padding: .5em;
+    border-radius: .4em;
+}
+.edit-notes-form input[type=button]{
+    margin: 0 1em 1em 1em;
+    width: 8em;
+    padding: .5em 0;
+    background-color: #77c;
+    border: 1px solid #bbb;
+    border-radius: .4em;
+    color: #f3f3f3;
+    cursor: pointer;
+}
+.edit-notes-form input[type=button]:hover{
+    background-color:#99f;
+}
+.edit-notes-form span.close{
+    cursor:pointer;
+    color:#fff;
+    background-color: #444;
+    display: block;
+    position: absolute;
+    top: -.5em;
+    right: -.5em;
+    padding: .2em .5em;
+    border-radius: 2em;
+    border: 1px solid #fff;
+}
+.edit-notes-form.fri span.close, .edit-notes-form.sat span.close{
+    right:auto;
+    left:-0.8em;
+}
+
+/* Lock Icon */
+.locked, .unlocked{
+    display:none;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    position: absolute;
+    bottom: .2em;
+    right: 1.5em;
+    z-index: 10;
+    background-size: 100% auto;
+}
+.fc-event:hover .locked, .fc-event:hover .unlocked{
+    display:block;
+}
+.locked{
+    background-image: url("../img/locked.png");
+}
+.unlocked{
+    background-image: url("../img/unlocked.png");
+}
+
+/*------------------------
+     Right Click Menu
+------------------------*/
+#right-click-menu{
+    font-size:.85em;
+    position: absolute;
+    width: 13em;
+    background-color: #eee;
+    border-radius: .3em;
+    border: 1px solid #ddd;
+    z-index: 99999;
+    -moz-box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+    box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+}
+#right-click-menu p{
+    padding:.5em;
+    margin:0;
+    border-bottom:1px solid #ddd;
+    border-top:1px solid #fff;
+    cursor:pointer;
+}
+#right-click-menu p:last-child{
+    border-bottom:none;
+}
+#right-click-menu p:first-child{
+    border-top:none;
+}
+#right-click-menu p:hover{
+    background-color:#f8f8f8;
+}
+
+/* Week View */
+.fc-agenda-slots td div {
+    height: 17px;
+}
+.week-day{
+    float:left;
+    width:14.2%;
+}
+
+/*------------------------
+      Error Message
+------------------------*/
+.top-error{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    padding:1em 0;
+    text-align: center;
+    font-weight: bold;
+    color:#fff;
+    background-color:#d66;
+    border-bottom: 1px solid #fff;
+    -moz-box-shadow: 0 0px 5px #333;
+    -webkit-box-shadow: 0 0px 5px #333;
+    -o-box-shadow: 0 0px 5px #333;
+    box-shadow: 0 0px 5px #333;
+    z-index:200;
+    display:none;
+}
+.top-error .close{
+    float: right;
+    cursor: pointer;
+    position: absolute;
+    right: 1em;
+    top: 0;
+    padding: 1em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

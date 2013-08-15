@@ -64,7 +64,6 @@ class Calendar(TimeStampedModel):
                     ('length',5),('container','false'),('stepNumber',stepI+1),('notes',step['technique_comment']),('actionID',action['objectid'])])
                 stepList.append(s)
             ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
-        print ret
         return ret
         
 

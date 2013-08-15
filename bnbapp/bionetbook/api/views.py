@@ -7,6 +7,15 @@ from django.views.generic import TemplateView
 from django import http
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
+from schedule.models import Calendar
+
+def calendar_json(request, calendar_pk):
+    if request.method == 'GET':
+        try:
+            curCal = Calendar.objects.get(pk=calendar_pk)
+            return HttpResponse(json.dumps(curCal.expToCalendar()),mimetype="application/json")
+        except ObjectDoesNotExist:
+            return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist','description':'Requested calendar could not be found.'}),mimetype="application/json")
 
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
