@@ -127,7 +127,10 @@
 
     var options = {
         displayDiff: false,
-        displayComments: false
+        displayComments: false,
+        contextMenu : {
+            diff : false
+        }
     }
 
     $('body').on('click', '.btn-toggle-differences', function(){
@@ -170,7 +173,7 @@
                                                     <td class="flowchart-card-inner-table-cell">
                                                     <div class="flowchart-card-inner-table-cell-content" style="<% if (ccell.color && ccell.color!='') { %>color:<%=ccell.color%><% } %>">
                                                         <% if (ccell.isUrl) { %>
-                                                            <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-edit"></i></a>
+                                                            <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-cog"></i></a>
                                                         <% } else if (ccell.isLink && ccell.value!=" ") { %>
                                                             <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-th-list"></i></a>
                                                         <% } else { %>
@@ -201,9 +204,9 @@
                                                 <% }) %>
                                                 </div>
                                                     <% if (cell.url) { %>
-                                                        <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-edit"></i></a>
+                                                        <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-cog"></i></a>
                                                     <%} else {%>
-                                                        <i class="icon icon-edit" style="opacity: 0;"></i>
+                                                        <i class="icon icon-cog" style="opacity: 0;"></i>
                                                     <%}%>
                                                 </td>
                                             </tr>
@@ -220,6 +223,7 @@
                     <%});%>
                 </tbody>
             </table>
+            <div class="flowchart-table-text-overlay-container">
             <% _(texts).each( function( text, index, texts ) { %>
                 <div class="flowchart-table-text-overlay">
                     <% if (text!='None') {%>
@@ -227,6 +231,8 @@
                     <% } %>
                 </div>
             <% }); %>
+            </div>
+
         </script>
 
 

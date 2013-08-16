@@ -8,7 +8,12 @@
     var defaults = {
         displayDiff: false,
         displayComments: false,
-        displayTexts: false
+        displayTexts: false,
+        contextMenu : {
+            diff : true,
+            comments : true,
+            texts : true
+        }
     };
 
     var currentOptions = defaults;
@@ -38,66 +43,66 @@
 
     var addContextMenu = function() {
         $.contextMenu( 'destroy' );
-        $(containerElement).contextMenu({
-            selector: '.flowchart-table',
-            items: {
-                'comment': {
-                    name: 'Show comments',
-                    type: 'checkbox',
-                    selected: currentOptions.displayComments,
-                    events: {
-                        change: function(key, opt) {
-                            currentOptions.displayComments = !currentOptions.displayComments;
-                            flowchart();
-                            $(window).trigger('resize');
-                        }
-                    }
-                },
-                'diff': {
-                    name: 'Show diffs',
-                    type: 'checkbox',
-                    selected: currentOptions.displayDiff,
-                    events: {
-                        change: function(key, opt) {
-                            currentOptions.displayDiff = !currentOptions.displayDiff;
-                            flowchart();
-                            $(window).trigger('resize');
-                        }
-                    }
-                },
-                'texts': {
-                    name: 'Show texts',
-                    type: 'checkbox',
-                    selected: currentOptions.displayTexts,
-                    disabled: lastTexts.length==0,
-                    events: {
-                        change: function(key, opt) {
-                            currentOptions.displayTexts = !currentOptions.displayTexts;
-                            flowchart();
-                            $(window).trigger('resize');
-                        }
+
+        var items = {
+            'comments': {
+                name: 'Show comments',
+                type: 'checkbox',
+                selected: currentOptions.displayComments,
+                events: {
+                    change: function(key, opt) {
+                        currentOptions.displayComments = !currentOptions.displayComments;
+                        flowchart();
+                        $(window).trigger('resize');
                     }
                 }
             },
+            'diff': {
+                name: 'Show diffs',
+                type: 'checkbox',
+                selected: currentOptions.displayDiff,
+                events: {
+                    change: function(key, opt) {
+                        currentOptions.displayDiff = !currentOptions.displayDiff;
+                        flowchart();
+                        $(window).trigger('resize');
+                    }
+                }
+            },
+            'texts': {
+                name: 'Show texts',
+                type: 'checkbox',
+                selected: currentOptions.displayTexts,
+                disabled: lastTexts.length==0,
+                events: {
+                    change: function(key, opt) {
+                        currentOptions.displayTexts = !currentOptions.displayTexts;
+                        flowchart();
+                        $(window).trigger('resize');
+                    }
+                }
+            }
+        };
+
+        _(currentOptions.contextMenu).each( function( value, key ) {
+            if (!value)
+                delete items[key];
+        })
+
+        $(containerElement).contextMenu({
+            selector: '.flowchart-table',
+            items: items,
             zIndex: 200
         });
     };
 
     var onresize = function(e) {
-        var $textOverlays = $(containerElement).find('.flowchart-table-text-overlay');
+        var $textOverlay = $(containerElement).find('.flowchart-table-text-overlay-container').css({ height: 'auto' });
 
         $(containerElement).css({position: 'relative'});
-
-        $textOverlays.css({
-            top: 0,
-            height: 'auto',
-            width: 'auto',
-            opacity: 0
-        });
+        $(containerElement).find('.flowchart-table-body').css({ height : 'auto' });
 
         $(containerElement).find('.flowchart-table .flowchart-table-row').each(function(rowIndex) {
-            $(this).css({height: 'auto'});
-
             // Maximum rows count
             var rowCount = 0;
             $(this).find('.flowchart-card-inner-table').each(function() {
@@ -119,38 +124,23 @@
                     $(this).height(maxHeight);
                 });
             }
-
-            var referenceText = $textOverlays.eq(rowIndex);
-            var rowHeight = Math.max( $(this).height(), referenceText.height() );
-            $(this).css({
-                height: rowHeight
-            });
-
-            referenceText.css({
-                top : $(this).offset().top - $(containerElement).offset().top - 1,
-                left: $(this).offset().left - $(containerElement).offset().left,
-                opacity: 1,
-                width: $(this).width() - 40,
-                height: rowHeight - 40
-
-            });
         });
 
-        $textOverlays.each(function(currentIndex){
-            var $currentText = $(this);
-            var nextIndex = currentIndex + 1;
+        var $tBody = $(containerElement).find('.flowchart-table-body');
+        var totalHeight = Math.max( $textOverlay.height(), $tBody.height() );
 
-            while ( $textOverlays.eq(nextIndex).size()==1 && $textOverlays.eq(nextIndex).text().trim()=='' ) {
-                $currentText.height( $currentText.height() + $textOverlays.eq(nextIndex).height() + 40 );
-                $textOverlays.eq(nextIndex).css({ opacity: 0 });
-                nextIndex++;
-            }
+        $tBody.height(totalHeight);
+        $textOverlay.css({
+            height : totalHeight,
+            width: $tBody.innerWidth(),
+            top : $tBody.offset().top - $(containerElement).offset().top + 1,
+            left : $tBody.offset().left - $(containerElement).offset().left + 1
         });
 
         if (currentOptions.displayTexts) {
-            $(containerElement).find('.flowchart-table-text-overlay').css({display: 'block'});
+            $textOverlay.css({display: 'block'});
         } else {
-            $(containerElement).find('.flowchart-table-text-overlay').css({display: 'none'});
+            $textOverlay.css({display: 'none'});
         }
 
         addLines();
@@ -327,7 +317,6 @@
                             card.data[childIndex + 1][colIndex] = {
                                 value: !options.displayComments && key == "technique_comment" ? "" : value,
                                 isLink: key == "link",
-                                // color: options.displayDiff && diff ? 'rgba('+colColors[cardIndex][0]+','+colColors[cardIndex][1]+','+colColors[cardIndex][2]+',1)' : ''
                                 color: options.displayDiff && diff ? 'red' : ''
                             };
 
@@ -336,10 +325,15 @@
                         normalizeCardData(card, keysCount, childIndex);
 
                         // Add Urls
-                        card.data[childIndex + 1][keysCount] = {
-                            value: child['URL'][cardIndex],
-                            isUrl: true
-                        };
+                        if (child.URL && child['URL'][cardIndex])
+                            card.data[childIndex + 1][keysCount] = {
+                                value: child['URL'][cardIndex],
+                                isUrl: true
+                            };
+                        else
+                            card.data[childIndex + 1][keysCount] = {
+                                value: ''
+                            }
                     } else if (card.isInline) {
                         card.data = [];
                         if (_(child.display_order).isUndefined()) {

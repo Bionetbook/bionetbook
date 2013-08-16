@@ -142,13 +142,16 @@ html, body {
     padding: 1em 0.5em 0;
     position: relative;
 }
-.flowchart-table-text-overlay {
+.flowchart-table-text-overlay-container {
     position: absolute;
-    background: rgba(255,255,255,.95);
-    text-align: center;
-    padding: 20px;
+    background: white;
     z-index: 100;
-    width: 100%;
+    border-radius: 1em;
+    pointer-events: none;
+}
+.flowchart-table-text-overlay {
+    text-align: left;
+    padding: 20px;
     pointer-events: none;
 }
 
@@ -531,7 +534,10 @@ html, body {
     list-style-type: none;
 
     border: 1px solid #DDD;
-    background: #EEE;
+    border-radius: .6em;
+    background: #FFF;
+
+    overflow: hidden;
 
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
        -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -539,13 +545,13 @@ html, body {
          -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 11px;
+    /*font-family: Verdana, Arial, Helvetica, sans-serif;*/
+    /*font-size: 11px;*/
 }
 
 .context-menu-item {
     padding: 2px 2px 2px 24px;
-    background-color: #EEE;
+    background-color: white;
     position: relative;
     -webkit-user-select: none;
        -moz-user-select: -moz-none;
@@ -567,18 +573,21 @@ html, body {
 }
 
 .context-menu-item.hover {
+    background-color: #08C;
+}
+.context-menu-item.hover,
+.context-menu-item.hover > label {
     cursor: pointer;
-    background-color: #39F;
 }
 
 .context-menu-item.disabled {
     color: #666;
 }
 
-.context-menu-input.hover,
+/*.context-menu-input.hover,*/
 .context-menu-item.disabled.hover {
     cursor: default;
-    background-color: #EEE;
+    background-color: #08C;
 }
 
 .context-menu-submenu:after {
@@ -617,12 +626,18 @@ html, body {
     margin-left: 5px;
 }
 
+.context-menu-input > label {
+    font-size: 1em;
+}
+
 .context-menu-input > label,
 .context-menu-input > label > input[type="text"],
 .context-menu-input > label > textarea,
 .context-menu-input > label > select {
     display: block;
     width: 100%;
+
+    margin: 5px 0;
 
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
