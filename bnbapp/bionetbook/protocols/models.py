@@ -424,27 +424,6 @@ class Protocol(TimeStampedModel):
         else:    
             return str(min_duration) + '-' + str(min_duration + delta_duration)
 
-# min_time = []
-# delta_time = []    
-
-# for item in self.children:
-#     if item['name'] =='store':
-#         continue
-#     action_time = item.get_children_times()
-#     min_time.append(action_time[0])
-#     if len(action_time) >3:
-#         delta_time.append(action_time[1]-action_time[0])
-
-# min_duration = sum(min_time)        
-# delta_duration = sum(delta_time)        
-
-# if delta_duration == 0:
-#     # self.duration = str(min_duration)
-#     return str(min_duration) 
-# else:    
-#     # self.duration =  str(min_duration) + '-' + str(min_duration + delta_duration)
-#     return str(min_duration) + '-' + str(min_duration + delta_duration)
-
 
     def update_duration_steps(self):
         min_time = []
@@ -590,6 +569,25 @@ class Protocol(TimeStampedModel):
                 
             out.append(step_dict)
         return out        
+
+    def get_verbatim_text(self, numbers = False):
+        '''this method returns a list with the verbatim text'''
+
+        # Validate if the protocol has verbatim text for each step:
+
+        if numbers:
+            verbatim = ["%d. "%(cnt+1) + item for cnt, item in enumerate(self.get_verbatim_text())]    
+        else:     
+            verbatim = [step['verbatim_text'] for step in self.steps]
+
+        if len(verbatim) == len(self.steps):
+            return verbatim
+
+        else:
+            return None
+
+
+
         
 
 class NodeBase(dict):

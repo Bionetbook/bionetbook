@@ -386,16 +386,16 @@ class CompareChildren(CompareVerb):
                 self['node_type'].append(node.node_type)
                 self['comparator'].append(node.summary)
                 self['objectid'].append(node['objectid'])
+                
                 if manual:
                     url_tmp = node.action_update_url()
-                    # self['URL'].append(node.action_update_url())
-
                     self['verb'].append(node['name'])
                 else:
                     url_tmp = node.get_update_url()
                     # self['URL'].append(node.get_update_url())
                 if protocol.published:
-                    url_tmp = node.get_absolute_url()
+                    # url_tmp = node.get_absolute_url()
+                    url_tmp = None
                     # self['URL'].append(node.get_absolute_url())
                 self['URL'].append(url_tmp)    
 

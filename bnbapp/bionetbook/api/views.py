@@ -21,13 +21,16 @@ def protocol_detail(request, protocol_slug):
 
 def get_layout_json(request, protocol_a_slug):
     '''
-    JSON call of a 2-protocol compare
+    JSON call of a protocol diagram
     '''
     A = Protocol.objects.get(slug=protocol_a_slug)
     protocols = [A]
     G = Compare(protocols)
     G.get_layout_by_objectid()
     data = list(G.layout)
+    verbatim = dict()
+    verbatim['text'] = A.get_verbatim_text(numbers=True)
+    data.append(verbatim)
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
