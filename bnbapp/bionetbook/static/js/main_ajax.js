@@ -12,6 +12,6 @@ function getFlowchartData(){
 };
 
 function callback(data) {
-    $('.flowchart-container').flowchart( data );
+    $('.flowchart-container').flowchart( data, options );
 }
 

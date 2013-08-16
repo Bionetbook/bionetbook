@@ -38,7 +38,7 @@
     {% if object %}
     <div class="span6">
       <h2>Steps</h2>
-      <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"> Add step</i></a></p>
+      <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"></i> Add step</a></p>
 
       {% if steps|length %}
         <table class="table table-striped table-condensed">
@@ -48,7 +48,7 @@
                   <th>Step</th>
                   <th>Duration</th>
                   <th>Actions</th>
-                  <th>Last Modified</th>
+                  <th>Step Comments</th>
               </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@
                     <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
                     {% endfor %}
                     </td>
-                    <td>{{ object.modified }}</td>
+                    <td> {{ item.technique_comment }} </td>
                 </tr>
                 {% endfor%}
             </tbody>

@@ -10,13 +10,13 @@
       <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
       <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol: {{object.name}}</a> <span class="divider">/</span></li>
-      <li class="active">{{step.name}}</li>
+      <li class="active">Step {{step.name}}</li>
     </ul>
 {% endblock %}
 
 
 {% block page_title %}
-Step {{ step.name }}
+<a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Step {{step.name }} details
 {% if protocol_edit_authorization %} 
     <!-- <small><a href="{{ step.step_update_url }}"><i class="icon-edit"></i> edit</a></small> -->
 {% endif %}
