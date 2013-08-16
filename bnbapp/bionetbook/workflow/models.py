@@ -19,7 +19,6 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     An Worflow is an ordered collection of a Protocols
     '''
     user = models.ForeignKey(User)
-    start = models.DateTimeField()
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)

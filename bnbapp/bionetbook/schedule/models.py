@@ -22,15 +22,40 @@ import collections
 class Calendar(TimeStampedModel):
     '''
     An Schedule is derived from an Experiment
+
+    data: { 'meta': {},
+            'experiments': [   {    name: "",
+                                    experiment: 1,
+                                    start: "1/1/2011",
+                                    end: "1/4/2011"
+                                    scedule: {},
+                                },
+                                {   name: "",
+                                    experiment: 2,
+                                    start: "1/1/2011",
+                                    end: "1/4/2011"
+                                    scedule: {},
+                                },
+                                {   name: "",
+                                    experiment: 3,
+                                    start: "1/1/2011",
+                                    end: "1/4/2011"
+                                    scedule: {},
+                                }
+                            ]
+             }
+
     '''
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         # self.data = {}
         if not self.data:
-            self.data['steps'] = []
+            # self.data['steps'] = []
+            self.data = self.expToCalendar()
+
         super(Calendar,self).save(*args,**kwargs)
 
 
@@ -51,8 +76,9 @@ class Calendar(TimeStampedModel):
 
     def expToCalendar(self):  # defaulted to take only 1 experiment
         usrExpLst = self.user.experiment_set.all()[0]
+        # usrExpLst = self.user.experiment_set.get(pk=1)
         expData = usrExpLst.data
-        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get() 
+        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get()
         protocolList = [Protocol.objects.filter(pk=p).get() for p in wrkflw.data['protocols']]
         ret = SortedDict()
         for protocol in protocolList:
@@ -67,8 +93,28 @@ class Calendar(TimeStampedModel):
         return ret
         
 
+    def returnCalendar(self):
+        result = []
+
+        for item in self.data['experiments']:
+            result.append( item['schedule'] )
+
+        return result
 
 
+    def listExperiments(self):
+        return [ x['name'] for x in self.data['experiments'] ]
+
+
+
+
+    # def returnCalendar(self):
+    #     result = {}
+
+    #     for item in self.data['experiments']:
+    #         result[item['name']] = item['schedule']
+
+    #     return result
 
 
 

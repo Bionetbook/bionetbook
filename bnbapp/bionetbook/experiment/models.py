@@ -11,6 +11,7 @@ from django_extensions.db.models import TimeStampedModel
 from core.models import SlugStampMixin
 
 from schedule.models import Calendar
+from workflow.models import Workflow
 
 
 class Experiment(SlugStampMixin, TimeStampedModel):
@@ -18,7 +19,7 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     An Experiment is an execution of Workflows
     '''
     user = models.ForeignKey(User)
-    calendar = models.ForeignKey(Calendar)
+    workflow = models.ForeignKey(Workflow)    # <- NEEDS TO BE ADDED TO THE MODEL
     name = models.CharField(_("Experiment Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
@@ -27,6 +28,7 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     	new_slug = self.generate_slug()
     	if self.slug != new_slug:
     		self.slug = new_slug
+
     	super(Experiment,self).save(*args,**kwargs)	
 
 
