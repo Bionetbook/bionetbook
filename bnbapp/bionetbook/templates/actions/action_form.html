@@ -19,7 +19,7 @@
 
 {% block page_title %}
 {% if object %}
-  Editing Action: {{ action.name }}
+  <a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Step {{ step.name }} edit Action details
 {% else %}
   Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}</a>
 {% endif %}
