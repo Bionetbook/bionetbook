@@ -102,6 +102,12 @@ class Calendar(TimeStampedModel):
         return result
 
 
+    def listExperiments(self):
+        return [ x['name'] for x in self.data['experiments'] ]
+
+
+
+
     # def returnCalendar(self):
     #     result = {}
 
