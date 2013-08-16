@@ -19,7 +19,6 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     An Experiment is an execution of Workflows
     '''
     user = models.ForeignKey(User)
-    # calendar = models.ForeignKey(Calendar)
     workflow = models.ForeignKey(Workflow)    # <- NEEDS TO BE ADDED TO THE MODEL
     name = models.CharField(_("Experiment Name"), max_length=255)
     data = JSONField(blank=True, null=True)
