@@ -17,7 +17,7 @@ urlpatterns = patterns("",
 	url(regex=r'^json/clone_ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.get_layout_clone_json', name='get_layout_clone_json'),
 	# url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
 	
-	url(regex=r'^calendar/(?P<calendar_pk>[-\w]+)/$', view='api.views.calendar_json', name='calendar_json'),
+	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view='api.views.calendar_json', name='calendar_json'),
 )
 
 

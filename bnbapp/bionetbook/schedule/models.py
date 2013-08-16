@@ -50,7 +50,7 @@ class Calendar(TimeStampedModel):
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
@@ -76,8 +76,9 @@ class Calendar(TimeStampedModel):
 
     def expToCalendar(self):  # defaulted to take only 1 experiment
         usrExpLst = self.user.experiment_set.all()[0]
+        # usrExpLst = self.user.experiment_set.get(pk=1)
         expData = usrExpLst.data
-        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get() 
+        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get()
         protocolList = [Protocol.objects.filter(pk=p).get() for p in wrkflw.data['protocols']]
         ret = SortedDict()
         for protocol in protocolList:
