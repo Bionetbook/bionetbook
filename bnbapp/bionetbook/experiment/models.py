@@ -10,13 +10,16 @@ from django_extensions.db.models import TimeStampedModel
 #from protocols.utils import MANUAL_VERBS
 from core.models import SlugStampMixin
 
-from schedule.models import Calendar
 from workflow.models import Workflow
 
 
 class Experiment(SlugStampMixin, TimeStampedModel):
     '''
     An Experiment is an execution of Workflows
+
+    data : { 'meta': {}
+
+            }
     '''
     user = models.ForeignKey(User)
     workflow = models.ForeignKey(Workflow)    # <- NEEDS TO BE ADDED TO THE MODEL
@@ -28,11 +31,17 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     	new_slug = self.generate_slug()
     	if self.slug != new_slug:
     		self.slug = new_slug
-
+        if not self.data:
+            self.data = self.setupExperiment() 
     	super(Experiment,self).save(*args,**kwargs)	
 
+    def setupExperiment(self):
+        ret = {'meta':{}}
+        return ret
 
-
+    def __unicode__(self):
+        return self.name
+        
 
 
 

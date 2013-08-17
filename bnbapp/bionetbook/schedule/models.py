@@ -11,6 +11,7 @@ from jsonfield import JSONField
 
 from protocols.models import Protocol
 from workflow.models import Workflow
+from experiment.models import Experiment
 from django.utils.datastructures import SortedDict
 
 import collections
@@ -54,11 +55,13 @@ class Calendar(TimeStampedModel):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
-            self.data = self.expToCalendar()
+            self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
 
-
+    def __unicode__(self):
+        return self.name
+        
     # def dataToCalendar(self):
     #     ret = {}    # return dict
     #     stepsList = []
@@ -74,12 +77,14 @@ class Calendar(TimeStampedModel):
     #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
     #     print ret
 
+    def setupCalendar(self):
+        ret = {'meta':{},'experiments':[]}
+        return ret
+
     def expToCalendar(self):  # defaulted to take only 1 experiment
-        usrExpLst = self.user.experiment_set.all()[0]
-        # usrExpLst = self.user.experiment_set.get(pk=1)
-        expData = usrExpLst.data
-        wrkflw = Workflow.objects.filter(pk=expData['workflow']['pk']).get()
-        protocolList = [Protocol.objects.filter(pk=p).get() for p in wrkflw.data['protocols']]
+        scheduledExperiment = Experiment.objects.get(pk=1)
+        experimentWorkflow = scheduledExperiment.workflow
+        protocolList = [Protocol.objects.filter(pk=p).get() for p in experimentWorkflow.data['protocols']]
         ret = SortedDict()
         for protocol in protocolList:
             stepI = 0

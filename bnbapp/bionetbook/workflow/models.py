@@ -17,6 +17,11 @@ from organization.models import Organization
 class Workflow(SlugStampMixin, TimeStampedModel):
     '''
     An Worflow is an ordered collection of a Protocols
+
+    data: { 'meta' : {}
+
+    		'protocols' : [ 1, 2 , 3]
+    	}
     '''
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
@@ -24,7 +29,19 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
 
+    def save(self, *args, **kwargs):
+    	if not self.data:
+    		self.data = self.setupWorkflow()
 
+    	super(Workflow,self).save(*args, **kwargs)
+
+    def setupWorkflow(self):
+    	ret = {'meta':{},'protocols':[]}
+    	return ret
+
+    def __unicode__(self):
+        return self.name
+        
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''
 #     name = models.CharField(_("Name"), max_length=255, unique=True)
