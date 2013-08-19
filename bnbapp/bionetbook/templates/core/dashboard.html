@@ -23,6 +23,13 @@
             <p>Cool Stats</p>
           </div>
         </div>
+        <br>
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Create Protocols</h3></li>
+            {% for org in request.user.organization_set.all %}
+            <li><a href="{% url protocol_create owner_slug=org.slug %}">{{ org.name }}</a><li>
+            {% endfor %}
+        </ul>
     </div>
 
     <div class="span8">
