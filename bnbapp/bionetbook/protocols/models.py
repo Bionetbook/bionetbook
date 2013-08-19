@@ -126,6 +126,8 @@ class Protocol(TimeStampedModel):
 
         # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
 
+        self.update_duration()
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()
@@ -424,7 +426,6 @@ class Protocol(TimeStampedModel):
         else:    
             return str(min_duration) + '-' + str(min_duration + delta_duration)
 
-
     def update_duration_steps(self):
         min_time = []
         delta_time = []    
@@ -455,9 +456,7 @@ class Protocol(TimeStampedModel):
             # print str(min_duration) + '-' + str(max_duration)       
             return str(min_duration) + '-' + str(min_duration + delta_duration)
 
-
-
-    def update_duration_strip(self):
+    def update_duration(self):
         min_time = 0
         max_time = 0    
 
@@ -469,20 +468,31 @@ class Protocol(TimeStampedModel):
             for action in step["actions"]:
                 action_min_time = 0
                 action_max_time = 0
+                auto_update = False
                 # print "\tAction: %s" % action['name']
 
-                # if 'duration' in action:
-                if action.children or action.childtype()== 'manual':
-                    action_times = action.get_children_times()
-                    # action_times = action['duration'].split("-")              # May need to correct any existing duration values first
-                    # action_times = str(int(action['duration'])).split("-")  
-                    action_min_time = int( action_times[0] )
-                    if len(action_times) >3: 
-                        action_min_time = int( action_times[0] )
-                        action_max_time = int( action_times[1] )
-                        # action_max_time = int( action_times[ len(action_times) - 1 ] )
-                
-                action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
+                if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
+                    pass
+                    # auto_update = True
+                    # Total Up Component Time Values Here from the DICT
+
+                if 'thermocycle' in action and action['verb'] in THERMOCYCLER_VERBS:    # if it should have a thermocycle, update
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if 'machine' in action and 'verb' in action and action['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if 'manual' in action and action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
+                    action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
 
                 # print "\t\tAction Duration: %s" % action['duration']
                 step_min_time += action_min_time
@@ -496,7 +506,6 @@ class Protocol(TimeStampedModel):
 
         self.duration = "%d-%d" % ( min_time, min_time+max_time )
         print self.duration
-
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
@@ -586,9 +595,6 @@ class Protocol(TimeStampedModel):
         else:
             return None
 
-
-
-        
 
 class NodeBase(dict):
     """Base class for the protocol components"""
