@@ -124,8 +124,8 @@ class Protocol(TimeStampedModel):
             if self.data['Name']:
                 self.name = self.data['Name']
 
-        self.update_duration()          # Total Up all the Steps, Actions and Components
 
+        self.update_duration()          # Total Up all the Steps, Actions and Components
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()

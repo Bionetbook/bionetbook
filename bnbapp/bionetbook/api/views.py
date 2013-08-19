@@ -14,7 +14,7 @@ from schedule.models import Calendar
 def calendar_json(request, pk):
     if request.method == 'GET':
         curCal = get_object_or_404(Calendar, pk=1)
-        return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
+        return HttpResponse( json.dumps( curCal.expToCalendar() ), mimetype="application/json" )
     elif request.method == 'PUT':
         print "I AM A PUT!"
 

@@ -29,19 +29,27 @@ class Calendar(TimeStampedModel):
                                     experiment: 1,
                                     start: "1/1/2011",
                                     end: "1/4/2011"
-                                    scedule: {},
+                                    schedule: [ { <protocolpk>: {
+                                            "<objectid step>":"2013:8:19:10:00:PST"
+                                            "<objectid step>":"2013:8:19:12:00:PST"
+                                            }},
+                                            { <protocolpk>: {
+                                            "<objectid step>":"2013:8:19:10:00:PST"
+                                            "<objectid step>":"2013:8:19:12:00:PST"
+                                            }}
+                                            ]
                                 },
                                 {   name: "",
                                     experiment: 2,
                                     start: "1/1/2011",
                                     end: "1/4/2011"
-                                    scedule: {},
+                                    schedule: [],
                                 },
                                 {   name: "",
                                     experiment: 3,
                                     start: "1/1/2011",
                                     end: "1/4/2011"
-                                    scedule: {},
+                                    schedule: [],
                                 }
                             ]
              }
@@ -80,6 +88,21 @@ class Calendar(TimeStampedModel):
     def setupCalendar(self):
         ret = {'meta':{},'experiments':[]}
         return ret
+
+    '''
+    experimentList = [ {"experiment":1,
+                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}
+                        ]},
+                        {"experiment":2,
+                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}]}]
+    '''
+
+
+    def updateCalendar(self, experimentList):
+        print "updated"
+
+
+
 
     def expToCalendar(self):  # defaulted to take only 1 experiment
         scheduledExperiment = Experiment.objects.get(pk=1)
