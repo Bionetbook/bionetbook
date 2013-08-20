@@ -64,10 +64,6 @@ class Protocol(TimeStampedModel):
     def __init__(self, *args, **kwargs):
         self.data = {}
         super(Protocol, self).__init__(*args, **kwargs)
-
-        if not self.data:
-            self.data={'steps':[]}
-
         self.rebuild_steps()
 
     def __unicode__(self):
@@ -244,6 +240,9 @@ class Protocol(TimeStampedModel):
         if self.data and 'steps' in self.data:
             self.data['steps'] = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
             #self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+        else:
+            if not self.data:
+                self.data={'steps':[]}
 
     # def add_step(self, step):
     #     if not step['objectid'] in [ s['objectid'] for s in self.data['steps'] ]:
@@ -297,8 +296,16 @@ class Protocol(TimeStampedModel):
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def steps(self):
-        # if not self.steps_data:
-        #     self.rebuild_steps()
+        if not self.data:
+            self.rebuild_steps()
+
+        # if not 'steps' in self.data:
+        #     return []
+
+
+
+        # if not 'steps' in self.data or not self.data['steps']:
+            # self.rebuild_steps()
         #     self.steps_data = self.data['steps']
 
         # return self.steps_data
