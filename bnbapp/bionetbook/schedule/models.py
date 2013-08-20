@@ -25,36 +25,42 @@ class Calendar(TimeStampedModel):
     An Schedule is derived from an Experiment
 
     data: { 'meta': {},
-            'experiments': [   {    name: "",
-                                    experiment: 1,
-                                    start: "1/1/2011",
-                                    end: "1/4/2011"
-                                    schedule: [ { <protocolpk>: {
-                                            "<objectid step>":"2013:8:19:10:00:PST"
-                                            "<objectid step>":"2013:8:19:12:00:PST"
-                                            }},
-                                            { <protocolpk>: {
-                                            "<objectid step>":"2013:8:19:10:00:PST"
-                                            "<objectid step>":"2013:8:19:12:00:PST"
-                                            }}
-                                            ]
-                                },
-                                {   name: "",
-                                    experiment: 2,
-                                    start: "1/1/2011",
-                                    end: "1/4/2011"
-                                    schedule: [],
-                                },
-                                {   name: "",
-                                    experiment: 3,
-                                    start: "1/1/2011",
-                                    end: "1/4/2011"
-                                    schedule: [],
-                                }
+            'experiments': [ { id: "e1",
+                                name: "",
+                                start: "1/1/2011",
+                                end: "1/4/2011"
+                                events: [ { 'id':"bnb-e1-p1-AXBAGS-FFGGAX":,
+                                            'start':1376957033,
+                                            'duration':300,
+                                            'name':"First Action",
+                                            'parent':None,
+                                            'notes':"",
+                                          },
+                                            'id': "bnb-e1-p1-AXBAGS-GBRISH",
+                                            'start':1376957033,
+                                            'duration':500,
+                                            'name':"Second Action",
+                                            'parent':None,
+                                            'notes':"",
+                                          }
+                                        },
+                             },
+                             {  name: "",
+                                experiment: 2,
+                                start: "1/1/2011",
+                                end: "1/4/2011"
+                                events: [],
+                             },
+                             {  name: "",
+                                experiment: 3,
+                                start: "1/1/2011",
+                                end: "1/4/2011"
+                                events: [],
+                             }
                             ]
              }
-
     '''
+
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
