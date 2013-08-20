@@ -9,16 +9,134 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from jsonfield import JSONField
 
-# from experiment.models import Experiment
+from protocols.models import Protocol
+from workflow.models import Workflow
+from experiment.models import Experiment
+from django.utils.datastructures import SortedDict
+
+import collections
+
+
+#from experiment.models import Experiment
 
 
 class Calendar(TimeStampedModel):
+    
     '''
     An Schedule is derived from an Experiment
+
+    data: { 'meta': {},
+            'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
+                            'start':1376957033,
+                            'duration':300,
+                            'name':"First Action",
+                            'notes':"",
+                        },
+                        {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
+                            'start':1376957033,
+                            'duration':500,
+                            'name':"Second Action",
+                            'notes':"",
+                        },
+                        {   'id': "bnb-o1-e2-p1-AXBAGS-GBRISH",
+                            'start':1376957033,
+                            'duration':500,
+                            'name':"Second Action",
+                            'notes':"",
+                        },
+                      ]
+             }
     '''
+
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # self.data = {}
+        if not self.data:
+            # self.data['steps'] = []
+            self.data = self.setupCalendar()
+
+        super(Calendar,self).save(*args,**kwargs)
+
+    def __unicode__(self):
+        return self.name
+        
+    # def dataToCalendar(self):
+    #     ret = {}    # return dict
+    #     stepsList = []
+    #     index = 0
+    #     for index, step in enumerate(protocol.data['steps']):       # step is dict
+    #         # index +=1
+    #         verb = step['actions'][0]['verb']
+    #         s = SortedDict([('eventId',Protocol.slug),('instanceId',0),('verb',verb),
+    #                 ('active','true'),('length',Protocol.duration),
+    #                 ('container','false'),('stepNumber',index),('notes',step['technique_comment'])])
+    #         st = "step%s" % index
+    #         stepsList.append({st:s})
+    #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
+    #     print ret
+
+    def setupCalendar(self):
+        ret = {'meta':{},'experiments':[]}
+        return ret
+
+    '''
+    experimentList = [ {"experiment":1,
+                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}
+                        ]},
+                        {"experiment":2,
+                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}]}]
+    '''
+
+
+    def updateCalendar(self, experimentList):
+        print "updated"
+
+
+
+
+    def expToCalendar(self):  # defaulted to take only 1 experiment
+        scheduledExperiment = Experiment.objects.get(pk=1)
+        experimentWorkflow = scheduledExperiment.workflow
+        protocolList = [Protocol.objects.filter(pk=p).get() for p in experimentWorkflow.data['protocols']]
+        ret = SortedDict()
+        for protocol in protocolList:
+            stepI = 0
+            stepList = []
+            for stepI, step in enumerate(protocol.data['steps']): # list of steps 
+                action = step['actions'][0] # action as a dict
+                s = SortedDict([('eventId',protocol.pk),('instanceId',0),('verb',action['verb']),('active','true'),
+                    ('length',5),('container','false'),('stepNumber',stepI+1),('notes',step['technique_comment']),('actionID',action['objectid'])])
+                stepList.append(s)
+            ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
+        return ret
+        
+
+    def returnCalendar(self):
+        result = []
+
+        for item in self.data['experiments']:
+            result.append( item['schedule'] )
+
+        return result
+
+
+    def listExperiments(self):
+        return [ x['name'] for x in self.data['experiments'] ]
+
+
+
+
+    # def returnCalendar(self):
+    #     result = {}
+
+    #     for item in self.data['experiments']:
+    #         result[item['name']] = item['schedule']
+
+    #     return result
+
 
 
 

@@ -8,8 +8,8 @@ from django import http
 from django.shortcuts import get_object_or_404
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
+<<<<<<< HEAD
 from schedule.models import Calendar
-from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
 
 def calendar_json(request, pk):
@@ -19,6 +19,9 @@ def calendar_json(request, pk):
     elif request.method == 'PUT':
         print "I AM A PUT!"
 
+=======
+from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+>>>>>>> 49d18e462a5a3e8d5a592fe61da9e4ad91e1c8ac
 
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
