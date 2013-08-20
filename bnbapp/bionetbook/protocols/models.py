@@ -472,7 +472,7 @@ class Protocol(TimeStampedModel):
             step_max_time = 0
             # print "Step: %s" % step['name']
 
-            for action in step["actions"]:
+            for action in step['actions']:
                 action_min_time = 0
                 action_max_time = 0
                 auto_update = False
@@ -498,7 +498,7 @@ class Protocol(TimeStampedModel):
                     # auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
-                if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
+                if auto_update or not 'duration' in action or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
                     action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
 
                 # print "\t\tAction Duration: %s" % action['duration']
