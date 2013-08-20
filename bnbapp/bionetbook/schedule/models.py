@@ -22,9 +22,9 @@ import collections
 
 class Calendar(TimeStampedModel):
     
+    '''
     An Schedule is derived from an Experiment
 
-    '''
     data: { 'meta': {},
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
