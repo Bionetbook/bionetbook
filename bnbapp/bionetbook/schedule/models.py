@@ -21,43 +21,30 @@ import collections
 
 
 class Calendar(TimeStampedModel):
-    '''
+    
     An Schedule is derived from an Experiment
 
+    '''
     data: { 'meta': {},
-            'experiments': [ { id: "e1",
-                                name: "",
-                                start: "1/1/2011",
-                                end: "1/4/2011"
-                                events: [ { 'id':"bnb-e1-p1-AXBAGS-FFGGAX":,
-                                            'start':1376957033,
-                                            'duration':300,
-                                            'name':"First Action",
-                                            'parent':None,
-                                            'notes':"",
-                                          },
-                                            'id': "bnb-e1-p1-AXBAGS-GBRISH",
-                                            'start':1376957033,
-                                            'duration':500,
-                                            'name':"Second Action",
-                                            'parent':None,
-                                            'notes':"",
-                                          }
-                                        },
-                             },
-                             {  name: "",
-                                experiment: 2,
-                                start: "1/1/2011",
-                                end: "1/4/2011"
-                                events: [],
-                             },
-                             {  name: "",
-                                experiment: 3,
-                                start: "1/1/2011",
-                                end: "1/4/2011"
-                                events: [],
-                             }
-                            ]
+            'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
+                            'start':1376957033,
+                            'duration':300,
+                            'name':"First Action",
+                            'notes':"",
+                        },
+                        {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
+                            'start':1376957033,
+                            'duration':500,
+                            'name':"Second Action",
+                            'notes':"",
+                        },
+                        {   'id': "bnb-o1-e2-p1-AXBAGS-GBRISH",
+                            'start':1376957033,
+                            'duration':500,
+                            'name':"Second Action",
+                            'notes':"",
+                        },
+                      ]
              }
     '''
 
