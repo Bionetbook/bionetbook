@@ -64,10 +64,6 @@ class Protocol(TimeStampedModel):
     def __init__(self, *args, **kwargs):
         self.data = {}
         super(Protocol, self).__init__(*args, **kwargs)
-
-        if not self.data:
-            self.data={'steps':[]}
-
         self.rebuild_steps()
 
     def __unicode__(self):
@@ -124,8 +120,10 @@ class Protocol(TimeStampedModel):
             if self.data['Name']:
                 self.name = self.data['Name']
 
+        # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
 
-        self.update_duration()          # Total Up all the Steps, Actions and Components
+        self.update_duration()
+
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()
@@ -160,7 +158,7 @@ class Protocol(TimeStampedModel):
     # URLs
 
     def get_absolute_url(self):
-        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_a_slug': self.slug})
+        return reverse("protocol_detail", kwargs={'owner_slug':self.owner.slug, 'protocol_slug': self.slug})
 
     def protocol_update_url(self):
         return reverse("protocol_update", kwargs={'protocol_slug':self.slug, 'owner_slug':self.owner.slug})
@@ -242,6 +240,9 @@ class Protocol(TimeStampedModel):
         if self.data and 'steps' in self.data:
             self.data['steps'] = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
             #self.steps_data = [ Step(protocol=self, data=s) for s in self.data['steps'] ]
+        else:
+            if not self.data:
+                self.data={'steps':[]}
 
     # def add_step(self, step):
     #     if not step['objectid'] in [ s['objectid'] for s in self.data['steps'] ]:
@@ -295,8 +296,16 @@ class Protocol(TimeStampedModel):
     # NEED TO CREATE add AND delete METHODS FOR THE PROPERTY
     @property
     def steps(self):
-        # if not self.steps_data:
-        #     self.rebuild_steps()
+        if not self.data:
+            self.rebuild_steps()
+
+        # if not 'steps' in self.data:
+        #     return []
+
+
+
+        # if not 'steps' in self.data or not self.data['steps']:
+            # self.rebuild_steps()
         #     self.steps_data = self.data['steps']
 
         # return self.steps_data
@@ -403,58 +412,56 @@ class Protocol(TimeStampedModel):
         
         return action_tree
 
-    # def update_duration_actions(self):
+    def update_duration_actions(self):
         
-    #     min_time = []
-    #     max_time = []    
-    #     # for step in self.steps:
+        min_time = []
+        delta_time = []    
 
-    #     for item in self.get_actions():
-    #         if self.nodes[item]['name'] =='store':
-    #             continue
-    #         action_time = self.nodes[item].get_children_times()
-    #         min_time.append(action_time[0])
-    #         max_time.append(action_time[0])
-    #         if len(action_time) >3:
-    #             max_time.append(action_time[1])
+        for item in self.get_actions():
+            if self.nodes[item]['name'] =='store':
+                continue
+            action_time = self.nodes[item].get_children_times()
+            min_time.append(action_time[0])
+            if len(action_time) >3:
+                delta_time.append(action_time[1]-action_time[0])
 
-    #     min_duration = sum(min_time)        
-    #     max_duration = sum(max_time)        
+        min_duration = sum(min_time)        
+        delta_duration = sum(delta_time)        
 
-    #     if min_duration == max_duration:
-    #         self.duration = str(min_duration)
-    #         print str(min_duration) 
-    #     else:    
-    #         self.duration =  str(min_duration) + '-' + str(max_duration)
-    #         print str(min_duration) + '-' + str(max_duration)       
+        if delta_duration == 0:
+            return str(min_duration) 
+        else:    
+            return str(min_duration) + '-' + str(min_duration + delta_duration)
 
-    # def update_duration_steps(self):
-    #     min_time = []
-    #     max_time = []    
+    def update_duration_steps(self):
+        min_time = []
+        delta_time = []    
         
-    #     total = []
-    #     for step in self.steps:
-    #         value = step.duration
+        total = []
+        for step in self.steps:
+            value = step.update_duration()
 
-    #         if '-' in value:
-    #             min_time.append(float(value[:value.index('-')]))
-    #             temp = value[value.index('-')+1:]
-    #             max_time.append(float(temp))
-    #         else:
-    #             min_time.append(float(value))
-    #             max_time.append(float(value))
+            if '-' in value:
+                min_time_temp = float(value[:value.index('-')])
+                min_time.append(min_time_temp)
+                max_time_temp = float(value[value.index('-')+1:])
+                # max_time.append(float(temp))
+                delta_time.append(max_time_temp - min_time_temp)
+            else:
+                min_time.append(float(value))
+                # max_time.append(float(value))
 
-    #     min_duration = sum(min_time)        
-    #     max_duration = sum(max_time)        
+        min_duration = sum(min_time)        
+        delta_duration = sum(delta_time)        
 
-    #     if min_duration == max_duration:
-    #         self.duration = str(min_duration) 
-    #         print str(min_duration) 
-    #     else:    
-    #         self.duration = str(min_duration) + '-' + str(max_duration)       
-    #         print str(min_duration) + '-' + str(max_duration)       
-
-
+        # if min_duration == max_duration:
+        if delta_duration == 0:
+            # self.duration = str(min_duration) 
+            return str(min_duration) 
+        else:    
+            # self.duration = str(min_duration) + '-' + str(max_duration)       
+            # print str(min_duration) + '-' + str(max_duration)       
+            return str(min_duration) + '-' + str(min_duration + delta_duration)
 
     def update_duration(self):
         min_time = 0
@@ -468,28 +475,44 @@ class Protocol(TimeStampedModel):
             for action in step["actions"]:
                 action_min_time = 0
                 action_max_time = 0
+                auto_update = False
                 # print "\tAction: %s" % action['name']
 
-                if 'duration' in action:
-                    action_times = action['duration'].split("-")              # May need to correct any existing duration values first
-                    # action_times = str(int(action['duration'])).split("-")  
-                    action_min_time = int( action_times[0] )
-                    action_max_time = int( action_times[ len(action_times) - 1 ] )
-                
-                action['duration'] = "%d-%d" % ( action_min_time, action_max_time )
+                if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
+                    pass
+                    # auto_update = True
+                    # Total Up Component Time Values Here from the DICT
+
+                if 'thermocycle' in action and action['verb'] in THERMOCYCLER_VERBS:    # if it should have a thermocycle, update
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if 'machine' in action and 'verb' in action and action['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if 'manual' in action and action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
+                    pass
+                    # auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
+
+                if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
+                    action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
 
                 # print "\t\tAction Duration: %s" % action['duration']
                 step_min_time += action_min_time
                 step_max_time += action_max_time
 
-            step['duration'] = "%d-%d" % ( step_min_time, step_max_time )
+            step['duration'] = "%d-%d" % ( step_min_time, step_min_time+step_max_time )
             # print "\tStep Duration: %s" % step['duration']
 
             min_time += step_min_time
             max_time += step_max_time
 
-        self.duration = "%d-%d" % ( min_time, max_time )
-
+        self.duration = "%d-%d" % ( min_time, min_time+max_time )
+        print self.duration
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
@@ -562,7 +585,23 @@ class Protocol(TimeStampedModel):
                 
             out.append(step_dict)
         return out        
-        
+
+    def get_verbatim_text(self, numbers = False):
+        '''this method returns a list with the verbatim text'''
+
+        # Validate if the protocol has verbatim text for each step:
+
+        if numbers:
+            verbatim = ["%d. "%(cnt+1) + item for cnt, item in enumerate(self.get_verbatim_text())]    
+        else:     
+            verbatim = [step['verbatim_text'] for step in self.steps]
+
+        if len(verbatim) == len(self.steps):
+            return verbatim
+
+        else:
+            return None
+
 
 class NodeBase(dict):
     """Base class for the protocol components"""
@@ -1033,19 +1072,35 @@ class Action(NodeBase):
 
             children_time = tuple(tmp_time)        
         return children_time
-    
+
+
+    def update_duration(self):
+        max_duration = None
+        value = self.get_children_times()
+
+        min_duration = str(value[0])
+        if len(value) >3:
+            max_duration = str(value[1])    
+
+        if max_duration:
+            # self['duration'] = str(min_duration) + '-' + str(max_duration)    
+            return str(min_duration) + '-' + str(max_duration)    
+        else:    
+            # self['duration'] = str(min_duration) 
+            return str(min_duration) 
 
     def childtype(self):
-        if self['verb'] in COMPONENT_VERBS: 
-            return 'components'
-        if self['verb'] in MACHINE_VERBS:
-            return 'machine'
-        if self['verb'] in THERMOCYCLER_VERBS:
-            return 'thermocycle'            
-        if self['verb'] in MANUAL_VERBS:
-            return 'manual'
-        else:
-            return None        
+        if 'verb' in self:
+            if self['verb'] in COMPONENT_VERBS: 
+                return 'components'
+            if self['verb'] in MACHINE_VERBS:
+                return 'machine'
+            if self['verb'] in THERMOCYCLER_VERBS:
+                return 'thermocycle'            
+            if self['verb'] in MANUAL_VERBS:
+                return 'manual'
+
+        return None
 
 
 class Step(NodeBase):
@@ -1062,31 +1117,6 @@ class Step(NodeBase):
             self['actions'] = []
 
         # UPDATE DURATION AT THE SAME TIME
-        # duration = 0
-        # min_time = []
-        # max_time = []    
-
-        # for action in self['actions']:
-        #     if action['name'] =='store':
-        #         continue
-        #     if action.children:
-        #         action_time = action.get_children_times()
-        #         min_time.append(action_time[0])
-        #         max_time.append(action_time[0])
-
-        #         if len(action_time) >3:
-        #             max_time.append(action_time[1])
-
-        # min_duration = sum(min_time)        
-        # max_duration = sum(max_time)                
-
-        # if min_duration == max_duration:
-        #     # return str(datetime.timedelta(seconds = min_duration))
-        #     self.duration = str(min_duration)
-        # else:    
-        #     # return str(datetime.timedelta(seconds = min_duration)) + '-' + str(datetime.timedelta(seconds = max_duration))
-        #     self.duration =  str(min_duration) + '-' + str(max_duration)
-
         # self['duration'] = duration
 
         #print self.protocol.nodes
@@ -1139,16 +1169,25 @@ class Step(NodeBase):
         else:
             return None
 
-
     def update_duration(self):
-        step_sum = []
+        min_time = []
+        delta_time = []    
 
-        for action in self.children:
-            step_sum.append(action.get_children_times())
+        for item in self.children:
+            if item['name'] =='store':
+                continue
+            action_time = item.get_children_times()
+            min_time.append(action_time[0])
+            if len(action_time) >3:
+                delta_time.append(action_time[1]-action_time[0])
 
-        self.duration = step_sum    
+        min_duration = sum(min_time)        
+        delta_duration = sum(delta_time)        
 
-
+        if delta_duration == 0:
+            return str(min_duration) 
+        else:    
+            return str(min_duration) + '-' + str(min_duration + delta_duration)    
 
 
 

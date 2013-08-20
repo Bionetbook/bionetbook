@@ -6,11 +6,11 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
+      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
-      <li><a href="{{step.get_absolute_url}}">{{step.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol:{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{step.get_absolute_url}}">Step {{step.name}}</a> <span class="divider">/</span></li>
       <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
       <li class="active">Edit Action</li>
     </ul>
@@ -19,7 +19,7 @@
 
 {% block page_title %}
 {% if object %}
-  Editing Action: {{ object }} -> {{ step.name }} -> {{ action.name }}
+  <a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Step {{ step.name }} edit Action details
 {% else %}
   Adding Action to Step: <a href="{{ step.get_absolute_url }}">{{ step }}</a>
 {% endif %}

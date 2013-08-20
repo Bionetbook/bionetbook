@@ -4,10 +4,10 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
+      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
       <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}">{{object.name}}</a> <span class="divider">/</span></li>
+      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol:{{object.name}}</a> <span class="divider">/</span></li>
       <li class="active">Create Step</li>
     </ul>
 {% endblock %}
@@ -15,10 +15,10 @@
 
 {% block title %}{{ object.name }}: Add Step{% endblock %}
 
-{% block page_title %}{{ object.name }}: Add Step
-{% if protocol_edit_authorization %}
+{% block page_title %}<a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Add Step
+<!-- {% if protocol_edit_authorization %}
     <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
-{% endif %}
+{% endif %} -->
 {% endblock %}
 
 {% block content %}
@@ -26,6 +26,10 @@
 <div class="row">
     <div class="span6">
         <h2>Detail</h2>
+        {% if protocol_edit_authorization %} 
+        <a class="btn btn-primary" href="{{ step.step_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+        <a class="btn btn-danger" href="{{ step.step_delete_url }}"><i class="icon-trash icon-white"></i> Delete Step</a>
+        {% endif %}
         {% if object.owner == request.user and object.status == object.STATUS_DRAFT %}      
             <p><a class="btn btn-success" data-toggle="modal" href="#publish-confirmation"><i class="icon-bell icon-white"></i></a> <a data-toggle="modal" href="#publish-confirmation"> Publish</a></p>
         {% endif %}
@@ -38,7 +42,7 @@
     <div class="span6">
       <h2>Steps</h2>
       {% if protocol_edit_authorization %}      
-          <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus icon-white"></i></a> <a href="{{ object.step_create_url }}">Add step</a></p>
+          <!-- <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Step</a> </p> -->
       {% endif %}
 
       {% if object.steps|length %}
@@ -47,23 +51,23 @@
               <tr>
                   <th>Step</th>
                   <th>Duration</th>
-                  <th>Actions</th>
                   <th>Action Names</th>
+                  <th>Step Comments</th>
               </tr>
             </thead>
             <tbody>
                 {% for item in object.steps %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
-                    <td>{{ item.duration_in_seconds|default:"0" }}</td>
-                    <td>{{ item.actions|length }}</td>
+                    <td>{{ item.update_duration|protocol_time }}</td>
                     <td>
                     {% for a in item.actions %}
-                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
+                      <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
                     {% endfor %}
                     </td>
+                    <td> {{ item.technique_comment }} </td>
                 </tr>
-                {% endfor%}
+                {% endfor %}
             </tbody>
         </table>                    
       {% endif %}

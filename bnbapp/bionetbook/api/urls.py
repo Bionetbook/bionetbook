@@ -18,6 +18,7 @@ urlpatterns = patterns("",
 	# url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
 	
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view='api.views.calendar_json', name='calendar_json'),
+	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view='api.views.get_verb_fields_json', name='api_verb_fields'),
 )
 
 

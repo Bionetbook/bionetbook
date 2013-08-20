@@ -989,7 +989,7 @@ class MachineUpdateView(NodeUpdateView):
     form_class = MachineForm
     slug_url_kwarg = "protocol_slug"
     template_name = "machine/machine_form.html"
-    success_url = "machine_detail"
+    success_url = "action_detail"
     node_type = "machine"
     slugs = ['step_slug', 'action_slug', 'machine_slug']
 
