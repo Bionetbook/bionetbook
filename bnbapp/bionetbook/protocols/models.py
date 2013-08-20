@@ -1083,16 +1083,17 @@ class Action(NodeBase):
             return str(min_duration) 
 
     def childtype(self):
-        if self['verb'] in COMPONENT_VERBS: 
-            return 'components'
-        if self['verb'] in MACHINE_VERBS:
-            return 'machine'
-        if self['verb'] in THERMOCYCLER_VERBS:
-            return 'thermocycle'            
-        if self['verb'] in MANUAL_VERBS:
-            return 'manual'
-        else:
-            return None        
+        if 'verb' in self:
+            if self['verb'] in COMPONENT_VERBS: 
+                return 'components'
+            if self['verb'] in MACHINE_VERBS:
+                return 'machine'
+            if self['verb'] in THERMOCYCLER_VERBS:
+                return 'thermocycle'            
+            if self['verb'] in MANUAL_VERBS:
+                return 'manual'
+
+        return None
 
 
 class Step(NodeBase):
