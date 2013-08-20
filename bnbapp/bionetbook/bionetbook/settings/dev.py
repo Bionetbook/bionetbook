@@ -22,7 +22,7 @@ DATABASES = {
 #     DATABASES['default']['NAME'] = ':memory:'
 
 
-REGISTRATION_ENABLED = True
+REGISTRATION_ENABLED = False
 
 MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
