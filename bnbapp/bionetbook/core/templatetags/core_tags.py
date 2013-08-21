@@ -71,52 +71,69 @@ def protocoltree(value):
 
 @register.filter(name='protocol_time')
 def protocol_time(value):
-    # def fit_closest_time_unit(time_var, input_unit = 'sec'):
-    max_time = None
+    
     if not value:
         return None
+    max_time = 0    
 
-    if '-' in value:
-        min_time = float(value[:value.index('-')])
-        max_time = float(value[value.index('-')+1:])
-    else:
-        min_time = float(value)
+    time = value.split('-')
+    min_time = format_time(float(time[0]))
+    if len(time) > 1: 
+        max_time = format_time(float(time[1]))
+    
+    if max_time > 0: 
+        if min_time == max_time:
+            return str(min_time)
+        else: 
+            return str(min_time)+ "-" + str(max_time)    
+    else: 
+        return str(min_time)
 
-    value1 = format_time(min_time)
+@register.filter(name='protocol_time_compact')
+def protocol_time_compact(value):
+    if not value:
+        return None 
+    max_time = 0
 
-    if max_time:
-        value2 = format_time(max_time)
-        return str(value1) + '-' + str(value2)
-    else:
-        return str(value1)
+    # max_time = None    
+    time = value.split('-')
+    min_time = format_time(float(time[0]), compact=True)
+    if len(time)>1:
+        max_time = format_time(float(time[1]), compact=True)
 
+    if max_time > 0:     
+        if min_time == max_time:
+            return str(min_time)
+        else: 
+            return str(min_time)+ "-" + str(max_time)   
+
+    else: 
+        return str(min_time)        
+
+    
 
 @register.filter(name='protocol_time_round_up')
 def protocol_time_round_up(value):
     if not value:
-        return None    
+        return None 
+    max_time = 0
 
-    max_time = None    
+    # max_time = None    
+    time = value.split('-')
+    min_time = format_time(float(time[0]), rounding=True)
+    if len(time)>1:
+        max_time = format_time(float(time[1]), rounding=True)
 
-    if '-' in value:
-        min_time = float(value[:value.index('-')])
-        max_temp = value[value.index('-')+1:]
-        max_time = float(max_temp)
-    else:
-        min_time = float(value)
+    if max_time > 0:     
+        if min_time == max_time:
+            return str(min_time)
+        else: 
+            return str(min_time)+ "-" + str(max_time)   
 
-    value1 = format_time(min_time, rounding=True)
+    else: 
+        return str(min_time)        
 
-    if max_time:
-        value2 = format_time(max_time, rounding=True)
-        if value1 != value2:
-            return str(value1) + '-' + str(value2)
-        else:     
-            return str(value1)
-    else:
-        return str(value1)
-
-def format_time(value, rounding = False):
+def format_time(value, rounding = False, compact = False):
 
     h=0
     m,s = divmod(value, 60)
@@ -125,18 +142,24 @@ def format_time(value, rounding = False):
         h,m = divmod(m, 60)
         if h > 24:
             d,h = divmod(h, 24)
+            if compact:
+                return "%dd:%02dh:%02dm" % (d, h, m)                
             if rounding:
                 return "%dd:%02dh:%02dm" % (d, h, m+1)            
             else:
                 return "%dd:%02dh:%02dm:%02ds" % (d, h, m, s)        
         else:
+            if compact:
+                return "%dh:%02dm" % (h, m)        
             if rounding:
                 return "%dh:%02dm" % (h, m+1)        
             else:
                 return "%dh:%02dm:%02ds" % (h, m, s)            
-    else: 
+    else:
+        if compact:       
+            return "%02dm" % (m) 
         if rounding:       
-            return "%dh%02dm" % (h, m+1)
+            return "%02dm" % (m+1)
         else:
             return "%dh:%02dm:%02ds" % (h, m, s)
 

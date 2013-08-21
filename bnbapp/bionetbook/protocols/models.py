@@ -470,14 +470,15 @@ class Protocol(TimeStampedModel):
         for step in self.steps:
             step_min_time = 0
             step_max_time = 0
+            # print "Step: %s" % step['name']
 
             for action in step["actions"]:
                 if action['name'] == 'store':
                     continue
                 action_min_time = 0
                 action_max_time = 0
-                
                 auto_update = False
+                # print "\tAction: %s" % action['name']
 
                 if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
                     action_min_time = float(len(action['components']) * 30 )
@@ -541,8 +542,7 @@ class Protocol(TimeStampedModel):
                     auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
-                # print "\t\tAction Duration: %s" % action['duration']
-                if auto_update:   # If this is an autoupdating action or there is no previous manually entered value...
+                if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
                     action['duration'] = "%d-%d" % ( action_min_time, action_max_time )
                     
                 # print "\t\tAction Duration: %s, %s" % (action['verb'], action['duration'])
@@ -555,9 +555,8 @@ class Protocol(TimeStampedModel):
 
             min_time += step_min_time
             max_time += step_max_time
-            time_delta += step_max_time - step_min_time
 
-        self.duration = "%d-%d" % ( min_time, min_time+time_delta)
+        self.duration = "%d-%d" % ( min_time, max_time)
         # print self.duration
 
     def get_item(self, objectid, item, return_default = None, **kwargs):

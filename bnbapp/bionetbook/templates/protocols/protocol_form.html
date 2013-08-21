@@ -62,7 +62,7 @@
                         </div>
                     </td> -->
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name|truncatewords:"3" }}</a></td>
-                    <td>{{ item.update_duration|protocol_time }}</td>     
+                    <td>{{ item.duration|protocol_time_compact }}</td>     
                     <td>
                     {% for a in item.actions %}
                     <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
