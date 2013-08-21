@@ -1,19 +1,10 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-       {{ paths|breadcrumb }}
-   </ul>
-{% endblock %}
-
 {% block title %}Action: {{ action.title }}{% endblock %}
 
 {% block page_title %}
-<a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Step {{ step.name }} edit Action details
-<!-- <a class="btn btn-primary" href="{{ protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a> -->
-
-
+<small>{{object.name}} > {{ step.name }}</small><br>{{ action.name }}
 {% endblock %}
 
 {% block content %}

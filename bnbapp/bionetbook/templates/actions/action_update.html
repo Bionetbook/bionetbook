@@ -2,13 +2,6 @@
 {% load core_tags %}
 {% load crispy_forms_tags %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      {{ paths|breadcrumb }}
-    </ul>
-{% endblock %}
-
-
 {% block title %}Create Action => {{step.title}}{% endblock %}
 
 {% block page_title %}
