@@ -46,7 +46,6 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
 		context = super(ScheduleAPI,self).get_context_data(**kwargs)
 		context['organization'] = Organization.objects.all()[0]
 		context['calendar'] = Calendar.objects.all()[0]
-		context['experiment'] = Experiment.objects.all()[0]
 		return context
 
 	# def get(self, request, *args, **kwargs):
