@@ -4,11 +4,7 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol:{{object.name}}</a> <span class="divider">/</span></li>
-      <li class="active">Create Step</li>
+      {{ paths|breadcrumb }}
     </ul>
 {% endblock %}
 

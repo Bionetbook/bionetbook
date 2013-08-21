@@ -1,24 +1,20 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load wysiwyg %}
+{% load core_tags %}
 
 {% block title %}Step Form{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol: {{object.name}}</a> <span class="divider">/</span></li>
-      <li><a href="{{step.get_absolute_url}}">Step {{step.name}}</a> <span class="divider">/</span></li>
-      <li class="active">Edit Step</li>
+      {{ paths|breadcrumb }}
     </ul>
 {% endblock %}
 
 
 {% block page_title %}
 {% if step %}
-  Editing Step: {{ step.title }}</a>
+  Editing Step: {{ step.title }}
 {% else %}
   Adding Step to Protocol: <a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a>
 {% endif %}

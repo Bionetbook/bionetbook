@@ -632,7 +632,7 @@ class StepCreateView(ProtocolSetupMixin, NodeCreateViewBase):
     template_name = "steps/step_create.html"
     form_class = StepForm
     success_url = 'protocol_detail'
-    pathEnd = { 'name':'Add Step' }
+    pathEnd = { 'name':'Create Step' }
 
     def form_valid(self, form):
         protocol = self.get_protocol()
@@ -657,9 +657,10 @@ class StepUpdateView(ProtocolSetupMixin, NodeUpdateView):
     pathEnd = { 'name':'Edit' }
 
 
-class StepDeleteView(NodeDeleteView):
+class StepDeleteView(ProtocolSetupMixin, NodeDeleteView):
     template_name = "steps/step_delete.html"
     node_type = "step"
+    pathEnd = { 'name':'Delete Step' }
 
     def get_context_data(self, **kwargs):
         context = super(StepDeleteView, self).get_context_data(**kwargs)
