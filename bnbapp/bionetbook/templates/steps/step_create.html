@@ -2,19 +2,10 @@
 {% load core_tags %}
 {% load crispy_forms_tags %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      {{ paths|breadcrumb }}
-    </ul>
-{% endblock %}
-
-
 {% block title %}{{ object.name }}: Add Step{% endblock %}
 
-{% block page_title %}<a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Add Step
-<!-- {% if protocol_edit_authorization %}
-    <small><a href="{{ object.protocol_update_url }}"><i class="icon-edit"></i> edit</a></small>
-{% endif %} -->
+{% block page_title %}
+Add Step
 {% endblock %}
 
 {% block content %}

@@ -4,13 +4,6 @@
 {# PAGE TITLE #}
 {% block page_title %}Protocol Diagram {% endblock %}
 
-{# BREADCRUMBS #}
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      {{ paths|breadcrumb }}
-    </ul>
-{% endblock %}
-
 {# CSS STYLE SHEETS GO HERE #}
 {% block extracss %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">

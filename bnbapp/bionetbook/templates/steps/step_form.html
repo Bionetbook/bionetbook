@@ -5,18 +5,11 @@
 
 {% block title %}Step Form{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      {{ paths|breadcrumb }}
-    </ul>
-{% endblock %}
-
-
 {% block page_title %}
 {% if step %}
   Editing Step: {{ step.title }}
 {% else %}
-  Adding Step to Protocol: <a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a>
+  Add Step to Protocol: {{ protocol }}
 {% endif %}
 
 {% endblock %}
