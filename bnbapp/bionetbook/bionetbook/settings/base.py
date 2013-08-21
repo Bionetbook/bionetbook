@@ -13,6 +13,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('Grant Viklund', 'gviklund@backcode.com'),
     ('Oren Schaedel', 'oren@bionetbook.com'),
+    ('Andrew Mori', 'andrewmori@backcode.com'),
 )
 
 MANAGERS = ADMINS
@@ -118,6 +119,7 @@ PROJECT_APPS = (
     'organization',
     'workflow',
     'feedback',
+    'experiment'
 )
 
 INSTALLED_APPS = BASE_APPS + PROJECT_APPS

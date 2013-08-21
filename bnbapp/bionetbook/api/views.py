@@ -5,9 +5,20 @@ import django.utils.simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
 from django import http
+from django.shortcuts import get_object_or_404
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
+from schedule.models import Calendar
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+
+
+def calendar_json(request, pk):
+    if request.method == 'GET':
+        curCal = get_object_or_404(Calendar, pk=1)
+        return HttpResponse( json.dumps( curCal.expToCalendar() ), mimetype="application/json" )
+    elif request.method == 'PUT':
+        print "I AM A PUT!"
+
 
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
@@ -19,6 +30,7 @@ def protocol_detail(request, protocol_slug):
                 return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
         except ObjectDoesNotExist:
             return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
+
 
 def get_layout_json(request, protocol_a_slug):
     '''
@@ -35,6 +47,7 @@ def get_layout_json(request, protocol_a_slug):
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
+
 def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare
@@ -46,6 +59,7 @@ def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     G.get_layout_by_objectid()
     data = list(G.layout)
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+
 
 def get_layout_clone_json(request, protocol_a_slug ,protocol_b_slug):
     '''
@@ -60,6 +74,7 @@ def get_layout_clone_json(request, protocol_a_slug ,protocol_b_slug):
     data = list(G.layout)
 
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+
 
 def json_data_dynamic(request):
     json_data = open("api/protocol_outline_double.json").read()

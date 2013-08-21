@@ -2,4 +2,8 @@ from django.contrib import admin
 
 from schedule.models import Calendar
 
-admin.site.register(Calendar)
+class CalendarAdmin(admin.ModelAdmin):
+	list_display = ('name','user')
+
+admin.site.register(Calendar,CalendarAdmin)
+

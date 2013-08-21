@@ -311,10 +311,66 @@ html, body {
 
 
 
-
-
-
-
+/*------------------------
+       Notes Popup
+------------------------*/
+.fc-event:hover{
+    z-index: 100 !important;
+}
+div.fc-event:after{
+    content: attr(data-notes);
+    display:none;
+    width: 15em;
+    min-height:2em;
+    position: absolute;
+    top: -1em;
+    right: -18em;
+    color: #ddd;
+    padding: .5em;
+    border-radius: .5em;
+    background-color: #444;
+}
+div.fc-event:hover:before{
+    display: none;
+    border: solid transparent;
+    border-color: rgba(136, 183, 213, 0);
+    border-width: .6em;
+    border-right-color: #444;
+    position: absolute;
+    top: 0em;
+    right: -2em;
+    width: 0.5em;
+    height: 0;
+    content: " ";
+    pointer-events: none;
+}
+div.fc-event.fri:after, div.fc-event.sat:after{
+    right:auto;
+    left:-18em;
+}
+div.fc-event.fri:hover:before, div.fc-event.sat:hover:before{
+    right:auto;
+    left:-2em;
+    border-right-color:transparent;
+    border-left-color: #444;
+}
+div.fc-event:hover:after, div.fc-event:hover:before{
+    display:block;
+}
+.fc-event-vert[data-active=false]{
+    background-color:transparent !important;
+    color:#000 !important;
+}
+div.fc-event-vert:hover:after{ top:0; }
+div.fc-event-vert:hover:before{ top:1em; }
+.fc-event[data-editing=true]:before, .fc-event[data-editing=true]:after, 
+.fc-event-vert[data-editing=true]:before, .fc-event-vert[data-editing=true]:after{
+    display:none !important;
+}
+div.fc-event[data-notes="There are no notes for this event."]:after{
+    font-style: italic;
+    color:#999;
+}
 
 
 

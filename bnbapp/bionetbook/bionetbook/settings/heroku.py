@@ -11,6 +11,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+REGISTRATION_ENABLED = False
+
 # DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL',
 #         'BioNetBook <info@bionetbook.com>')
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

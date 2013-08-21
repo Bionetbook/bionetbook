@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
 admin.autodiscover()
 
@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^profiles/', include('profiles.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^compare/', include('compare.urls')),
+    url(r'^schedule/', include('schedule.urls')),
     url(r'^organization/', include('organization.urls')),
     url(r'^signup/', include('interest.urls')),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name="login"),

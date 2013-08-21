@@ -18,8 +18,8 @@ class ProtocolPublishForm(forms.Form):
 
 
 class StepForm(NodeForm):
-    name = forms.CharField(max_length=100, required=False, label='step number')
-    verbatim_text = forms.CharField()
+    name = forms.CharField(max_length=100, required=False, label='Step Name')
+    verbatim_text = forms.CharField(required=False, label='Verbatim Text', help_text='As written text from the protocol (if you are transposing from another source)')
 
 
 class ActionForm(NodeForm):

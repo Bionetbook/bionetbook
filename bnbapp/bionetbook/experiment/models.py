@@ -1,29 +1,47 @@
 from django.db import models
+from django.contrib.auth.models import User
 from protocols.models import Protocol, Action, Step
 from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
+from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 #from protocols.utils import MANUAL_VERBS
 from core.models import SlugStampMixin
 
-from schedule.models import Calendar
+from workflow.models import Workflow
 
 
 class Experiment(SlugStampMixin, TimeStampedModel):
     '''
     An Experiment is an execution of Workflows
+
+    data : { 'meta': {}
+
+            }
     '''
     user = models.ForeignKey(User)
-    calendar = models.ForeignKey(Calendar)
+    workflow = models.ForeignKey(Workflow)    # <- NEEDS TO BE ADDED TO THE MODEL
     name = models.CharField(_("Experiment Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
+    def save(self,*args,**kwargs):
+    	new_slug = self.generate_slug()
+    	if self.slug != new_slug:
+    		self.slug = new_slug
+        if not self.data:
+            self.data = self.setupExperiment() 
+    	super(Experiment,self).save(*args,**kwargs)	
 
+    def setupExperiment(self):
+        ret = {'meta':{}}
+        return ret
 
-
+    def __unicode__(self):
+        return self.name
+        
 
 
 

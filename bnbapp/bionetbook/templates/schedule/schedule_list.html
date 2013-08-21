@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{{ organization.organization_protocol_list }}">{{ organization.name }}
+      </a> <span class="divider">/</span></li>
+      <li class="active">{{ experiment.name }}</li>
+    </ul>
+{% endblock %}
+
+{% block page_title %}{{ organization.name|possesive }} Schedule
+{% endblock %}
+
+{% block extracss %}
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/fullcalendar.css">
+	<link rel="stylesheet" type="text/css" media="print" href="{{ STATIC_URL }}css/fullcalendar.print.css">
+{% endblock %}
+
+{% block extrajs %}
+	<script src="{{ STATIC_URL }}js/fullcalendar.js"></script>
+	<script src="{{ STATIC_URL }}js/bnb.calendar.js"></script>
+	<script src="{{ STATIC_URL }}js/gcal.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery-ui-1.10.2.custom.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id='external-events'>
+	<p style="padding:.5em 0; border-top:1px solid #ccc;">
+		<input style="margin-top:.5em;" type="button" id="sync-events" value="Sync" onclick="BNB.calendar.getEvents('/api/calendar/{{ calendar.pk }}/');">
+	</p>
+
+</div> <!-- End Drag Events Container -->
+	<div id='calendar'></div>
+{% endblock %}
