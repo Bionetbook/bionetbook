@@ -248,27 +248,31 @@ def get_timeunit(time_var, desired_unit = 'sec'):
                 desired_unit, 
                 time_var[1])
 
-# def fit_closest_time_unit(time_var, input_unit = 'sec'):
+def eval_time(_dict, value = 'min_time'):
+    ''' time_var = [value_str, 'units']
+    return (float(min_value), [,float(max_value)], 'units', 'original units')
+    '''
+
+    # action_min_time = 0
+    # action_max_time = 0
+    time_unit = 'sec'
+
+    factor = {
+        'sec' : {'sec': 1, 'min': 60, 'hrs': 3600,'h': 3600, 'd' : 86400, 'yrs':  31536000},
+        'min' : {'sec': 1/60, 'min': 1, 'hrs': 60, 'h': 60,'d' : 1440, 'yrs':  525600},
+        'hrs' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'h': 1, 'd' : 24, 'yrs':  8760},
+        'h' : {'sec': 1/3600, 'min': 1/60, 'hrs': 1, 'h': 1, 'd' : 24, 'yrs':  8760},
+        'd' : {'sec': 1/86400, 'min': 1/3600, 'hrs': 1/60, 'h': 1/60, 'd' : 1, 'yrs':  365},
+        'yrs' : {'sec': 1/31536000, 'min': 1/525600, 'hrs': 1/8760, 'h': 1/8760, 'd' : 1/365, 'yrs':  1},
+        }
     
-#     m,s = divmod(time_var, 60)
-#     if m> 60:
-#         h,m = divmod(m, 60)
-#         if h > 24:
-#             d,h = divmod(h, 24)
-#             return "%dd:%02dh:%02dm:%02ds" % (d, h, m, s)        
-#         else:
-#             return "%dh:%02dm:%02ds" % (h, m, s)        
-#     else:        
-#         return "%dm:%02ds" % (m, s)
+    if 'time_units' in _dict and _dict['time_units'] is not None:
+        time_unit = _dict['time_units']
 
+    if value in _dict and _dict[value] is not None:
+        return float(factor['sec'][time_unit]) * float(_dict[value])
 
-
-
-
-
-
-
-
-
-
-
+    try: 
+        return float(factor['sec'][time_unit]) * float(_dict['min_time'])
+    except:
+        return 0

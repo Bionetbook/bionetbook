@@ -20,7 +20,7 @@ from organization.models import Organization
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit, eval_time
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -465,54 +465,100 @@ class Protocol(TimeStampedModel):
 
     def update_duration(self):
         min_time = 0
-        max_time = 0    
+        max_time = 0  
 
         for step in self.steps:
             step_min_time = 0
             step_max_time = 0
-            # print "Step: %s" % step['name']
 
             for action in step["actions"]:
+                if action['name'] == 'store':
+                    continue
                 action_min_time = 0
                 action_max_time = 0
+                
                 auto_update = False
-                # print "\tAction: %s" % action['name']
 
                 if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
-                    pass
-                    # auto_update = True
+                    action_min_time = float(len(action['components']) * 30 )
+                    action_max_time = float(len(action['components']) * 60 )
+
+                    auto_update = True
                     # Total Up Component Time Values Here from the DICT
 
                 if 'thermocycle' in action and action['verb'] in THERMOCYCLER_VERBS:    # if it should have a thermocycle, update
-                    pass
-                    # auto_update = True
+                    min_time_temp = []
+                    max_time_temp = []
+
+                    cycles = [r['cycles'] for r in action['thermocycle']]
+                    cycle_back_to = [r['cycle_back_to'] for r in action['thermocycle']]
+                    for cnt, (C, B) in enumerate(zip(cycles, cycle_back_to)):
+                        
+                        # Append times of single-phase cycles
+                        if C and not B:
+                            min_time_temp.append(eval_time(action['thermocycle'][cnt], value = 'min_time'))
+                            max_time_temp.append(eval_time(action['thermocycle'][cnt], value = 'max_time'))
+
+                        # Append times of multi-phased cycles    
+                        if C and B:
+                            phases_in_cycle_min = [eval_time(r, value='min_time') for r in action['thermocycle'][int(B)-1:int(cnt)+1]]
+                            phases_in_cycle_max = [eval_time(r, value='max_time') for r in action['thermocycle'][int(B)-1:int(cnt)+1]]
+                            
+                            # Multiply the cycle number for multi-phased cycle:
+                            sum_of_cycles_min = sum(phases_in_cycle_min) * C   
+                            sum_of_cycles_max = sum(phases_in_cycle_max) * C 
+                            
+                            # append repeating cycle to single cycle phases:
+                            min_time_temp.append(sum_of_cycles_min)
+                            max_time_temp.append(sum_of_cycles_max)
+
+                    action_min_time = float(sum(min_time_temp))          
+                    action_max_time = float(sum(max_time_temp))          
+
+                    auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
                 if 'machine' in action and 'verb' in action and action['verb'] in MACHINE_VERBS:            # Make sure this action is supposed to have a "machine" attribute
-                    pass
-                    # auto_update = True
+                    
+                    action_min_time = eval_time(action['machine'], value = 'min_time')
+                    action_max_time = eval_time(action['machine'], value = 'max_time')
+                    
+                    # Debuggin Clause
+                    if action_max_time ==0:
+                        print action['name'], action['objectid']
+
+                    auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
-                if 'manual' in action and action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
-                    pass
-                    # auto_update = True
-                    # Total Up Machine Time Values Here from the DICT
+                if action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
+                    action_min_time = eval_time(action, value = 'min_time')
+                    action_max_time = eval_time(action, value = 'max_time')
+                    
+                    # debuggin Clause:
+                    # if action_max_time ==0:
+                    #     print action['name'], action['objectid']                    
 
-                if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
-                    action['duration'] = "%d-%d" % ( action_min_time, action_min_time+action_max_time )
+                    auto_update = True
+                    # Total Up Machine Time Values Here from the DICT
 
                 # print "\t\tAction Duration: %s" % action['duration']
+                if auto_update:   # If this is an autoupdating action or there is no previous manually entered value...
+                    action['duration'] = "%d-%d" % ( action_min_time, action_max_time )
+                    
+                # print "\t\tAction Duration: %s, %s" % (action['verb'], action['duration'])
                 step_min_time += action_min_time
                 step_max_time += action_max_time
 
-            step['duration'] = "%d-%d" % ( step_min_time, step_min_time+step_max_time )
-            # print "\tStep Duration: %s" % step['duration']
+            step['duration'] = "%d-%d" % ( step_min_time, step_max_time )
+            
+            # print "\tStep Duration: %s" % (step['duration'])
 
             min_time += step_min_time
             max_time += step_max_time
+            time_delta += step_max_time - step_min_time
 
-        self.duration = "%d-%d" % ( min_time, min_time+max_time )
-        print self.duration
+        self.duration = "%d-%d" % ( min_time, min_time+time_delta)
+        # print self.duration
 
     def get_item(self, objectid, item, return_default = None, **kwargs):
         out = None
