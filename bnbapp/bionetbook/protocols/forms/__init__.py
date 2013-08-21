@@ -2,6 +2,7 @@ import floppyforms as forms
 from organization.models import Organization
 from core.utils import CONCENTRATION_UNITS, VOLUME_UNITS, TIME_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, MASS_UNITS, AMMOUNT_UNITS
 from django.core.exceptions import ValidationError
+import re
 
 ###########
 # REGEX PATTERNS
