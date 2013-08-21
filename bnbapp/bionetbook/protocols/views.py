@@ -325,6 +325,9 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedOrganizationMixin, Authorized
 
 
 class ProtocolSetupMixin(PathMixin):
+
+    pathEnd = {}
+
     def get_context_data(self, **kwargs):
         context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
 
@@ -332,6 +335,15 @@ class ProtocolSetupMixin(PathMixin):
         if protocol_slug:
             context['protocol'] = Protocol.objects.get(slug=protocol_slug)
             context['organization'] = context['protocol'].owner
+
+            step_slug = self.kwargs.get('step_slug', None)
+            if step_slug:
+                context['step'] = context['protocol'].nodes[step_slug]
+
+                action_slug = self.kwargs.get('action_slug', None)
+                if action_slug:
+                    context['action'] = context['protocol'].nodes[action_slug]
+
         else:
             owner_slug = self.kwargs.get('owner_slug', None)
             if owner_slug:
@@ -343,19 +355,27 @@ class ProtocolSetupMixin(PathMixin):
             if 'protocol' in context:
                 context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
 
+                if 'step' in context:
+                    context['paths'].append( { 'name':context['step']['name'], 'url':context['step'].get_absolute_url() } )
+
+        if self.pathEnd:
+            context['paths'].append( self.pathEnd )
+        else:
+            del(context['paths'][-1]['url'])            # IF THERE ARE NO PATHS TO APPEND, MAKE THE LAST ONE THE END
+
         return context 
 
 
 class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
     template_name = "protocols/protocol_layout_single.html"           
 
-    def get_context_data(self, **kwargs):
-        context = super(ProtocolDetailView, self).get_context_data(**kwargs)
-        del(context['paths'][-1]['url'])
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(ProtocolDetailView, self).get_context_data(**kwargs)
+    #     del(context['paths'][-1]['url'])
+    #     return context
 
 
-class ProtocolListView(LoginRequiredMixin, ListView):
+class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
 
     model = Organization
     template_name = "protocols/protocol_list.html"
@@ -400,6 +420,7 @@ class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
     model = Protocol
     form_class = ProtocolForm
     slug_url_kwarg = "owner_slug"
+    pathEnd = { 'name':'New Protocol' }
 
     # def form_valid(self, form):
     #     form.instance.owner = self.request.user
@@ -412,10 +433,10 @@ class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
     #         context['organization'] = Organization.objects.get(slug=slug)
     #     return context
 
-    def get_context_data(self, **kwargs):
-        context = super(ProtocolCreateView, self).get_context_data(**kwargs)
-        context['paths'].append( { 'name':'New Protocol' } )
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(ProtocolCreateView, self).get_context_data(**kwargs)
+    #     context['paths'].append( { 'name':'New Protocol' } )
+    #     return context
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -447,6 +468,7 @@ class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
     model = Protocol
     form_class = ProtocolForm
     slug_url_kwarg = "protocol_slug"
+    pathEnd = { 'name':'Edit' }
 
     # NEED TO ONLY RETURN A PROTOCOL WHO'S PUBLISH IS SET TO False
 
@@ -466,7 +488,6 @@ class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
         context['organization'] = self.object.owner
-        context['paths'].append( { 'name':'Edit' } )
         return context
 
     def get_object(self, queryset=None):
@@ -514,6 +535,7 @@ class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrga
     model = Protocol
     slug_url_kwarg = "protocol_slug"
     template_name = "protocols/protocol_publish_form.html"
+    pathEnd = { 'name':'Publish' }
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -533,6 +555,7 @@ class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
     model = Protocol
     slug_url_kwarg = "protocol_slug"
     template_name = "protocols/protocol_public_form.html"
+    pathEnd = { 'name':'Make Public' }
 
     def cancel(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -548,7 +571,7 @@ class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return http.HttpResponseRedirect(url)
 
 
-class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolDuplicateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     # NEED TO VALIDATE THE FORM TO GET THE OWNER
     # NEED TO CONFIRM THE PROTOCOL IS PUBLISHED BEFORE DUPLICATING
@@ -557,6 +580,7 @@ class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedOrganizationMixin, Aut
     slug_url_kwarg = "protocol_slug"
     template_name = "protocols/protocol_duplicate_form.html"
     form_class = OrganizationListForm
+    pathEnd = { 'name':'Duplicate Protocol' }
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolDuplicateView, self).get_context_data(**kwargs)
@@ -589,20 +613,26 @@ class ProtocolDuplicateView(LoginRequiredMixin, AuthorizedOrganizationMixin, Aut
 #####################
 
 
-class StepDetailView(NodeDetailView):
+class StepDetailView(ProtocolSetupMixin, NodeDetailView):
 
     model = Protocol
     template_name = "steps/step_detail.html"
     slug_url_kwarg = "protocol_slug"
     slugs = ['step_slug']
 
+    def get_context_data(self, **kwargs):
+        context = super(StepDetailView, self).get_context_data(**kwargs)
+        # context['paths'].append( { 'name':self.object.name } )
+        return context
 
-class StepCreateView(NodeCreateViewBase):
+
+class StepCreateView(ProtocolSetupMixin, NodeCreateViewBase):
     '''Creates and appends a step to a protocol.'''
 
     template_name = "steps/step_create.html"
     form_class = StepForm
     success_url = 'protocol_detail'
+    pathEnd = { 'name':'Add Step' }
 
     def form_valid(self, form):
         protocol = self.get_protocol()
@@ -616,7 +646,7 @@ class StepCreateView(NodeCreateViewBase):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class StepUpdateView(NodeUpdateView):
+class StepUpdateView(ProtocolSetupMixin, NodeUpdateView):
     model = Protocol
     form_class = StepForm
     slug_url_kwarg = "protocol_slug"
@@ -624,6 +654,7 @@ class StepUpdateView(NodeUpdateView):
     success_url = 'step_detail'
     slugs = ['step_slug']
     node_type = "step"
+    pathEnd = { 'name':'Edit' }
 
 
 class StepDeleteView(NodeDeleteView):
