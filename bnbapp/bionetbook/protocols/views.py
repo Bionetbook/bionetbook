@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
+from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView, PathMixin
 
 from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
 from protocols.forms.baseforms import ProtocolForm
@@ -317,21 +317,44 @@ class NodeDeleteView(LoginRequiredMixin, AuthorizedOrganizationMixin, Authorized
 #         context['steps'] = self.object.steps
 #         return context
 
+# class PathMixin(object):
+#     def get_context_data(self, **kwargs):
+#         context = super(PathMixin, self).get_context_data(**kwargs)
+#         context['paths'] = [{'name':"Dashboard", 'icon':'home', 'url':reverse('dashboard')}]
+#         return context 
 
-class ProtocolDetailView(LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
-    template_name = "compare/protocol_layout_single.html"           
-    
+
+class ProtocolSetupMixin(PathMixin):
+    def get_context_data(self, **kwargs):
+        context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
+
+        owner_slug = self.kwargs.get('owner_slug', None)
+        if owner_slug:
+            context['organization'] = Organization.objects.get(slug=owner_slug)
+            context['paths'].append( { 'name':context['organization'].name, 'url':context['organization'].get_absolute_url() } )
+
+        protocol_slug = self.kwargs.get('protocol_slug', None)
+        if protocol_slug:
+            context['protocol'] = Protocol.objects.get(slug=protocol_slug)
+            context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
+
+        return context 
+
+
+# class ProtocolPathMixin(PathMixin):
+#     def get_context_data(self, **kwargs):
+#         context = super(ProtocolPathMixin, self).get_context_data(**kwargs)
+#         # context['paths'].append( {'name':"Dashboard", 'icon':'home', 'url':reverse('dashboard')} )
+#         return context 
+
+
+class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+    template_name = "protocols/protocol_layout_single.html"           
+
     def get_context_data(self, **kwargs):
         context = super(ProtocolDetailView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
-        return context 
-        
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        context['protocol_a'] = Protocol.objects.get(slug=kwargs['protocol_slug'])
-        context['organization'] = context['protocol_a'].owner
-
-        return self.render_to_response(context)    
+        del(context['paths'][-1]['url'])
+        return context
 
 
 class ProtocolListView(LoginRequiredMixin, ListView):
@@ -371,7 +394,7 @@ class ProtocolListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ProtocolCreateView(LoginRequiredMixin, CreateView):
+class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
     '''
     View used to create new protocols
     '''
@@ -384,13 +407,17 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
     #     form.instance.owner = self.request.user
     #     return super(ProtocolCreateView, self).form_valid(form)
 
+    # def get_context_data(self, **kwargs):
+    #     context = super(ProtocolCreateView, self).get_context_data(**kwargs)
+    #     slug = self.kwargs.get(self.slug_url_kwarg, None)
+    #     if slug:
+    #         context['organization'] = Organization.objects.get(slug=slug)
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super(ProtocolCreateView, self).get_context_data(**kwargs)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        if slug:
-            context['organization'] = Organization.objects.get(slug=slug)
+        context['paths'].append( { 'name':'New Protocol' } )
         return context
-
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -417,7 +444,7 @@ class ProtocolCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-class ProtocolUpdateView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
+class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
@@ -441,6 +468,7 @@ class ProtocolUpdateView(LoginRequiredMixin, AuthorizedOrganizationMixin, Author
         context = super(ProtocolUpdateView, self).get_context_data(**kwargs)
         context['steps'] = self.object.steps
         context['organization'] = self.object.owner
+        context['paths'].append( { 'name':'Edit' } )
         return context
 
     def get_object(self, queryset=None):
