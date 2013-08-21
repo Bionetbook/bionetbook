@@ -356,7 +356,9 @@ class Protocol(TimeStampedModel):
     def get_steps(self):
         return [r['objectid'] for r in self.steps]
 
-    
+    def get_action_durations(self):
+        return []
+
     def get_components(self):
         return [r for r in self.get_actions() if self.nodes[r].has_components()]
 
