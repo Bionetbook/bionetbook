@@ -4,6 +4,7 @@ from django.views.generic import View, TemplateView
 from django.utils.log import getLogger
 from django.views.generic.detail import SingleObjectMixin
 from django import http
+from django.core.urlresolvers import reverse
 
 from braces.views import LoginRequiredMixin
 
@@ -12,22 +13,35 @@ from protocols.models import Protocol
 
 logger = getLogger('django.request')
 
+#####################
+# MIXINS
+#####################
 
-class DashboardView(LoginRequiredMixin, TemplateView):
+class PathMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super(PathMixin, self).get_context_data(**kwargs)
+        context['paths'] = [{'name':"Dashboard", 'icon':'home', 'url':reverse('dashboard')}]
+        return context 
 
+
+#####################
+# VIEWS
+#####################
+
+class DashboardView(PathMixin, LoginRequiredMixin, TemplateView):
     template_name = "core/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
+        del(context['paths'][-1]['url'])
         return context
 
 
 class DocumentationView(TemplateView):
-
     template_name = "core/documentation.html"
 
-class FAQView(TemplateView):
 
+class FAQView(TemplateView):
     template_name = "core/FAQ.html"    
 
 
