@@ -32,8 +32,12 @@ class ProtocolSetupMixin(PathMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
-
         protocol_slug = self.kwargs.get('protocol_slug', None)
+
+        prefix = ""
+        suffix = ""
+        title = ""
+
         if protocol_slug:
             context['protocol'] = Protocol.objects.get(slug=protocol_slug)
             context['organization'] = context['protocol'].owner
@@ -53,20 +57,31 @@ class ProtocolSetupMixin(PathMixin):
 
         if 'organization' in context:
             context['paths'].append( { 'name':context['organization'].name, 'url':context['organization'].get_absolute_url() } )
+            title = context['organization'].name
 
             if 'protocol' in context:
                 context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
+                prefix += title
+                title = context['protocol'].name
 
                 if 'step' in context:
                     context['paths'].append( { 'name':context['step']['name'], 'url':context['step'].get_absolute_url() } )
+                    prefix += title
+                    title = context['step']['name']
 
                     if 'action' in context:
                         context['paths'].append( { 'name':context['action']['name'], 'url':context['action'].get_absolute_url() } )
+                        prefix += title
+                        title = context['action']['name']
 
         if self.pathEnd:
             context['paths'].append( self.pathEnd )
+            suffix = self.pathEnd['name']
         else:
             del(context['paths'][-1]['url'])            # IF THERE ARE NO PATHS TO APPEND, MAKE THE LAST ONE THE END
+
+        if title:
+            context['titleBlock'] = {'prefix':prefix, 'title':title, 'suffix':suffix}
 
         return context 
 
@@ -376,7 +391,7 @@ class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
     #     return context
 
 
-class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
+class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, ListView):
 
     model = Organization
     template_name = "protocols/protocol_list.html"
@@ -413,7 +428,7 @@ class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
+class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, CreateView):
     '''
     View used to create new protocols
     '''
@@ -941,6 +956,7 @@ class ComponentCreateView(NodeCreateViewBase):
     template_name = "component/component_form.html"
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug']
+    pathEnd = { 'name':'Add Component' }
 
     def form_valid(self, form):
         protocol = self.get_protocol()
@@ -960,6 +976,7 @@ class ComponentUpdateView(NodeUpdateView):
     success_url = "action_detail"
     node_type = "component"
     slugs = ['step_slug', 'action_slug', 'component_slug']
+    pathEnd = { 'name':'Edit Component' }
 
     # def get_context_data(self, form = None, **kwargs):
     #     context = super(MachineUpdateView, self).get_context_data(**kwargs)
@@ -984,6 +1001,7 @@ class ComponentDeleteView(NodeDeleteView):
     template_name = "component/component_delete.html"
     node_type = "component"
     cancel_parent_redirect = True
+    pathEnd = { 'name':'Delete Component' }
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDeleteView, self).get_context_data(**kwargs)
@@ -1023,6 +1041,7 @@ class ComponentDeleteView(NodeDeleteView):
 class MachineDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug', 'machine_slug']
     template_name = "machine/machine_detail.html"
+    pathEnd = { 'name':'Machine' }
 
     def get_context_data(self, **kwargs):
         context = super(MachineDetailView, self).get_context_data(**kwargs)
@@ -1036,6 +1055,7 @@ class MachineCreateView(NodeCreateViewBase):
     template_name = "machine/machine_form.html"
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug']
+    pathEnd = { 'name':'Add Machine' }
 
     def form_valid(self, form):
         protocol = self.get_protocol()
@@ -1055,6 +1075,7 @@ class MachineUpdateView(NodeUpdateView):
     success_url = "machine_detail"
     node_type = "machine"
     slugs = ['step_slug', 'action_slug', 'machine_slug']
+    pathEnd = { 'name':'Edit Machine' }
 
     def get_context_data(self, form = None, **kwargs):
         context = super(MachineUpdateView, self).get_context_data(**kwargs)
@@ -1067,6 +1088,7 @@ class MachineDeleteView(NodeDeleteView):
     template_name = "machine/machine_delete.html"
     node_type = "machine"
     cancel_parent_redirect = True
+    pathEnd = { 'name':'Delete Machine' }
 
     def get_context_data(self, **kwargs):
         context = super(MachineDeleteView, self).get_context_data(**kwargs)
