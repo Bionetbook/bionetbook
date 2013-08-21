@@ -63,14 +63,17 @@ def breadcrumb(value):
     '''
     result = []
     for item in value:
-        if 'icon' in item:
-            item['name'] = '<i class="icon-%(icon)s"></i> %(name)s' % item
-
         if not 'url' in item:
-            result.append( '<li class="active">%(name)s </li>' % item )
+            if 'icon' in item:
+                result.append( '<li class="active"><i class="icon-%(icon)s"></i> %(name)s </li>' % item )
+            else:
+                result.append( '<li class="active">%(name)s </li>' % item )
         else:
-            result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
-
+            if 'icon' in item:
+                result.append( '<li><a href="%(url)s"><i class="icon-%(icon)s"></i> %(name)s</a><span class="divider">/</span></li>' % item )
+            else:
+                result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
+                
     return mark_safe("\n".join(result))
 
 

@@ -13,9 +13,10 @@ from django.contrib import messages
 from protocols.models import Protocol
 import itertools
 from protocols.utils import MANUAL_VERBS
+from core.views import PathMixin
 
 
-class CompareSelectView(LoginRequiredMixin, TemplateView):
+class CompareSelectView(PathMixin, LoginRequiredMixin, TemplateView):
     model = Organization
     template_name = "compare/compare_select.html"
     slug_url_kwarg = "owner_slug"
@@ -25,10 +26,12 @@ class CompareSelectView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(CompareSelectView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()
+        context['protocols'] = Protocol.objects.all()   # NEED TO REPLACE THIS WITH MORE SECURE WAY TO GET PROTOCOLS
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         if slug:
             context['organization'] = Organization.objects.get(slug=slug)
+
+        context['paths'].append({'name':'Compare'})
         return context
 
     def post(self, request, *args, **kwargs):

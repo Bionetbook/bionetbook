@@ -328,24 +328,22 @@ class ProtocolSetupMixin(PathMixin):
     def get_context_data(self, **kwargs):
         context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
 
-        owner_slug = self.kwargs.get('owner_slug', None)
-        if owner_slug:
-            context['organization'] = Organization.objects.get(slug=owner_slug)
-            context['paths'].append( { 'name':context['organization'].name, 'url':context['organization'].get_absolute_url() } )
-
         protocol_slug = self.kwargs.get('protocol_slug', None)
         if protocol_slug:
             context['protocol'] = Protocol.objects.get(slug=protocol_slug)
-            context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
+            context['organization'] = context['protocol'].owner
+        else:
+            owner_slug = self.kwargs.get('owner_slug', None)
+            if owner_slug:
+                context['organization'] = Organization.objects.get(slug=owner_slug)
+
+        if 'organization' in context:
+            context['paths'].append( { 'name':context['organization'].name, 'url':context['organization'].get_absolute_url() } )
+
+            if 'protocol' in context:
+                context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
 
         return context 
-
-
-# class ProtocolPathMixin(PathMixin):
-#     def get_context_data(self, **kwargs):
-#         context = super(ProtocolPathMixin, self).get_context_data(**kwargs)
-#         # context['paths'].append( {'name':"Dashboard", 'icon':'home', 'url':reverse('dashboard')} )
-#         return context 
 
 
 class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
@@ -511,7 +509,7 @@ class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return obj
 
 
-class ProtocolPublishView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -530,7 +528,7 @@ class ProtocolPublishView(LoginRequiredMixin, AuthorizedOrganizationMixin, Autho
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
 
-class ProtocolPublicView(LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"

@@ -5,6 +5,7 @@ from django.utils.log import getLogger
 from django.views.generic.detail import SingleObjectMixin
 from django import http
 from django.core.urlresolvers import reverse
+# import django.template as template
 
 from braces.views import LoginRequiredMixin
 
@@ -12,6 +13,12 @@ from core.utils import check_owner_edit_authorization, check_owner_view_authoriz
 from protocols.models import Protocol
 
 logger = getLogger('django.request')
+
+
+# class PathGenerator(template.Node):
+#     def render(self, context):
+#         return "FOO"
+
 
 #####################
 # MIXINS
