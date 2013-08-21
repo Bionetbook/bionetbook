@@ -73,7 +73,7 @@ def breadcrumb(value):
                 result.append( '<li><a href="%(url)s"><i class="icon-%(icon)s"></i> %(name)s</a><span class="divider">/</span></li>' % item )
             else:
                 result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
-                
+
     return mark_safe("\n".join(result))
 
 
