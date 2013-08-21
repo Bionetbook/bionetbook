@@ -77,6 +77,29 @@ def breadcrumb(value):
     return mark_safe("\n".join(result))
 
 
+
+@register.filter(name='titleblock')
+def title_block(value):
+    '''
+    '''
+
+    prefix = ""
+    suffix = ""
+    title = ""
+
+    if 'title' in value:
+        title = value['title']
+        if 'prefix' in value:
+            prefix = "<small>%s</small><br>" % prefix
+
+        if 'suffix' in value:
+            suffix = "<small>%s</small>" % suffix
+
+        result = prefix + title + suffix
+
+    return mark_safe(result)
+
+
 @register.filter(name='protocoltree')
 def protocoltree(value):
     # GET A LIST OF EACH STEP
