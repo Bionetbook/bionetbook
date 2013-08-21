@@ -19,4 +19,5 @@ urlpatterns = patterns("",
 	
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view='api.views.calendar_json', name='calendar_json'),
 	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view='api.views.get_verb_fields_json', name='api_verb_fields'),
+	url(regex=r'^action/types/$', view='api.views.get_verb_types_json', name='api_verb_types'),
 )
