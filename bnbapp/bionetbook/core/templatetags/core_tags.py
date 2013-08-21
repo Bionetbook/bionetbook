@@ -54,6 +54,22 @@ def possesive(value):
         return "%s's" % value
 
 
+@register.filter(name='breadcrumb')
+def breadcrumb(value):
+    '''
+    Expects an ordered list of dictionaries 
+    example: [{'url':"/", 'name':"bob"},{}]
+    '''
+    result = []
+    for item in value:
+        if not 'url' in item:
+            result.append( '<li class="active">%(name)s</li>' % item )
+        else:
+            result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
+
+    return "\n".join(result)
+
+
 @register.filter(name='protocoltree')
 def protocoltree(value):
     # GET A LIST OF EACH STEP
