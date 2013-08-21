@@ -29,19 +29,25 @@ class Calendar(TimeStampedModel):
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
                             'duration':300,
-                            'name':"First Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1'
                             'notes':"",
                         },
                         {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'name':"Second Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1',
                             'notes':"",
                         },
                         {   'id': "bnb-o1-e2-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'name':"Second Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1',
                             'notes':"",
                         },
                       ]
@@ -79,22 +85,29 @@ class Calendar(TimeStampedModel):
     #     print ret
 
     def setupCalendar(self):
-        ret = {'meta':{},'experiments':[]}
+        ret = {'meta':{},'events':[]}
+        userExperimentList = self.user.experiment_set.all()
+        for e in userExperimentList:                    # loop through each experiment for user
+            for p in e.workflow.data['protocols']:      # loop through each experiments protocols
+                stepActionList = zip(p.get_steps(),p.get_actions())
+
+
         return ret
 
-    '''
-    experimentList = [ {"experiment":1,
-                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}
-                        ]},
-                        {"experiment":2,
-                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}]}]
-    '''
+
+    def createEventObject(org,exp,proto,stp,act):
+        ret = {}
+        ret['id'] = "bnb-o%d-e%d-p%d-%s-%s" % (org,exp.pk,proto.pk,stp.objectid,act.objectid)
+        ret['start'] = 0
+        ret['duration'] = act.duration
+        ret['experiment'] = exp.title
+        ret['protocol'] = proto.title
+        ret['action'] = action.verb
+        ret['notes'] = ""
 
 
     def updateCalendar(self, experimentList):
         print "updated"
-
-
 
 
     def expToCalendar(self):  # defaulted to take only 1 experiment
