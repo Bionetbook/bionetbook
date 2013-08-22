@@ -7,19 +7,6 @@
 
 {% block page_title %}Protocol{% if not object %} Create{% else %} Edit: {{ object }}{% endif %}{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_protocol_list organization.slug %}">{{ organization.name }}</a> <span class="divider">/</span></li>
-      {% if object %}
-      <li><a href="{{ object.get_absolute_url }}"><i class="icon-th-list"></i> Protocol: {{object.name}}</a><span class="divider">/</span></li>
-      <li class="active">Protocol Edit</li>
-      {% else %}
-      <li class="active">Protocol Create</li>
-      {% endif %}
-    </ul>
-{% endblock %}
-
 {% block content %}
 <div class="row">
 

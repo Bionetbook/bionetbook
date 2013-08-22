@@ -1,24 +1,10 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol:{{object.name}}</a> <span class="divider">/</span></li>
-      <li><a href="{{step.get_absolute_url}}">Step {{step.name}}</a> <span class="divider">/</span></li>
-      <li class="active">{{action.name}}</li>
-    </ul>
-{% endblock %}
-
 {% block title %}Action: {{ action.title }}{% endblock %}
 
 {% block page_title %}
-<a href="{{ object.protocol_update_url }}">Protocol Edit:</a> Step {{ step.name }} edit Action details
-<!-- <a class="btn btn-primary" href="{{ protocol.protocol_outline_url }}"><i class="icon-th-list"></i> Protocol Diagram</a> -->
-
-
+<small>{{object.name}} > {{ step.name }}</small><br>{{ action.name }}
 {% endblock %}
 
 {% block content %}

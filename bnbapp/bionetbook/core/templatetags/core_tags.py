@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.utils.html import conditional_escape
 
 register = template.Library()
 
@@ -52,6 +53,51 @@ def possesive(value):
         return "%s'" % value
     else:
         return "%s's" % value
+
+
+@register.filter(name='breadcrumb')
+def breadcrumb(value):
+    '''
+    Expects an ordered list of dictionaries 
+    example: [{'url':"/", 'name':"bob"},{}]
+    '''
+    result = []
+    for item in value:
+        if not 'url' in item:
+            if 'icon' in item:
+                result.append( '<li class="active"><i class="icon-%(icon)s"></i> %(name)s </li>' % item )
+            else:
+                result.append( '<li class="active">%(name)s </li>' % item )
+        else:
+            if 'icon' in item:
+                result.append( '<li><a href="%(url)s"><i class="icon-%(icon)s"></i> %(name)s</a><span class="divider">/</span></li>' % item )
+            else:
+                result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
+
+    return mark_safe("\n".join(result))
+
+
+
+@register.filter(name='titleblock')
+def title_block(value):
+    '''
+    '''
+
+    prefix = ""
+    suffix = ""
+    title = ""
+
+    if 'title' in value:
+        title = value['title']
+        if 'prefix' in value:
+            prefix = "<small>%s</small><br>" % prefix
+
+        if 'suffix' in value:
+            suffix = "<small>%s</small>" % suffix
+
+        result = prefix + title + suffix
+
+    return mark_safe(result)
 
 
 @register.filter(name='protocoltree')

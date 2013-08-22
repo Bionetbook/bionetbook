@@ -81,6 +81,11 @@ def json_data_dynamic(request):
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
 
+def get_verb_types_json(request):
+    result = {'meta':{}, 'data':[{'name':x[0]} for x in VERB_CHOICES ] }
+    return HttpResponse(json.dumps(result, indent = 4, separators=(',', ': ')), mimetype="application/json")
+
+
 def get_verb_fields_json(request, slug):
     '''
     Returns a JSON result that lists all the form fields the verb type requires
