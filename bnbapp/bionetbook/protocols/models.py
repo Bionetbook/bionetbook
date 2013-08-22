@@ -1088,11 +1088,9 @@ class Action(NodeBase):
         # get children times:
         children_time = 0
 
-        
         if self.childtype() == "components":
             if self.children:
                 children_time = (len(self.children) * 30, 'sec', 'sec')
-
 
         if self.childtype() == "manual":
             children_time = get_timeunit(self.summary['time'])
@@ -1100,7 +1098,6 @@ class Action(NodeBase):
         if self.childtype() == "machine":
             children_time = get_timeunit(self.children[0].summary['time'])   
 
-        
         if self.childtype() == "thermocycle":    
             tmp_time =[0, 'sec']
             cycles = [r.summary['cycles'] for r in self.children]
@@ -1117,7 +1114,6 @@ class Action(NodeBase):
 
             children_time = tuple(tmp_time)        
         return children_time
-
 
     def update_duration(self):
         max_duration = None
