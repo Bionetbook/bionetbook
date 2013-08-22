@@ -1123,6 +1123,7 @@ class ThermocycleCreateView(NodeCreateViewBase):
     template_name = "thermocycle/thermocycle_form.html"
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug']
+    pathEnd = { 'name':'Add Thermocycle' }
 
     def form_valid(self, form):
         protocol = self.get_protocol()
@@ -1142,6 +1143,7 @@ class ThermocycleUpdateView(NodeUpdateView):
     success_url = "action_detail"
     slugs = ['step_slug', 'action_slug', 'thermocycle_slug']
     node_type = "thermocycle"
+    pathEnd = { 'name':'Edit Thermocycle' }
 
     def get_success_url(self):
         """
@@ -1161,6 +1163,7 @@ class ThermocycleDeleteView(NodeDeleteView):
     template_name = "thermocycle/thermocycle_delete.html"
     node_type = "thermocycle"
     cancel_parent_redirect = True
+    pathEnd = { 'name':'Delete Thermocycle' }
 
     def get_context_data(self, **kwargs):
         context = super(ThermocycleDeleteView, self).get_context_data(**kwargs)
