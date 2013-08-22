@@ -4,23 +4,6 @@
 
 {% block title %}Component Form{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{object.get_absolute_url}}"><i class="icon-th-list"></i> Protocol: {{object.name}}</a> <span class="divider">/</span></li>
-      <li><a href="{{step.get_absolute_url}}">Step {{step.name}}</a> <span class="divider">/</span></li>
-      <li><a href="{{action.get_absolute_url}}">{{action.name}}</a> <span class="divider">/</span></li>
-      {% if component %}
-      <li class="active">Edit Component</li>
-      {% else %}
-      <li class="active">Add Component</li>
-      {% endif %}
-    </ul>
-{% endblock %}
-
-
 {% block page_title %}
 {% if component %}
   Editing Component: {{ step.name }} -> {{ action.name }} -> {{ component.name }}
