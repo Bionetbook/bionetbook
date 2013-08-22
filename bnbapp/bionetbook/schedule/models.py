@@ -123,8 +123,8 @@ class Calendar(TimeStampedModel):
     #         ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
     #     return ret
 
-    def listExperiments(self):
-        return [ x['name'] for x in self.data['experiments'] ]
+    # def listExperiments(self):
+    #     return [ x['name'] for x in self.data['experiments'] ]
 
 
 

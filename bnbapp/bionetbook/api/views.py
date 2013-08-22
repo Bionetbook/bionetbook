@@ -16,8 +16,7 @@ def calendar_json(request, pk):
     if request.method == 'GET':
         curCal = get_object_or_404(Calendar, pk=1)
         return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
-    elif request.method == 'PUT':
-        print "I AM A PUT!"
+
 
 
 def protocol_detail(request, protocol_slug):
