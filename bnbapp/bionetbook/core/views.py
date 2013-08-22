@@ -58,6 +58,8 @@ class FAQView(TemplateView):
 class AuthorizedOrganizationMixin(object):
     '''Checks to see if the user has the right to see the given protocol'''
 
+    # NEEDS TO BE UPDATE TO HANDLE NO PROTOCOL PASSED AND JUST AN ORG
+
     def get_protocol(self):
         if hasattr(self, "protocol"):
             return self.protocol
