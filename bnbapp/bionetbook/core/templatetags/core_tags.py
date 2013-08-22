@@ -84,20 +84,18 @@ def title_block(value):
     '''
 
     prefix = ""
-    suffix = ""
+    suffix = "suffix"
     title = ""
 
     if 'title' in value:
         title = value['title']
         if 'prefix' in value:
-            prefix = "<small>%s</small><br>" % prefix
+            prefix = "<p><small>%s</small></p>" % value['prefix']
 
         if 'suffix' in value:
-            suffix = "<small>%s</small>" % suffix
+            suffix = " <small>%s</small>" % value['suffix']
 
-        result = prefix + title + suffix
-
-    return mark_safe(result)
+    return mark_safe(prefix + title + suffix)
 
 
 @register.filter(name='protocoltree')
