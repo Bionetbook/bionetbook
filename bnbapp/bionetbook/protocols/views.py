@@ -437,7 +437,7 @@ class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, CreateView):
+class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
     '''
     View used to create new protocols
     '''
