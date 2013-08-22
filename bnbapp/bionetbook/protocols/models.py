@@ -478,7 +478,9 @@ class Protocol(TimeStampedModel):
                 action_min_time = 0
                 action_max_time = 0
                 auto_update = False
-                # print "\tAction: %s" % action['name']
+
+                if not 'duration' in action:
+                    action['duration'] = ""
 
                 if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
                     action_min_time = float(len(action['components']) * 30 )
