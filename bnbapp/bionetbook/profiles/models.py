@@ -39,6 +39,15 @@ class Profile(TimeStampedModel):
     # def get_organizations(self):
     #     return self.organization_set.all()
 
+    def get_accessable_protocols(self):
+        draft = self.get_private_draft_protocols()
+        private = self.get_private_protocols()
+        public = self.get_public_protocols()
+
+        return list(draft) + list(private) + list(public)
+
+        # return draft + private + public
+
     def get_published_protocols(self, public=True, private=True):
         '''
         Returns a list of published protocols the user has access to.
@@ -90,8 +99,6 @@ class Profile(TimeStampedModel):
         return Protocol.objects.filter(owner__in=self.user.organization_set.all(), published=False, public=False, author=self.user)
 
             # context['events'] = Event.objects.filter( project__in=Project.objects.filter( org__in=self.request.user.organization_set.all() ) ).exclude( eventType="LOG" )
-
-
 
     def get_public_protocols(self):
         return Protocol.objects.filter(published=True, public=True)

@@ -21,17 +21,18 @@ class CompareSelectView(PathMixin, LoginRequiredMixin, TemplateView):
     template_name = "compare/compare_select.html"
     slug_url_kwarg = "owner_slug"
 
-
-    # GET THE PROTOCOLS THE USER CAN SEE
     def get_context_data(self, **kwargs):
-
         context = super(CompareSelectView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()   # NEED TO REPLACE THIS WITH MORE SECURE WAY TO GET PROTOCOLS
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        if slug:
-            context['organization'] = Organization.objects.get(slug=slug)
+        profile = self.request.user.get_profile()
+        context['protocols'] = profile.get_accessable_protocols()
 
-        context['paths'].append({'name':'Compare'})
+        owner_slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if owner_slug:
+            context['organization'] = self.model.objects.get(slug=owner_slug)
+
+        context['paths'].append({'name':'Compare Select'})
+        context['titleBlock'] = {'prefix':"", 'title':'Compare', 'suffix':"Select"}
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -45,14 +46,13 @@ class CompareSelectView(PathMixin, LoginRequiredMixin, TemplateView):
         return HttpResponseRedirect(url)
 
 
-class CompareDisplayView(CompareSelectView, TemplateView):          
-    # template_name = "compare/protocol_layout_api_headers.html"           
-    # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
+class CompareDisplayView(PathMixin, LoginRequiredMixin, TemplateView):          
     template_name = "compare/protocol_layout_compare.html"           
-
 
     def get_context_data(self, **kwargs):
         context = super(CompareDisplayView, self).get_context_data(**kwargs)
+        context['paths'].append({'name':'Compare'})
+        context['titleBlock'] = {'prefix':"", 'title':'Compare', 'suffix':""}
         return context 
         
     def get(self, request, *args, **kwargs):
@@ -62,7 +62,7 @@ class CompareDisplayView(CompareSelectView, TemplateView):
         
         return self.render_to_response(context)    
 
-class LayoutSingleView(TemplateView):
+class LayoutSingleView(PathMixin, LoginRequiredMixin, TemplateView):
     # template_name = "compare/protocol_layout_api_1_headers.html"           
 
     # template_name = "compare/protocol_layout_api_1_headers_temp_17.html"           
@@ -71,7 +71,8 @@ class LayoutSingleView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(LayoutSingleView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
+        profile = self.request.user.get_profile()
+        context['protocols'] = profile.get_accessable_protocols()
         return context 
         
     def get(self, request, *args, **kwargs):
@@ -81,7 +82,7 @@ class LayoutSingleView(TemplateView):
 
         return self.render_to_response(context)    
 
-class CloneLayoutSingleView(TemplateView):
+class CloneLayoutSingleView(PathMixin, LoginRequiredMixin, TemplateView):
     # template_name = "compare/protocol_layout_api_1_headers.html"           
 
     # template_name = "compare/protocol_layout_api_1_headers_temp_17.html"           
@@ -90,7 +91,8 @@ class CloneLayoutSingleView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(CloneLayoutSingleView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
+        profile = self.request.user.get_profile()
+        context['protocols'] = profile.get_accessable_protocols()
         context['clone'] = True
         return context 
         
@@ -112,7 +114,7 @@ class CloneLayoutSingleView(TemplateView):
 
 
 # class 
-class CloneDisplayView(TemplateView):          
+class CloneDisplayView(PathMixin, LoginRequiredMixin, TemplateView):          
     # template_name = "compare/protocol_layout_api_headers.html"           
     # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
     template_name = "compare/protocol_layout_compare.html"           
@@ -120,7 +122,8 @@ class CloneDisplayView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CloneDisplayView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
+        profile = self.request.user.get_profile()
+        context['protocols'] = profile.get_accessable_protocols()
         context['clone'] = True
         return context 
         
@@ -132,25 +135,6 @@ class CloneDisplayView(TemplateView):
         
         return self.render_to_response(context)    
 
-
-class CompareDisplayView(CompareSelectView, TemplateView):          
-    # template_name = "compare/protocol_layout_api_headers.html"           
-    # template_name = "compare/protocol_layout_api_headers_temp_17.html"           
-    template_name = "compare/protocol_layout_compare.html"           
-
-
-    def get_context_data(self, **kwargs):
-        context = super(CompareDisplayView, self).get_context_data(**kwargs)
-        context['protocols'] = Protocol.objects.all()           # THIS NEEDS TO BE CHANGED SO THAT THE USER ONLY SEE WHAT THEY HVE PERMISSION TO CompareSelectView
-        return context 
-        
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        context['protocol_a'] = ProtocolPlot.objects.get(slug=kwargs['protocol_a_slug'])
-        context['protocol_b'] = ProtocolPlot.objects.get(slug=kwargs['protocol_b_slug'])
-        context['organization'] = context['protocol_a'].owner
-        
-        return self.render_to_response(context)    
 
 
 
