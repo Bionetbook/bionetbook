@@ -3,13 +3,6 @@
 
 {% block title %}Protocol List{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li class="active">{{ organization.name }}</li>
-    </ul>
-{% endblock %}
-
 {% block page_title %}{{ organization.name|possesive }} Protocol List 
 {% endblock %}
 
@@ -58,7 +51,7 @@
             <tbody>
                 {% for protocol in object.protocol_set.all %}
                 <tr>
-                    <td><a href="{{ protocol.protocol_outline_url }}">{{ protocol }}</a></td>
+                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
                     <td>
                         {% if not protocol.published %}
                             <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>

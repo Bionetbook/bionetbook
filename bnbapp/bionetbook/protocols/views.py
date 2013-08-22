@@ -65,22 +65,22 @@ class ProtocolSetupMixin(PathMixin):
 
             if 'protocol' in context:
                 context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
-                prefix += title
+                prefix = title
                 title = context['protocol'].name
 
                 if 'step' in context:
                     context['paths'].append( { 'name':context['step']['name'], 'url':context['step'].get_absolute_url() } )
-                    prefix += title
+                    prefix += " -> " + title
                     title = context['step']['name']
 
                     if 'action' in context:
                         context['paths'].append( { 'name':context['action']['name'], 'url':context['action'].get_absolute_url() } )
-                        prefix += title
+                        prefix += " -> " + title
                         title = context['action']['name']
 
                         if 'component' in context:
                             context['paths'].append( { 'name':context['component']['name'], 'url':context['component'].get_absolute_url() } )
-                            prefix += title
+                            prefix += " -> " + title
                             title = context['component']['name']
 
         if self.pathEnd:
@@ -400,7 +400,7 @@ class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
     #     return context
 
 
-class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, ListView):
+class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
 
     model = Organization
     template_name = "protocols/protocol_list.html"
@@ -437,7 +437,7 @@ class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganiz
         return context
 
 
-class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, CreateView):
+class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
     '''
     View used to create new protocols
     '''

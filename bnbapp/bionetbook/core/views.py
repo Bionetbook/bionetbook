@@ -41,6 +41,9 @@ class DashboardView(PathMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         del(context['paths'][-1]['url'])
+
+        context['titleBlock'] = {'prefix':str(self.request.user) + "\'s", 'title':'Dashboard', 'suffix':""}
+        
         return context
 
 
@@ -54,6 +57,8 @@ class FAQView(TemplateView):
 
 class AuthorizedOrganizationMixin(object):
     '''Checks to see if the user has the right to see the given protocol'''
+
+    # NEEDS TO BE UPDATE TO HANDLE NO PROTOCOL PASSED AND JUST AN ORG
 
     def get_protocol(self):
         if hasattr(self, "protocol"):
