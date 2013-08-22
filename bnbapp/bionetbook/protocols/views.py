@@ -65,22 +65,22 @@ class ProtocolSetupMixin(PathMixin):
 
             if 'protocol' in context:
                 context['paths'].append( { 'name':context['protocol'].name, 'url':context['protocol'].get_absolute_url() } )
-                prefix += title
+                prefix = title
                 title = context['protocol'].name
 
                 if 'step' in context:
                     context['paths'].append( { 'name':context['step']['name'], 'url':context['step'].get_absolute_url() } )
-                    prefix += title
+                    prefix += " -> " + title
                     title = context['step']['name']
 
                     if 'action' in context:
                         context['paths'].append( { 'name':context['action']['name'], 'url':context['action'].get_absolute_url() } )
-                        prefix += title
+                        prefix += " -> " + title
                         title = context['action']['name']
 
                         if 'component' in context:
                             context['paths'].append( { 'name':context['component']['name'], 'url':context['component'].get_absolute_url() } )
-                            prefix += title
+                            prefix += " -> " + title
                             title = context['component']['name']
 
         if self.pathEnd:
