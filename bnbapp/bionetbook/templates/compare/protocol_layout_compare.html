@@ -4,6 +4,17 @@
 {# PAGE TITLE #}
 {% block title %}Compare: {{ object.name }}{% endblock %}
 
+{# BREADCRUMBS #}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
+      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.get_absolute_url }}"><i class="icon-th-list"></i> {{ protocol_a.name }}</a> <<  to >> </li>
+      <li><a href="{{ protocol_b.get_absolute_url }}"><i class="icon-th-list"></i> {{ protocol_b.name }}</a> </li>
+      <li class="active">{{object.name}}</li>
+    </ul>
+{% endblock %}
 
 {# CSS STYLE SHEETS GO HERE #}
 {% block extracss %}
@@ -16,10 +27,8 @@
 <ul class="nav nav-tabs">
   <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
   <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
-    <!--   <li><a href="{% url workflow_list protocol_a.owner %}">Workflows</a></li>-->  
-    <!-- <li><a href="{% url compare_select %}">Compare Protocols</a></li> -->
     {% if request.user.is_authenticated %}
-  <li><a href="{% url protocol_create protocol_a.owner %}">New Protocol</a></li>
+  <li><a href="{% url protocol_create protocol_a.owner.slug %}">New Protocol</a></li>
     {% endif %}
 </ul>
 
