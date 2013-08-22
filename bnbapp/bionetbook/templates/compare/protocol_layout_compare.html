@@ -4,17 +4,6 @@
 {# PAGE TITLE #}
 {% block title %}Compare: {{ object.name }}{% endblock %}
 
-{# BREADCRUMBS #}
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{ protocol_a.get_absolute_url }}"><i class="icon-th-list"></i> {{ protocol_a.name }}</a> <<  to >> </li>
-      <li><a href="{{ protocol_b.get_absolute_url }}"><i class="icon-th-list"></i> {{ protocol_b.name }}</a> </li>
-      <li class="active">{{object.name}}</li>
-    </ul>
-{% endblock %}
 
 {# CSS STYLE SHEETS GO HERE #}
 {% block extracss %}
