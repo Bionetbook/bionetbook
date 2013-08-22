@@ -400,7 +400,7 @@ class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
     #     return context
 
 
-class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, ListView):
+class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
 
     model = Organization
     template_name = "protocols/protocol_list.html"
