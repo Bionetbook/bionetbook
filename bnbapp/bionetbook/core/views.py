@@ -41,6 +41,9 @@ class DashboardView(PathMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         del(context['paths'][-1]['url'])
+
+        context['titleBlock'] = {'prefix':str(self.request.user) + "\'s", 'title':'Dashboard', 'suffix':""}
+        
         return context
 
 
