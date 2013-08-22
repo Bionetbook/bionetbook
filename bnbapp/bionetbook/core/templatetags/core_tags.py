@@ -84,7 +84,7 @@ def title_block(value):
     '''
 
     prefix = ""
-    suffix = "suffix"
+    suffix = ""
     title = ""
 
     if 'title' in value:
