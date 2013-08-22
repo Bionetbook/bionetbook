@@ -50,6 +50,10 @@ class ProtocolSetupMixin(PathMixin):
                 if action_slug:
                     context['action'] = context['protocol'].nodes[action_slug]
 
+                    component_slug = self.kwargs.get('component_slug', None)
+                    if component_slug:
+                        context['component'] = context['protocol'].nodes[component_slug]
+
         else:
             owner_slug = self.kwargs.get('owner_slug', None)
             if owner_slug:
@@ -73,6 +77,11 @@ class ProtocolSetupMixin(PathMixin):
                         context['paths'].append( { 'name':context['action']['name'], 'url':context['action'].get_absolute_url() } )
                         prefix += title
                         title = context['action']['name']
+
+                        if 'component' in context:
+                            context['paths'].append( { 'name':context['component']['name'], 'url':context['component'].get_absolute_url() } )
+                            prefix += title
+                            title = context['component']['name']
 
         if self.pathEnd:
             context['paths'].append( self.pathEnd )
