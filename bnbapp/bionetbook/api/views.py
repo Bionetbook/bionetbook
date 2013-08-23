@@ -76,19 +76,23 @@ class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         curCal = get_object_or_404( Calendar, pk=1 )
-        return self.render_to_response( curCal.expToCalendar() )
+        result = {'meta':{}, 'data':curCal }
+        return self.render_to_response( result )
 
     def put(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
 
     def delete(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
 
 
 class JSONResponseMixin(object):
