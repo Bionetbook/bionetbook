@@ -463,14 +463,15 @@ class Protocol(TimeStampedModel):
             # print str(min_duration) + '-' + str(max_duration)       
             return str(min_duration) + '-' + str(min_duration + delta_duration)
 
-    def update_duration(self):
+    def update_duration(self, debug = False):
         min_time = 0
         max_time = 0  
 
         for step in self.steps:
             step_min_time = 0
             step_max_time = 0
-            # print "Step: %s" % step['name']
+            if debug:
+                print "Step: %s" % step['name']
 
             for action in step["actions"]:
                 if action['name'] == 'store':
@@ -527,8 +528,9 @@ class Protocol(TimeStampedModel):
                     action_max_time = eval_time(action['machine'], value = 'max_time')
                     
                     # Debuggin Clause
-                    if action_max_time ==0:
-                        print action['name'], action['objectid']
+                    # if debug: 
+                    #     if action_max_time ==0:
+                    #         print action['name'], action['objectid']
 
                     auto_update = True
                     # Total Up Machine Time Values Here from the DICT
@@ -546,14 +548,17 @@ class Protocol(TimeStampedModel):
 
                 if auto_update or not action['duration']:   # If this is an autoupdating action or there is no previous manually entered value...
                     action['duration'] = "%d-%d" % ( action_min_time, action_max_time )
-                    
-                # print "\t\tAction Duration: %s, %s" % (action['verb'], action['duration'])
+                
+                if debug:     
+                    print "\t\tAction Duration: %s, %s" % (action['verb'], action['duration'])
+
                 step_min_time += action_min_time
                 step_max_time += action_max_time
 
             step['duration'] = "%d-%d" % ( step_min_time, step_max_time )
             
-            # print "\tStep Duration: %s" % (step['duration'])
+            if debug: 
+                print "\tStep Duration: %s" % (step['duration'])
 
             min_time += step_min_time
             max_time += step_max_time
