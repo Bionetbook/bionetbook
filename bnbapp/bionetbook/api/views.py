@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
+from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
