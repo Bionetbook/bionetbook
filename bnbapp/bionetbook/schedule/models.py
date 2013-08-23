@@ -103,7 +103,15 @@ class Calendar(TimeStampedModel):
                     ret['events'].append(eventObject)
         return ret
 
-    def updateCalendar(self, experimentList):
+    def updateCalendar(self,updatedEvents):
+        for event in eventDict['events']:
+            for updated in updatedEvents['events']:
+                if event['id'] in updated.values():
+                    event['start'] = updated['started']
+                    event['notes'] = updated['notes']
+                    updatedEvents['events'].remove(updated)
+                    continue
+
         print "updated"
 
 
