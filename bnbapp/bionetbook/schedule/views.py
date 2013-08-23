@@ -46,15 +46,6 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ScheduleAPI,self).get_context_data(**kwargs)
 
-<<<<<<< HEAD
-        organizations = self.request.user.organization_set.all()
-        if organizations:
-            context['organization'] = organizations[0]
-        else:
-            context['organization'] = None
-
-=======
->>>>>>> master
         calendars = self.request.user.calendar_set.all()
         if calendars:
             context['calendar'] = calendars[0]
@@ -62,7 +53,7 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
             context['calendar'] = None
 
         organizations = self.request.user.organization_set.all()
-        if calendars:
+        if organizations:
             context['organization'] = organizations[0]
         else:
             context['organization'] = None
