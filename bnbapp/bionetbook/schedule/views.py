@@ -7,12 +7,13 @@ from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 from django.utils import simplejson
+
+from braces.views import LoginRequiredMixin
+
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
-
 from schedule.models import Calendar
 from experiment.models import Experiment
-
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
 # class ScheduleListView(LoginRequiredMixin, ListView):
@@ -46,7 +47,7 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
         context = super(ScheduleAPI,self).get_context_data(**kwargs)
 
         organizations = self.request.user.organization_set.all()
-        if calendars:
+        if organizations:
             context['organization'] = organizations[0]
         else:
             context['organization'] = None

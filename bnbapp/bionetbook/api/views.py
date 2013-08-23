@@ -6,6 +6,9 @@ from django.views.generic.detail import View, BaseDetailView, SingleObjectTempla
 from django.views.generic import TemplateView
 from django import http
 from django.shortcuts import get_object_or_404
+
+from braces.views import LoginRequiredMixin
+
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
 from schedule.models import Calendar
