@@ -130,14 +130,20 @@ def protocol_detail(request, protocol_slug):
 
 # class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
 #     '''
-#     JSON call of a protocol diagram
+#     JSON call of a protocol diagram handling 1 and 2 protocols
 #     '''
 #     def get(self, request, *args, **kwargs):
-#         protocol = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
-#         comp = Compare([protocol])
+#         protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
+#         protocols = [protocol_a]
+
+#         if 'protocol_b_slug' in kwargs:
+#             protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
+#             protocols.append( protocol_b )
+
+#         comp = Compare( protocols )
 #         comp.get_layout_by_objectid()
 #         data = list(comp.layout)
-#         data.append( { 'text':protocol.get_verbatim_text(numbers=True) } )
+#         data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
 
 #         return self.render_to_response(data)
 
