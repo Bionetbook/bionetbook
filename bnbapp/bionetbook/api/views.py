@@ -64,21 +64,17 @@ class UpdateEvent(JSONResponseMixin, LoginRequiredMixin, View):
         curCal = get_object_or_404( Calendar, pk=1 )
         return self.render_to_response( curCal.expToCalendar() )
 
-
     def put(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
-
     def delete(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
 
 
 def calendar_json(request, pk):
