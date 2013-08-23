@@ -11,6 +11,20 @@ from protocols.models import Protocol
 from schedule.models import Calendar
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
+'''
+API Documentation
+
+The API should be formatted like so using CRUD methodology:
+
+http://www.bionetbook.com/api/<version>/<resource>/(<id>/)
+
+Up through version number should come from the main urls.py, everything after the version should be in the API app.
+
+Example (GET):
+http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
+http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
+http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
+'''
 
 class JSONResponseMixin(object):
     def render_to_response(self, context):
@@ -26,7 +40,7 @@ class JSONResponseMixin(object):
         return json.dumps(context)
 
 
-class UpdateEvent(JSONResponseMixin, LoginRequiredMixin, View):
+class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     API Examples, CRUD
 
@@ -64,21 +78,17 @@ class UpdateEvent(JSONResponseMixin, LoginRequiredMixin, View):
         curCal = get_object_or_404( Calendar, pk=1 )
         return self.render_to_response( curCal.expToCalendar() )
 
-
     def put(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
-
     def delete(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
 
 
 def calendar_json(request, pk):
