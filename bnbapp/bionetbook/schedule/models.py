@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from jsonfield import JSONField
 
-from protocols.models import Protocol
+from protocols.models import Protocol, Step, Action
 from workflow.models import Workflow
 from experiment.models import Experiment
 from django.utils.datastructures import SortedDict
@@ -29,19 +29,25 @@ class Calendar(TimeStampedModel):
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
                             'duration':300,
-                            'name':"First Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1'
                             'notes':"",
                         },
                         {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'name':"Second Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1',
                             'notes':"",
                         },
                         {   'id': "bnb-o1-e2-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'name':"Second Action",
+                            'action':"First Action",
+                            'protocol':'dna-jalkf',
+                            'experiment':'experiment 1',
                             'notes':"",
                         },
                       ]
@@ -79,52 +85,53 @@ class Calendar(TimeStampedModel):
     #     print ret
 
     def setupCalendar(self):
-        ret = {'meta':{},'experiments':[]}
+        ret = {'meta':{},'events':[]}
+        userExperimentList = self.user.experiment_set.all()
+        for e in userExperimentList:                    # loop through each experiment for user
+            protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
+            for p in protocolList:      # loop through each experiments protocols
+                stepActionList = zip(p.get_steps(),p.get_actions(),p.get_action_verbs(),p.get_action_durations())
+                for element in stepActionList:
+                    eventObject = {}
+                    eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk,element[0],element[1])
+                    eventObject['start'] = '0'
+                    eventObject['duration'] = element[3].split('-')[1]
+                    eventObject['action'] = element[2]
+                    eventObject['protocol'] = p.title
+                    eventObject['experiment'] = e.name
+                    eventObject['notes'] = ""
+                    ret['events'].append(eventObject)
         return ret
 
-    '''
-    experimentList = [ {"experiment":1,
-                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}
-                        ]},
-                        {"experiment":2,
-                        "protocols":[ {"protocol":1,"<objectid>":"startime"}, {"protocol":2,"<objectid>":"startime"}]}]
-    '''
+    def updateCalendar(self,updatedEvents):
+        for event in self.data['events']:
+            for updated in updatedEvents['events']:
+                if event['id'] in updated.values():
+                    event['start'] = updated['started']
+                    event['notes'] = updated['notes']
+                    updatedEvents['events'].remove(updated)
+                    continue
 
-
-    def updateCalendar(self, experimentList):
         print "updated"
 
+    # def expToCalendar(self):  # defaulted to take only 1 experiment
+    #     scheduledExperiment = Experiment.objects.get(pk=1)
+    #     experimentWorkflow = scheduledExperiment.workflow
+    #     protocolList = [Protocol.objects.filter(pk=p).get() for p in experimentWorkflow.data['protocols']]
+    #     ret = SortedDict()
+    #     for protocol in protocolList:
+    #         stepI = 0
+    #         stepList = []
+    #         for stepI, step in enumerate(protocol.steps): # list of steps 
+    #             action = step['actions'][0] # action as a dict
+    #             s = SortedDict([('eventId',protocol.pk),('instanceId',0),('verb',action['verb']),('active','true'),
+    #                 ('length',5),('container','false'),('stepNumber',stepI+1),('notes',step['technique_comment']),('actionID',action['objectid'])])
+    #             stepList.append(s)
+    #         ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
+    #     return ret
 
-
-
-    def expToCalendar(self):  # defaulted to take only 1 experiment
-        scheduledExperiment = Experiment.objects.get(pk=1)
-        experimentWorkflow = scheduledExperiment.workflow
-        protocolList = [Protocol.objects.filter(pk=p).get() for p in experimentWorkflow.data['protocols']]
-        ret = SortedDict()
-        for protocol in protocolList:
-            stepI = 0
-            stepList = []
-            for stepI, step in enumerate(protocol.data['steps']): # list of steps 
-                action = step['actions'][0] # action as a dict
-                s = SortedDict([('eventId',protocol.pk),('instanceId',0),('verb',action['verb']),('active','true'),
-                    ('length',5),('container','false'),('stepNumber',stepI+1),('notes',step['technique_comment']),('actionID',action['objectid'])])
-                stepList.append(s)
-            ret[protocol.slug] = SortedDict([('container','true'),('title',protocol.title),('protocolID',protocol.pk),('length',protocol.duration),('description',protocol.description),('events',stepList)])
-        return ret
-        
-
-    def returnCalendar(self):
-        result = []
-
-        for item in self.data['experiments']:
-            result.append( item['schedule'] )
-
-        return result
-
-
-    def listExperiments(self):
-        return [ x['name'] for x in self.data['experiments'] ]
+    # def listExperiments(self):
+    #     return [ x['name'] for x in self.data['experiments'] ]
 
 
 

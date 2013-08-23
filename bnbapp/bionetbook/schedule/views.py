@@ -71,3 +71,4 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
     #   context = self.get_context_data()
     #   context['calendar'] = Calendar.objects.all()[0]
     #   return self.render_to_response(context)
+

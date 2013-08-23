@@ -11,7 +11,7 @@
 <div class="row">
 
     <!-- main form div -->
-    <div class="span6">
+    <div class="span4">
       {% if object %}<h2>Detail</h2>{% endif %}
       <form action="." method="post" class="form-stacked well">{% csrf_token %}
       {{ form|crispy }}
@@ -23,7 +23,7 @@
 
     <!-- secondary form div -->
     {% if object %}
-    <div class="span6">
+    <div class="span8">
       <h2>Steps</h2>
       <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"></i> Add step</a></p>
 
