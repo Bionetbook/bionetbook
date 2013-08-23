@@ -51,7 +51,6 @@
         {% if request.user.is_superuser or request.user.is_staff %}
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Admin Tools</h3></li>
-            <li><a href="{% url organization_list %}">All Protocols</a></li>
             <li><a href="{% url profile_list %}">Users</a></li>
         </ul>
         {% endif %}
