@@ -7,10 +7,96 @@ from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
+
+from braces.views import LoginRequiredMixin
+
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
 from schedule.models import Calendar
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+
+'''
+API Documentation
+
+The API should be formatted like so using CRUD methodology:
+
+http://www.bionetbook.com/api/<version>/<resource>/(<id>/)
+
+Up through version number should come from the main urls.py, everything after the version should be in the API app.
+
+Example (GET):
+http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
+http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
+http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
+'''
+
+class JSONResponseMixin(object):
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return self.get_json_response(self.convert_context_to_json(context))
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        "Construct an `HttpResponse` object."
+        return http.HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps(context)
+
+
+class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
+    '''
+    API Examples, CRUD
+
+    POST: { 'meta':{...},
+            'data':[ { 'id':'bnb-o1-e1-p1-AXBAGS-FFGGAX',
+                       'tmpid':"...",
+                       'status':'add'
+                      },
+                    ]
+            }
+
+    GET: {  'meta':{...},
+            'data':[ {...},
+                   ]
+            }
+
+    PUT: { 'meta':{...},
+            'data':[ { 'id':'...',
+                       'status':'update'
+                      },
+                    ]
+            }
+
+    DELETE: { 'meta':{...},
+              'data':[ { 'id':'...',
+                       'status':'delete'
+                        },
+                     ]
+            }
+    '''
+    # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def get(self, request, *args, **kwargs):
+        curCal = get_object_or_404( Calendar, pk=1 )
+        result = {'meta':{}, 'data':curCal }
+        return self.render_to_response( result )
+
+    def put(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
+
+    def delete(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        result = {'meta':{}, 'data':context }
+        return self.render_to_response(result)
 
 
 class JSONResponseMixin(object):
