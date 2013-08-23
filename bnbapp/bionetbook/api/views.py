@@ -133,17 +133,21 @@ def protocol_detail(request, protocol_slug):
 #     JSON call of a protocol diagram handling 1 and 2 protocols
 #     '''
 #     def get(self, request, *args, **kwargs):
+#         single_protocol = True
 #         protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
 #         protocols = [protocol_a]
 
 #         if 'protocol_b_slug' in kwargs:
 #             protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
 #             protocols.append( protocol_b )
+#             single_protocol = False
 
 #         comp = Compare( protocols )
 #         comp.get_layout_by_objectid()
 #         data = list(comp.layout)
-#         data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
+
+#         if single_protocol:
+#             data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
 
 #         return self.render_to_response(data)
 
