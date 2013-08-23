@@ -105,6 +105,16 @@ def calendar_json(request, pk):
         return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
 
 
+# class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):
+#     '''
+#     '''
+#     def get(self, request, *args, **kwargs):
+#         p = get_object_or_404( Protocol, slug=kwargs['protocol_slug'] )
+#         if p.data:
+#             return self.render_to_response(p.data)
+#         else:
+#             return self.render_to_response({'error':'NoObjectData', 'description':'Requested protocol has no data.'})
+
 
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
@@ -116,6 +126,20 @@ def protocol_detail(request, protocol_slug):
                 return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
         except ObjectDoesNotExist:
             return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
+
+
+# class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
+#     '''
+#     JSON call of a protocol diagram
+#     '''
+#     def get(self, request, *args, **kwargs):
+#         protocol = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
+#         comp = Compare([protocol])
+#         comp.get_layout_by_objectid()
+#         data = list(comp.layout)
+#         data.append( { 'text':protocol.get_verbatim_text(numbers=True) } )
+
+#         return self.render_to_response(data)
 
 
 def get_layout_json(request, protocol_a_slug):
