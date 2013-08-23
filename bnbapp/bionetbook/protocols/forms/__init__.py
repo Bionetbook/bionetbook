@@ -54,7 +54,7 @@ class StepForm(NodeForm):
 
 class ActionForm(NodeForm):
     name = forms.CharField(max_length=100, required=False, help_text = 'This will autofill')
-    tracking_object = forms.CharField(required=False, help_text='Sample mix | Buffer | Other mix')
+    # tracking_object = forms.CharField(required=False, help_text='Sample mix | Buffer | Other mix')
     min_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)
     max_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)
     temp_units = forms.ChoiceField(required=False, choices=TEMPERATURE_UNITS, help_text='in celcius')
