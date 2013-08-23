@@ -26,7 +26,7 @@ class JSONResponseMixin(object):
         return json.dumps(context)
 
 
-class UpdateEvent(JSONResponseMixin, LoginRequiredMixin, View):
+class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     API Examples, CRUD
 
