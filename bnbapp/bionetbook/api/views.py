@@ -98,7 +98,7 @@ class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         result = {'meta':{}, 'data':context }
         return self.render_to_response(result)
 
-
+# REPLACE WITH CLASS BASED VIEW ABOVE
 def calendar_json(request, pk):
     if request.method == 'GET':
         curCal = get_object_or_404(Calendar, pk=1)
@@ -115,7 +115,7 @@ def calendar_json(request, pk):
 #         else:
 #             return self.render_to_response({'error':'NoObjectData', 'description':'Requested protocol has no data.'})
 
-
+# REPLACE WITH CLASS BASED VIEW ABOVE
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
         try:
@@ -152,6 +152,7 @@ def protocol_detail(request, protocol_slug):
 #         return self.render_to_response(data)
 
 
+# REPLACE WITH CLASS BASED VIEWS ABOVE
 def get_layout_json(request, protocol_a_slug):
     '''
     JSON call of a protocol diagram
@@ -167,7 +168,7 @@ def get_layout_json(request, protocol_a_slug):
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
-
+# REPLACE WITH CLASS BASED VIEWS ABOVE
 def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare
