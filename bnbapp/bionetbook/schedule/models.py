@@ -104,7 +104,7 @@ class Calendar(TimeStampedModel):
         return ret
 
     def updateCalendar(self,updatedEvents):
-        for event in eventDict['events']:
+        for event in self.data['events']:
             for updated in updatedEvents['events']:
                 if event['id'] in updated.values():
                     event['start'] = updated['started']
@@ -113,7 +113,6 @@ class Calendar(TimeStampedModel):
                     continue
 
         print "updated"
-
 
     # def expToCalendar(self):  # defaulted to take only 1 experiment
     #     scheduledExperiment = Experiment.objects.get(pk=1)
