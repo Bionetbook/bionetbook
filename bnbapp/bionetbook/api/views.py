@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
 from django.views.generic import TemplateView
+from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
@@ -25,6 +26,71 @@ http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all cale
 http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
 http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
 '''
+
+class JSONResponseMixin(object):
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return self.get_json_response(self.convert_context_to_json(context))
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        "Construct an `HttpResponse` object."
+        return http.HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps(context)
+
+
+class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
+    '''
+    API Examples, CRUD
+
+    POST: { 'meta':{...},
+            'data':[ { 'id':'bnb-o1-e1-p1-AXBAGS-FFGGAX',
+                       'tmpid':"...",
+                       'status':'add'
+                      },
+                    ]
+            }
+
+    GET: {  'meta':{...},
+            'data':[ {...},
+                   ]
+            }
+
+    PUT: { 'meta':{...},
+            'data':[ { 'id':'...',
+                       'status':'update'
+                      },
+                    ]
+            }
+
+    DELETE: { 'meta':{...},
+              'data':[ { 'id':'...',
+                       'status':'delete'
+                        },
+                     ]
+            }
+    '''
+    # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def get(self, request, *args, **kwargs):
+        curCal = get_object_or_404( Calendar, pk=1 )
+        return self.render_to_response( curCal.expToCalendar() )
+
+    def put(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def delete(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
 
 class JSONResponseMixin(object):
     def render_to_response(self, context):
