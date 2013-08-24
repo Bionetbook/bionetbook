@@ -1,6 +1,6 @@
 from protocols.forms import forms
 from django.db.models.query import EmptyQuerySet
-# from protocols.models import Protocol
+from django.utils.translation import ugettext_lazy as _
 
 
 class CallForProtocolForm(forms.VerbForm):
@@ -9,8 +9,8 @@ class CallForProtocolForm(forms.VerbForm):
     slug = "call-for-protocol"
     has_component = True
 
-    protocol_name = forms.CharField(required = False, help_text = 'kit or protocol name')
-    protocol_link = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet())
+    # protocol_name = forms.CharField(required = False, help_text='kit or protocol name')
+    protocol_id = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Protocol"))
     # protocol_id = forms.ChoiceField(required=False, help_text='Select a protocol to link to', choices=[])
     input_to_track = forms.CharField(help_text = 'reagent, sample, molecule, compounds, strain etc.')
     input_notes = forms.CharField(required = False, help_text = 'concentration, volume, mass etc')

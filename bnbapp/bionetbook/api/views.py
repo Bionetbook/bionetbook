@@ -99,20 +99,6 @@ class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         return self.render_to_response(result)
 
 
-class JSONResponseMixin(object):
-    def render_to_response(self, context):
-        "Returns a JSON response containing 'context' as payload"
-        return self.get_json_response(self.convert_context_to_json(context))
-
-    def get_json_response(self, content, **httpresponse_kwargs):
-        "Construct an `HttpResponse` object."
-        return http.HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
-
-    def convert_context_to_json(self, context):
-        "Convert the context dictionary into a JSON object"
-        return json.dumps(context)
-
-
 class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     API Examples, CRUD
@@ -164,13 +150,26 @@ class EventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         return self.render_to_response(context)
 
 
+
+# REPLACE WITH CLASS BASED VIEW ABOVE
+
 def calendar_json(request, pk):
     if request.method == 'GET':
         curCal = get_object_or_404(Calendar, pk=1)
         return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
 
 
+# class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):
+#     '''
+#     '''
+#     def get(self, request, *args, **kwargs):
+#         p = get_object_or_404( Protocol, slug=kwargs['protocol_slug'] )
+#         if p.data:
+#             return self.render_to_response(p.data)
+#         else:
+#             return self.render_to_response({'error':'NoObjectData', 'description':'Requested protocol has no data.'})
 
+# REPLACE WITH CLASS BASED VIEW ABOVE
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
         try:
@@ -183,6 +182,31 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
+# class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
+#     '''
+#     JSON call of a protocol diagram handling 1 and 2 protocols
+#     '''
+#     def get(self, request, *args, **kwargs):
+#         single_protocol = True
+#         protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
+#         protocols = [protocol_a]
+
+#         if 'protocol_b_slug' in kwargs:
+#             protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
+#             protocols.append( protocol_b )
+#             single_protocol = False
+
+#         comp = Compare( protocols )
+#         comp.get_layout_by_objectid()
+#         data = list(comp.layout)
+
+#         if single_protocol:
+#             data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
+
+#         return self.render_to_response(data)
+
+
+# REPLACE WITH CLASS BASED VIEWS ABOVE
 def get_layout_json(request, protocol_a_slug):
     '''
     JSON call of a protocol diagram
@@ -198,7 +222,7 @@ def get_layout_json(request, protocol_a_slug):
     
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
-
+# REPLACE WITH CLASS BASED VIEWS ABOVE
 def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare

@@ -12,19 +12,20 @@
 
 {% block content %}
 
+
 <div class="row">
     <div class="span4">
         <h2>Components</h2>
         {% for component in action.components %}
           <h3>{{component.name}}</h3>
+          {% if protocol_edit_authorization %} 
+            <a class="btn btn-primary" href="{{ component.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+            <a class="btn btn-danger" href="{{ component.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+          {% endif %}
           {% object_data_table component %}
-          <a class="btn btn-warning" href="{{component.get_update_url}}">Edit Component</a>
+          <!-- <a class="btn btn-warning" href="{{component.get_update_url}}">Edit Component</a> -->
           <hr>
         {% endfor %}
-        <p>
-          <a class="btn btn-warning" href="#">Add Component</a>
-        </p>
-
     </div>
   </div>
 {% endblock %}

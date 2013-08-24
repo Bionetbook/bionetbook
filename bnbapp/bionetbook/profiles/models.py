@@ -3,6 +3,7 @@ from django.contrib.localflavor.us.models import USStateField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.query import EmptyQuerySet
 
 from django_extensions.db.models import TimeStampedModel
 
@@ -62,6 +63,30 @@ class Profile(TimeStampedModel):
             result.extend( Protocol.objects.filter(published=True, public=True) )
 
         return result
+
+    def get_published_protocols_qs(self, public=True, private=True):
+        '''
+        Returns a list of published protocols the user has access to.
+        '''
+        result = None
+
+        if private:
+            for org in self.user.organization_set.prefetch_related('protocol_set').all():
+                # result.extend( org.protocol_set.filter(published=True, public=False))
+                if result:
+                    result = result | org.protocol_set.filter(published=True, public=False)
+                else:
+                    result = org.protocol_set.filter(published=True, public=False)
+
+        if public:
+            # result.extend( Protocol.objects.filter(published=True, public=True) )
+                if result:
+                    result = result | org.protocol_set.filter(published=True, public=True)
+                else:
+                    result = org.protocol_set.filter(published=True, public=True)
+
+        return result
+
 
     # def get_published_org_protocols(self):
     #     '''

@@ -10,6 +10,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
+from django import forms
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView, PathMixin
@@ -764,7 +765,7 @@ class ActionCreateView(NodeCreateViewBase):
             context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'].choices = self.request.user.profile.get_all_published_protocol_choices()
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         return context
 
@@ -777,6 +778,9 @@ class ActionCreateView(NodeCreateViewBase):
         form = ActionForm(request.POST, prefix='action')
         verb_slug = self.kwargs.get('verb_slug', None)
         verb_form = VERB_FORM_DICT[verb_slug](request.POST, prefix='verb')
+
+        if 'protocol_id' in verb_form.fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form.is_valid() and verb_form.is_valid():
             print "FORM VALID"
@@ -803,9 +807,19 @@ class ActionCreateView(NodeCreateViewBase):
         context = self.get_context_data()
         step = context['step']
 
-        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())     # COMBINE THE DATA FROM THE TWO FORMS
+        verb_form_data = dict(verb_form.cleaned_data.items())
+        data = dict(form.cleaned_data.items())     # COMBINE THE DATA FROM THE TWO FORMS
+
+        if 'protocol_id' in verb_form_data:
+            verb_form_data['protocol_name'] = verb_form_data['protocol_id'].name
+            data['duration'] = verb_form_data['protocol_id'].duration
+            verb_form_data['protocol_id'] = verb_form_data['protocol_id'].pk
+
+        data.update(verb_form_data)
         verb_slug = self.kwargs.get('verb_slug', None)                              # ADD THE VERB
         data['verb'] = verb_slug
+
+        print data
 
         action = Action(protocol, parent=step, data=data)
 
@@ -840,7 +854,7 @@ class ActionUpdateView(NodeUpdateView):
         context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'].choices = self.request.user.profile.get_all_published_protocol_choices()
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form:
             context['form'] = form
@@ -859,6 +873,9 @@ class ActionUpdateView(NodeUpdateView):
         verb_key = context[self.node_type]['verb']
         verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
 
+        if 'protocol_id' in verb_form.fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
+            verb_form.fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
+
         if form.is_valid() and verb_form.is_valid():
             return self.form_valid(form, verb_form)
         else:
@@ -871,7 +888,15 @@ class ActionUpdateView(NodeUpdateView):
         node = context[self.node_type]
 
         # COMBINE THE DATA FROM THE TWO FORMS
-        data = dict(form.cleaned_data.items() + verb_form.cleaned_data.items())
+        verb_form_data = dict(verb_form.cleaned_data.items())
+        data = dict(form.cleaned_data.items())     # COMBINE THE DATA FROM THE TWO FORMS
+
+        if 'protocol_id' in verb_form_data:
+            verb_form_data['protocol_name'] = verb_form_data['protocol_id'].name
+            data['duration'] = verb_form_data['protocol_id'].duration
+            verb_form_data['protocol_id'] = verb_form_data['protocol_id'].pk
+
+        data.update(verb_form_data)
         data['verb'] = node['verb']
 
         # UPDATE THE ACTION VALUES WITH THE CLEANED DATA
