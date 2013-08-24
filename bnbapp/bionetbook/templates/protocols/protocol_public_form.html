@@ -6,16 +6,6 @@
 
 {% block page_title %}Protocol{% if object %}: {{ object }}{% endif %}{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <!-- <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li> -->
-      <li><a href="{{ object.owner.organization_protocol_list }}"><i class="icon-home"></i> Protocol: {{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{{ object.get_absolute_url }}">{{object.name}}</a><span class="divider">/</span></li>
-      <li class="active">Publish</li>
-    </ul>
-{% endblock %}
-
 {% block content %}
 <div class="row">
 

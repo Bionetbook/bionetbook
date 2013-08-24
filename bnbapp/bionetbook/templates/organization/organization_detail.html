@@ -17,16 +17,6 @@
 
 {% block title %}Organization: {{ object.name }}{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
-      <li class="active">{{object.name}}</li>
-    </ul>
-{% endblock %}
-
-
-
 {% block page_title %}Organization: {{ object.name }}
 {% if protocol_edit_authorization %}
     <small><a href="{% url organization_detail object.slug %}"><i class="icon-edit"></i> edit</a></small>
