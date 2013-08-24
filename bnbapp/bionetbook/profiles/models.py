@@ -8,7 +8,7 @@ from django.db.models.query import EmptyQuerySet
 from django_extensions.db.models import TimeStampedModel
 
 from protocols.models import Protocol
-
+from organization.models import Organization
 
 class Profile(TimeStampedModel):
 
@@ -53,16 +53,7 @@ class Profile(TimeStampedModel):
         '''
         Returns a list of published protocols the user has access to.
         '''
-        result = []
-
-        if private:
-            for org in self.user.organization_set.prefetch_related('protocol_set').all():
-                result.extend( org.protocol_set.filter(published=True, public=False))
-
-        if public:
-            result.extend( Protocol.objects.filter(published=True, public=True) )
-
-        return result
+        return list( self.get_published_protocols_qs(public, private) )
 
     def get_published_protocols_qs(self, public=True, private=True):
         '''
@@ -72,18 +63,16 @@ class Profile(TimeStampedModel):
 
         if private:
             for org in self.user.organization_set.prefetch_related('protocol_set').all():
-                # result.extend( org.protocol_set.filter(published=True, public=False))
                 if result:
                     result = result | org.protocol_set.filter(published=True, public=False)
                 else:
                     result = org.protocol_set.filter(published=True, public=False)
 
         if public:
-            # result.extend( Protocol.objects.filter(published=True, public=True) )
-                if result:
-                    result = result | org.protocol_set.filter(published=True, public=True)
-                else:
-                    result = org.protocol_set.filter(published=True, public=True)
+            if result:
+                result = result | Protocol.objects.filter(published=True, public=True)
+            else:
+                result = Protocol.objects.filter(published=True, public=True)
 
         return result
 

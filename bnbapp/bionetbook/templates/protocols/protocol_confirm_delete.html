@@ -3,14 +3,6 @@
 
 {% block title %}Protocol: {{ object.name }}, Delete{% endblock %}
 
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url protocol_list %}">Protocols</a> <span class="divider">/</span></li>
-      <li class="active">{{object.name}}</li>
-    </ul>
-{% endblock %}
-
 {% block page_title %}Protocol: {{ object.name }}
 {% endblock %}
 
