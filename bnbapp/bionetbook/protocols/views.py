@@ -773,6 +773,7 @@ class ActionCreateView(NodeCreateViewBase):
         '''This is done to handle the two forms'''
 
         self.object = self.get_object()
+        # context = self.get_context_data(**kwargs)
         args = self.get_form_kwargs()
 
         form = ActionForm(request.POST, prefix='action')

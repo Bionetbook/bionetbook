@@ -2,12 +2,12 @@ from protocols.forms import forms
 from django.db.models.query import EmptyQuerySet
 from django.utils.translation import ugettext_lazy as _
 
-
 class CallForProtocolForm(forms.VerbForm):
 
     name = "Call For Protocol"
     slug = "call-for-protocol"
-    has_component = True
+    has_manual = True
+    layers = ['input_to_track', 'output_to_track']
 
     # protocol_name = forms.CharField(required = False, help_text='kit or protocol name')
     protocol_id = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Protocol"))
