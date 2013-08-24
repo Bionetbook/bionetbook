@@ -765,7 +765,7 @@ class ActionCreateView(NodeCreateViewBase):
             context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs() )
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         return context
 
@@ -780,7 +780,7 @@ class ActionCreateView(NodeCreateViewBase):
         verb_form = VERB_FORM_DICT[verb_slug](request.POST, prefix='verb')
 
         if 'protocol_id' in verb_form.fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            verb_form.fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs() )
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form.is_valid() and verb_form.is_valid():
             print "FORM VALID"
@@ -854,7 +854,7 @@ class ActionUpdateView(NodeUpdateView):
         context['verb_name'] = context['verb_form'].name
 
         if 'protocol_id' in context['verb_form'].fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs() )
+            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form:
             context['form'] = form
@@ -874,7 +874,7 @@ class ActionUpdateView(NodeUpdateView):
         verb_form = VERB_FORM_DICT[verb_key](request.POST, prefix='verb')
 
         if 'protocol_id' in verb_form.fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            verb_form.fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs() )
+            verb_form.fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form.is_valid() and verb_form.is_valid():
             return self.form_valid(form, verb_form)
