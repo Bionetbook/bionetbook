@@ -839,7 +839,7 @@ class ActionCreateView(NodeCreateViewBase):
         messages.add_message(self.request, messages.INFO, "Your action was added.")
         # return super(ActionCreateView, self).form_valid(form)
 
-        # F THE VERB IS IN THE MANUAL_VERBS, REDIRECT TO STEP_DETAIL, OTHERWISE ACTION_DETAIL
+        # IF THE VERB IS IN THE MANUAL_VERBS, REDIRECT TO STEP_DETAIL, OTHERWISE ACTION_DETAIL
         if action['verb'] in MANUAL_VERBS:
             return HttpResponseRedirect( step.get_absolute_url() )
 
