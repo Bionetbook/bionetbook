@@ -781,7 +781,7 @@ class ActionCreateView(NodeCreateViewBase):
         verb_form = VERB_FORM_DICT[verb_slug](request.POST, prefix='verb')
 
         if 'protocol_id' in verb_form.fields:        # POPULATE THE protocol_id CHOICES WITH OPTIONS THE USER HAS ACCESS TO
-            context['verb_form'].fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
+            verb_form.fields['protocol_id'] = forms.ModelChoiceField( self.request.user.profile.get_published_protocols_qs(), label=_("Protocol") )
 
         if form.is_valid() and verb_form.is_valid():
             print "FORM VALID"
