@@ -491,7 +491,7 @@ class Protocol(TimeStampedModel):
                 if 'components' in action and action['verb'] in COMPONENT_VERBS:        # if it should have components, update
                     action_min_time = float(len(action['components']) * 30 )
                     action_max_time = float(len(action['components']) * 60 )
-
+                    print "COMPONENTS TRIGGERED"
                     auto_update = True
                     # Total Up Component Time Values Here from the DICT
 
@@ -536,18 +536,26 @@ class Protocol(TimeStampedModel):
                     # if debug: 
                     #     if action_max_time ==0:
                     #         print action['name'], action['objectid']
-
+                    print "MACHINE TRIGGERED"
                     auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
                 if action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
-                    action_min_time = eval_time(action, value = 'min_time')
-                    action_max_time = eval_time(action, value = 'max_time')
+                    if 'duration' in action and 'min_time' not in action['verb']:
+                        time = action['duration'].split('-')
+                        action_min_time = float(time[0])
+                        action_max_time = float(time[1])
+                        print '\t input time before method %s-%s' %(time[0], time[1])   
+                    else:                             
+                        action_min_time = eval_time(action, value = 'min_time')
+                        action_max_time = eval_time(action, value = 'max_time')
+                    
+                    print '\t input time after method %d' %action_min_time
                     
                     # debuggin Clause:
                     # if action_max_time ==0:
                     #     print action['name'], action['objectid']                    
-
+                    print "MANUAL TRIGGERED"
                     auto_update = True
                     # Total Up Machine Time Values Here from the DICT
 
