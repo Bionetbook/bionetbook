@@ -20,7 +20,7 @@ from protocols.forms.baseforms import ProtocolForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from compare.models import ProtocolPlot
-from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+from protocols.utils import VERB_CHOICES, VERB_FORM_DICT, MANUAL_VERBS
 
 
 #####################
@@ -646,10 +646,10 @@ class StepDetailView(NodeDetailView):
     slug_url_kwarg = "protocol_slug"
     slugs = ['step_slug']
 
-    def get_context_data(self, **kwargs):
-        context = super(StepDetailView, self).get_context_data(**kwargs)
-        # context['paths'].append( { 'name':self.object.name } )
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(StepDetailView, self).get_context_data(**kwargs)
+    #     # context['paths'].append( { 'name':self.object.name } )
+    #     return context
 
 
 class StepCreateView(NodeCreateViewBase):
@@ -659,14 +659,20 @@ class StepCreateView(NodeCreateViewBase):
     form_class = StepForm
     success_url = 'protocol_detail'
     pathEnd = { 'name':'Create Step' }
+    # slugs = ['step']
 
     def form_valid(self, form):
         protocol = self.get_protocol()
         new_step = Step(protocol, data=form.cleaned_data)
         protocol.save()
 
+        self.slugs = ['step']
+        self.success_url = "steps_detail"
+
+        print new_step.get_absolute_url()
+
         messages.add_message(self.request, messages.INFO, "Your step \'%s\'' was added." % new_step.title)
-        return super(StepCreateView, self).form_valid(form)
+        return HttpResponseRedirect( new_step.get_absolute_url() )
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
@@ -831,7 +837,13 @@ class ActionCreateView(NodeCreateViewBase):
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")
-        return super(ActionCreateView, self).form_valid(form)
+        # return super(ActionCreateView, self).form_valid(form)
+
+        # F THE VERB IS IN THE MANUAL_VERBS, REDIRECT TO STEP_DETAIL, OTHERWISE ACTION_DETAIL
+        if action['verb'] in MANUAL_VERBS:
+            return HttpResponseRedirect( step.get_absolute_url() )
+
+        return HttpResponseRedirect( action.get_absolute_url() )
 
 
 class ActionUpdateView(NodeUpdateView):
