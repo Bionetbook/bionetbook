@@ -19,7 +19,7 @@ urlpatterns = patterns("",
 	
 	url(regex=r'^calendar/$', view=views.ListCalendarAPI.as_view(), name='ListCalendarAPI'),
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view=views.SingleCalendarAPI.as_view(), name='EventAPI'),
-	url(regex=r'^calendar/(?P<pk>[-\w]+)/(?P<id>[-\w]+)/$', view=views.SingleEventAPI.as_view(), name='SingleEventAPI'),
+	url(regex=r'^calendar/(?P<pk>[-\w]+)/(?P<event_id>[-\w]+)/$', view=views.SingleEventAPI.as_view(), name='SingleEventAPI'),
 	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view='api.views.get_verb_fields_json', name='api_verb_fields'),
 	url(regex=r'^action/types/$', view='api.views.get_verb_types_json', name='api_verb_types'),
 )
