@@ -1,81 +1,217 @@
 {% extends "base.html" %}
 {% load core_tags %}
-{% load crispy_forms_tags %}
-{% load wysiwyg %}
 
-{% block title %}Protocol{% if not object %} Create{% else %} Edit: {{ object }}{% endif %}{% endblock %}
+{% block title %}Protocol Form Test{% endblock %}
 
-{% block page_title %}Protocol{% if not object %} Create{% else %} Edit: {{ object }}{% endif %}{% endblock %}
+{% block page_title %}Protocol Form Test{% endblock %}
+
+{% block extracss %}
+<style>
+/*--------------------
+  Throwaway styles - for testing 
+--------------------*/
+#wrapper{
+    width: 960px;
+    margin-top:5em !important;
+    margin: auto;
+    position: relative;
+    min-height: 32em;
+}
+.nav-tabs>li {width:13em;}
+.nav-tabs>li>a {
+    padding: 2em 1em;
+    text-align: right;
+}
+.nav-tabs>li>a input{
+    width:10em;
+}
+
+/*------------------------
+    Input Page styles 
+------------------------*/
+#protocol-intro{
+    content:"";
+    background-color:rgba(0,0,0,.3);
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:-1em;
+    right:-1em;
+    z-index:1;
+}
+.data-input.hero-unit{
+    position:fixed;
+    left:25%;
+    right:25%;
+    margin-top:4em;
+    z-index:2;
+}
+.data-input.hero-unit h1{
+    margin-bottom:.5em;
+}
+.data-input.hero-unit input, .data-input.hero-unit .btn{
+    padding:.5em;
+}
+#protocol-intro .alert{ font-size: .8em; }
+
+#protocol-title{
+    margin:0;
+}
+#protocol-description{
+    font-style: italic;
+    color: #777;
+}
+.blur-text *{
+    color: transparent !important;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5) !important;
+}
+.tab-content{
+    position:relative;
+    padding-bottom:5em;
+}
+.page-header .step-description{
+    color:#777;
+}
+/*------------------------
+       Action styles 
+------------------------*/
+.verb > td{
+    padding-top: .8em;
+}
+.module-title{
+    padding: 1em;
+    background-color: #f6f6f6;
+    color: #999;
+    font-style: normal;
+    margin-bottom: 1em;
+}
+tr.action-header{
+    background-color:#eee;
+}
+tr.action-header h4{
+    margin-left:1em;
+    float:left;
+}
+td:first-child{
+    font-weight:bold;
+}
+tr:last-child{
+    font-weight:normal;
+    color:#ddd;
+    font-style: italic;
+    cursor:text;
+}
+tr:last-child td:first-child{
+    font-weight:normal;
+}
+tr:last-child:hover td{
+    color:#bbb;
+    transition: .2s ease;
+}
+.action-container input[type=text]{
+    margin:0;padding:0;
+}
+.add-new-action{
+    padding-left:1.5em;
+    border:1px solid #ddd;
+    background-color:#eee;
+    border-radius:3px;
+    cursor:pointer;
+    font-style: italic;
+    opacity: .5;
+}
+.add-new-action:hover{
+    transition:.2s all;
+    opacity: 1;
+} 
+.add-new-action h4{font-weight: normal;}
+.add-new-step{ 
+    font-style: italic;
+    cursor: pointer; 
+}
+th.add-property{ 
+    text-align: right;
+    width: 70%;
+    font-style: italic;
+    font-weight: normal;
+    cursor: pointer;
+    margin-right:1em;
+}
+.action-container label{
+    color:#000;
+    font-style: normal;
+}
+.action-container input[type=text]{ padding: .2em .5em; }
+
+/* Bootstrap Doesn't like combining its form elements */
+.action-container .help-block{ color:#aaa; }
+.action-container .input-append .help-block{ font-size: 14px; }
+.input-append .add-on{ 
+    padding:3px 5px;
+    border-radius:0 3px 3px 0;
+    color:#666;
+}
+.form-horizontal .controls.input-append {
+    margin-left: 20px;
+}
+.form-horizontal textarea.comments{
+    display: block;
+    margin-top: .5em;
+    opacity: .5;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="row">
+    <div class="span12">
+      <div id="wrapper">
 
-    <!-- main form div -->
-    <div class="span4">
-      {% if object %}<h2>Detail</h2>{% endif %}
-      <form action="." method="post" class="form-stacked well">{% csrf_token %}
-      {{ form|crispy }}
-        <div class="actions">
-          <input type="submit" class="btn btn-primary" value="Submit">
+        <!-- Start Overlay -->
+        <div id="protocol-intro">
+            <div class="hero-unit data-input">
+                <h1>First, name this protocol</h1>
+                <div class="input-append">
+                    <input type="text" class="span4" placeholder="name" autofocus>
+                    <button class="btn" id="intro-submit" type="button">Got it!</button>
+                </div>
+            </div>
         </div>
-      </form>
+
+        <!-- Start Main Content -->
+         <div class="tabbable tabs-left blur-text" id="nav-tabs">
+
+            <!-- Protocol Meta -->
+            <div class="page-header">
+                <!-- Title -->
+                <h3 id="protocol-title">Name this protocol</h3>
+                <!-- Description -->
+                <span id="protocol-description">add a description</span>
+            </div>
+            
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="protocol-tabs">
+                <li class="add-new-step"><a href="">&plus; add new step</a></li>
+            </ul>
+
+            <!-- Content -->
+            <div class="tab-content">
+
+            </div>
+        </div>
+
+        <!-- End Main Content -->
+    </div> <!-- End Container -->
     </div>
-
-    <!-- secondary form div -->
-    {% if object %}
-    <div class="span8">
-      <h2>Steps</h2>
-      <p><a class="btn btn-success" href="{{ object.step_create_url }}"><i class="icon-plus-sign icon-white"></i> Add step</a></p>
-
-      {% if steps|length %}
-        <table class="table table-striped table-condensed">
-            <thead>
-              <tr>
-                  <!-- <th nowrap></th> -->
-                  <th>Step</th>
-                  <th>Duration</th>
-                  <th>Actions</th>
-                  <th>Step Comments</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for item in steps %}
-                <tr>
-                    <!-- <td nowrap>
-                        <div class="btn-group" id="item-{{ item.pk }}">
-                            <button class="btn btn-warning {% if forloop.first %}disabled{% else %}up{% endif %}"><i class="icon-arrow-up icon-white"></i></button>
-                            <button class="btn btn-warning {% if forloop.last %}disabled{% else %}down{% endif %}"><i class="icon-arrow-down icon-white"></i></button>
-                            <button class="btn btn-danger delete"><i class="icon-minus icon-white"></i></button>                            
-                        </div>
-                    </td> -->
-                    <td><a href="{{ item.get_absolute_url }}">{{ item.name|truncatewords:"3" }}</a></td>
-                    <td>{{ item.duration|protocol_time_compact }}</td>     
-                    <td>
-                    {% for a in item.actions %}
-                    <a href="{{ a.get_absolute_url }}">{{ a.name }}</a><br>
-                    {% endfor %}
-                    </td>
-                    <td> {{ item.technique_comment }} </td>
-                </tr>
-                {% endfor%}
-            </tbody>
-        </table>                    
-      {% endif %}
-
-    </div>    
-    {% endif %}
-  </div>
+</div>
 {% endblock %}
 
 {% block extrajs %}
+
+<!-- EXTRA JS-->
 <script>
-    $(document).ready(function(){
-        $("#id_name").focus();
-    });
+// URL prefix for use in multiple enviorments
+var apiUrlPrefix = 'http://localhost:8000/api/';
 </script>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/xxxxx.js">
-
-
-{% wysiwyg_setup  %}    
-{% wysiwyg_editor "id_raw" %}
+<script src="{{ STATIC_URL }}js/bnb.data-input.js"></script>
 {% endblock extrajs %}

@@ -659,8 +659,13 @@ class Protocol(TimeStampedModel):
 
         if numbers:
             verbatim = ["%d. "%(cnt+1) + item for cnt, item in enumerate(self.get_verbatim_text())]    
-        else:     
-            verbatim = [step['verbatim_text'] for step in self.steps]
+        else:
+            verbatim = []
+            for step in self.steps:
+                if 'verbatim_text' in step:
+                    verbatim.append( step['verbatim_text'] )
+                else:
+                    verbatim.append( "" )
 
         if len(verbatim) == len(self.steps):
             return verbatim
