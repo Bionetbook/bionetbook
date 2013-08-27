@@ -7,7 +7,7 @@ import compare.views as cviews
 
 urlpatterns = patterns("",
 
-    url(regex=r'^protocols/$', view=views.ProtocolListView.as_view(), name='protocol_list'),
+    # url(regex=r'^protocols/$', view=views.ProtocolListView.as_view(), name='protocol_list'),
     # url(regex=r'^protocols/(?P<protocol_a_slug>[-\w]+)/layers/(?P<layers>[-\w]+)/$', view=cviews.CompareSingleLayersView.as_view(), name='draw_single_layers'),
     # PROTOCOL URLS
     url(regex=r'^(?P<owner_slug>[-\w]+)/$', view=views.ProtocolListView.as_view(), name='organization_protocol_list'),
@@ -18,6 +18,9 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/publish/$', view=views.ProtocolPublishView.as_view(), name='protocol_publish'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/public/$', view=views.ProtocolPublicView.as_view(), name='protocol_public'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/duplicate/$', view=views.ProtocolDuplicateView.as_view(), name='protocol_duplicate'),
+
+    url(regex=r'^(?P<owner_slug>[-\w]+)/test/create/$', view=views.ProtocolCreateTestView.as_view(), name='protocol_test_create'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/test/edit/$', view=views.ProtocolUpdateTestView.as_view(), name='protocol_test_update'),
 
     # STEP URLS
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/step/create/$', view=views.StepCreateView.as_view(), name='step_create'),

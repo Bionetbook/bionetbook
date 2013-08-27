@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}Protocol List{% endblock %}
+{% block title %}{{ organization.name|possesive }} Protocol List{% endblock %}
 
-{% block page_title %}{{ organization.name|possesive }} Protocol List 
+{% block page_title %}
+{{ organization.name }}
 {% endblock %}
 
 {% block content %}
@@ -17,19 +18,7 @@
     {% endif %}
 </ul>
 
-{% for object in object_list %}
-{% with profile=object.owner.get_profile %}
 <div class="row">
-    <!-- <div class="span4">
-        <div class="box">
-          <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label">Protocols</li>
-            {% for protocol in organization.protocol_set.all %}
-            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ organization.name }}/{{ protocol.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
-    </div> -->
     <div class="span12">
         <table class="table table-striped">
             <thead>
@@ -39,60 +28,39 @@
                         <th>Status</th>
                     {% endif %}
                     <th>Author</th>
-                    <!-- <th>Steps</th> -->
                     <th>Duration</th>
                     <th>Actions</th>
-                    <!-- {% if request.user.is_authenticated %}
-                        <th>Status</th>
-                    {% endif %} -->
                     <th>Last Modified</th>
                 </tr>
             </thead>
             <tbody>
-                {% for protocol in object.protocol_set.all %}
+                {% for object in object_list %}
                 <tr>
-                    <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
+                    <td><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
                     <td>
-                        {% if not protocol.published %}
-                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% if not object.published %}
+                            <a href="{{ object.get_absolute_url }}"><i class="icon-edit"></i></a>
                         {% else %}
                             <a href="#"><i class="icon-lock"></i></a>    
                         {% endif %}
-                        {% if protocol.public %}
+                        {% if object.public %}
                             <a href ="#"><i class="icon-globe"></i></a>
                         {% else %}
                             <a href ="#"><i class="icon-eye-open"></i></a>
-                            <!-- <a href="{{ protocol.get_absolute_url }}"><i class="icon-th-list"></i></a> -->
                         {% endif %}
-
-                        <!-- <a href="{{ protocol.protocol_outline_url }}"><i class="icon-picture"></i></a> -->
                     </td>
-                    <!-- <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td> -->
-                    
-                    <td>{{ protocol.author.last_name }}</td>
-                    <!-- <td>{{ protocol.steps|length }}</td> -->
-                    <td>{{ protocol.duration|protocol_time_round_up }}</td>
-                    <td>{{ protocol.get_actions|length }}</td>
-                    <!-- <td>{{ protocol.status }}</td> -->
-                    <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
+                    <td>{{ object.author.last_name }}</td>
+                    <td>{{ object.duration|protocol_time_round_up }}</td>
+                    <td>{{ object.get_actions|length }}</td>
+                    <td>{{ object.modified|date:"M d, Y H:i"}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-<div class="row">
-    <div class="span12" style="text-align:right">
-        <!-- {% if request.user.is_authenticated %}
-        <a class="btn btn-info" href="{{ object.create_protocol_url }}">New Protocol</a>
-        {% endif %} -->
-        <br>
-        <br>
-        <br>
-        <br>
-    </div>
-</div>
-{% endwith %}
-{% endfor %}
+
+
+
 
 {% endblock %}
