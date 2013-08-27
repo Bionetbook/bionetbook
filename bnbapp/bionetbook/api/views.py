@@ -90,8 +90,7 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     def put(self, request, *args, **kwargs):
         event = self.request.PUT['event']
         eventID = self.kwargs['event_id']
-        requestedCalendarPK = self.kwargs['pk']
-        cal = get_object_or_404(Calendar, pk=requestedCalendarPK)
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
         if eventID == event['id']:
             for e in cal.data['events']:
                 if eventID in e.values():
@@ -118,8 +117,7 @@ class ListCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
         if self.request.user.is_authenticated():
             for cal in self.request.user.calendar_set.all():
                 usersCalendars.append('%s-%s' % (cal.name, cal.pk))
-        ret = {'calendars':usersCalendars}
-        return self.render_to_response ( ret )
+        return self.render_to_response ( {'calendars':usersCalendars} )
 
 
 class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
@@ -157,8 +155,7 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     http_method_names = ['get', 'post', 'put', 'delete']
 
     def get(self, request, *args, **kwargs):
-        requestedCalendarPK = self.kwargs['pk']
-        curCal = get_object_or_404( Calendar, pk=requestedCalendarPK )
+        curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
 
     # def put(self, request, *args, **kwargs):
