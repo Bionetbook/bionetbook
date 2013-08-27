@@ -54,6 +54,9 @@ class DocumentationView(TemplateView):
 class FAQView(TemplateView):
     template_name = "core/FAQ.html"    
 
+class ReleaseNotes(TemplateView):
+    template_name = "core/release_notes.html"        
+
 
 class AuthorizedOrganizationMixin(object):
     '''Checks to see if the user has the right to see the given protocol'''
