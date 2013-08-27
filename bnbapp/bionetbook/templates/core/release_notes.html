@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block page_title %} Release Notes {% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li ><i class="icon-question-sign"></i></i> Help</li> <span class="divider">/</span></li>
+      <li class="active"> Release Notes </li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span12">
+        <h3>Release 0.2 August 26 2013</h3>
+    <hr>
+        <h4> New Features:</h4>
+        
+        <ul> 
+            <li> Protocol layout: Lets user view protocol as a diagram or text. Comments can be turned off for easy reading</li>
+            <li> Protocol permissions: You can choose to share your protocols with your organization or with everyone.</li>
+            <li> Protocol compare: Protocols display verb differences and can toggle on/off specific differences amounts and units of reagents, machine and thermocycler settings, etc. </li>
+
+        </ul>
+
+        <h4>Fixes:</h4>
+        
+        <ul> 
+            <li> Duration calculation: Actions, Steps and Protocols now have duration calculation with a time range ( minimum time - maximum time).</li>
+            <li> Protocol layout: Protocols can be rendered and no longer fail. </li>
+            <li> Dashboard shows all users' protocols.    
+        </ul>
+
+    
+        <h4>Known Issues: </h4>
+        
+        <ul> 
+            <li> Login: Users can not create accounts, this will be fixed in a further release</li>
+            <li> Dashboard: Users can't edit personal information, this will be fixed in a further release</li>
+            <li> Protocol entry: We are aware that this process is cumbersome. The next release will improve protocol entry significantly.: </li>
+            <li> Protocol search: There is no search in this release. </li>
+            <li> Protocol compare: Comparing protocols can only be done on cloned protocols. In future versions there will release more comprehensive comparison tools.</li>
+            <li> Protocol compare: Only two protocols can be compared. This will be extended to more in future release. </li>       
+            <li>Protocol duration: Duration only accounts for the net time and indicates the estimated amount of time for executing the protocol. In some cases there will be a range, its reflected from the protocol. In future releases duration will account for gross time which includes in-between times like setting up the tubes in a centrifuge, labeling tubes etc. </li>
+        </ul>
+
+        <h4>Next Release Targets</h4>
+        
+        <ul> 
+            <li> Protocol searches: We will add protocol searching tools that integrate PMID resources. </li>
+            <li> Protocol scheduling: You will be able to sync your personal calendar with a protocol schedule. </li>
+            <li> Workflows: Combine several protocols into a workflow and schedule it. </li>
+            <li> Login will be handled through a Google acount. </li>
+            
+        </ul>
+
+    </div>
+</div>
+
+
+{% endblock %}

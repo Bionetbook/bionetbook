@@ -80,9 +80,8 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated():
-            requestedCalendarPK = self.kwargs['pk']
             eventID = self.kwargs['event_id']
-            cal = get_object_or_404(Calendar, pk=requestedCalendarPK)
+            cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
             for event in cal.data['events']:
                 if eventID in event.values():
                     return self.render_to_response ( event )
