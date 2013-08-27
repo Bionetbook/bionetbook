@@ -45,22 +45,74 @@ class JSONResponseMixin(object):
 
 
 class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
-    http_method_names = ['get', 'post', 'put', 'delete']
+    '''
+    SingleEventAPI returns a single event from a calendar
+
+    GET:
+    {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
+        'start':1376957033,
+        'duration':300,
+        'action':"First Action",
+        'protocol':'dna-jalkf',
+        'experiment':'experiment 1',
+        'notes':""
+    }
+
+    PUT:
+    On success:
+    {
+        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
+        'start':12321311231,
+        'notes':"",
+        'status':"updated"
+    }
+    On failure:
+    {
+        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
+        'start':12321311231,
+        'notes':"",
+        'status':"failed"
+    }
+
+    '''
+
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated():
-            requestUrl = request.path_info.split('/')
-            requestedCalendarPK = requestUrl[len(requestUrl)-3]
-            eventID = requestUrl[len(requestUrl)-2]
+            requestedCalendarPK = self.kwargs['pk']
+            eventID = self.kwargs['event_id']
             cal = get_object_or_404(Calendar, pk=requestedCalendarPK)
             for event in cal.data['events']:
                 if eventID in event.values():
-                    return self.render_to_response ( {'event':event } )
+                    return self.render_to_response ( event )
             raise Http404
+
+    def put(self, request, *args, **kwargs):
+        event = self.request.PUT['event']
+        eventID = self.kwargs['event_id']
+        requestedCalendarPK = self.kwargs['pk']
+        cal = get_object_or_404(Calendar, pk=requestedCalendarPK)
+        if eventID == event['id']:
+            for e in cal.data['events']:
+                if eventID in e.values():
+                    e['start'] = event['start']
+                    e['notes'] = event['notes']
+                    return self.render_to_response ( { 'id':e['id'], 'start':e['start'], 'notes':e['notes'], 'status':'updated'} )
+        return self.render_to_response ( { 'id':event['id'], 'start':event['start'], 'notes':event['notes'], 'status':'failed'} )
 
 
 class ListCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
-    http_method_names = ['get', 'post', 'put', 'delete']
+    
+    '''
+    ListCalendarAPI returns a list of calendars belonging to the user with their pk
+
+    {
+        'calendars': ['Andrew's Calendar-1', 'Public Calendar-2', 'Misc Calendar-3']
+    }
+    '''
+
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
         usersCalendars = []
@@ -106,25 +158,24 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     http_method_names = ['get', 'post', 'put', 'delete']
 
     def get(self, request, *args, **kwargs):
-        requestUrl = request.path_info.split('/')
-        requestedCalendarPK = requestUrl[len(requestUrl)-2]
+        requestedCalendarPK = self.kwargs['pk']
         curCal = get_object_or_404( Calendar, pk=requestedCalendarPK )
         return self.render_to_response( curCal.data )
 
-    def put(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def put(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def post(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
-    def delete(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def delete(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
 
 # REPLACE WITH CLASS BASED VIEW ABOVE
