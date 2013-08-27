@@ -158,45 +158,45 @@ def protocol_detail(request, protocol_slug):
             return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
-# class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
-#     '''
-#     JSON call of a protocol diagram handling 1 and 2 protocols
-#     '''
-#     def get(self, request, *args, **kwargs):
-#         single_protocol = True
-#         protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
-#         protocols = [protocol_a]
+class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
+    '''
+    JSON call of a protocol diagram handling 1 and 2 protocols
+    '''
+    def get(self, request, *args, **kwargs):
+        single_protocol = True
+        protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
+        protocols = [protocol_a]
 
-#         if 'protocol_b_slug' in kwargs:
-#             protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
-#             protocols.append( protocol_b )
-#             single_protocol = False
+        if 'protocol_b_slug' in kwargs:
+            protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
+            protocols.append( protocol_b )
+            single_protocol = False
 
-#         comp = Compare( protocols )
-#         comp.get_layout_by_objectid()
-#         data = list(comp.layout)
+        comp = Compare( protocols )
+        comp.get_layout_by_objectid()
+        data = list(comp.layout)
 
-#         if single_protocol:
-#             data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
+        if single_protocol:
+            data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
 
-#         return self.render_to_response(data)
+        return self.render_to_response(data)
 
 
 # REPLACE WITH CLASS BASED VIEWS ABOVE
-def get_layout_json(request, protocol_a_slug):
-    '''
-    JSON call of a protocol diagram
-    '''
-    A = Protocol.objects.get(slug=protocol_a_slug)
-    protocols = [A]
-    G = Compare(protocols)
-    G.get_layout_by_objectid()
-    data = list(G.layout)
-    verbatim = dict()
-    verbatim['text'] = A.get_verbatim_text(numbers=True)
-    data.append(verbatim)
+# def get_layout_json(request, protocol_a_slug):
+#     '''
+#     JSON call of a protocol diagram
+#     '''
+#     A = Protocol.objects.get(slug=protocol_a_slug)
+#     protocols = [A]
+#     G = Compare(protocols)
+#     G.get_layout_by_objectid()
+#     data = list(G.layout)
+#     verbatim = dict()
+#     verbatim['text'] = A.get_verbatim_text(numbers=True)
+#     data.append(verbatim)
     
-    return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
+#     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
 
 # REPLACE WITH CLASS BASED VIEWS ABOVE
 def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
