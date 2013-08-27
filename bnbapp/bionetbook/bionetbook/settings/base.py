@@ -1,6 +1,7 @@
 # Django settings for bionetbook project.
 
 import os.path
+import sys
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -138,12 +139,18 @@ LOGGING = {
         }
     },
     'handlers': {
+        'console':{
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+            'stream': sys.stdout
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
+
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
