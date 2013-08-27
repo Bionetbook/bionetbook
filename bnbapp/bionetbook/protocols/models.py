@@ -24,7 +24,7 @@ from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, 
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
-
+REFERENCE_TYPES = [('pmid',"PMID"), ('doi',"DOI")]
 
 class Protocol(TimeStampedModel):
 
@@ -54,10 +54,10 @@ class Protocol(TimeStampedModel):
     # status = models.CharField(_("Status"), max_length=30, default=STATUS_DRAFT, choices=STATUS)
     # version = models.CharField(_("Version"), max_length=100, blank=True, null=True)
 
-    # reference fields
+    # reference fields -> MOVING TO NEW MODEL
     # url = models.URLField(_("URL"), max_length=255, null=True, blank=True)
-    # PMID = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
-    # DOI = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
+    # pmid = models.CharField(_("PMID"), max_length=255, null=True, blank=True)
+    # doi_id = models.CharField(_("DOI"), max_length=255, null=True, blank=True)
     # document_id = models.CharField(_("Document ID"), max_length=255, null=True, blank=True)
 
 
@@ -667,6 +667,12 @@ class Protocol(TimeStampedModel):
 
         else:
             return None
+
+
+class Reference(models.Model):
+    protocol = models.ManyToManyField(Protocol)
+    name = models.CharField(_("Name"), max_length=255, unique=True)
+    typ = models.CharField(_("Type"), max_length=255, unique=True, choices=REFERENCE_TYPES)
 
 
 class NodeBase(dict):
