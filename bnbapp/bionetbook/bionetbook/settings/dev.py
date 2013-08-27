@@ -17,6 +17,17 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'db_name',                      
+#         'USER': 'db_user',
+#         'PASSWORD': 'db_user_password',
+#         'HOST': ''
+#     }
+# }
+
+
 # ATTEMPT TO FORCE AN IN-MEMORY DB CREATION
 # if 'test' in sys.argv:
 #     DATABASES['default']['NAME'] = ':memory:'
