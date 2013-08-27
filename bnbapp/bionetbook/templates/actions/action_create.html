@@ -41,7 +41,7 @@ Add Action: {{ object.name }} > {{ step.name }}
                 {% for item in step.actions %}
                 <tr>
                     <td><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
-                    <td>{{ item.update_duration|protocol_time }} </td>
+                    <td>{{ item.duration|protocol_time }} </td>
                     <td>{{ item.physical_commitment }}</td>
                     
                 </tr>
