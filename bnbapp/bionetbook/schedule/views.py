@@ -53,6 +53,7 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
             context['calendar'] = None
 
         organizations = self.request.user.organization_set.all()
+
         if organizations:
             context['organization'] = organizations[0]
         else:
