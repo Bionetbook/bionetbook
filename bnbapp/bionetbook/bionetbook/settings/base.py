@@ -139,11 +139,11 @@ LOGGING = {
         }
     },
     'handlers': {
-        'console':{
-            'level':'INFO',
-            'class':'logging.StreamHandler',
-            'stream': sys.stdout
-        },
+        # 'console':{
+        #     'level':'INFO',
+        #     'class':'logging.StreamHandler',
+        #     'stream': sys.stdout
+        # },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
