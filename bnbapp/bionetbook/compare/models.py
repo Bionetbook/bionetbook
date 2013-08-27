@@ -442,7 +442,9 @@ class CompareChildren(CompareVerb):
                 self['display_order'].append(['technique_comment'])
             if 'item_to_act' in self:
                 self['display_order'][0].pop(self['display_order'][0].index('item_to_act'))
-                self['name'] = self['item_to_act']           
+                self['name'] = self['item_to_act']       
+            if 'call-for-protocol' in self['verb']:
+                self['name'] = self['protocol_link']        
 
         if self['node_type'] == 'Component':        
             self['display_order'] = ['conc', 'vol', 'mass', 'time', 'technique_comment', 'link']
@@ -465,5 +467,6 @@ class CompareChildren(CompareVerb):
                 attribs.append(node.keys()) 
                 if manual:
                     attribs.append(['verb'])
+                    # if 'call-for-protocol' in 
             
         return union(attribs)   

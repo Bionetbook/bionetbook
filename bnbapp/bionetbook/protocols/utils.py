@@ -210,9 +210,13 @@ def labeler(object_dict):
             if 'duration' in object_dict.keys() and 'duration_units' in object_dict.keys():
                 output['time'] = [object_dict['duration'], object_dict['duration_units']]    
             if 'duration' in object_dict.keys() and 'duration_units' not in object_dict.keys():
-                output['time'] = [object_dict['duration'], 'sec']    
+                output['time'] = [object_dict['duration'], 'sec']   
             if 'settify' in item:
                 output.update(settify(object_dict, summary=True))    
+
+            #SPECIAL CASES:
+            if 'call-for-protocol' in object_dict['verb']:
+                output['protocol_link'] = object_dict['protocol_name']    
 
         if 'settify' in verb_attrib_order:
             
