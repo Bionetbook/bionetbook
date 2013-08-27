@@ -13,34 +13,17 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
             ('modified', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['organization.Organization'])),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('data', self.gf('jsonfield.fields.JSONField')(null=True, blank=True)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=255, null=True, blank=True)),
-            ('duration', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('note', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal('workflow', ['Workflow'])
-
-        # Adding model 'WorkflowProtocol'
-        db.create_table('workflow_workflowprotocol', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('protocol', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['protocols.Protocol'])),
-            ('workflow', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workflow.Workflow'])),
-            ('order', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('workflow', ['WorkflowProtocol'])
 
 
     def backwards(self, orm):
         # Deleting model 'Workflow'
         db.delete_table('workflow_workflow')
-
-        # Deleting model 'WorkflowProtocol'
-        db.delete_table('workflow_workflowprotocol')
 
 
     models = {
@@ -80,64 +63,15 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'organization.membership': {
-            'Meta': {'ordering': "('-modified', '-created')", 'object_name': 'Membership'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'org': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['organization.Organization']"}),
-            'role': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        },
-        'organization.organization': {
-            'Meta': {'ordering': "('-modified', '-created')", 'object_name': 'Organization'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['organization.Membership']", 'symmetrical': 'False'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': "'60'"}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': "'60'", 'null': 'True', 'blank': 'True'})
-        },
-        'protocols.protocol': {
-            'Meta': {'ordering': "('-modified', '-created')", 'object_name': 'Protocol'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'duration_in_seconds': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'note': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['organization.Organization']"}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['protocols.Protocol']", 'null': 'True', 'blank': 'True'}),
-            'public': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'published': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'raw': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
-        },
         'workflow.workflow': {
             'Meta': {'ordering': "('-modified', '-created')", 'object_name': 'Workflow'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'duration': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'note': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['organization.Organization']"}),
-            'protocols': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['protocols.Protocol']", 'through': "orm['workflow.WorkflowProtocol']", 'symmetrical': 'False'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
-        },
-        'workflow.workflowprotocol': {
-            'Meta': {'ordering': "('order',)", 'object_name': 'WorkflowProtocol'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['protocols.Protocol']"}),
-            'workflow': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['workflow.Workflow']"})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         }
     }
 
