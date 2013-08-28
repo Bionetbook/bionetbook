@@ -43,6 +43,24 @@ class JSONResponseMixin(object):
         "Convert the context dictionary into a JSON object"
         return json.dumps(context)
 
+    def put_request_scrub(self, request):
+        if hasattr(request, '_post'):
+            del request._post
+            del request._files
+        
+        try:
+            request.method = "POST"
+            request._load_post_and_files()
+            request.method = "PUT"
+        except AttributeError:
+            request.META['REQUEST_METHOD'] = 'POST'
+            request._load_post_and_files()
+            request.META['REQUEST_METHOD'] = 'PUT'
+            
+        request.PUT = request.POST
+        return request
+
+
 
 class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
@@ -81,24 +99,7 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         raise Http404
 
     def put(self, request, *args, **kwargs):
-
-        if hasattr(request, '_post'):
-            del request._post
-            del request._files
-        
-        try:
-            request.method = "POST"
-            request._load_post_and_files()
-            request.method = "PUT"
-        except AttributeError:
-            request.META['REQUEST_METHOD'] = 'POST'
-            request._load_post_and_files()
-            request.META['REQUEST_METHOD'] = 'PUT'
-            
-        request.PUT = request.POST
-
-
-
+        request = self.put_request_scrub(request)
         event = request.PUT
         eventID = self.kwargs['event_id']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
