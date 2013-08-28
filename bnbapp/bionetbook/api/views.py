@@ -1,5 +1,5 @@
 from django.template import Context, loader
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, QueryDict
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
@@ -45,30 +45,91 @@ class JSONResponseMixin(object):
 
 
 class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
-    http_method_names = ['get', 'post', 'put', 'delete']
+    '''
+    SingleEventAPI returns a single event from a calendar
+
+    GET:
+    {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
+        'start':1376957033,
+        'duration':300,
+        'action':"First Action",
+        'protocol':'dna-jalkf',
+        'experiment':'experiment 1',
+        'notes':""
+    }
+
+    PUT:
+    On success:
+    {
+        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
+        'start':12321311231,
+        'notes':"",
+        'status':"updated"
+    }
+    On failure: 
+    404
+    '''
+
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            # requestUrl = request.path_info.split('/')
-            # requestedCalendarPK = requestUrl[len(requestUrl)-3]
-            # eventID = requestUrl[len(requestUrl)-2]
-            cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
-            for event in cal.data['events']:
-                if eventID in event.values():
-                    return self.render_to_response ( {'event':event } )
-            raise Http404
+        eventID = self.kwargs['event_id']
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        for event in cal.data['events']:
+            if eventID in event.values():
+                return self.render_to_response ( event )
+        raise Http404
+
+    def put(self, request, *args, **kwargs):
+
+        if hasattr(request, '_post'):
+            del request._post
+            del request._files
+        
+        try:
+            request.method = "POST"
+            request._load_post_and_files()
+            request.method = "PUT"
+        except AttributeError:
+            request.META['REQUEST_METHOD'] = 'POST'
+            request._load_post_and_files()
+            request.META['REQUEST_METHOD'] = 'PUT'
+            
+        request.PUT = request.POST
+
+
+
+        event = request.PUT
+        eventID = self.kwargs['event_id']
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        if eventID == event['id']:
+            for e in cal.data['events']:
+                if eventID in e.values():
+                    e['start'] = event['start']
+                    e['notes'] = event['notes']
+                    cal.save()
+                    return self.render_to_response ( { 'id':e['id'], 'start':e['start'], 'notes':e['notes'], 'status':'updated'} )
+        raise Http404
 
 
 class ListCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
-    http_method_names = ['get', 'post', 'put', 'delete']
+    
+    '''
+    ListCalendarAPI returns a list of calendars belonging to the user with their pk
+
+    {
+        'calendars': ['Andrew's Calendar-1', 'Public Calendar-2', 'Misc Calendar-3']
+    }
+    '''
+
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
         usersCalendars = []
         if self.request.user.is_authenticated():
             for cal in self.request.user.calendar_set.all():
                 usersCalendars.append('%s-%s' % (cal.name, cal.pk))
-        ret = {'calendars':usersCalendars}
-        return self.render_to_response ( ret )
+        return self.render_to_response ( {'calendars':usersCalendars} )
 
 
 class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
@@ -106,25 +167,23 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     http_method_names = ['get', 'post', 'put', 'delete']
 
     def get(self, request, *args, **kwargs):
-        requestUrl = request.path_info.split('/')
-        requestedCalendarPK = requestUrl[len(requestUrl)-2]
-        curCal = get_object_or_404( Calendar, pk=requestedCalendarPK )
+        curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
 
-    def put(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def put(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def post(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
-    def delete(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        result = {'meta':{}, 'data':context }
-        return self.render_to_response(result)
+    # def delete(self, request, *args, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     result = {'meta':{}, 'data':context }
+    #     return self.render_to_response(result)
 
 
 # REPLACE WITH CLASS BASED VIEW ABOVE
