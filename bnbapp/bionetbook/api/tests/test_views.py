@@ -18,6 +18,7 @@ class APIViewTests(AutoBaseTest):
 		super(APIViewTests, self).setUp()
 
 		self.user = self.createUserInstance(username="testuser", password="pass", email="test@example.com")
+		self.user2 = self.createUserInstance(username="fakeuser", password="pass", email="fake@example.com")
 		self.profile = self.createModelInstance(Profile, user=self.user)
 		self.org = self.createModelInstance(Organization, name="TestOrg")
 		self.member = self.createModelInstance(Membership, user=self.user, org=self.org)
@@ -61,12 +62,21 @@ class APIViewTests(AutoBaseTest):
 							 	'notes':''
 								} ]
 				}
-		rep = json.loads(resp.content)
-		self.assertEqual(rep,cal)
+		self.assertEqual(json.loads(resp.content),cal)
 
 		# Testing failed GET, should return 404
 		resp2 = c.get('/api/calendar/2/')
 		self.assertEqual(resp2.status_code, 404)
+
+	def test_list_calendar_api(self):
+
+		# Testing successful GET
+		c = Client()
+		c.login(username="testuser", password="pass")
+		resp = c.get('/api/calendar/')
+		ret = { 'calendars': ['Test Schedule-1']}
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(json.loads(resp.content), ret)
 
 	def test_single_event_api(self):
 
@@ -124,7 +134,7 @@ class APIViewTests(AutoBaseTest):
 		self.assertEqual(json.loads(resp5.content), eventUpdated)
 		self.assertEqual(resp5.status_code, 200)
 
-		# Testing failed PUT, should return 404
+		# Testing failed PUT, should return 404 for both incorrect calendar pk and event id
 		update2 = {
 						'id':'bnb-o1-e1-p1-8v5lak-kxsl3x',
 						'start':'5',
@@ -134,7 +144,4 @@ class APIViewTests(AutoBaseTest):
 		self.assertEqual(resp6.status_code, 404)
 		resp6 = c.put('/api/calendar/2/bnb-o1-e1-p1-8v5lak-kxsl3x/', data=update2)
 		self.assertEqual(resp6.status_code, 404)
-
-
-
 
