@@ -48,6 +48,17 @@ class APIViewTests(AutoBaseTest):
 		c.login(username="testuser", password="pass")
 		resp = c.get('/api/calendar/1/')
 		self.assertEqual(resp.status_code, 200)
-		cal = {'meta':{},'events':[{'id':'bnb-o1-e1-p1-8v5lak-kxsl3b','start':'0','duration':'0','action':'add', 'protocol':'Test Protocol', 'experiment':'Test Experiment','notes':''}]}
+		cal = 	{
+					'meta':{},
+					'events':[ {
+							 	'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+							 	'start':'0',
+							 	'duration':'0',
+							 	'action':'add',
+							 	'protocol':'Test Protocol',
+							 	'experiment':'Test Experiment',
+							 	'notes':''
+								} ]
+				}
 		rep = json.loads(resp.content)
 		self.assertEqual(rep,cal)
