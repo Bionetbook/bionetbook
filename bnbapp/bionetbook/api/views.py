@@ -1,5 +1,5 @@
 from django.template import Context, loader
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, QueryDict
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import simplejson as json
 from django.views.generic.detail import View, BaseDetailView, SingleObjectTemplateResponseMixin
@@ -66,29 +66,40 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         'notes':"",
         'status':"updated"
     }
-    On failure:
-    {
-        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
-        'start':12321311231,
-        'notes':"",
-        'status':"failed"
-    }
-
+    On failure: 
+    404
     '''
 
     http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            eventID = self.kwargs['event_id']
-            cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
-            for event in cal.data['events']:
-                if eventID in event.values():
-                    return self.render_to_response ( event )
-            raise Http404
+        eventID = self.kwargs['event_id']
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        for event in cal.data['events']:
+            if eventID in event.values():
+                return self.render_to_response ( event )
+        raise Http404
 
     def put(self, request, *args, **kwargs):
-        event = self.request.PUT['event']
+
+        if hasattr(request, '_post'):
+            del request._post
+            del request._files
+        
+        try:
+            request.method = "POST"
+            request._load_post_and_files()
+            request.method = "PUT"
+        except AttributeError:
+            request.META['REQUEST_METHOD'] = 'POST'
+            request._load_post_and_files()
+            request.META['REQUEST_METHOD'] = 'PUT'
+            
+        request.PUT = request.POST
+
+
+
+        event = request.PUT
         eventID = self.kwargs['event_id']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
         if eventID == event['id']:
@@ -96,8 +107,9 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
                 if eventID in e.values():
                     e['start'] = event['start']
                     e['notes'] = event['notes']
+                    cal.save()
                     return self.render_to_response ( { 'id':e['id'], 'start':e['start'], 'notes':e['notes'], 'status':'updated'} )
-        return self.render_to_response ( { 'id':event['id'], 'start':event['start'], 'notes':event['notes'], 'status':'failed'} )
+        raise Http404
 
 
 class ListCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):

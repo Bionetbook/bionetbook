@@ -42,8 +42,9 @@ class APIViewTests(AutoBaseTest):
 		self.experiment = self.createModelInstance(Experiment, user=self.user, workflow=self.workflow, name="Test Experiment")
 		self.calendar = self.createModelInstance(Calendar, user=self.user, name="Test Schedule")
 
-
 	def test_single_calendar_api(self):
+
+		# Testing successful GET
 		c = Client()
 		c.login(username="testuser", password="pass")
 		resp = c.get('/api/calendar/1/')
@@ -62,3 +63,78 @@ class APIViewTests(AutoBaseTest):
 				}
 		rep = json.loads(resp.content)
 		self.assertEqual(rep,cal)
+
+		# Testing failed GET, should return 404
+		resp2 = c.get('/api/calendar/2/')
+		self.assertEqual(resp2.status_code, 404)
+
+	def test_single_event_api(self):
+
+		# Testing successful GET
+		c = Client()
+		c.login(username="testuser", password="pass")
+		resp = c.get('/api/calendar/1/bnb-o1-e1-p1-8v5lak-kxsl3b/')
+		self.assertEqual(resp.status_code, 200)
+		event = {
+					'protocol':'Test Protocol',
+					'duration':'0',
+					'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+					'action':'add',
+					'notes':'',
+					'experiment':'Test Experiment',
+					'start':'0'
+				}
+		self.assertEqual(json.loads(resp.content), event)
+		
+		# Testing with wrong id, should return 404
+		resp2 = c.get('/api/calendar/1/bnb-o1-e1-p1-8v5lak-kxsl3x/')
+		self.assertEqual(resp2.status_code, 404)
+		
+		# Testing with wrong calendar pk
+		resp3 = c.get('/api/calendar/2/bnb-o1-e1-p1-8v5lak-kxsl3b/')
+		self.assertEqual(resp3.status_code, 404)
+
+		# Testing successful PUT
+		update = {
+						'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+						'start':'5',
+						'notes':'new notes'
+				 }
+		resp4 = c.put('/api/calendar/1/bnb-o1-e1-p1-8v5lak-kxsl3b/', data=update)
+		self.assertEqual(resp4.status_code, 200)
+		ret = {
+					'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+					'start':'5',
+					'notes':'new notes',
+					'status':'updated'
+				}
+		self.assertEqual(json.loads(resp4.content), ret)
+
+		# Testing successful GET after updating event
+		resp5 = c.get('/api/calendar/1/bnb-o1-e1-p1-8v5lak-kxsl3b/')
+		eventUpdated = {
+					'protocol':'Test Protocol',
+					'duration':'0',
+					'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+					'action':'add',
+					'notes':'new notes',
+					'experiment':'Test Experiment',
+					'start':'5'
+				}
+		self.assertEqual(json.loads(resp5.content), eventUpdated)
+		self.assertEqual(resp5.status_code, 200)
+
+		# Testing failed PUT, should return 404
+		update2 = {
+						'id':'bnb-o1-e1-p1-8v5lak-kxsl3x',
+						'start':'5',
+						'notes':'new notes'
+				 }
+		resp6 = c.put('/api/calendar/1/bnb-o1-e1-p1-8v5lak-kxsl3x/', data=update2)
+		self.assertEqual(resp6.status_code, 404)
+		resp6 = c.put('/api/calendar/2/bnb-o1-e1-p1-8v5lak-kxsl3x/', data=update2)
+		self.assertEqual(resp6.status_code, 404)
+
+
+
+
