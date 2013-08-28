@@ -252,7 +252,7 @@ def get_timeunit(time_var, desired_unit = 'sec'):
                 desired_unit, 
                 time_var[1])
 
-def eval_time(_dict, value = 'min_time'):
+def eval_time(node, value = 'min_time'):
     ''' time_var = [value_str, 'units']
     return (float(min_value), [,float(max_value)], 'units', 'original units')
     '''
@@ -270,13 +270,19 @@ def eval_time(_dict, value = 'min_time'):
         'yrs' : {'sec': 1/31536000, 'min': 1/525600, 'hrs': 1/8760, 'h': 1/8760, 'd' : 1/365, 'yrs':  1},
         }
     
-    if 'time_units' in _dict and _dict['time_units'] is not None:
-        time_unit = _dict['time_units']
+    if 'time_units' in node and node['time_units'] is not None:
+        time_unit = node['time_units']
 
-    if value in _dict and _dict[value] is not None:
-        return float(factor['sec'][time_unit]) * float(_dict[value])
+        if time_unit == "minutes":          # TEMP FIX TO SEE IF THIS WORKS.  SOME PROTOCOLS NEED TO BE CORRECTED.
+            time_unit = "min"
+
+    if value in node and node[value] is not None:
+        return float(factor['sec'][time_unit]) * float(node[value])
 
     try: 
-        return float(factor['sec'][time_unit]) * float(_dict['min_time'])
+        return float(factor['sec'][time_unit]) * float(node['min_time'])
     except:
         return 0
+
+
+

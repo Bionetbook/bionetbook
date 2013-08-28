@@ -11,6 +11,7 @@ from django.views.generic.edit import FormMixin
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django import forms
+from django.db.models.query import EmptyQuerySet
 
 from braces.views import LoginRequiredMixin
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView, PathMixin
@@ -30,13 +31,14 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT, MANUAL_VERBS
 class ProtocolSetupMixin(PathMixin):
 
     pathEnd = {}
+    titleMarks = {'suffix':"", 'prefix':""}
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
         protocol_slug = self.kwargs.get('protocol_slug', None)
 
-        prefix = ""
-        suffix = ""
+        prefix = self.titleMarks['prefix']
+        suffix = self.titleMarks['suffix']
         title = ""
 
         if protocol_slug:
@@ -390,6 +392,15 @@ class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
 #         context['paths'] = [{'name':"Dashboard", 'icon':'home', 'url':reverse('dashboard')}]
 #         return context 
 
+#######
+# TEST VIEWS
+#######
+
+class ProtocolCreateTestView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
+    template_name = "protocols/protocol_form_test.html"  
+
+class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+    template_name = "protocols/protocol_form_test.html"  
 
 
 class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
@@ -402,40 +413,29 @@ class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
 
 
 class ProtocolListView(ProtocolSetupMixin, LoginRequiredMixin, ListView):
+    '''
+    Returns a list of Protocols in the organiation
 
-    model = Organization
-    template_name = "protocols/protocol_list.html"
+    THIS VIEW IS REALLY BROKEN IN HOW IT'S SET-UP.  NEEDS REFACTOR.
+    '''
+
+    model = Protocol
     slug_url_kwarg = "owner_slug"
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(ProtocolCreateView, self).get_context_data(**kwargs)
-    #     slug = self.kwargs.get(self.slug_url_kwarg, None)
-    #     if slug:
-    #         context['organization'] = Organization.objects.get(slug=slug)
-    #     return context
+    # pathEnd = { 'name':'Protocol List' }
+    titleMarks = {'suffix':"Protocol List", 'prefix':""}
 
     def get_queryset(self):
+
         slug = self.kwargs.get(self.slug_url_kwarg, None)
+        org = self.request.user.organization_set.get(slug=slug)
 
-        if slug:
-            self.object = Organization.objects.get(slug=slug)
-            return Organization.objects.filter(slug=slug)
-        else:
-            if self.request.user.is_superuser or self.request.user.is_staff:
-                return Organization.objects.all()    # GET ALL THE PROTOCOLS
-            if self.request.user.is_authenticated():
-                #return self.request.user.organizations.protocols
-                # return Protocol.objects.filter(
-                #         Q(status=Protocol.STATUS_PUBLISHED) |
-                #         Q(owner=self.request.user)
-                #         )
-                return self.request.user.organization_set.all() # GET ALL THE ORGANIZATIONS THE USER IS A MEMEBER OF
-            return []
+        if self.request.user.is_staff:                  # IF THIS IS A BnB STAFF PERSON, SHOW ALL PROTOCOLS FOR THE ORG
+            return org.protocol_set.all()
 
-    def get_context_data(self, **kwargs):
-        context = super(ProtocolListView, self).get_context_data(**kwargs)
-        context['organization'] = self.object
-        return context
+        org_pub = org.protocol_set.filter(published=True)
+        org_user = self.request.user.protocol_set.filter(owner=org)
+
+        return org_user | org_pub
 
 
 class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
