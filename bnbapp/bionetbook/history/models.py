@@ -28,7 +28,7 @@ class History(TimeStampedModel):
     protocol = models.ForeignKey(Protocol)
     org = models.ForeignKey(Organization, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
-    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+    # slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
     def __unicode__(self):
         return self.name
