@@ -10,10 +10,9 @@ from protocol.models import Protocol
 # Create your models here.
 
 HISTORY_TYPE_CHOICES = (
-    ('NOTE', 'Note'),
-    # ('EMAIL', 'Email'),
-    # ('PHONE', 'Phone Call'),
-    ('LOG', 'Event Log'),
+    ('EDIT', 'Edit Event Log'),
+    ('WORK', 'Workflow Event'),
+    ('EXPR', 'Experiment Event'),
 )
 
 class History(TimeStampedModel):
@@ -21,7 +20,7 @@ class History(TimeStampedModel):
     History log attached to the Project
     '''
     htype = models.CharField(_("Type"), max_length=10, choices=HISTORY_TYPE_CHOICES, default='NOTE')
-    description = models.TextField(_("Description"), blank=True, null=True)
+    # description = models.TextField(_("Description"), blank=True, null=True)
     data = models.TextField(_("Data"), blank=True, null=True)
     protocol = models.ForeignKey(Protocol)
     user = models.ForeignKey(User, blank=True, null=True)
