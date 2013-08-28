@@ -27,7 +27,7 @@ Up through version number should come from the main urls.py, everything after th
 Example (GET):
 http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
 http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
-http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
+http://www.bionetbook.com/api/v1/calendar/2/bnb-o1-e1-p1-AXBAGS-FFGGAX/ - Returns details for the given event
 '''
 
 class JSONResponseMixin(object):
@@ -136,31 +136,9 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     API Examples, CRUD
 
-    POST: { 'meta':{...},
-            'data':[ { 'id':'bnb-o1-e1-p1-AXBAGS-FFGGAX',
-                       'tmpid':"...",
-                       'status':'add'
-                      },
-                    ]
-            }
-
     GET: {  'meta':{...},
-            'data':[ {...},
+            'events':[ {...},
                    ]
-            }
-
-    PUT: { 'meta':{...},
-            'data':[ { 'id':'...',
-                       'status':'update'
-                      },
-                    ]
-            }
-
-    DELETE: { 'meta':{...},
-              'data':[ { 'id':'...',
-                       'status':'delete'
-                        },
-                     ]
             }
     '''
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
@@ -169,30 +147,6 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
-
-    # def put(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
-
-    # def post(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
-
-    # def delete(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
-
-
-# REPLACE WITH CLASS BASED VIEW ABOVE
-
-# def calendar_json(request, pk):
-#     if request.method == 'GET':
-#         curCal = get_object_or_404(Calendar, pk=1)
-#         return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
-
 
 # class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):
 #     '''
