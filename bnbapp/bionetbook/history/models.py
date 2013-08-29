@@ -33,23 +33,23 @@ class History(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-    def history_add_event(self, node_id, data={}):
-        '''
-        Data was added to the Item
-        '''
-        self.data.append({'id':node_id, 'event':"add", data: data })
+    # def history_add_event(self, node_id, data={}):
+    #     '''
+    #     Data was added to the Item
+    #     '''
+    #     self.data.append({'id':node_id, 'event':"add", data: data })
 
-    def history_update_event(self, node_id, data={}):
-        '''
-        Data was updated in the Item
-        '''
-        self.data.append({'id':node_id, 'event':"update", data: data })
+    # def history_update_event(self, node_id, data={}):
+    #     '''
+    #     Data was updated in the Item
+    #     '''
+    #     self.data.append({'id':node_id, 'event':"update", data: data })
 
-    def history_delete_event(self, node_id, data={}):
-        '''
-        Data was deleted from the Item
-        '''
-        self.data.append({'id':node_id, 'event':"delete", data: data })
+    # def history_delete_event(self, node_id, data={}):
+    #     '''
+    #     Data was deleted from the Item
+    #     '''
+    #     self.data.append({'id':node_id, 'event':"delete", data: data })
 
 
 #     def __init__(self, old_state, new_state, htype, *args, **kwargs):
