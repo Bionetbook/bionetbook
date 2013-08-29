@@ -17,6 +17,7 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
+from history.models import History
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
@@ -133,7 +134,17 @@ class Protocol(TimeStampedModel):
             #self.slug = self.generate_slug()
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-            
+        
+        # LOG THIS HISTORY OBJECT HERE
+        # history = History(org=self.owner, user=self.user, protocol=self, htype="EDIT")
+        
+        # DIFF DATA GOES IN HERE
+        # history_add_event(self, node_id, data={})
+        # history_update_event(self, node_id, data={})
+        # history_delete_event(self, node_id, data={})
+
+        # hisotry.save()
+
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
