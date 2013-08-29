@@ -10,9 +10,9 @@
 /*--------------------
   Throwaway styles - for testing 
 --------------------*/
+footer{ display:none; }
 #wrapper{
     width: 960px;
-    margin-top:5em !important;
     margin: auto;
     position: relative;
     min-height: 32em;
@@ -40,11 +40,11 @@
     z-index:1;
 }
 .data-input.hero-unit{
-    position:fixed;
-    left:25%;
-    right:25%;
-    margin-top:4em;
-    z-index:2;
+    position:absolute;
+    left: 15%;
+    right: 15%;
+    margin-top: 4em;
+    z-index: 2;
 }
 .data-input.hero-unit h1{
     margin-bottom:.5em;
@@ -72,6 +72,21 @@
 .page-header .step-description{
     color:#777;
 }
+.save-protocol-container{
+    border-top:1px solid #ddd;
+    padding-top:1em;
+    margin-top:1em;
+}
+#save-protocol{
+    float:right;
+    margin-bottom:.5em;
+    margin-top: 0.3em;
+    margin-left: 1em;
+}
+.save-protocol-container .alert{
+    display:inline;
+    float:right;
+}
 /*------------------------
        Action styles 
 ------------------------*/
@@ -85,6 +100,14 @@
     font-style: normal;
     margin-bottom: 1em;
 }
+.isactive-toggle{
+    float:right;
+}
+.isactive-toggle input{
+    float:left;
+    margin-right: .5em;
+}
+.isactive-toggle label{ float:left; }
 tr.action-header{
     background-color:#eee;
 }
@@ -165,6 +188,7 @@ th.add-property{
 {% block content %}
 <div class="row">
     <div class="span12">
+
       <div id="wrapper">
 
         <!-- Start Overlay -->
@@ -201,13 +225,18 @@ th.add-property{
         </div>
 
         <!-- End Main Content -->
+
     </div> <!-- End Container -->
+
+    <div class="save-protocol-container">
+        <button class="btn btn-success" id="save-protocol">Save Protocol</button>
+    </div>
+
     </div>
 </div>
 {% endblock %}
 
 {% block extrajs %}
-
 <!-- EXTRA JS-->
 <script>
 // URL prefix for use in multiple enviorments
