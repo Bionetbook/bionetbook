@@ -307,6 +307,8 @@ class ProtocolChangeLog(object):
         # Naming events:
         # if [item for item in cloned if item in d.changed()]:
         #     self.log_item(objectid = self.old.pk, event = 'cloned', data = self.new.pk)
+        if 'id' in d.changed() and 'author_id' not in d.changed():
+            self.log_item(objectid = self.old.pk, event = 'clone', data = { "pk": self.new.pk} )
 
         if 'user' in d.changed():
             self.log_item(objectid = self.new.pk, event = 'update', data = { "author": self.new.author })

@@ -126,10 +126,15 @@ class Protocol(TimeStampedModel):
         self.update_duration()
         
         # DIFF DATA GOES IN HERE
-        old_state = Protocol.objects.get(pk = self.pk)
-        new_state = self
-        diff = ProtocolChangeLog(old_state, new_state)
-        print diff.hdf
+    
+        if not self.pk:
+            old_state = Protocol.objects.get(pk = self.parent_id)            
+        else:     
+            old_state = Protocol.objects.get(pk = self.pk)
+
+        # new_state = self
+        # diff = ProtocolChangeLog(old_state, new_state)
+        # print diff.hdf
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -141,6 +146,9 @@ class Protocol(TimeStampedModel):
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
+        new_state = self
+        diff = ProtocolChangeLog(old_state, new_state)
+        print diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
 
@@ -156,6 +164,9 @@ class Protocol(TimeStampedModel):
             history.history_update_event(entry['objectid'], data=entry['data'])  
         if entry['event'] == "delete":    
             history.history_delete_event(entry['objectid'], data=entry['data'])    
+        
+        if entry['event'] == "clone":    
+            history.history_clone_event(entry['objectid'], data=entry['data'])        
                                     
         history.save()
 
