@@ -21,10 +21,11 @@ class History(TimeStampedModel):
     '''
     History log attached to the Project
     '''
+    name = models.CharField(_("Name"), max_length=255, unique=True)
     htype = models.CharField(_("History Type"), max_length=10, choices=HISTORY_EVENT_CHOICES, default='EDIT')
     # keyword = models.CharField(_("Keyword"), max_length=10 )
     # description = models.TextField(_("Description"), blank=True, null=True)
-    data = JSONField(_("Data"), blank=True, null=True)
+    data = JSONField(_("Data"), blank=True)
     protocol = models.ForeignKey('protocols.Protocol')
     org = models.ForeignKey(Organization, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
@@ -37,19 +38,22 @@ class History(TimeStampedModel):
         '''
         Data was added to the Item
         '''
-        self.data.append({'id':node_id, 'event':"add", data: data })
+        self.data.update({'id':node_id, 'event':"add", "data": data })
+        self.name = "add"
 
     def history_update_event(self, node_id, data={}):
         '''
         Data was updated in the Item
         '''
-        self.data.append({'id':node_id, 'event':"update", data: data })
+        self.data.update({'id':node_id, 'event':"update", "data": data })
+        self.name = "update"
 
     def history_delete_event(self, node_id, data={}):
         '''
         Data was deleted from the Item
         '''
-        self.data.append({'id':node_id, 'event':"delete", data: data })
+        self.data.update({'id':node_id, 'event':"delete", "data": data })
+        self.name = "delete"
 
 
 #     def __init__(self, old_state, new_state, htype, *args, **kwargs):

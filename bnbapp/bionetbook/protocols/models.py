@@ -21,7 +21,7 @@ from history.models import History
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit, eval_time
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit, eval_time, ProtocolChangeLog, DataDiffer
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -101,8 +101,8 @@ class Protocol(TimeStampedModel):
             self.author = author
 
         self.parent = Protocol.objects.get(pk=parentid)
-
-
+            
+        
     def save(self, *args, **kwargs):
 
         #self.set_data_ids()
@@ -122,8 +122,13 @@ class Protocol(TimeStampedModel):
                 self.name = self.data['Name']
 
         # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
-
         self.update_duration()
+        
+        # DIFF DATA GOES IN HERE
+        old_state = Protocol.objects.get(pk = self.pk)
+        new_state = self
+        diff = ProtocolChangeLog(old_state, new_state)
+        print diff.hdf
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -135,15 +140,23 @@ class Protocol(TimeStampedModel):
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
-        # LOG THIS HISTORY OBJECT HERE
-        # history = History(org=self.owner, user=self.user, protocol=self, htype="EDIT")
-        
-        # DIFF DATA GOES IN HERE
-        # history_add_event(self, node_id, data={})
-        # history_update_event(self, node_id, data={})
-        # history_delete_event(self, node_id, data={})
 
-        # hisotry.save()
+        # LOG THIS HISTORY OBJECT HERE
+
+        [self.update_history(entry) for entry in diff.hdf]
+    
+    def update_history(self, entry=None):
+
+        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        
+        if entry['event'] == "add":
+            history.history_add_event(entry['objectid'], data=entry['data'])
+        if entry['event'] == "update":  
+            history.history_update_event(entry['objectid'], data=entry['data'])  
+        if entry['event'] == "delete":    
+            history.history_delete_event(entry['objectid'], data=entry['data'])    
+                                    
+        history.save()
 
 
     def user_has_access(self, user):
