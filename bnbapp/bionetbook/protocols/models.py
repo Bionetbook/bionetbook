@@ -5,6 +5,7 @@ import itertools
 import re
 import datetime
 
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -90,8 +91,8 @@ class Protocol(TimeStampedModel):
 
         self.published = False
         self.private = True
-        self.created = datetime.datetime.now()
-        self.modified = datetime.datetime.now()
+        self.created = timezone.now()
+        self.modified = timezone.now()
 
         # NEED TO SET THE ORGANIZATION
         if owner:
