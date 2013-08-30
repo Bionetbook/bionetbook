@@ -1307,3 +1307,37 @@ class Step(NodeBase):
     # @property
     # def actions(self):
     #     return 
+
+
+class ProtocolHistoryDiffer(object):
+    '''
+        [
+            {'id':"XXXXXX", 'event':"add", data: {} },
+            {'id':"XXXXXX", 'event':"update", data: {} },
+            {'id':"XXXXXX", 'event':"delete" },
+        ]
+    '''
+
+    add = []
+    update = []
+    delete = []
+
+    def parse_changes(self, protocol):
+        pass
+        # DIFF THE GIVEN PROTOCOL OBJECT INTO PARTS
+
+        # PSEUDO CODE
+        # for node in parsed_changes:
+        #     if add:
+        #         self.add.append( {'id':node.node_id, 'data':node.new_data_dict })
+        #     elif delete:
+        #         self.delete.append( {'id':node.node_id, 'data':node.new_data_dict })
+        #     else:
+        #         self.update.append( {'id':node.node_id, 'data':node.new_data_dict })
+
+
+
+
+
+
+
