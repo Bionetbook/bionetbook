@@ -315,10 +315,12 @@ def get_verb_fields_json(request, slug):
             }
 
     for key in form.base_fields:
-
-        widget = field_to_json( form.base_fields[key] )
+        form_field = form.base_fields[key]
+        widget = field_to_json( form_field )
         widget['name'] = key
+        widget['label'] = " ".join(split(key, "_"))
 
+        # NEED TO ADD LABEL FIELD
         data['visible_fields'].append( widget )
 
     result = {'meta':{}, 'data':data }
