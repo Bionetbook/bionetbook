@@ -157,6 +157,7 @@ BNB.dataInput = (function(){
             id: tempId,
             actions: []
         });
+
         newTab.setAttribute("data-id", tempId);
 
         // get real id from server and replace the tempId
@@ -180,7 +181,7 @@ BNB.dataInput = (function(){
         });
 
         // Add attributes
-        newTab.className = "active";
+        newTab.className += "step-tab active";
         newLink.href = "#tabContent" + tabNum;
         newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
 
@@ -193,7 +194,7 @@ BNB.dataInput = (function(){
 
 
         // Adding editing functionality to the tab onclick
-        var numTabs = document.getElementById("protocol-tabs").children.length - 2;
+        var numTabs = document.getElementById("protocol-tabs").getElementsByClassName('step-tab').length - 2;
         if(numTabs < 0) numTabs = 0;
         fieldEditingFunctionality(newLink, "step name", "Name this step", Protocol.steps[numTabs], "title");
 
@@ -203,14 +204,21 @@ BNB.dataInput = (function(){
         $(".add-new-step").removeClass('active');
 
         // Reset event listeners
-        $('#nav-tabs li a').off('click.showTab');
+        $('#nav-tabs li.step-tab a').off('click.showTab');
         $('#nav-tabs li.add-new-step a').off('click.newTab');
 
         // Add listeners back
         // Clicking a tab shows it
-        $('#nav-tabs li a').on('click.showTab', function (e) {
+        $('#nav-tabs li.step-tab a').on('click.showTab', function (e) {
             e.preventDefault();
             $(this).tab('show');
+
+            // show actions underneath tab
+            var nextTab = this.parentNode.nextSibling;
+            while( $(nextTab).hasClass('action-tab')){
+                $(nextTab).addClass('active');
+                nextTab = nextTab.nextSibling;
+            }
         });
         // Add new tab when the "add new tab" is clicked
         $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
@@ -231,7 +239,7 @@ BNB.dataInput = (function(){
         // Step description label
         headerH2Small.innerHTML = "Step description: "
         // Step description
-        headerH2Edit.innerHTML = "add a descrription";
+        headerH2Edit.innerHTML = "add a description";
         headerH2Edit.className = "step-description";
         // Step description editing
         fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', getStep(containerTempId), "description");
@@ -283,13 +291,32 @@ BNB.dataInput = (function(){
             newAction.style.display = "none";
             this.parentNode.insertBefore(newAction, this);
             $(newAction).fadeIn();
+
+
+            // Add action link to tabs
+            var tabs = document.getElementById('protocol-tabs');
+            var activeTab = tabs.getElementsByClassName('active')[0],
+                nextTab = activeTab.nextSibling;
+            while( !$(nextTab).hasClass('step-tab') && !$(nextTab).hasClass('add-new-step') ){
+                nextTab = nextTab.nextSibling;
+            } 
+            var actionTab = document.createElement('li');
+            actionTab.className = 'action-tab active';
+            actionTab.innerHTML = 'new action';
+            tabs.insertBefore( actionTab, nextTab );
+
+            // TODO: 
+            // View action on action-tab click in tab contents area
+            // On action name change, change tab name as well
         }
 
         document.getElementsByClassName("tab-content")[0].appendChild(tabContent);
 
-        $('#nav-tabs li a').click(function (e) {
+        // Show tabs on click
+        $('#nav-tabs li a').on('click.showTab', function (e) {
             e.preventDefault();
-            $(this).tab('show');
+            $(this).tab('show'); 
+            $('#protocol-tabs .action-tab').removeClass('active'); 
         });
     }
 
@@ -338,7 +365,6 @@ BNB.dataInput = (function(){
         isActive.setAttribute("type", "checkbox");
         isActiveLabel.appendChild(isActive);
         isActiveLabel.onclick = function(){
-            console.log(this, thisAction)
             thisAction.isActive = !!this.getElementsByTagName('input')[0].checked;
         };
         isActiveLabel.innerHTML += 'Is this action active?';
@@ -503,7 +529,6 @@ BNB.dataInput = (function(){
                     );
                 }
                 addComponentRow.addEventListener("focus", function(){
-                    console.log(thisAction.componentFields)
                     this.parentNode.insertBefore(
                         createNewComponent(
                             this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length,
@@ -710,6 +735,8 @@ BNB.dataInput = (function(){
     }
 
     // Typeahead not working!
+    // Well... it is, but the value is never added to input field on enter/click
+    // Also does not support minLength = 0
     function createNewProperty(that, objReference){
         var newProperty = document.createElement("th"),
             addComponentTr = that.parentNode.parentNode.parentNode.getElementsByClassName("add-new-component")[0].getElementsByTagName("td")[0],
@@ -737,12 +764,11 @@ BNB.dataInput = (function(){
             'autocomplete="off" placeholder="mass, volume, etc" autofocus>';
 
         // Add editing functionality
-        propertyEditingFunctionality(newProperty);
+        propertyEditingFunctionality(newProperty, objReference);
 
         // Add this property to DOM
         that.parentNode.parentNode.insertBefore(newProperty, that.parentNode.nextSibling);
-        $("#property-input").hide();
-        $("#property-input").fadeIn("fast", function(){
+        $("#property-input").hide().fadeIn("fast", function(){
             // Add typeahead options
             $(this).typeahead({
                 name: "property",
@@ -778,7 +804,7 @@ BNB.dataInput = (function(){
 
     // Editing functionality for COMPONENT NAMES
     function componentEditingFunctionality(ele, objReference){
-
+        // decode <sub>16</sub> to /16/
         ele.onclick = function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
@@ -787,7 +813,10 @@ BNB.dataInput = (function(){
                 this.innerHTML = '<input type="text" style="width:0;" placeholder="amount" value="' +  inputValue + '" autofocus>';
             }
             // Animate input to get wider
-            $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
+            if(this == this.parentNode.firstChild)
+                $(this.getElementsByTagName("input")[0]).animate({width:'15em'}, 200);
+            else
+                $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
         }
         ele.addEventListener("focus", function(){
             if(this.getElementsByTagName("input")[0]) return;
@@ -797,7 +826,10 @@ BNB.dataInput = (function(){
                 this.innerHTML = '<input type="text" style="width:0;" placeholder="amount" value="' +  inputValue + '" autofocus>';
             }
             // Animate input to get wider
-            $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
+            if(this == this.parentNode.firstChild)
+                $(this.getElementsByTagName("input")[0]).animate({width:'15em'}, 200);
+            else
+                $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
         }, true);
 
         // Check for "Enter" keypress
@@ -827,7 +859,8 @@ BNB.dataInput = (function(){
                 // Update the component object's title - or create the object if it doesn't exist
                 if(this == this.parentNode.firstChild){
                     objReference[getIndexOf(this.parentNode) - 1] = objReference[getIndexOf(this.parentNode) - 1] || {};
-                    objReference[getIndexOf(this.parentNode) - 1].title = this.getElementsByTagName("input")[0].value;
+                    objReference[getIndexOf(this.parentNode) - 1].title = 
+                        htmlEntities( this.getElementsByTagName("input")[0].value );
                 }
 
                 // Coponent Property Field
@@ -841,11 +874,10 @@ BNB.dataInput = (function(){
                 // Set element back to original state of displaying the clickable value
                 this.setAttribute("data-editing", false);
                 var that = this;
-                console.log(that, that.outerHTML)
                 // Animate input to get skinnier
                 $(this.getElementsByTagName("input")[0]).animate({width:'0'}, 200, "linear", function(){
                     that.innerHTML = '<a href="javascript:void(0)">' + 
-                                     (that.getElementsByTagName("input")[0].value || "quantity") + 
+                                     (htmlEntities( that.getElementsByTagName("input")[0].value ) || "quantity") + 
                                      '</a>';
                 });
             }
@@ -890,17 +922,18 @@ BNB.dataInput = (function(){
             // Set element back to original state of displaying the clickable value
             this.setAttribute("data-editing", false);
             var that = this;
-            console.log(that, that.outerHTML)
             // Animate input to get skinnier
             $(this.getElementsByTagName("input")[0]).animate({width:'0'}, 200, "linear", function(){
                 that.innerHTML = '<a href="javascript:void(0)">' + 
-                                 (that.getElementsByTagName("input")[0].value || "quantity") + 
+                                 (htmlEntities( that.getElementsByTagName("input")[0].value ) || "quantity") + 
                                  '</a>';
             });
         }, true);
     }
 
-    function propertyEditingFunctionality(ele){
+    // Editing functionality for PROPERTY NAMES
+    // objReference = array of component objects
+    function propertyEditingFunctionality(ele, objReference){
         ele.onclick = function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
@@ -921,7 +954,7 @@ BNB.dataInput = (function(){
         }, true);
 
         // Check for "Enter" keypress
-        // REMOVE everything that was just added! colspan, tds, etc if empty
+        // if empty: REMOVE everything that was just added! colspan, tds, etc
         ele.addEventListener("keydown", function(e) {
             if (!e) { var e = window.event; }
             if (e.keyCode == 13) {
@@ -931,6 +964,11 @@ BNB.dataInput = (function(){
                 if(!this.getElementsByTagName("input")[0].value) {
                     var component = this.parentNode.parentNode.getElementsByClassName("component"),
                         propNum = $(this).index();
+
+                    // Remove properties of the action when user deletes property
+                    for(var i = 0; i < objReference.length; i++){
+                        delete objReference[i][this.getAttribute("data-value")];
+                    }
 
                     // Delete the property field for each component
                     for(var i = 0; i < component.length; i++){
@@ -943,12 +981,26 @@ BNB.dataInput = (function(){
                     return;
                 }
 
+                // Modify properties of the action to reflect new property name - on edit
+                for(var i = 0; i < objReference.length; i++){
+                    if(this.getElementsByTagName("input")[0].value != this.getAttribute("data-value")){
+                        objReference[i][htmlEntities( this.getElementsByTagName("input")[0].value )] = 
+                            objReference[i][this.getAttribute("data-value")];
+                        delete objReference[i][this.getAttribute("data-value")];
+                    }
+                }
+
                 this.setAttribute("data-editing", false);
+
+                // Track the value just before current change. Helps with property name changes + deletion
+                this.setAttribute("data-value", htmlEntities( this.getElementsByTagName("input")[0].value ));
+
+                // Show user the new name
                 this.innerHTML = '<a href="javascript:void(0)">' + 
-                    this.getElementsByTagName("input")[0].value + '</a>';
+                    htmlEntities( this.getElementsByTagName("input")[0].value ) + '</a>';
             }
         }, true);
-        // REMOVE everything that was just added! colspan, tds, etc if empty
+        // if empty: REMOVE everything that was just added! colspan, tds, etc
         ele.addEventListener("blur", function(){
             if(!this.getElementsByTagName("input")[0]) return;
 
@@ -956,6 +1008,11 @@ BNB.dataInput = (function(){
             if(!this.getElementsByTagName("input")[0].value) {
                 var component = this.parentNode.parentNode.getElementsByClassName("component"),
                     propNum = $(this).index();
+
+                // Remove properties of the action when user deletes property
+                for(var i = 0; i < objReference.length; i++){
+                    delete objReference[i][this.getAttribute("data-value")];
+                }
 
                 // Delete the property field for each component
                 for(var i = 0; i < component.length; i++){
@@ -968,9 +1025,23 @@ BNB.dataInput = (function(){
                 return;
             }
 
+            // Modify properties of the action to reflect new property name - on edit
+            for(var i = 0; i < objReference.length; i++){
+                if(this.getElementsByTagName("input")[0].value != this.getAttribute("data-value")){
+                    objReference[i][htmlEntities( this.getElementsByTagName("input")[0].value )] = 
+                        objReference[i][this.getAttribute("data-value")];
+                    delete objReference[i][this.getAttribute("data-value")];
+                }
+            }
+
             this.setAttribute("data-editing", false);
+
+            // Track the value just before current change. Helps with property name changes + deletion
+            this.setAttribute("data-value", htmlEntities( this.getElementsByTagName("input")[0].value ));
+
+            // Show user the new name
             this.innerHTML = '<a href="javascript:void(0)">' + 
-                this.getElementsByTagName("input")[0].value + '</a>';
+                htmlEntities( this.getElementsByTagName("input")[0].value ) + '</a>';
         }, true);
     }
 
@@ -1077,8 +1148,13 @@ BNB.dataInput = (function(){
         }
     }
 
+    function htmlEntities(str) {
+        return String(str).replace(/&amp;/g, '&').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     return {
-        verbList: verbList
+        verbList: verbList,
+        htmlEntities: htmlEntities
     }
 
 })();
