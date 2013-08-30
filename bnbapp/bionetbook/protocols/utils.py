@@ -305,16 +305,16 @@ class ProtocolChangeLog(object):
         cloned = ['name', 'slug', 'pk']
         
         # Naming events:
-        # if [item for item in cloned if item in d.changed()]:
-        #     self.log_item(objectid = self.old.pk, event = 'cloned', data = self.new.pk)
         if 'id' in d.changed() and 'author_id' not in d.changed():
             self.log_item(objectid = self.old.pk, event = 'clone', data = { "pk": self.new.pk} )
+            self.log_item(objectid = self.new.pk, event = 'create', data = { "pk": self.new.data} )
+
 
         if 'user' in d.changed():
-            self.log_item(objectid = self.new.pk, event = 'update', data = { "author": self.new.author })
+            self.log_item(objectid = self.new.pk, event = 'forked', data = { "author": self.new.author })
             # self.log_item(objectid = self.new.pk, event = 'update', data = { "author": self.new.author })
 
-        if "published" in d.changed():
+        if "published" in d.changed() and 'id' not in d.changed():
             self.log_item(objectid = self.old.pk, event = 'update', data = { "published": self.new.published })
 
         if "public" in d.changed():

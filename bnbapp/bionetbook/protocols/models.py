@@ -160,13 +160,18 @@ class Protocol(TimeStampedModel):
         
         if entry['event'] == "add":
             history.history_add_event(entry['objectid'], data=entry['data'])
+        
         if entry['event'] == "update":  
             history.history_update_event(entry['objectid'], data=entry['data'])  
+        
         if entry['event'] == "delete":    
             history.history_delete_event(entry['objectid'], data=entry['data'])    
         
         if entry['event'] == "clone":    
             history.history_clone_event(entry['objectid'], data=entry['data'])        
+        
+        if entry['event'] == "create":    
+            history.history_create_event(entry['objectid'], data=entry['data'])            
                                     
         history.save()
 

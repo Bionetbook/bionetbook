@@ -62,6 +62,13 @@ class History(TimeStampedModel):
         self.data.update({'id':node_id, 'event':"clone", "data": data })
         self.name = "clone"    
 
+    def history_create_event(self, node_id, data={}):
+        '''
+        Data was created from the Item
+        '''
+        self.data.update({'id':node_id, 'event':"create", "data": data })
+        self.name = "create"        
+
 
 '''
 HISTORY DATA FORMAT
