@@ -676,8 +676,8 @@ class Protocol(TimeStampedModel):
 
 class Reference(models.Model):
     protocol = models.ManyToManyField(Protocol)
-    name = models.CharField(_("Name"), max_length=255, unique=True)
-    typ = models.CharField(_("Type"), max_length=255, unique=True, choices=REFERENCE_TYPES)
+    data = models.CharField(_("Data"), max_length=255, default="#NDF")
+    typ = models.CharField(_("Type"), max_length=255, choices=REFERENCE_TYPES)
 
 
 class NodeBase(dict):
