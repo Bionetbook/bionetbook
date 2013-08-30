@@ -359,11 +359,11 @@ class ProtocolChangeLog(object):
                     # print "logged changed %s, %s "% (objid, obj_new[key])
                 
             if key in diff.added():
-                self.log_item(objectid = objid, event = "add", data = obj_new[key])
+                self.log_item(objectid = objid, event = "add", data = { key: obj_new[key]} )
                 # print "logged add %s, %s "% (objid, obj_new[key])
             
             if key in diff.removed():
-                self.log_item(objectid = objid, event = "delete", data = obj_old[key])                
+                self.log_item(objectid = objid, event = "delete", data = { key: obj_old[key]} )                
                 # print "logged remove%s, %s "% (objid, obj_new[key])
 
     def diff_list(self, list_a, list_b):         
