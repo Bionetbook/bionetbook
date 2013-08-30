@@ -78,6 +78,9 @@ footer{ display:none; }
     display:inline;
     float:right;
 }
+.table tbody tr:hover td, .table tbody tr:hover th{
+    background-color:inherit;
+}
 /* Stop input jump */
 a[data-editing=true]{
     padding:1em inherit !important;

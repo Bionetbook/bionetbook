@@ -294,7 +294,7 @@ BNB.dataInput = (function(){
 
 
             // Add action link to tabs
-            var tabs = document.getElementById('protocol-tabs');
+            /*var tabs = document.getElementById('protocol-tabs');
             var activeTab = tabs.getElementsByClassName('active')[0],
                 nextTab = activeTab.nextSibling;
             while( !$(nextTab).hasClass('step-tab') && !$(nextTab).hasClass('add-new-step') ){
@@ -303,11 +303,14 @@ BNB.dataInput = (function(){
             var actionTab = document.createElement('li');
             actionTab.className = 'action-tab active';
             actionTab.innerHTML = 'new action';
-            tabs.insertBefore( actionTab, nextTab );
+            tabs.insertBefore( actionTab, nextTab );*/
 
             // TODO: 
             // View action on action-tab click in tab contents area
             // On action name change, change tab name as well
+            // Get indexOf() action-tab
+            // $().hide() all others in the .active tab-pane
+
         }
 
         document.getElementsByClassName("tab-content")[0].appendChild(tabContent);
