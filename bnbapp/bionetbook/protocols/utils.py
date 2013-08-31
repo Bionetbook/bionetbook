@@ -291,8 +291,11 @@ class ProtocolChangeLog(object):
         self.old = old_state
         self.new = new_state
         self.hdf  = []
-        self.diff_protocol_keys()
-        self.diff_list(self.old.data['steps'], self.new.data['steps'])
+        if not self.old:
+            self.log_item(objectid = self.new.pk, event = 'create', data = { "data": self.new.data} )    
+        else:    
+            self.diff_protocol_keys()
+            self.diff_list(self.old.data['steps'], self.new.data['steps'])
 
     def log_item(self, objectid = None, event = None, data = None):
         self.hdf.append({"objectid": objectid,
@@ -301,14 +304,16 @@ class ProtocolChangeLog(object):
                    })    
 
     def diff_protocol_keys(self):
+        
         d = DataDiffer(self.old.__dict__, self.new.__dict__)
         cloned = ['name', 'slug', 'pk']
         
         # Naming events:
+
+
         if 'id' in d.changed() and 'author_id' not in d.changed():
             self.log_item(objectid = self.old.pk, event = 'clone', data = { "pk": self.new.pk} )
             self.log_item(objectid = self.new.pk, event = 'create', data = { "pk": self.new.data} )
-
 
         if 'user' in d.changed():
             self.log_item(objectid = self.new.pk, event = 'forked', data = { "author": self.new.author })

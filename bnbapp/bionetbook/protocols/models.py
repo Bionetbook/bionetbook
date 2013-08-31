@@ -127,8 +127,10 @@ class Protocol(TimeStampedModel):
         
         # DIFF DATA GOES IN HERE
     
-        if not self.pk:
-            old_state = Protocol.objects.get(pk = self.parent_id)            
+        if not self.pk and not self.parent_id: # protocol is new
+            old_state = None            
+        elif not self.pk and self.slug: # protocol is cloned
+            old_state = Protocol.objects.get(pk = self.parent_id)
         else:     
             old_state = Protocol.objects.get(pk = self.pk)
 
