@@ -70,10 +70,11 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
         'start':1376957033,
         'duration':300,
-        'action':"First Action",
+        'title':"First Action",
         'protocol':'dna-jalkf',
         'experiment':'experiment 1',
-        'notes':""
+        'notes':"",
+        'verb':"mix"
     }
 
     PUT:

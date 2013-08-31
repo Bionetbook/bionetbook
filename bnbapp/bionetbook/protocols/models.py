@@ -362,6 +362,9 @@ class Protocol(TimeStampedModel):
     def get_action_verbs(self):
         return [a['actions'][0]['verb'] for a in self.steps]
 
+    def get_action_names(self):
+        return [a['actions'][0]['name'] for a in self.steps]
+
     def get_components(self):
         return [r for r in self.get_actions() if self.nodes[r].has_components()]
 

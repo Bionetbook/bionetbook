@@ -29,26 +29,29 @@ class Calendar(TimeStampedModel):
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
                             'duration':300,
-                            'action':"First Action",
+                            'title':"First Action",
                             'protocol':'dna-jalkf',
-                            'experiment':'experiment 1'
+                            'experiment':'experiment 1',
                             'notes':"",
+                            'verb':"mix"
                         },
                         {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'action':"First Action",
+                            'title':"First Action",
                             'protocol':'dna-jalkf',
                             'experiment':'experiment 1',
                             'notes':"",
+                            'verb':"mix"
                         },
                         {   'id': "bnb-o1-e2-p1-AXBAGS-GBRISH",
                             'start':1376957033,
                             'duration':500,
-                            'action':"First Action",
+                            'title':"First Action",
                             'protocol':'dna-jalkf',
                             'experiment':'experiment 1',
                             'notes':"",
+                            'verb':"mix"
                         },
                       ]
              }
@@ -90,13 +93,14 @@ class Calendar(TimeStampedModel):
         for e in userExperimentList:                    # loop through each experiment for user
             protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
             for p in protocolList:      # loop through each experiments protocols
-                stepActionList = zip(p.get_steps(),p.get_actions(),p.get_action_verbs(),p.get_action_durations())
+                stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
                 for element in stepActionList:
                     eventObject = {}
-                    eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk,element[0],element[1])
+                    eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk, element[0], element[1])
                     eventObject['start'] = '0'
                     eventObject['duration'] = element[3].split('-')[1]
-                    eventObject['action'] = element[2]
+                    eventObject['verb'] = element[2]
+                    eventObject['title'] = element[4]
                     eventObject['protocol'] = p.title
                     eventObject['experiment'] = e.name
                     eventObject['notes'] = ""
