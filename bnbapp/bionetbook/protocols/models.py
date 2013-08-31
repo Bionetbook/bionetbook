@@ -153,8 +153,9 @@ class Protocol(TimeStampedModel):
         print diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
+        for entry in diff.hdf:
+             self.update_history(entry)
 
-        [self.update_history(entry) for entry in diff.hdf]
     
     def update_history(self, entry=None):
 
