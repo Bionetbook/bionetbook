@@ -174,6 +174,9 @@ class Protocol(TimeStampedModel):
         # for entry in diff.hdf:
         #     hlog[entry['event']](entry['objectid'], data=entry['data'])
 
+        # ALTERNATE 3
+        # history.update_from_diff(diff)
+
         for entry in diff.hdf:
             if entry['event'] == "add":
                 history.history_add_event(entry['objectid'], data=entry['data'])

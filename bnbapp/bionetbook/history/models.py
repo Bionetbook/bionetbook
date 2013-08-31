@@ -69,6 +69,13 @@ class History(TimeStampedModel):
             self.data[etype] = []
 
         self.data[etype].append({'id':node_id, 'event':etype, "data": data })
+
+    def update_from_diff(self, diff):
+        for entry in diff.hdf:        
+            self.history_event(entry['event'], entry['objectid'], entry['data'])
+
+
+
 '''
 HISTORY DATA FORMAT
 
