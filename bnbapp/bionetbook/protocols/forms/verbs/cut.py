@@ -5,6 +5,8 @@ class CutForm(forms.VerbForm):
 
     name = "Cut"
     slug = "cut"
+    has_manual = True
+    layers =['item_to_act', 'target', 'specify_tool','conditional_statement','settify']
 
     item_to_act = forms.CharField(required=False, help_text='what are you cutting', label='item to remove')
     target = forms.CharField(required=False, help_text='where are you placing it')
