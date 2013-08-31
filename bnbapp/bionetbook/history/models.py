@@ -38,8 +38,10 @@ class History(TimeStampedModel):
         '''
         Data was added to the Item
         '''
-        self.data.update({'id':node_id, 'event':"add", "data": data })
-        self.name = "add"
+        if not 'add' in self.data:
+            self.data['add'] = []
+
+        self.data['add'].append({'id':node_id, 'event':"add", "data": data })
 
     def history_update_event(self, node_id, data={}):
         '''

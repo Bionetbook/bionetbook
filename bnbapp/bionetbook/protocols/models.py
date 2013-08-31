@@ -132,7 +132,7 @@ class Protocol(TimeStampedModel):
         elif not self.pk and self.slug: # protocol is cloned
             old_state = Protocol.objects.get(pk = self.parent_id)
         else:     
-            old_state = Protocol.objects.get(pk = self.pk)
+            old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL UPDATE
 
         # new_state = self
         # diff = ProtocolChangeLog(old_state, new_state)
@@ -153,28 +153,28 @@ class Protocol(TimeStampedModel):
         print diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
-        for entry in diff.hdf:
-             self.update_history(entry)
+        self.update_history(diff)
 
     
-    def update_history(self, entry=None):
+    def update_history(self, diff):
 
         history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
         
-        if entry['event'] == "add":
-            history.history_add_event(entry['objectid'], data=entry['data'])
-        
-        if entry['event'] == "update":  
-            history.history_update_event(entry['objectid'], data=entry['data'])  
-        
-        if entry['event'] == "delete":    
-            history.history_delete_event(entry['objectid'], data=entry['data'])    
-        
-        if entry['event'] == "clone":    
-            history.history_clone_event(entry['objectid'], data=entry['data'])        
-        
-        if entry['event'] == "create":    
-            history.history_create_event(entry['objectid'], data=entry['data'])            
+        for entry in diff.hdf:
+            if entry['event'] == "add":
+                history.history_add_event(entry['objectid'], data=entry['data'])
+            
+            if entry['event'] == "update":  
+                history.history_update_event(entry['objectid'], data=entry['data'])  
+            
+            if entry['event'] == "delete":    
+                history.history_delete_event(entry['objectid'], data=entry['data'])    
+            
+            if entry['event'] == "clone":    
+                history.history_clone_event(entry['objectid'], data=entry['data'])        
+            
+            if entry['event'] == "create":    
+                history.history_create_event(entry['objectid'], data=entry['data'])            
                                     
         history.save()
 
