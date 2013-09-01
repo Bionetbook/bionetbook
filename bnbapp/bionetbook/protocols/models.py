@@ -105,7 +105,7 @@ class Protocol(TimeStampedModel):
             
         
     def save(self, *args, **kwargs):
-
+        
         #self.set_data_ids()
         #self.set_data_slugs()
 
@@ -149,17 +149,40 @@ class Protocol(TimeStampedModel):
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_state = self
+        diff = None
         diff = ProtocolChangeLog(old_state, new_state)
-        print diff.hdf
+        print "diff hdf from protocol.model:", diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
-        self.update_history(diff)
+        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        print "\t\t history data:", history.data
+        history.update_from_diff(diff)
+        history.save()
+        # self.update_history(diff)
 
     
-    def update_history(self, diff):
+    # def update_history(self, diff):
 
-        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+    #     # ALTERNATE 3
+    #     history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+    #     history.update_from_diff(diff)
+    #     history.save()
         
+        # Initial method: 
+        # for entry in diff.hdf:
+        #     if entry['event'] == "add":
+        #         history.history_add_event(entry['objectid'], data=entry['data'])
+        #     elif entry['event'] == "update":  
+        #         history.history_update_event(entry['objectid'], data=entry['data'])  
+        #     elif entry['event'] == "delete":    
+        #         history.history_delete_event(entry['objectid'], data=entry['data'])    
+        #     elif entry['event'] == "clone":    
+        #         history.history_clone_event(entry['objectid'], data=entry['data'])        
+        #     elif entry['event'] == "create":    
+        #         history.history_create_event(entry['objectid'], data=entry['data'])            
+                                    
+        # history.save()
+
         # ALTERNATE 1 - Does not allow the History object to do the formatting
         # for entry in diff.hdf:        
         #     history.history_event(entry['event'], entry['objectid'], entry['data'])
@@ -173,23 +196,6 @@ class Protocol(TimeStampedModel):
         #         }
         # for entry in diff.hdf:
         #     hlog[entry['event']](entry['objectid'], data=entry['data'])
-
-        # ALTERNATE 3
-        # history.update_from_diff(diff)
-
-        for entry in diff.hdf:
-            if entry['event'] == "add":
-                history.history_add_event(entry['objectid'], data=entry['data'])
-            elif entry['event'] == "update":  
-                history.history_update_event(entry['objectid'], data=entry['data'])  
-            elif entry['event'] == "delete":    
-                history.history_delete_event(entry['objectid'], data=entry['data'])    
-            elif entry['event'] == "clone":    
-                history.history_clone_event(entry['objectid'], data=entry['data'])        
-            elif entry['event'] == "create":    
-                history.history_create_event(entry['objectid'], data=entry['data'])            
-                                    
-        history.save()
 
 
     def user_has_access(self, user):

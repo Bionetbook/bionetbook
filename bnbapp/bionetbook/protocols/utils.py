@@ -306,10 +306,8 @@ class ProtocolChangeLog(object):
     def diff_protocol_keys(self):
         
         d = DataDiffer(self.old.__dict__, self.new.__dict__)
-        cloned = ['name', 'slug', 'pk']
         
         # Naming events:
-
 
         if 'id' in d.changed() and 'author_id' not in d.changed():
             self.log_item(objectid = self.old.pk, event = 'clone', data = { "pk": self.new.pk} )
@@ -349,7 +347,7 @@ class ProtocolChangeLog(object):
             # print "diffing %s, %s "% (obj_old['name'], obj_new['name'])
         
         diff = DataDiffer(obj_old, obj_new) ## diff the step content
-        print "added: %s, \n deleted: %s,  \n update: %s"% (diff.added(), diff.removed(), diff.changed())
+        # print "added: %s, \n deleted: %s,  \n update: %s"% (diff.added(), diff.removed(), diff.changed())
 
         all_keys = set(obj_old.keys()).union(set(obj_new.keys()))
 

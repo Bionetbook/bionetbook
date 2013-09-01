@@ -34,44 +34,51 @@ class History(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-    def history_add_event(self, node_id, data={}):
-        '''
-        Data was added to the Item
-        '''
-        self.history_event("add", node_id, data)
+    # def __init__(self, *args, **kwargs):    
+    #     super(History, self).__init__(*args, **kwargs)
+         
 
-    def history_update_event(self, node_id, data={}):
-        '''
-        Data was updated in the Item
-        '''
-        self.history_event("update", node_id, data)
 
-    def history_delete_event(self, node_id, data={}):
-        '''
-        Data was deleted from the Item
-        '''
-        self.history_event("delete", node_id, data)
+    # def history_add_event(self, node_id, data={}):
+    #     '''
+    #     Data was added to the Item
+    #     '''
+    #     self.history_event("add", node_id, data)
 
-    def history_clone_event(self, node_id, data={}):
-        '''
-        Data was cloned from the Item
-        '''
-        self.history_event("clone", node_id, data)
+    # def history_update_event(self, node_id, data={}):
+    #     '''
+    #     Data was updated in the Item
+    #     '''
+    #     self.history_event("update", node_id, data)
 
-    def history_create_event(self, node_id, data={}):
-        '''
-        Data was created from the Item
-        '''
-        self.history_event("create", node_id, data)
+    # def history_delete_event(self, node_id, data={}):
+    #     '''
+    #     Data was deleted from the Item
+    #     '''
+    #     self.history_event("delete", node_id, data)
+
+    # def history_clone_event(self, node_id, data={}):
+    #     '''
+    #     Data was cloned from the Item
+    #     '''
+    #     self.history_event("clone", node_id, data)
+
+    # def history_create_event(self, node_id, data={}):
+    #     '''
+    #     Data was created from the Item
+    #     '''
+    #     self.history_event("create", node_id, data)
 
     def history_event(self, etype, node_id, data={}):
-        if not etype in self.data:
+        if not etype in self.data: #Causes duplicate entries and cross object entries
             self.data[etype] = []
 
-        self.data[etype].append({'id':node_id, 'event':etype, "data": data })
+        self.data[etype].append({'id':node_id, "data": data })
+        print 'data to save:', self.data
 
     def update_from_diff(self, diff):
-        for entry in diff.hdf:        
+        for entry in diff.hdf:    
+            print "entry from history.model:", entry
             self.history_event(entry['event'], entry['objectid'], entry['data'])
 
 
