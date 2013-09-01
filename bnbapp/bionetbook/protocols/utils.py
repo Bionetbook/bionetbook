@@ -316,11 +316,11 @@ class ProtocolChangeLog(object):
         self.hdf  = []
 
         if not self.old:
-            self.log_item(objectid = self.new.pk, event = 'create', data = { "data": self.new } )    
-            print new_data.keys()
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )    
+            print self.new.keys()
         else:    
             self.diff_protocol_keys()
-            self.diff_list(self.old.data['steps'], self.new.data['steps'])
+            self.diff_list(self.old['data']['steps'], self.new['data']['steps'])
 
     def record_to_dict(self, record):
         result = {}
@@ -329,7 +329,7 @@ class ProtocolChangeLog(object):
 
             for k in tmp_dict:
                 if k[0] != "_":
-                    new_data[k] = tmp_dict[k]
+                    result[k] = tmp_dict[k]
 
         return result
 
@@ -341,29 +341,29 @@ class ProtocolChangeLog(object):
 
     def diff_protocol_keys(self):
         
-        d = DataDiffer(self.old.__dict__, self.new.__dict__)
+        d = DataDiffer(self.old, self.new)
         
         # Naming events:
 
         if 'name' in d.changed(): 
-            self.log_item(objectid = self.old.pk, event = 'update', data = { "name": self.new.name} )        
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "name": self.new['name']} )        
 
         if 'id' in d.changed() and 'author_id' not in d.changed():
-            self.log_item(objectid = self.old.pk, event = 'clone', data = { "pk": self.new.pk} )
-            self.log_item(objectid = self.new.pk, event = 'create', data = { "pk": self.new.data} )
+            self.log_item(objectid = self.old['id'], event = 'clone', data = { "pk": self.new['id']} )
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "pk": self.new['data']} )
 
         if 'user' in d.changed():
-            self.log_item(objectid = self.new.pk, event = 'forked', data = { "author": self.new.author })
-            # self.log_item(objectid = self.new.pk, event = 'update', data = { "author": self.new.author })
+            self.log_item(objectid = self.new['id'], event = 'forked', data = { "author": self.new['author'] })
+            # self.log_item(objectid = self.new['id'], event = 'update', data = { "author": self.new.author })
 
         if "published" in d.changed() and 'id' not in d.changed():
-            self.log_item(objectid = self.old.pk, event = 'update', data = { "published": self.new.published })
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "published": self.new['published'] })
 
         if "public" in d.changed():
-            self.log_item(objectid = self.old.pk, event = 'update', data = { "public": self.new.public })    
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "public": self.new['public'] })    
 
         if "description" in d.changed():
-            self.log_item(objectid = self.old.pk, event = 'update', data = { "description": self.new.description }) 
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "description": self.new['description'] }) 
 
     def diff_dict(self, objid= None):
         '''this method takes a dict and finds the differences in it catching the following diffs:
