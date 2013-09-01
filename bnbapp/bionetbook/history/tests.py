@@ -42,10 +42,12 @@ class HistoryModelTests(AutoBaseTest):
         self.membership = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
         self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
 
-    def test_catch_change_in_protocol_values(self):
-        # CHECK THE CHANGES HERE IN THE PROTOCOL
+    def test_history_logging_for_protocol(self):
         history = self.protocol.history_set.all()
-        print len(history)
 
-        # self.assertEquals(self.protocol.raw, "what?")
-        # self.assertEquals(self.protocol.slug, "%d-test-protocol" % self.protocol.pk)
+        self.assertEquals(len(history), 1)
+        print history[0].data
+
+
+    def test_catch_change_in_protocol_values(self):
+        pass
