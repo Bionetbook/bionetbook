@@ -29,3 +29,20 @@ class SimpleTest(TestCase):
 
 
 
+class ProtocolModelTests(AutoBaseTest):
+
+    def setUp(self):
+        super(ProtocolModelTests, self).setUp()
+        self.protocol = None
+        self.user = self.createUserInstance( username="testuser", password="password", email="test@example.com" )        # CREATE THE USER
+        self.org = self.createModelInstance(Organization, name="testorg")        # CREATE THE ORGANIZATION
+        self.membership = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
+
+    def test_catch_change_in_protocol_values(self):
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
+        self.protocol.save()
+
+        # CHECK THE CHANGES HERE IN THE PROTOCOL
+
+        # self.assertEquals(self.protocol.raw, "what?")
+        # self.assertEquals(self.protocol.slug, "%d-test-protocol" % self.protocol.pk)
