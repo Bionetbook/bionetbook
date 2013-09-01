@@ -285,42 +285,17 @@ def eval_time(node, value = 'min_time'):
         return 0
 
 
-
-
-class ProtoChangeLog(object):
-    def __init__(self, old_record, new_record):
-        self.old_record = old_record
-        self.new_record = new_record
-        self.hdf  = []
-
-        if not self.old_record:
-            # THIS IS A NEW PROTOCOL
-            self.log_item(objectid=self.new_record.pk, event='create', attrs={ "name": self.new_record.name } )    
-
-        # else:
-            # THIS IS A CHANGED PROTOCOL
-
-
-    def log_item(self, objectid=None, event=None, attrs=None):
-        self.hdf.append({"objectid": objectid, "event": event, "data": attrs })
-
-
-
-
-
-
 class ProtocolChangeLog(object):
     def __init__(self, old_state, new_state):
         self.old = self.record_to_dict(old_state)
         self.new = self.record_to_dict(new_state)
         self.hdf  = []
 
-        if not self.old:
-            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )    
-            print self.new.keys()
-        else:    
+        if self.old:
             self.diff_protocol_keys()
-            self.diff_list(self.old['data']['steps'], self.new['data']['steps'])
+            self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
+        else:    
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )    
 
     def record_to_dict(self, record):
         result = {}
@@ -334,10 +309,8 @@ class ProtocolChangeLog(object):
         return result
 
     def log_item(self, objectid = None, event = None, data = None):
-        self.hdf.append({"objectid": objectid,
-                   "event": event,   
-                   "data": data  
-                   })    
+        self.hdf.append({ "objectid": objectid, "event": event, "data": data })    
+
 
     def diff_protocol_keys(self):
         
