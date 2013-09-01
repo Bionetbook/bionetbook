@@ -18,7 +18,7 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-
+from core.tests import AutoBaseTest
 
 class SimpleTest(TestCase):
     def test_added_step(self):
