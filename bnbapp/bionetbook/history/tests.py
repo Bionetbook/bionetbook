@@ -44,10 +44,14 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_history_logging_for_protocol(self):
         history = self.protocol.history_set.all()
-
         self.assertEquals(len(history), 1)
         print history[0].data
 
 
     def test_catch_change_in_protocol_values(self):
-        pass
+        self.protocol.name = "New Test Protocol"
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+        self.assertEquals(len(history), 2)
+        print history[1].data
