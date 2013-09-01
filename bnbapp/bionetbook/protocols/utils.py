@@ -287,8 +287,10 @@ def eval_time(node, value = 'min_time'):
 
 class ProtocolChangeLog(object):
     def __init__(self, old_state, new_state):
-        self.old = self.record_to_dict(old_state)
-        self.new = self.record_to_dict(new_state)
+        self.old_record = old_state
+        self.new_record = new_state
+        self.old = self.record_to_dict(self.old_record)
+        self.new = self.record_to_dict(self.new_record)
         self.hdf  = []
 
         if self.old:
@@ -404,11 +406,11 @@ class ProtocolChangeLog(object):
         all_objectids = set(old_list.keys()).union(set(new_list.keys()))
         for objid in all_objectids:
             if objid in added: 
-                self.log_item(objectid = objid, event = 'add', data = self.new.nodes[objid])
+                self.log_item(objectid = objid, event = 'add', data = self.new_record.nodes[objid])
                 # print "logged add%s, %s "% (objid, self.new.nodes[objid])
 
             if objid in removed:
-                self.log_item(objectid = objid, event = 'delete', data = self.old.nodes[objid])
+                self.log_item(objectid = objid, event = 'delete', data = self.old_record.nodes[objid])
                 # print "logged remove%s, %s "% (objid, self.old.nodes[objid])
             
             if objid in changed: 
