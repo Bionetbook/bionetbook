@@ -1,6 +1,9 @@
 from protocols.forms import verbs as verb_forms
 from protocols.forms import forms
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 def get_verb_list():
     verb_list = []
     for attr_name in dir(verb_forms):
@@ -285,4 +288,156 @@ def eval_time(node, value = 'min_time'):
         return 0
 
 
+class ProtocolChangeLog(object):
+    def __init__(self, old_state, new_state):
+        self.old_record = old_state
+        self.new_record = new_state
+        self.old = self.record_to_dict(self.old_record)
+        self.new = self.record_to_dict(self.new_record)
+        self.hdf  = []
 
+        if self.old:
+            self.diff_protocol_keys()
+            self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
+        else:
+            # print self.new
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )
+
+        pp.pprint( self.hdf )
+
+    def record_to_dict(self, record):
+        result = {}
+        if record:
+            tmp_dict = record.__dict__
+
+            for k in tmp_dict:
+                if k[0] != "_":
+                    result[k] = tmp_dict[k]
+
+        return result
+
+    def log_item(self, objectid=None, event=None, data=None):
+        self.hdf.append({ "objectid": objectid, "event": event, "data": data })
+
+
+    def diff_protocol_keys(self):
+        
+        # print self.new
+        # print self.old
+
+        d = DataDiffer(self.old, self.new)
+        
+        # Naming events:
+
+        if 'name' in d.changed(): 
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "name": self.new['name']} )        
+
+        if 'id' in d.changed() and 'author_id' not in d.changed():
+            self.log_item(objectid = self.old['id'], event = 'clone', data = { "pk": self.new['id']} )
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "pk": self.new['data']} )
+
+        if 'user' in d.changed():
+            self.log_item(objectid = self.new['id'], event = 'forked', data = { "author": self.new['author'] })
+            # self.log_item(objectid = self.new['id'], event = 'update', data = { "author": self.new.author })
+
+        if "published" in d.changed() and 'id' not in d.changed():
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "published": self.new['published'] })
+
+        if "public" in d.changed():
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "public": self.new['public'] })    
+
+        if "description" in d.changed():
+            self.log_item(objectid = self.old['id'], event = 'update', data = { "description": self.new['description'] }) 
+
+    def diff_dict(self, objid= None):
+        '''this method takes a dict and finds the differences in it catching the following diffs:
+            key-value pairs: 
+            triggered by a unicode / int / float / str type. 
+            finds the added, removed, changed key value pairs and creates a log for each change
+            
+            list objects:
+            triggered by list type. calls the diff_list method
+        '''
+
+        if not objid: # if dict is protocol.data:
+            obj_old = self.old.data
+            obj_new = self.new.data
+            # print "diffing data_a and data_b"
+        
+        else: # all other dicts in protocol.nodes
+            obj_old = self.old.nodes[objid]
+            obj_new = self.new.nodes[objid] 
+            # print "diffing %s, %s "% (obj_old['name'], obj_new['name'])
+        
+        diff = DataDiffer(obj_old, obj_new) ## diff the step content
+        # print "added: %s, \n deleted: %s,  \n update: %s"% (diff.added(), diff.removed(), diff.changed())
+
+        all_keys = set(obj_old.keys()).union(set(obj_new.keys()))
+
+        for key in all_keys:
+            if key in diff.changed():
+                if isinstance(obj_old[key], list):       
+                    self.diff_list(obj_old[key], obj_new[key])
+                    # print "unpacking lisf of %s and %s"% (type(obj_old), type(obj_new))
+
+                if isinstance(obj_old[key], (int, float, unicode, str)):
+                    self.log_item(objectid = objid, event = "update", data = {key: obj_new[key]})
+                    # print "logged changed %s, %s "% (objid, obj_new[key])
+                
+            if key in diff.added():
+                self.log_item(objectid = objid, event = "add", data = { key: obj_new[key]} )
+                # print "logged add %s, %s "% (objid, obj_new[key])
+            
+            if key in diff.removed():
+                self.log_item(objectid = objid, event = "delete", data = { key: obj_old[key]} )                
+                # print "logged remove%s, %s "% (objid, obj_new[key])
+
+    def diff_list(self, list_a, list_b):         
+        ''' this method takes a list of object ids and compares it between the old and the new list. 
+            it will catch a few events: 
+            1. turns the list of objects into a dict of objectids for ease of compare
+            2. finds the added removed or edited objects in each list
+            3. for added or removed objects it triggers a log event
+            4. for changed objects it recurses to diff_dict'''
+
+        old_list = dict((item['objectid'],item) for item in list_a)
+        new_list = dict((item['objectid'],item) for item in list_b)
+        
+        # find changes between list objects (add, delete update)        
+        diff_list_items = DataDiffer(old_list, new_list)
+        changed = diff_list_items.changed()
+        added = diff_list_items.added()
+        removed = diff_list_items.removed()
+        # print "added: %s, \n deleted: %s,  \n update: %s"% (diff_list_items.added(), diff_list_items.removed(), diff_list_items.changed()) 
+        
+        ### Place Holder for finding chaned Order in list ###
+
+        all_objectids = set(old_list.keys()).union(set(new_list.keys()))
+        for objid in all_objectids:
+            if objid in added: 
+                self.log_item(objectid = objid, event = 'add', data = self.new_record.nodes[objid])
+                # print "logged add%s, %s "% (objid, self.new.nodes[objid])
+
+            if objid in removed:
+                self.log_item(objectid = objid, event = 'delete', data = self.old_record.nodes[objid])
+                # print "logged remove%s, %s "% (objid, self.old.nodes[objid])
+            
+            if objid in changed: 
+               self.diff_dict(objid) # recursive call. 
+               # print 'recursing dict %s' %objid 
+
+class DataDiffer(object):    
+
+    def __init__(self, old_data, new_data, **kwargs):
+        self.old_data, self.new_data = old_data, new_data
+        self.set_a, self.set_b = set(old_data.keys()), set(new_data.keys())
+        self.intersect = self.set_a.intersection(self.set_b)
+    def removed(self):
+        return list(self.set_a - self.intersect)
+    def added(self):
+        return list(self.set_b - self.intersect)
+    def changed(self, **kwargs):
+        delta = list(o for o in self.intersect if self.new_data[o] != self.old_data[o])
+        return delta
+    def unchanged(self):
+        return list(o for o in self.intersect if self.new_data[o] == self.old_data[o])

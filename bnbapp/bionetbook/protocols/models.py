@@ -5,6 +5,7 @@ import itertools
 import re
 import datetime
 
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -17,10 +18,11 @@ from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
 
 from organization.models import Organization
+from history.models import History
 # from protocols.helpers import settify, unify
 # from protocols.settify import settify
 # from protocols.utils import VERB_FORM_DICT
-from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit, eval_time
+from protocols.utils import MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, MANUAL_VERBS, settify, labeler, get_timeunit, eval_time, ProtocolChangeLog, DataDiffer
 
 COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
@@ -89,8 +91,8 @@ class Protocol(TimeStampedModel):
 
         self.published = False
         self.private = True
-        self.created = datetime.datetime.now()
-        self.modified = datetime.datetime.now()
+        self.created = timezone.now()
+        self.modified = timezone.now()
 
         # NEED TO SET THE ORGANIZATION
         if owner:
@@ -100,10 +102,10 @@ class Protocol(TimeStampedModel):
             self.author = author
 
         self.parent = Protocol.objects.get(pk=parentid)
-
-
+            
+        
     def save(self, *args, **kwargs):
-
+        
         #self.set_data_ids()
         #self.set_data_slugs()
 
@@ -121,8 +123,20 @@ class Protocol(TimeStampedModel):
                 self.name = self.data['Name']
 
         # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
-
         self.update_duration()
+        
+        # DIFF DATA GOES IN HERE
+    
+        if not self.pk and not self.parent_id: # protocol is new
+            old_state = None            
+        elif not self.pk and self.slug: # protocol is cloned
+            old_state = Protocol.objects.get(pk = self.parent_id)
+        else:     
+            old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL
+
+        # new_state = self
+        # diff = ProtocolChangeLog(old_state, new_state)
+        # print diff.hdf
 
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -133,7 +147,57 @@ class Protocol(TimeStampedModel):
             #self.slug = self.generate_slug()
             #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-            
+        
+        new_state = self
+        diff = None
+        diff = ProtocolChangeLog(old_state, new_state)
+        # print "diff hdf from protocol.model:", diff.hdf
+
+        # LOG THIS HISTORY OBJECT HERE
+        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        # print "history data: %s"% history.data
+        history.update_from_diff(diff)
+        # print "history data: %s"% history.data
+        history.save()
+        # self.update_history(diff)
+
+    
+    # def update_history(self, diff):
+
+    #     # ALTERNATE 3
+    #     history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+    #     history.update_from_diff(diff)
+    #     history.save()
+        
+        # Initial method: 
+        # for entry in diff.hdf:
+        #     if entry['event'] == "add":
+        #         history.history_add_event(entry['objectid'], data=entry['data'])
+        #     elif entry['event'] == "update":  
+        #         history.history_update_event(entry['objectid'], data=entry['data'])  
+        #     elif entry['event'] == "delete":    
+        #         history.history_delete_event(entry['objectid'], data=entry['data'])    
+        #     elif entry['event'] == "clone":    
+        #         history.history_clone_event(entry['objectid'], data=entry['data'])        
+        #     elif entry['event'] == "create":    
+        #         history.history_create_event(entry['objectid'], data=entry['data'])            
+                                    
+        # history.save()
+
+        # ALTERNATE 1 - Does not allow the History object to do the formatting
+        # for entry in diff.hdf:        
+        #     history.history_event(entry['event'], entry['objectid'], entry['data'])
+
+        # ALTERNATE 2 - Relies on the History object to do the formatting but streamlines the data
+        # hlog = {'add': history.history_add_event,         
+        #         'update': history.history_update_event,
+        #         'delete': history.history_delete_event,
+        #         'clone': history.history_clone_event,
+        #         'create': history.history_create_event,
+        #         }
+        # for entry in diff.hdf:
+        #     hlog[entry['event']](entry['objectid'], data=entry['data'])
+
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
@@ -676,8 +740,8 @@ class Protocol(TimeStampedModel):
 
 class Reference(models.Model):
     protocol = models.ManyToManyField(Protocol)
-    name = models.CharField(_("Name"), max_length=255, unique=True)
-    typ = models.CharField(_("Type"), max_length=255, unique=True, choices=REFERENCE_TYPES)
+    data = models.CharField(_("Data"), max_length=255, default="#NDF")
+    typ = models.CharField(_("Type"), max_length=255, choices=REFERENCE_TYPES)
 
 
 class NodeBase(dict):
@@ -1283,3 +1347,37 @@ class Step(NodeBase):
     # @property
     # def actions(self):
     #     return 
+
+
+class ProtocolHistoryDiffer(object):
+    '''
+        [
+            {'id':"XXXXXX", 'event':"add", data: {} },
+            {'id':"XXXXXX", 'event':"update", data: {} },
+            {'id':"XXXXXX", 'event':"delete" },
+        ]
+    '''
+
+    add = []
+    update = []
+    delete = []
+
+    def parse_changes(self, protocol):
+        pass
+        # DIFF THE GIVEN PROTOCOL OBJECT INTO PARTS
+
+        # PSEUDO CODE
+        # for node in parsed_changes:
+        #     if add:
+        #         self.add.append( {'id':node.node_id, 'data':node.new_data_dict })
+        #     elif delete:
+        #         self.delete.append( {'id':node.node_id, 'data':node.new_data_dict })
+        #     else:
+        #         self.update.append( {'id':node.node_id, 'data':node.new_data_dict })
+
+
+
+
+
+
+

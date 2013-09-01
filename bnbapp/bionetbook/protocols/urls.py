@@ -19,6 +19,7 @@ urlpatterns = patterns("",
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/public/$', view=views.ProtocolPublicView.as_view(), name='protocol_public'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/duplicate/$', view=views.ProtocolDuplicateView.as_view(), name='protocol_duplicate'),
 
+    # FORM TEST URLS
     url(regex=r'^(?P<owner_slug>[-\w]+)/test/create/$', view=views.ProtocolCreateTestView.as_view(), name='protocol_test_create'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/test/edit/$', view=views.ProtocolUpdateTestView.as_view(), name='protocol_test_update'),
 

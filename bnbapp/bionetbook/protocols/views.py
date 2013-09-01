@@ -396,7 +396,7 @@ class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
 # TEST VIEWS
 #######
 
-class ProtocolCreateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+class ProtocolCreateTestView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
     template_name = "protocols/protocol_form_test.html"  
 
 class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
