@@ -1,6 +1,9 @@
 from protocols.forms import verbs as verb_forms
 from protocols.forms import forms
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 def get_verb_list():
     verb_list = []
     for attr_name in dir(verb_forms):
@@ -296,8 +299,11 @@ class ProtocolChangeLog(object):
         if self.old:
             self.diff_protocol_keys()
             self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
-        else:    
-            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )    
+        else:
+            # print self.new
+            self.log_item(objectid = self.new['id'], event = 'create', data = { "data": self.new } )
+
+        pp.pprint( self.hdf )
 
     def record_to_dict(self, record):
         result = {}
@@ -310,12 +316,15 @@ class ProtocolChangeLog(object):
 
         return result
 
-    def log_item(self, objectid = None, event = None, data = None):
-        self.hdf.append({ "objectid": objectid, "event": event, "data": data })    
+    def log_item(self, objectid=None, event=None, data=None):
+        self.hdf.append({ "objectid": objectid, "event": event, "data": data })
 
 
     def diff_protocol_keys(self):
         
+        # print self.new
+        # print self.old
+
         d = DataDiffer(self.old, self.new)
         
         # Naming events:

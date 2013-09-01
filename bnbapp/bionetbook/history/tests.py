@@ -17,6 +17,9 @@ Replace this with more appropriate tests for your application.
 12. catch edited child 
 """
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 from django.test import TestCase
 from core.tests import AutoBaseTest
 
@@ -46,7 +49,7 @@ class HistoryModelTests(AutoBaseTest):
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 1)
         # print "TEST ONE"
-        # print history[0].data['create'][0]
+        # pp.pprint( history[0].data )
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
 
@@ -57,7 +60,7 @@ class HistoryModelTests(AutoBaseTest):
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 2)
         # print "TEST TWO"
-        print history[0].data
+        # print history[0].data
         # print history[1].data
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
