@@ -20,12 +20,15 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from core.tests import AutoBaseTest
 
-class SimpleTest(TestCase):
-    def test_added_step(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+from protocols.models import Protocol, Action, Step, Component
+from organization.models import Organization, Membership
+
+# class SimpleTest(TestCase):
+#     def test_added_step(self):
+#         """
+#         Tests that 1 + 1 always equals 2.
+#         """
+#         self.assertEqual(1 + 1, 2)
 
 
 
@@ -37,12 +40,14 @@ class HistoryModelTests(AutoBaseTest):
         self.user = self.createUserInstance( username="testuser", password="password", email="test@example.com" )        # CREATE THE USER
         self.org = self.createModelInstance(Organization, name="testorg")        # CREATE THE ORGANIZATION
         self.membership = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
 
     def test_catch_change_in_protocol_values(self):
-        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
         self.protocol.save()
 
         # CHECK THE CHANGES HERE IN THE PROTOCOL
+        history = self.protocol.history_set.all()
+        print len(history)
 
         # self.assertEquals(self.protocol.raw, "what?")
         # self.assertEquals(self.protocol.slug, "%d-test-protocol" % self.protocol.pk)
