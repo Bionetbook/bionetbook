@@ -29,10 +29,10 @@ class SimpleTest(TestCase):
 
 
 
-class ProtocolModelTests(AutoBaseTest):
+class HistoryModelTests(AutoBaseTest):
 
     def setUp(self):
-        super(ProtocolModelTests, self).setUp()
+        super(HistoryModelTests, self).setUp()
         self.protocol = None
         self.user = self.createUserInstance( username="testuser", password="password", email="test@example.com" )        # CREATE THE USER
         self.org = self.createModelInstance(Organization, name="testorg")        # CREATE THE ORGANIZATION
