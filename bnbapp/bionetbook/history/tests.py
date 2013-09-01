@@ -43,8 +43,6 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
 
     def test_catch_change_in_protocol_values(self):
-        self.protocol.save()
-
         # CHECK THE CHANGES HERE IN THE PROTOCOL
         history = self.protocol.history_set.all()
         print len(history)

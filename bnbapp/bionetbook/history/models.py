@@ -73,7 +73,7 @@ class History(TimeStampedModel):
         if not etype in self.data: #Causes duplicate entries and cross object entries
             self.data[etype] = []
 
-        self.data[etype].append({'id':node_id, "data": data })
+        self.data[etype].append({'id':node_id, "attrs": data })
         print 'data to save: %s'% self.data
 
     def update_from_diff(self, diff):
