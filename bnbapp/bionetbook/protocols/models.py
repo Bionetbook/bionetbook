@@ -151,11 +151,11 @@ class Protocol(TimeStampedModel):
         new_state = self
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
-        print "diff hdf from protocol.model:", diff.hdf
+        # print "diff hdf from protocol.model:", diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
         history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        print "\t\t history data:", history.data
+        print "\t\t history data:, %s"% history.data
         history.update_from_diff(diff)
         history.save()
         # self.update_history(diff)

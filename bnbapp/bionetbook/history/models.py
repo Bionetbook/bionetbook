@@ -36,7 +36,7 @@ class History(TimeStampedModel):
 
     # def __init__(self, *args, **kwargs):    
     #     super(History, self).__init__(*args, **kwargs)
-         
+
 
 
     # def history_add_event(self, node_id, data={}):
@@ -74,11 +74,11 @@ class History(TimeStampedModel):
             self.data[etype] = []
 
         self.data[etype].append({'id':node_id, "data": data })
-        print 'data to save:', self.data
+        print 'data to save: %s'% self.data
 
     def update_from_diff(self, diff):
         for entry in diff.hdf:    
-            print "entry from history.model:", entry
+            # print "entry from history.model:", entry
             self.history_event(entry['event'], entry['objectid'], entry['data'])
 
 
