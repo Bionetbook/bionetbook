@@ -74,7 +74,7 @@ class History(TimeStampedModel):
             self.data[etype] = []
 
         self.data[etype].append({'id':node_id, "attrs": data })
-        print 'data to save: %s'% self.data
+        # print 'data to save: %s'% self.data
 
     def update_from_diff(self, diff):
         for entry in diff.hdf:    

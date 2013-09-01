@@ -155,7 +155,7 @@ class Protocol(TimeStampedModel):
 
         # LOG THIS HISTORY OBJECT HERE
         history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        print "history data: %s"% history.data
+        # print "history data: %s"% history.data
         history.update_from_diff(diff)
         # print "history data: %s"% history.data
         history.save()
