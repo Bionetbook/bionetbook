@@ -299,7 +299,7 @@ class ProtocolChangeLog(object):
 
         if self.old:
             self.diff_protocol_keys()
-            self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
+            # self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
         else:
             self.log_item(self.new_record.pk, 'create', 'protocol', self.new)
 

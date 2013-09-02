@@ -62,6 +62,7 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history), 2)
 
         for h in history:
+            print "HISTORY ENTRY: %d" % h.pk
             pp.pprint( h.data )
 
 
