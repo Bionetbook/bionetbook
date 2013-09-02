@@ -47,8 +47,8 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_history_logging_for_protocol(self):
         history = self.protocol.history_set.all()
-        self.assertEquals(len(history), 1)
 
+        self.assertEquals(len(history), 1)
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
 
@@ -57,8 +57,8 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.save()
 
         history = self.protocol.history_set.all()
-        self.assertEquals(len(history), 2)
 
+        self.assertEquals(len(history), 2)
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
 
@@ -68,20 +68,37 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.save()
 
         history = self.protocol.history_set.all()
+
+        # for h in history:
+        #     print "\nHISTORY ENTRY: %d" % h.pk
+        #     pp.pprint( h.data )
+
         self.assertEquals(len(history), 2)
-
-        for h in history:
-            print "\nHISTORY ENTRY: %d" % h.pk
-            pp.pprint( h.data )
-
         self.assertEquals(history[0].data['update'][0]['id'], 1)
+        self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
+
+    def test_change_two_attrs_in_published_protocol_values(self):
+        self.protocol.name = "First Name Protocol"
+        self.protocol.save()
+
+        self.protocol.name = "New Published Protocol"
+        self.protocol.published = True
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+
+        # for h in history:
+        #     print "\nHISTORY ENTRY: %d" % h.pk
+        #     pp.pprint( h.data )
+
+        self.assertEquals(len(history), 3)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
 
     def test_log_adding_step_to_protocol(self):
         self.protocol.published = True
         step = Step(self.protocol)
         self.protocol.add_node(step)
-        self.protocol.save()
+        self.protocol.save()            # <- Not Currently being logged
 
         print "\nSTEP ADDED:"
         pp.pprint( step )
