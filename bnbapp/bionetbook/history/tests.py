@@ -43,13 +43,14 @@ class HistoryModelTests(AutoBaseTest):
         self.user = self.createUserInstance( username="testuser", password="password", email="test@example.com" )        # CREATE THE USER
         self.org = self.createModelInstance(Organization, name="testorg")        # CREATE THE ORGANIZATION
         self.membership = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
-        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?", author=self.user)
 
     def test_history_logging_for_protocol(self):
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 1)
         # print "TEST ONE"
         # pp.pprint( history[0].data )
+
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
 
@@ -59,6 +60,11 @@ class HistoryModelTests(AutoBaseTest):
 
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 2)
+
+        for h in history:
+            pp.pprint( h.data )
+
+
         # print "TEST TWO"
         # print history[0].data
         # print history[1].data

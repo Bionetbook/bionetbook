@@ -77,9 +77,23 @@ class History(TimeStampedModel):
         # print 'data to save: %s'% self.data
 
     def update_from_diff(self, diff):
-        for entry in diff.hdf:    
-            # print "entry from history.model:", entry
-            self.history_event(entry['event'], entry['objectid'], entry['data'])
+        result = diff.hdf
+        if not self.data:
+            self.data = {}
+
+        for key in result:
+            for item in result[key]:
+
+                if not key in self.data:    # MAKE SURE THIS IS A LIST
+                    self.data[key] = []
+
+                self.data[key].append( item )
+
+        # self.data[etype].append({'id':node_id, "attrs": data })
+
+        # for entry in diff.hdf:    
+        #     # print "entry from history.model:", entry
+        #     self.history_event(entry['event'], entry['objectid'], entry['data'])
 
 
 

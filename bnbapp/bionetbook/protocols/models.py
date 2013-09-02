@@ -105,28 +105,14 @@ class Protocol(TimeStampedModel):
             
         
     def save(self, *args, **kwargs):
-        
-        #self.set_data_ids()
-        #self.set_data_slugs()
-
-        
-        # !!!this will overwrite the self.data!!!!11111
-        #if self.data:       
-            # NEED TO RETURN STEPS TO JSON
-        #    self.data['steps'] = self.steps
-
-        # if not self.steps_data:
-        #     self.steps
 
         if not self.name:
             if self.data['Name']:
                 self.name = self.data['Name']
 
-        # self.update_duration_actions()          # Total Up all the Steps, Actions and Components
         self.update_duration()
         
-        # DIFF DATA GOES IN HERE
-    
+        # DIFF DATA
         if not self.pk and not self.parent_id: # protocol is new
             old_state = None            
         elif not self.pk and self.slug: # protocol is cloned
@@ -134,69 +120,22 @@ class Protocol(TimeStampedModel):
         else:     
             old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL
 
-        # new_state = self
-        # diff = ProtocolChangeLog(old_state, new_state)
-        # print diff.hdf
-
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_slug = self.generate_slug()
 
         if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
-            #self.slug = self.generate_slug()
-            #self.save()
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
         
         new_state = self
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
-        # print "diff hdf from protocol.model:", diff.hdf
 
         # LOG THIS HISTORY OBJECT HERE
-        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        # print "history data: %s"% history.data
+        history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
         history.update_from_diff(diff)
-        # print "history data: %s"% history.data
         history.save()
-        # self.update_history(diff)
-
-    
-    # def update_history(self, diff):
-
-    #     # ALTERNATE 3
-    #     history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-    #     history.update_from_diff(diff)
-    #     history.save()
-        
-        # Initial method: 
-        # for entry in diff.hdf:
-        #     if entry['event'] == "add":
-        #         history.history_add_event(entry['objectid'], data=entry['data'])
-        #     elif entry['event'] == "update":  
-        #         history.history_update_event(entry['objectid'], data=entry['data'])  
-        #     elif entry['event'] == "delete":    
-        #         history.history_delete_event(entry['objectid'], data=entry['data'])    
-        #     elif entry['event'] == "clone":    
-        #         history.history_clone_event(entry['objectid'], data=entry['data'])        
-        #     elif entry['event'] == "create":    
-        #         history.history_create_event(entry['objectid'], data=entry['data'])            
-                                    
-        # history.save()
-
-        # ALTERNATE 1 - Does not allow the History object to do the formatting
-        # for entry in diff.hdf:        
-        #     history.history_event(entry['event'], entry['objectid'], entry['data'])
-
-        # ALTERNATE 2 - Relies on the History object to do the formatting but streamlines the data
-        # hlog = {'add': history.history_add_event,         
-        #         'update': history.history_update_event,
-        #         'delete': history.history_delete_event,
-        #         'clone': history.history_clone_event,
-        #         'create': history.history_create_event,
-        #         }
-        # for entry in diff.hdf:
-        #     hlog[entry['event']](entry['objectid'], data=entry['data'])
 
 
     def user_has_access(self, user):
