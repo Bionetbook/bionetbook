@@ -48,8 +48,6 @@ class HistoryModelTests(AutoBaseTest):
     def test_history_logging_for_protocol(self):
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 1)
-        # print "TEST ONE"
-        # pp.pprint( history[0].data )
 
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
@@ -60,10 +58,6 @@ class HistoryModelTests(AutoBaseTest):
 
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 2)
-
-        # for h in history:
-        #     print "HISTORY ENTRY: %d" % h.pk
-        #     pp.pprint( h.data )
 
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
