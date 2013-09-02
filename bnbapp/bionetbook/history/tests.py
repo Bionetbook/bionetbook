@@ -25,6 +25,7 @@ from core.tests import AutoBaseTest
 
 from protocols.models import Protocol, Action, Step, Component
 from organization.models import Organization, Membership
+from history.models import History
 
 # class SimpleTest(TestCase):
 #     def test_added_step(self):
@@ -70,7 +71,7 @@ class HistoryModelTests(AutoBaseTest):
         history = self.protocol.history_set.all()
 
         # for h in history:
-        #     print "\nHISTORY ENTRY: %d" % h.pk
+        #     print "\nHISTORY EVENT: %d" % h.pk
         #     pp.pprint( h.data )
 
         self.assertEquals(len(history), 2)
@@ -88,7 +89,7 @@ class HistoryModelTests(AutoBaseTest):
         history = self.protocol.history_set.all()
 
         # for h in history:
-        #     print "\nHISTORY ENTRY: %d" % h.pk
+        #     print "\nHISTORY EVENT: %d" % h.pk
         #     pp.pprint( h.data )
 
         self.assertEquals(len(history), 3)
@@ -100,18 +101,38 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.add_node(step)
         self.protocol.save()            # <- Not Currently being logged
 
-        print "\nSTEP ADDED:"
-        pp.pprint( step )
+        # print "\nSTEP ADDED:"
+        # pp.pprint( step )
 
-        print "\nPROTOCOL STEP DATA:"
-        pp.pprint( self.protocol.data )
+        # print "\nPROTOCOL STEP DATA:"
+        # pp.pprint( self.protocol.data )
 
         history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY ENTRY: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
         # print history[0].data['create'][0]['attrs']
         self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 
+    def test_log_adding_two_protocols(self):
+        self.protocol.published = True
+        protocol_two = self.createModelInstance(Protocol, name="Second Protocol", owner=self.org, raw="", author=self.user)
+
+        self.protocol.published = True
+        self.protocol.save()
+
+        history = History.objects.all()
+        history_one = self.protocol.history_set.all()
+
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+        self.assertEquals(len(history_one), 2)
+        self.assertEquals(len(history), 3)
+
+        # print history[0].data['create'][0]['attrs']
+        # self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        # self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
