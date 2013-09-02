@@ -61,18 +61,29 @@ class HistoryModelTests(AutoBaseTest):
         history = self.protocol.history_set.all()
         self.assertEquals(len(history), 2)
 
-        for h in history:
-            print "HISTORY ENTRY: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "HISTORY ENTRY: %d" % h.pk
+        #     pp.pprint( h.data )
 
-
-        # print "TEST TWO"
-        # print history[0].data
-        # print history[1].data
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
 
 
+    def test_catch_change_in_published_protocol_values(self):
+        self.protocol.name = "New Published Protocol"
+        self.protocol.published = True
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+        self.assertEquals(len(history), 2)
+
+        for h in history:
+            print "\nHISTORY ENTRY: %d" % h.pk
+            pp.pprint( h.data )
+
+        self.assertEquals(history[0].data['update'][0]['id'], 1)
+        self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
 
 
-
+    # def test_catch_adding_step(self):
+    #     pass

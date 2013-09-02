@@ -315,35 +315,44 @@ class ProtocolChangeLog(object):
         return result
 
     def log_item(self, objectid, event, otype, data):
+        new = True
 
         if not event in self.hdf:
             self.hdf[event] = []
 
-        self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data } )
+        # CHECK TO SEE IF THIS ITEM IS ALREADY IN THE LOG OR NOT
+        for item in self.hdf[event]:
+            if item['id'] == objectid and item['type'] == otype:   # THEY ARE THE SAME OBJECT
+                item['attrs'].update( data )
+                new = False
+
+        if new:
+            self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data } )
 
 
     def diff_protocol_keys(self):
 
         d = DataDiffer(self.old, self.new)
+        changed = d.changed()
 
-        if 'name' in d.changed(): 
+        if 'name' in changed: 
             self.log_item(objectid = self.old['id'], event='update', otype="protocol", data = { "name": self.new['name']} )        
 
-        if 'id' in d.changed() and 'author_id' not in d.changed():
+        if 'id' in changed and 'author_id' not in changed:
             self.log_item(objectid = self.old['id'], event = 'clone', otype="protocol", data = { "pk": self.new['id']} )
             self.log_item(objectid = self.new['id'], event = 'create', otype="protocol", data = { "pk": self.new['data']} )
 
-        if 'user' in d.changed():
+        if 'user' in changed:
             self.log_item(objectid = self.new['id'], event = 'forked', otype="protocol", data = { "author": self.new['author'] })
             # self.log_item(objectid = self.new['id'], event = 'update', data = { "author": self.new.author })
 
-        if "published" in d.changed() and 'id' not in d.changed():
+        if "published" in changed and 'id' not in changed:
             self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "published": self.new['published'] })
 
-        if "public" in d.changed():
+        if "public" in changed:
             self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "public": self.new['public'] })    
 
-        if "description" in d.changed():
+        if "description" in changed:
             self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "description": self.new['description'] }) 
 
     def diff_dict(self, objid= None):
