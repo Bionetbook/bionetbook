@@ -77,6 +77,7 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history), 2)
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
+        self.assertEquals(history[0].data['update'][0]['attrs']['published'], True)
 
     def test_change_two_attrs_in_published_protocol_values(self):
         self.protocol.name = "First Name Protocol"
@@ -107,7 +108,7 @@ class HistoryModelTests(AutoBaseTest):
         # print "\nPROTOCOL STEP DATA:"
         # pp.pprint( self.protocol.data )
 
-        # history = self.protocol.history_set.all()
+        history = self.protocol.history_set.all()
         # for h in history:
         #     print "\nHISTORY EVENT: %d" % h.pk
         #     pp.pprint( h.data )
@@ -145,8 +146,8 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.add_node(step)
         self.protocol.save()
 
-        action = Action(self.protocol, verb="add")
-        self.protocol.add_node(action)
+        action = Action(step, verb="add")
+        step.add_node(action)
         self.protocol.save()
         # print "\nSTEP ADDED:"
         # pp.pprint( step )
@@ -160,6 +161,11 @@ class HistoryModelTests(AutoBaseTest):
             pp.pprint( h.data )
 
         # print history[0].data['create'][0]['attrs']
-        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
+        self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+
+
 

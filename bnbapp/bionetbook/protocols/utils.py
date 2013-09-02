@@ -329,7 +329,6 @@ class ProtocolChangeLog(object):
         if new:
             self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data, 'parent_id':parent_id } )
 
-
     def diff_protocol_keys(self):
         ''' 
         Takes the two Protocol Model Objects and diff's their attributes except for the JSON (data) & date fields.
