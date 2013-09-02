@@ -62,7 +62,6 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
 
-
     def test_catch_change_in_published_protocol_values(self):
         self.protocol.name = "New Published Protocol"
         self.protocol.published = True
@@ -78,6 +77,20 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
 
+    def test_log_adding_step_to_protocol(self):
+        self.protocol.published = True
+        step = Step(self.protocol)
+        self.protocol.add_node(step)
+        self.protocol.save()
 
-    # def test_catch_adding_step(self):
-    #     pass
+        print "\nSTEP ADDED:"
+        pp.pprint( step )
+
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY ENTRY: %d" % h.pk
+            pp.pprint( h.data )
+
+        self.assertEquals(len(history[0].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(len(history[0].data['create']['type']), "step")   # STEP SHOULD SHOW UP AS A CREATION
+
