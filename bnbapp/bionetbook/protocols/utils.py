@@ -299,7 +299,7 @@ class ProtocolChangeLog(object):
 
         if self.old:
             self.diff_protocol_keys()
-            self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
+            self.diff_nodes()
         else:
             self.log_item(self.new_record.pk, 'create', 'protocol', self.new)
 
@@ -308,9 +308,9 @@ class ProtocolChangeLog(object):
         if record:
             tmp_dict = record.__dict__
 
-            for k in tmp_dict:
-                if k[0] != "_":
-                    result[k] = tmp_dict[k]
+            for key in tmp_dict:
+                if key[0] != "_":
+                    result[key] = tmp_dict[key]
 
         return result
 
@@ -393,12 +393,51 @@ class ProtocolChangeLog(object):
                     # print "logged changed %s, %s "% (objid, obj_new[key])
                 
             if key in diff.added():
-                self.log_item(objectid = objid, event = "add", data = { key: obj_new[key]} )
+                self.log_item(objectid = objid, event = "create", data = { key: obj_new[key]} )
                 # print "logged add %s, %s "% (objid, obj_new[key])
             
             if key in diff.removed():
                 self.log_item(objectid = objid, event = "delete", data = { key: obj_old[key]} )                
                 # print "logged remove%s, %s "% (objid, obj_new[key])
+
+    def diff_nodes(self):
+        # self.old_record = old_state
+        # self.new_record = new_state
+        # print "DIFF NODES CALLED"
+
+
+        old_ids = self.old_record.nodes.keys()
+        new_ids = self.new_record.nodes.keys()
+
+        for key in old_ids:
+            if key in new_ids:  # CHECK FOR NODE EDIT
+                print "\nNODE EDIT: %s" % key
+            else:   # DELETED NODE
+                print "\nNODE DELETE: %s" % key
+            new_ids.pop(key)
+
+        for key in new_ids:     # NEW NODES
+            node_type = self.new_record.nodes[key].__class__.__name__.lower()
+            print "\nNODE CREATED: %s \"%s\"" % (node_type, key)
+            self.log_item(objectid=key, event="create", otype=node_type, data={} )
+
+        # print self.new_record.nodes
+
+
+        # for key, item in self.new_record.nodes.items():
+        #     print item.__class__.__name__
+
+        # for step in self.old_record.steps:
+        #     print "OLD STEP"
+
+        # for step in self.new_record.steps:
+        #     print "NEW STEP"
+
+        # old_steps = self.old_record['data']['steps']
+
+
+        # self.diff_list( self.old_record['data']['steps'], self.new_record['data']['steps'] )
+
 
     def diff_list(self, list_a, list_b):         
         ''' this method takes a list of object ids and compares it between the old and the new list. 
@@ -407,6 +446,8 @@ class ProtocolChangeLog(object):
             2. finds the added removed or edited objects in each list
             3. for added or removed objects it triggers a log event
             4. for changed objects it recurses to diff_dict'''
+
+        print "DIFF LIST CALLED"
 
         old_list = dict((item['objectid'],item) for item in list_a)
         new_list = dict((item['objectid'],item) for item in list_b)

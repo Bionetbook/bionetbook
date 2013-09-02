@@ -108,9 +108,9 @@ class HistoryModelTests(AutoBaseTest):
         # pp.pprint( self.protocol.data )
 
         history = self.protocol.history_set.all()
-        # for h in history:
-        #     print "\nHISTORY EVENT: %d" % h.pk
-        #     pp.pprint( h.data )
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
 
         # print history[0].data['create'][0]['attrs']
         self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
@@ -126,9 +126,9 @@ class HistoryModelTests(AutoBaseTest):
         history = History.objects.all()
         history_one = self.protocol.history_set.all()
 
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
         self.assertEquals(len(history_one), 2)
         self.assertEquals(len(history), 3)
