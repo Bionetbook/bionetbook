@@ -103,11 +103,15 @@ class HistoryModelTests(AutoBaseTest):
         print "\nSTEP ADDED:"
         pp.pprint( step )
 
+        print "\nPROTOCOL STEP DATA:"
+        pp.pprint( self.protocol.data )
+
         history = self.protocol.history_set.all()
         for h in history:
             print "\nHISTORY ENTRY: %d" % h.pk
             pp.pprint( h.data )
 
-        self.assertEquals(len(history[0].data['update']), 1)                # LOG THE PUBLISH CHANGE
-        self.assertEquals(len(history[0].data['create']['type']), "step")   # STEP SHOULD SHOW UP AS A CREATION
+        # print history[0].data['create'][0]['attrs']
+        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 

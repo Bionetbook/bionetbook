@@ -299,7 +299,7 @@ class ProtocolChangeLog(object):
 
         if self.old:
             self.diff_protocol_keys()
-            # self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
+            self.diff_list( self.old['data']['steps'], self.new['data']['steps'] )
         else:
             self.log_item(self.new_record.pk, 'create', 'protocol', self.new)
 
@@ -331,7 +331,9 @@ class ProtocolChangeLog(object):
 
 
     def diff_protocol_keys(self):
-
+        ''' 
+        Takes the two Protocol Model Objects and diff's their attributes except for the JSON (data) & date fields.
+        '''
         d = DataDiffer(self.old, self.new)
         changed = d.changed()
 
@@ -421,11 +423,11 @@ class ProtocolChangeLog(object):
         all_objectids = set(old_list.keys()).union(set(new_list.keys()))
         for objid in all_objectids:
             if objid in added: 
-                self.log_item(objectid = objid, event = 'add', data = self.new_record.nodes[objid])
+                self.log_item(objectid = objid, event = 'create', otype="step", data = self.new_record.nodes[objid])
                 # print "logged add%s, %s "% (objid, self.new.nodes[objid])
 
             if objid in removed:
-                self.log_item(objectid = objid, event = 'delete', data = self.old_record.nodes[objid])
+                self.log_item(objectid = objid, event = 'delete', otype="", data = self.old_record.nodes[objid])
                 # print "logged remove%s, %s "% (objid, self.old.nodes[objid])
             
             if objid in changed: 
