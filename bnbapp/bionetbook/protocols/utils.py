@@ -314,7 +314,7 @@ class ProtocolChangeLog(object):
 
         return result
 
-    def log_item(self, objectid, event, otype, data):
+    def log_item(self, objectid, event, otype, data, parent_id=None):
         new = True
 
         if not event in self.hdf:
@@ -327,7 +327,7 @@ class ProtocolChangeLog(object):
                 new = False
 
         if new:
-            self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data } )
+            self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data, 'parent_id':parent_id } )
 
 
     def diff_protocol_keys(self):
@@ -357,7 +357,7 @@ class ProtocolChangeLog(object):
         if "description" in changed:
             self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "description": self.new['description'] }) 
 
-    def diff_dict(self, objid= None):
+    def diff_dict(self, objid=None):
         '''this method takes a dict and finds the differences in it catching the following diffs:
             key-value pairs: 
             triggered by a unicode / int / float / str type. 
@@ -401,43 +401,38 @@ class ProtocolChangeLog(object):
                 # print "logged remove%s, %s "% (objid, obj_new[key])
 
     def diff_nodes(self):
-        # self.old_record = old_state
-        # self.new_record = new_state
-        # print "DIFF NODES CALLED"
-
+        '''
+        Diff's nodes that are attached to protocols.
+        '''
 
         old_ids = self.old_record.nodes.keys()
         new_ids = self.new_record.nodes.keys()
 
-        for key in old_ids:
+        for key in old_ids:     # UPDATED AN DELETED NODES
             if key in new_ids:  # CHECK FOR NODE EDIT
                 print "\nNODE EDIT: %s" % key
-            else:   # DELETED NODE
-                print "\nNODE DELETE: %s" % key
+                # self.diff_list( self.old_record['data']['steps'], self.new_record['data']['steps'] )
+            else:
+                # print "\nNODE DELETED: %s" % key
+                node = self.old_record.nodes[key]
+                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
             new_ids.pop(key)
 
         for key in new_ids:     # NEW NODES
-            node_type = self.new_record.nodes[key].__class__.__name__.lower()
-            print "\nNODE CREATED: %s \"%s\"" % (node_type, key)
-            self.log_item(objectid=key, event="create", otype=node_type, data={} )
+            node = self.new_record.nodes[key]
+            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
 
-        # print self.new_record.nodes
+    def clean_node_data(self, node):
+        '''
+        Returns a Node in the cleaned up format for logging
+        '''
+        result = {}
 
+        for key, item in node.items():
+            if key not in ['steps', 'actions', 'machine', 'components', 'thermocycler']:
+                result[key] = node[key]
 
-        # for key, item in self.new_record.nodes.items():
-        #     print item.__class__.__name__
-
-        # for step in self.old_record.steps:
-        #     print "OLD STEP"
-
-        # for step in self.new_record.steps:
-        #     print "NEW STEP"
-
-        # old_steps = self.old_record['data']['steps']
-
-
-        # self.diff_list( self.old_record['data']['steps'], self.new_record['data']['steps'] )
-
+        return result
 
     def diff_list(self, list_a, list_b):         
         ''' this method takes a list of object ids and compares it between the old and the new list. 
