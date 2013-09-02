@@ -107,10 +107,10 @@ class HistoryModelTests(AutoBaseTest):
         # print "\nPROTOCOL STEP DATA:"
         # pp.pprint( self.protocol.data )
 
-        history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
         # print history[0].data['create'][0]['attrs']
         self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
@@ -136,3 +136,30 @@ class HistoryModelTests(AutoBaseTest):
         # print history[0].data['create'][0]['attrs']
         # self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         # self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
+
+
+
+    def test_log_adding_multiple_nodes_to_protocol(self):
+        self.protocol.published = True
+        step = Step(self.protocol)
+        self.protocol.add_node(step)
+        self.protocol.save()
+
+        action = Action(self.protocol, verb="add")
+        self.protocol.add_node(action)
+        self.protocol.save()
+        # print "\nSTEP ADDED:"
+        # pp.pprint( step )
+
+        # print "\nPROTOCOL STEP DATA:"
+        # pp.pprint( self.protocol.data )
+
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+        # print history[0].data['create'][0]['attrs']
+        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
+

@@ -420,7 +420,7 @@ class ProtocolChangeLog(object):
                     if changes[edit_type]:
                         self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.pk )
 
-                new_ids.pop(key)
+                new_ids.remove(key)
             else:
                 # print "\nNODE DELETED: %s" % key
                 node = self.old_record.nodes[key]
@@ -451,14 +451,16 @@ class ProtocolChangeLog(object):
 
         for key in old_keys:
             if key in new_keys:
-                if new_keys[key] != old_keys[key]:
-                    result['update'][key] = new_key[key]
-                new_keys.pop(key)
+                if new_node[key] != old_node[key]:
+                    result['update'][key] = new_node[key]
+                new_keys.remove(key)
             else:
-                result['delete'][key] = old_key[key]
+                result['delete'][key] = old_node[key]
 
         for keys in new_keys:
-            result['create'][key] = new_key[key]
+            result['create'][key] = new_node[key]
+
+        return result
 
 
     # def diff_list(self, list_a, list_b):         
