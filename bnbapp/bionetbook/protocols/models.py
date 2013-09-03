@@ -714,6 +714,8 @@ class NodeBase(dict):
 
         self._meta = NodeBase.Meta(self)
 
+        # IT SHOULD APPEND IT'S SELF TO THE PARENT
+
         # for item in self.keylist:       # REQUIRED ATTRIBUTES
         #     self[item] = None
 
@@ -756,7 +758,6 @@ class NodeBase(dict):
     def node_type(self):
         return self.__class__.__name__
 
-
     def update_data(self, data={}, **kwargs):
         if data:
             for key in data:
@@ -767,7 +768,6 @@ class NodeBase(dict):
 
     def __unicode__(self):
         return self['slug']
-
 
     @property
     def title(self):
@@ -807,7 +807,6 @@ class Component(NodeBase):
                 return
 
         parent['components'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
-
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
@@ -944,7 +943,6 @@ class Thermocycle(NodeBase):
 
     @property
     def summary(self):
-        
         tmp = settify(self, shorthand = True, summary = True)
         tmp['name'] = self['name']          
         return tmp    
@@ -978,14 +976,9 @@ class Action(NodeBase):
         if self['name'] == self['objectid']:        # CORRECT THIS DATA
             self['name'] = self['verb']
 
-        if not self['objectid'] in self.protocol.nodes:
-            print "NOT THERE"
-
-        # if 'actions' in self.parent:
-        #     self.parent['actions'].append(self)
-        # else:
-        #     self.parent['actions'] = [self]
-
+        # NEEDS APPEND TO THE PARENT LIKE STEP DOES
+        # if self.parent and not self['objectid'] in self.protocol.nodes:           # THIS WORKS BUT COMMENTED OUT FOR TESTING AGAINST EXISTING CODE
+        #     self.parent.add_child_node(self)                                          # SOMETHING SIMILAR SHOULD WORK FOR OTHER NODES, CAN MAKE MORE GENERIC
 
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
@@ -1046,9 +1039,7 @@ class Action(NodeBase):
     @property
     def summary(self):
         ''' returns a summary for manual objects'''
-
         return labeler(self)
-
 
     @property
     def children(self):
@@ -1067,7 +1058,6 @@ class Action(NodeBase):
 
         if 'thermocycle' in self:
             return self['thermocycle']   
-
         else:
             return None
 
@@ -1223,7 +1213,7 @@ class Step(NodeBase):
     # def title(self):
     #     return "%s - %s" % (self.protocol.name, self['name'])
 
-    def add_action(self, action):
+    def add_child_node(self, action):
         self['actions'].append(action)
 
     def delete_child_node(self, node_id):

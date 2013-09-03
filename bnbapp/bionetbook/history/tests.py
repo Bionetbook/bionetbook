@@ -145,13 +145,10 @@ class HistoryModelTests(AutoBaseTest):
         step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
 
         action = Action(self.protocol, parent=step, verb="add")     # ACTION NOT BEING ADDED CORRECTLY HERE
-        step.add_action(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        step.add_child_node(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
         self.protocol.save()
 
-        # print "\nACTION ADDED:"
-        # pp.pprint( action )
-
-        # history = self.protocol.history_set.all()
+        history = self.protocol.history_set.all()
         # for h in history:
         #     print "\nHISTORY EVENT: %d" % h.pk
         #     pp.pprint( h.data )
@@ -170,7 +167,7 @@ class HistoryModelTests(AutoBaseTest):
         step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
 
         action = Action(self.protocol, parent=step, verb="add")     # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT
-        step.add_action(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        step.add_child_node(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
         self.protocol.save()
 
         # print "\nACTION ADDED:"
@@ -189,4 +186,6 @@ class HistoryModelTests(AutoBaseTest):
 
         # ADD TESTS FOR ACTION ADD LOG
         self.assertEquals(history[1].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[0].data['update'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[0].data['update'][0]['attrs']['name'], "Action Jackson")   # ACTION SHOULD SHOW UP AS A CREATION
 
