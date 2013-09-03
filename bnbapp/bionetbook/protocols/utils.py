@@ -417,17 +417,16 @@ class ProtocolChangeLog(object):
 
                 for edit_type in ['create', 'update', 'delete']:
                     if changes[edit_type]:
-                        self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.pk )
+                        self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.id )
 
                 new_ids.remove(key)
             else:
-                # print "\nNODE DELETED: %s" % key
                 node = self.old_record.nodes[key]
-                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
+                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
 
         for key in new_ids:     # NEW NODES
             node = self.new_record.nodes[key]
-            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
+            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
 
     def clean_node_data(self, node):
         '''
@@ -442,22 +441,17 @@ class ProtocolChangeLog(object):
         return result
 
     def node_changes(self, old_node, new_node):
-
         result = { 'create':{}, 'update':{}, 'delete':{} }
+        differ = DataDiffer(old_node, new_node)
 
-        old_keys = old_node.keys()
-        new_keys = new_node.keys()
+        for key in differ.changed():
+            result['update'][key] = new_node[key]
 
-        for key in old_keys:
-            if key in new_keys:
-                if new_node[key] != old_node[key]:
-                    result['update'][key] = new_node[key]
-                new_keys.remove(key)
-            else:
-                result['delete'][key] = old_node[key]
-
-        for keys in new_keys:
+        for key in differ.added():
             result['create'][key] = new_node[key]
+
+        for key in differ.removed():
+            result['delete'][key] = new_node[key]
 
         return result
 

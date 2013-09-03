@@ -218,7 +218,7 @@ class Protocol(TimeStampedModel):
         uid_list = []
         uid = ''.join(random.choice(chars) for x in range(size))
 
-        for step in self.steps:
+        for step in self.data['steps']:
             if hasattr(step, 'objectid'):
                 if step['objectid']:
                     uid_list.append(step.objectid)
@@ -233,6 +233,7 @@ class Protocol(TimeStampedModel):
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])
 
+        print "\nUID: %s" % uid
 
         if uid not in uid_list:
             return uid
@@ -683,8 +684,14 @@ class Reference(models.Model):
     typ = models.CharField(_("Type"), max_length=255, choices=REFERENCE_TYPES)
 
 
+################
+# NODES
+################
+
 class NodeBase(dict):
     """Base class for the protocol components"""
+    parent_key_name = None      # NAME THE PARENT OBJECT USES TO HOLD THIS OBJECT
+    parent_key_plural = True    # WETHER OR NOT THERE ARE MULTIPLE OF THESE OBJECTS UNDER THE PARENT (string vs list)
 
     # keylist = ['name','objectid']   # <- REQUIRED OBJECTS FOR ALL NODES
 
@@ -703,6 +710,9 @@ class NodeBase(dict):
     def __init__(self, protocol, parent=None, data={}, **kwargs):
         super(NodeBase, self).__init__(**kwargs)
         
+        if not self.parent_key_name:
+            self.parent_key_name = self.__class__.__name__.lower()
+
         self.protocol = protocol
         if parent:
             self.parent = parent
@@ -713,11 +723,27 @@ class NodeBase(dict):
 
         self._meta = NodeBase.Meta(self)
 
+        # IT SHOULD APPEND IT'S SELF TO THE PARENT
+
         # for item in self.keylist:       # REQUIRED ATTRIBUTES
         #     self[item] = None
 
         self.update_data(data)
         # self.set_defaults()
+
+    def register_with_parent(self):
+        if self.parent_key_name in parent and parent[self.parent_key_name]:                         # CHECK TO SEE IF THE KEY EXISTS
+            if self.parent_key_plural:                                                              # FALL THROUGH IF NOT PLURAL
+                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:   # CHECK IF THIS IS ALREADY A CHILD OF THE PARENT
+                    parent[self.parent_key_name].append(self)                                       # IF NOT APPEND
+                return                                                                              # RETURN
+            # elif parent[self.parent_key_name]['objectid'] == self['objectid']:                      # IF IT IS ALREADY THE CHILD, RETURN
+            #     return
+
+        if self.parent_key_plural:
+            parent[self.parent_key_name] = [self]   # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        else:
+            parent[self.parent_key_name] = self     # NO HARM IN RE-ASSIGNING IF IT'S ALREADY THE CHILD?
 
     def clean_data(self, data):
         # OBJECT KEY GENERATOR IF MISSING
@@ -742,6 +768,10 @@ class NodeBase(dict):
         return "%d-%s" % (self.protocol.pk, self['objectid'])
 
     @property
+    def id(self):
+        return self['objectid']
+
+    @property
     def slug(self):
         #if not self['slug']:
         #    self['slug'] = slugify(self['name'])
@@ -755,7 +785,6 @@ class NodeBase(dict):
     def node_type(self):
         return self.__class__.__name__
 
-
     def update_data(self, data={}, **kwargs):
         if data:
             for key in data:
@@ -766,7 +795,6 @@ class NodeBase(dict):
 
     def __unicode__(self):
         return self['slug']
-
 
     @property
     def title(self):
@@ -790,7 +818,10 @@ class NodeBase(dict):
     # def update_duration(self):
     #         pass
     
+
 class Component(NodeBase):
+
+    parent_key_name = "components"
 
     def __init__(self, protocol, parent=None, data=None, **kwargs):
         #self.parent = parent
@@ -799,14 +830,15 @@ class Component(NodeBase):
         if 'name' in self and not['name'] and 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
 
-        if 'components' in parent:
-            if parent['components']:
-                if self['objectid'] not in [x['objectid'] for x in parent['components']]:
-                    parent['components'].append(self)
+        if self.parent_key_name in parent:
+            if parent[self.parent_key_name]:
+                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
+                    parent[self.parent_key_name].append(self)
                 return
 
-        parent['components'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
 
+        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
@@ -835,13 +867,16 @@ class Component(NodeBase):
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
         
-        tmp = settify(self, shorthand = True, summary = True)
-        tmp['name'] = self['name']      
+        result = settify(self, shorthand = True, summary = True)
+        result['name'] = self['name']      
 
-        return tmp
+        return result
 
 
 class Machine(NodeBase):
+
+    parent_key_name = "machine"
+    parent_key_plural = False
 
     default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
 
@@ -858,7 +893,7 @@ class Machine(NodeBase):
         #     parent['machine'] = self
         
         parent['machine'] = self # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
-
+        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
 
         super(Machine, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
         
@@ -871,7 +906,6 @@ class Machine(NodeBase):
 
     def get_delete_url(self):
         return reverse('machine_delete', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
-
 
     # @property
     # def title(self):
@@ -890,28 +924,28 @@ class Machine(NodeBase):
         ''' takes self.label as a list and turns it into a dict:
             u'25 degrees Celsius', u'2 minutes' -> 
             {temp: '25C', time: '2 min'}'''
-        tmp = settify(self, shorthand = True, summary = True)
-        tmp['name'] = self['name']  
+        result = settify(self, shorthand = True, summary = True)
+        result['name'] = self['name']  
+        return result   
 
-
-
-        return tmp   
 
 class Thermocycle(NodeBase):
+
+    parent_key_name = "thermocycle"
         
     def __init__(self, protocol, parent=None, data=None, **kwargs):
         #self.parent = parent
         super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        # REGISTER SELF WITH PARENT?
-
-        if 'thermocycle' in parent:
-            if parent['thermocycle']:
-                if self['objectid'] not in [x['objectid'] for x in parent['thermocycle']]:
-                    parent['thermocycle'].append(self)
+        if self.parent_key_name in parent:
+            if parent[self.parent_key_name]:
+                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
+                    parent[self.parent_key_name].append(self)
                 return
         
-        parent['thermocycle'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+
+        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
 
         # if 'reagent_name' in self:
         #     self['name'] = self.pop("reagent_name")
@@ -943,7 +977,6 @@ class Thermocycle(NodeBase):
 
     @property
     def summary(self):
-        
         tmp = settify(self, shorthand = True, summary = True)
         tmp['name'] = self['name']          
         return tmp    
@@ -951,11 +984,16 @@ class Thermocycle(NodeBase):
 
 class Action(NodeBase):
 
+    parent_key_name = "actions"
+
     # def __init__(self, protocol, parent=None, data=None, **kwargs):
     #     #self.step = step
     #     self.parent = parent
     #     super(Action, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
     
+    #     REGISTER SELF WITH PARENT?
+    #     self.register_with_parent()
+
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
@@ -977,14 +1015,9 @@ class Action(NodeBase):
         if self['name'] == self['objectid']:        # CORRECT THIS DATA
             self['name'] = self['verb']
 
-        if not self['objectid'] in self.protocol.nodes:
-            print "NOT THERE"
-
-        # if 'actions' in self.parent:
-        #     self.parent['actions'].append(self)
-        # else:
-        #     self.parent['actions'] = [self]
-
+        # NEEDS APPEND TO THE PARENT LIKE STEP DOES
+        # if self.parent and not self['objectid'] in self.protocol.nodes:           # THIS WORKS BUT COMMENTED OUT FOR TESTING AGAINST EXISTING CODE
+        #     self.parent.add_child_node(self)                                          # SOMETHING SIMILAR SHOULD WORK FOR OTHER NODES, CAN MAKE MORE GENERIC
 
     def get_absolute_url(self):
         return reverse("action_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.slug, 'action_slug':self.slug })
@@ -1045,9 +1078,7 @@ class Action(NodeBase):
     @property
     def summary(self):
         ''' returns a summary for manual objects'''
-
         return labeler(self)
-
 
     @property
     def children(self):
@@ -1066,7 +1097,6 @@ class Action(NodeBase):
 
         if 'thermocycle' in self:
             return self['thermocycle']   
-
         else:
             return None
 
@@ -1181,6 +1211,8 @@ class Action(NodeBase):
 
 class Step(NodeBase):
 
+    parent_key_name = "steps"
+
     # def __init__(self, protocol, parent=None, data=None, **kwargs):
     #     super(Step, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
@@ -1221,6 +1253,9 @@ class Step(NodeBase):
     # @property
     # def title(self):
     #     return "%s - %s" % (self.protocol.name, self['name'])
+
+    def add_child_node(self, action):
+        self['actions'].append(action)
 
     def delete_child_node(self, node_id):
         """
