@@ -218,7 +218,7 @@ class Protocol(TimeStampedModel):
         uid_list = []
         uid = ''.join(random.choice(chars) for x in range(size))
 
-        for step in self.steps:
+        for step in self.data['steps']:
             if hasattr(step, 'objectid'):
                 if step['objectid']:
                     uid_list.append(step.objectid)
@@ -233,6 +233,7 @@ class Protocol(TimeStampedModel):
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])
 
+        print "\nUID: %s" % uid
 
         if uid not in uid_list:
             return uid
@@ -1221,6 +1222,9 @@ class Step(NodeBase):
     # @property
     # def title(self):
     #     return "%s - %s" % (self.protocol.name, self['name'])
+
+    def add_action(self, action):
+        self['actions'].append(action)
 
     def delete_child_node(self, node_id):
         """

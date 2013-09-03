@@ -142,25 +142,21 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_log_adding_multiple_nodes_to_protocol(self):
         self.protocol.published = True
-        step = Step(self.protocol)
-        self.protocol.add_node(step)
+        step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
 
-        action = Action(step, verb="add")
-        step.add_node(action)
+        action = Action(self.protocol, parent=step, verb="add")     # ACTION NOT BEING ADDED CORRECTLY HERE
+        self.protocol.data['steps'][0].add_action(action)
         self.protocol.save()
-        # print "\nSTEP ADDED:"
-        # pp.pprint( step )
 
-        # print "\nPROTOCOL STEP DATA:"
-        # pp.pprint( self.protocol.data )
+        print "\nACTION ADDED:"
+        pp.pprint( action )
 
         history = self.protocol.history_set.all()
         for h in history:
             print "\nHISTORY EVENT: %d" % h.pk
             pp.pprint( h.data )
 
-        # print history[0].data['create'][0]['attrs']
         self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
