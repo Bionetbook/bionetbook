@@ -23,7 +23,7 @@ pp = pprint.PrettyPrinter(indent=4)
 from django.test import TestCase
 from core.tests import AutoBaseTest
 
-from protocols.models import Protocol, Action, Step, Component
+from protocols.models import Protocol, Action, Step, Component, Machine, Thermocycle
 from organization.models import Organization, Membership
 from history.models import History
 
@@ -176,6 +176,34 @@ class HistoryModelTests(AutoBaseTest):
         action['name'] = "Action Jackson"                           # TEST A RENAMING EVENT
         self.protocol.save()
 
+        # history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
+
+        self.assertEquals(len(history[2].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[1].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[0].data['update'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[0].data['update'][0]['attrs']['name'], "Action Jackson")   # ACTION SHOULD SHOW UP AS A CREATION
+
+
+    def test_log_adding_multiple_nodes_to_protocol_with_edit(self):
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save()
+        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action = Action(self.protocol, parent=step, verb="add")     # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT
+        step.add_child_node(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save()
+
+        comp1 = Component(self.protocol, parent=action)
+        comp2 = Component(self.protocol, parent=action)
+        self.protocol.save()
+
         history = self.protocol.history_set.all()
         for h in history:
             print "\nHISTORY EVENT: %d" % h.pk
@@ -185,7 +213,8 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
         # ADD TESTS FOR ACTION ADD LOG
-        self.assertEquals(history[1].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
-        self.assertEquals(history[0].data['update'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
-        self.assertEquals(history[0].data['update'][0]['attrs']['name'], "Action Jackson")   # ACTION SHOULD SHOW UP AS A CREATION
+        # self.assertEquals(history[1].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        # self.assertEquals(history[0].data['update'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        # self.assertEquals(history[0].data['update'][0]['attrs']['name'], "Action Jackson")   # ACTION SHOULD SHOW UP AS A CREATION
+
 

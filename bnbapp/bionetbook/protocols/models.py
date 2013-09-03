@@ -710,8 +710,8 @@ class NodeBase(dict):
     def __init__(self, protocol, parent=None, data={}, **kwargs):
         super(NodeBase, self).__init__(**kwargs)
         
-        if not self.key_name:
-            self.key_name = self.__class__.__name__.lower()
+        if not self.parent_key_name:
+            self.parent_key_name = self.__class__.__name__.lower()
 
         self.protocol = protocol
         if parent:
@@ -826,13 +826,13 @@ class Component(NodeBase):
         if 'name' in self and not['name'] and 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
 
-        if self. in parent:
-            if parent['components']:
-                if self['objectid'] not in [x['objectid'] for x in parent['components']]:
-                    parent['components'].append(self)
+        if self.parent_key_name in parent:
+            if parent[self.parent_key_name]:
+                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
+                    parent[self.parent_key_name].append(self)
                 return
 
-        parent['components'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
 
         # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
         
@@ -933,13 +933,13 @@ class Thermocycle(NodeBase):
         #self.parent = parent
         super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        if 'thermocycle' in parent:
-            if parent['thermocycle']:
-                if self['objectid'] not in [x['objectid'] for x in parent['thermocycle']]:
-                    parent['thermocycle'].append(self)
+        if self.parent_key_name in parent:
+            if parent[self.parent_key_name]:
+                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
+                    parent[self.parent_key_name].append(self)
                 return
         
-        parent['thermocycle'] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
 
         # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
 
