@@ -768,6 +768,10 @@ class NodeBase(dict):
         return "%d-%s" % (self.protocol.pk, self['objectid'])
 
     @property
+    def id(self):
+        return self['objectid']
+
+    @property
     def slug(self):
         #if not self['slug']:
         #    self['slug'] = slugify(self['name'])

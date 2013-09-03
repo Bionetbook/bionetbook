@@ -417,17 +417,16 @@ class ProtocolChangeLog(object):
 
                 for edit_type in ['create', 'update', 'delete']:
                     if changes[edit_type]:
-                        self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.pk )
+                        self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.id )
 
                 new_ids.remove(key)
             else:
-                # print "\nNODE DELETED: %s" % key
                 node = self.old_record.nodes[key]
-                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
+                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
 
         for key in new_ids:     # NEW NODES
             node = self.new_record.nodes[key]
-            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.pk )
+            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
 
     def clean_node_data(self, node):
         '''
@@ -442,9 +441,7 @@ class ProtocolChangeLog(object):
         return result
 
     def node_changes(self, old_node, new_node):
-
         result = { 'create':{}, 'update':{}, 'delete':{} }
-
         differ = DataDiffer(old_node, new_node)
 
         for key in differ.changed():
