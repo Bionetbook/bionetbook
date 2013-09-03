@@ -445,19 +445,16 @@ class ProtocolChangeLog(object):
 
         result = { 'create':{}, 'update':{}, 'delete':{} }
 
-        old_keys = old_node.keys()
-        new_keys = new_node.keys()
+        differ = DataDiffer(old_node, new_node)
 
-        for key in old_keys:
-            if key in new_keys:
-                if new_node[key] != old_node[key]:
-                    result['update'][key] = new_node[key]
-                new_keys.remove(key)
-            else:
-                result['delete'][key] = old_node[key]
+        for key in differ.changed():
+            result['update'][key] = new_node[key]
 
-        for keys in new_keys:
+        for key in differ.added():
             result['create'][key] = new_node[key]
+
+        for key in differ.removed():
+            result['delete'][key] = new_node[key]
 
         return result
 
