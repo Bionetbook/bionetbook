@@ -138,24 +138,23 @@ class HistoryModelTests(AutoBaseTest):
         # self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         # self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 
-
-
     def test_log_adding_multiple_nodes_to_protocol(self):
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
+        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
 
         action = Action(self.protocol, parent=step, verb="add")     # ACTION NOT BEING ADDED CORRECTLY HERE
-        self.protocol.data['steps'][0].add_action(action)
+        step.add_action(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
         self.protocol.save()
 
-        print "\nACTION ADDED:"
-        pp.pprint( action )
+        # print "\nACTION ADDED:"
+        # pp.pprint( action )
 
-        history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
         self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
@@ -164,4 +163,30 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
 
 
+    def test_log_adding_multiple_nodes_to_protocol_with_edit(self):
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save()
+        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action = Action(self.protocol, parent=step, verb="add")     # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT
+        step.add_action(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save()
+
+        # print "\nACTION ADDED:"
+        # pp.pprint( action )
+
+        action['name'] = "Action Jackson"                           # TEST A RENAMING EVENT
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+        self.assertEquals(len(history[2].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[1].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
 
