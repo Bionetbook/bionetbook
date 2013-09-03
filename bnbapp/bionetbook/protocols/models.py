@@ -737,11 +737,13 @@ class NodeBase(dict):
                 if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:   # CHECK IF THIS IS ALREADY A CHILD OF THE PARENT
                     parent[self.parent_key_name].append(self)                                       # IF NOT APPEND
                 return                                                                              # RETURN
+            # elif parent[self.parent_key_name]['objectid'] == self['objectid']:                      # IF IT IS ALREADY THE CHILD, RETURN
+            #     return
 
         if self.parent_key_plural:
-            parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+            parent[self.parent_key_name] = [self]   # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
         else:
-            parent[self.parent_key_name] = self
+            parent[self.parent_key_name] = self     # NO HARM IN RE-ASSIGNING IF IT'S ALREADY THE CHILD?
 
     def clean_data(self, data):
         # OBJECT KEY GENERATOR IF MISSING
