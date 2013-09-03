@@ -173,7 +173,7 @@ class HistoryModelTests(AutoBaseTest):
         # print "\nACTION ADDED:"
         # pp.pprint( action )
 
-        action['name'] = "Action Jackson"                           # TEST A RENAMING EVENT
+        action['name'] = "Action Jackson"                                   # TEST A RENAMING EVENT
         self.protocol.save()
 
         # history = self.protocol.history_set.all()
@@ -181,7 +181,7 @@ class HistoryModelTests(AutoBaseTest):
         #     print "\nHISTORY EVENT: %d" % h.pk
         #     pp.pprint( h.data )
 
-        self.assertEquals(len(history[2].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(len(history[2].data['update']), 1)                # LOG THE PUBLISH CHANGE
         self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
         # ADD TESTS FOR ACTION ADD LOG
@@ -194,10 +194,10 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
-        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
 
-        action1 = Action(self.protocol, parent=step, verb="add")     # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
-        step.add_child_node(action1)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        action1 = Action(self.protocol, parent=step, verb="add")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
         self.protocol.save()
 
         comp1 = Component(self.protocol, parent=action1)
@@ -209,13 +209,11 @@ class HistoryModelTests(AutoBaseTest):
             print "\nHISTORY EVENT: %d" % h.pk
             pp.pprint( h.data )
 
-        self.assertEquals(len(history[2].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(len(history[2].data['update']), 1)                # LOG THE PUBLISH CHANGE
         self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
         # ADD TESTS FOR ACTION ADD LOG
         self.assertEquals(history[0].data['create'][0]['type'], 'component')
         self.assertEquals(history[0].data['create'][1]['type'], 'component')
-        # self.assertEquals(history[0].data['update'][0]['type'], 'action')
-        # self.assertEquals(history[0].data['update'][1]['type'], 'step')
 
 
