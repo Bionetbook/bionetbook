@@ -168,60 +168,60 @@ class HistoryModelTests(AutoBaseTest):
 
 
 
-    # def test_log_adding_multiple_nodes_to_protocol(self):
-    #     self.protocol.published = True
-    #     step = Step(self.protocol)
-    #     self.protocol.add_node(step)
-    #     self.protocol.save()
+    def test_log_adding_multiple_nodes_to_protocol(self):
+        self.protocol.published = True
+        step = Step(self.protocol)
+        self.protocol.add_node(step)
+        self.protocol.save()
 
-    #     action = Action(step, verb="add")
-    #     step.add_node(action)
-    #     self.protocol.save()
-    #     print "\nSTEP ADDED:"
-    #     pp.pprint( step )
+        action = Action(step, verb="add")
+        step.add_node(action)
+        self.protocol.save()
+        print "\nSTEP ADDED:"
+        pp.pprint( step )
 
-    #     print "\nPROTOCOL STEP DATA:"
-    #     pp.pprint( self.protocol.data )
+        print "\nPROTOCOL STEP DATA:"
+        pp.pprint( self.protocol.data )
 
-    #     history = self.protocol.history_set.all()
-    #     for h in history:
-    #         print "\nHISTORY EVENT: %d" % h.pk
-    #         pp.pprint( h.data )
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
 
-    #     # print history[0].data['create'][0]['attrs']
-    #     self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-    #     self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+        # print history[0].data['create'][0]['attrs']
+        self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
-    #     # ADD TESTS FOR ACTION ADD LOG
-    #     self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
 
-    # def test_log_removing_step_from_protocol(self):
-    #     self.protocol.published = True
-    #     step = Step(self.protocol)
-    #     self.protocol.add_node(step)
-    #     self.protocol.save()    # <- Not Currently being logged
+    def test_log_removing_step_from_protocol(self):
+        self.protocol.published = True
+        step = Step(self.protocol)
+        self.protocol.add_node(step)
+        self.protocol.save()    # <- Not Currently being logged
 
-    #     history = self.protocol.history_set.all()
+        history = self.protocol.history_set.all()
         
-    #     self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-    #     self.assertEquals(history[0].data['create'][0]['type'], 'step')
+        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['create'][0]['type'], 'step')
 
-    #     self.protocol.delete_node(step)
-    #     self.protocol.save()
-    #     self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
-    #     self.assertEquals(history[0].data['delete'][0]['type'], 'step')
-    #     # print "\nSTEP ADDED:"
-    #     # pp.pprint( step )
+        self.protocol.delete_node(step)
+        self.protocol.save()
 
-    #     # print "\nPROTOCOL STEP DATA:"
-    #     # pp.pprint( self.protocol.data )
+        # print "\nSTEP ADDED:"
+        # pp.pprint( step )
 
-    #     history = self.protocol.history_set.all()
-    #     # for h in history:
-    #     #     print "\nHISTORY EVENT: %d" % h.pk
-    #     #     pp.pprint( h.data )
+        # print "\nPROTOCOL STEP DATA:"
+        # pp.pprint( self.protocol.data )
+        self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['delete'][0]['type'], 'step')
+        
 
-    #     # print history[0].data['create'][0]['attrs']
-    #     self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-    #     self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION    
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
 
+        # print history[0].data['create'][0]['attrs']
+        
