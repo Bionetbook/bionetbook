@@ -93,8 +93,13 @@ class Calendar(TimeStampedModel):
         for e in userExperimentList:                    # loop through each experiment for user
             protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
             for p in protocolList:      # loop through each experiments protocols
-                stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
-                for element in stepActionList:
+                #stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
+                actionList = []
+                for step in p.data['steps']:
+                    for action in step['actions']:
+                        actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
+
+                for element in actionList:
                     eventObject = {}
                     eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk, element[0], element[1])
                     eventObject['start'] = '0'
@@ -107,16 +112,28 @@ class Calendar(TimeStampedModel):
                     ret['events'].append(eventObject)
         return ret
 
-    def updateCalendar(self,updatedEvents):
-        for event in self.data['events']:
-            for updated in updatedEvents['events']:
-                if event['id'] in updated.values():
-                    event['start'] = updated['started']
-                    event['notes'] = updated['notes']
-                    updatedEvents['events'].remove(updated)
-                    continue
+    def addExperiment(self, newExperiment):
+        events = self.data['events']             
+        protocolList = [Protocol.objects.get(pk=p) for p in newExperiment.workflow.data['protocols']]
+        for p in protocolList:      # loop through each experiments protocols
+            actionList = []
+            for step in p.data['steps']:
+                for action in step['actions']:
+                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
-        print "updated"
+            for element in actionList:
+                eventObject = {}
+                eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (newExperiment.pk,p.pk, element[0], element[1])
+                eventObject['start'] = '0'
+                eventObject['duration'] = element[3].split('-')[1]
+                eventObject['verb'] = element[2]
+                eventObject['title'] = element[4]
+                eventObject['protocol'] = p.title
+                eventObject['experiment'] = newExperiment.name
+                eventObject['notes'] = ""
+                events.append(eventObject)
+        self.data['events'] = events
+        self.save()        
 
     # def expToCalendar(self):  # defaulted to take only 1 experiment
     #     scheduledExperiment = Experiment.objects.get(pk=1)
