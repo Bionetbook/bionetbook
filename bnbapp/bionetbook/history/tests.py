@@ -19,6 +19,7 @@ Replace this with more appropriate tests for your application.
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+import sys
 
 from django.test import TestCase
 from core.tests import AutoBaseTest
@@ -47,13 +48,21 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?", author=self.user)
 
     def test_history_logging_for_protocol(self):
+        
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
         history = self.protocol.history_set.all()
 
         self.assertEquals(len(history), 1)
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
-
+        
+    
     def test_catch_change_in_protocol_values(self):
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
         self.protocol.name = "New Test Protocol"
         self.protocol.save()
 
@@ -62,8 +71,14 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history), 2)
         self.assertEquals(history[0].data['update'][0]['id'], 1)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Test Protocol")
+        
 
     def test_catch_change_in_published_protocol_values(self):
+
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
+
         self.protocol.name = "New Published Protocol"
         self.protocol.published = True
         self.protocol.save()
@@ -80,6 +95,11 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['update'][0]['attrs']['published'], True)
 
     def test_change_two_attrs_in_published_protocol_values(self):
+        
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
+
         self.protocol.name = "First Name Protocol"
         self.protocol.save()
 
@@ -97,6 +117,11 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
 
     def test_log_adding_step_to_protocol(self):
+        
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
+
         self.protocol.published = True
         step = Step(self.protocol)
         self.protocol.add_node(step)
@@ -118,6 +143,9 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 
     def test_log_adding_two_protocols(self):
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
         self.protocol.published = True
         protocol_two = self.createModelInstance(Protocol, name="Second Protocol", owner=self.org, raw="", author=self.user)
 
@@ -127,9 +155,9 @@ class HistoryModelTests(AutoBaseTest):
         history = History.objects.all()
         history_one = self.protocol.history_set.all()
 
-        # for h in history:
-        #     print "\nHISTORY EVENT: %d" % h.pk
-        #     pp.pprint( h.data )
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
 
         self.assertEquals(len(history_one), 2)
         self.assertEquals(len(history), 3)
@@ -140,32 +168,60 @@ class HistoryModelTests(AutoBaseTest):
 
 
 
-    def test_log_adding_multiple_nodes_to_protocol(self):
-        self.protocol.published = True
-        step = Step(self.protocol)
-        self.protocol.add_node(step)
-        self.protocol.save()
+    # def test_log_adding_multiple_nodes_to_protocol(self):
+    #     self.protocol.published = True
+    #     step = Step(self.protocol)
+    #     self.protocol.add_node(step)
+    #     self.protocol.save()
 
-        action = Action(step, verb="add")
-        step.add_node(action)
-        self.protocol.save()
-        # print "\nSTEP ADDED:"
-        # pp.pprint( step )
+    #     action = Action(step, verb="add")
+    #     step.add_node(action)
+    #     self.protocol.save()
+    #     print "\nSTEP ADDED:"
+    #     pp.pprint( step )
 
-        # print "\nPROTOCOL STEP DATA:"
-        # pp.pprint( self.protocol.data )
+    #     print "\nPROTOCOL STEP DATA:"
+    #     pp.pprint( self.protocol.data )
 
-        history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+    #     history = self.protocol.history_set.all()
+    #     for h in history:
+    #         print "\nHISTORY EVENT: %d" % h.pk
+    #         pp.pprint( h.data )
 
-        # print history[0].data['create'][0]['attrs']
-        self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+    #     # print history[0].data['create'][0]['attrs']
+    #     self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+    #     self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
-        # ADD TESTS FOR ACTION ADD LOG
-        self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+    #     # ADD TESTS FOR ACTION ADD LOG
+    #     self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
 
+    # def test_log_removing_step_from_protocol(self):
+    #     self.protocol.published = True
+    #     step = Step(self.protocol)
+    #     self.protocol.add_node(step)
+    #     self.protocol.save()    # <- Not Currently being logged
 
+    #     history = self.protocol.history_set.all()
+        
+    #     self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+    #     self.assertEquals(history[0].data['create'][0]['type'], 'step')
+
+    #     self.protocol.delete_node(step)
+    #     self.protocol.save()
+    #     self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
+    #     self.assertEquals(history[0].data['delete'][0]['type'], 'step')
+    #     # print "\nSTEP ADDED:"
+    #     # pp.pprint( step )
+
+    #     # print "\nPROTOCOL STEP DATA:"
+    #     # pp.pprint( self.protocol.data )
+
+    #     history = self.protocol.history_set.all()
+    #     # for h in history:
+    #     #     print "\nHISTORY EVENT: %d" % h.pk
+    #     #     pp.pprint( h.data )
+
+    #     # print history[0].data['create'][0]['attrs']
+    #     self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+    #     self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION    
 
