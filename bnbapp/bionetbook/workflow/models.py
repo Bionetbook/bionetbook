@@ -24,7 +24,7 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     	}
     '''
     user = models.ForeignKey(User)
-    name = models.CharField(_("Calendar Name"), max_length=255)
+    name = models.CharField(_("Workflow Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
