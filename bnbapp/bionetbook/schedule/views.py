@@ -41,14 +41,14 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 #       return context
 
 class ScheduleAPI(LoginRequiredMixin, TemplateView):
-    template_name = "schedule/schedule_list.html"
+    template_name = "schedule/single_calendar.html"
     slug_url_kwarg = "owner_slug"
     def get_context_data(self, **kwargs):
         context = super(ScheduleAPI,self).get_context_data(**kwargs)
 
-        calendars = self.request.user.calendar_set.all()
+        calendars = self.request.user.calendar_set.get(pk=self.kwargs['pk'])
         if calendars:
-            context['calendar'] = calendars[0]
+            context['calendar'] = calendars
         else:
             context['calendar'] = None
 
@@ -64,6 +64,21 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
             context['experiment'] = experiements[0]
         else:
             context['experiment'] = None
+
+        return context
+
+
+class CalendarListView(LoginRequiredMixin, ListView):
+    model = Calendar
+    template_name = "schedule/schedule_list.html"
+    slug_url_kwarg = "owner_slug"
+    def get_context_data(self, **kwargs):
+        context = super(CalendarListView, self).get_context_data(**kwargs)
+        calendarList = self.request.user.calendar_set.all()
+        if calendarList:
+            context['calendars'] = calendarList
+        else:
+            context['calendars'] = None
 
         return context
 

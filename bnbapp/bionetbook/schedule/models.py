@@ -25,7 +25,9 @@ class Calendar(TimeStampedModel):
     '''
     An Schedule is derived from an Experiment
 
-    data: { 'meta': {},
+    data: { 'meta': { 1: "sample description",
+                      2: "sample"
+                    },
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
                             'duration':300,
@@ -110,6 +112,8 @@ class Calendar(TimeStampedModel):
                     eventObject['experiment'] = e.name
                     eventObject['notes'] = ""
                     ret['events'].append(eventObject)
+                if p.pk not in ret['meta']:
+                    ret['meta'][p.pk] = p.description
         return ret
 
     def addExperiment(self, newExperiment):
