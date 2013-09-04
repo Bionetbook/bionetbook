@@ -22,19 +22,13 @@
           </div>
         </div>
         <br>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Protocol for...</h3></li>
-            {% for org in request.user.organization_set.all %}
-            <li><a href="{% url protocol_create owner_slug=org.slug %}">{{ org.name }}</a><li>
-            {% endfor %}
-        </ul>
     </div>
 
     <div class="span8">
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Organizations</h3></li>
         {% for organization in request.user.organization_set.all %}
-            <li><a href="{{ organization.get_absolute_url }}"><i class="icon-play-circle"></i> {{ organization.name }}</a></li>
+            <li><a href="{% url organization_main organization.slug %}"><i class="icon-play-circle"></i> {{ organization.name }}</a></li>
         {% endfor %}
             <li><a href="{{ organization.get_absolute_url }}"><i class="icon-play-circle"></i> {{ 'Create Organization' }}</a></li>
         </ul>

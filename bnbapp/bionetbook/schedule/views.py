@@ -42,7 +42,7 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 
 class ScheduleAPI(LoginRequiredMixin, TemplateView):
     template_name = "schedule/single_calendar.html"
-    slug_url_kwarg = "owner_slug"
+    slug_url_kwarg = "calendar_slug"
     def get_context_data(self, **kwargs):
         context = super(ScheduleAPI,self).get_context_data(**kwargs)
 
