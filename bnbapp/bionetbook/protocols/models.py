@@ -500,7 +500,8 @@ class Protocol(TimeStampedModel):
                     action['duration'] = ""
 
                 if action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
-                    if 'duration' in action and action['duration'] and 'min_time' not in action['verb']:
+                    print action['verb']
+                    if 'duration' in action and 'min_time' in action['verb']:
                         time = action['duration'].split('-')
                         if time and time[0]:
                             action_min_time = float(time[0])
