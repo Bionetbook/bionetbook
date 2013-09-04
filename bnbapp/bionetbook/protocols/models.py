@@ -137,15 +137,6 @@ class Protocol(TimeStampedModel):
         diff = ProtocolChangeLog(old_state, new_state)
 
         # LOG THIS HISTORY OBJECT HERE
-        # print "create log in db"
-        # history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        # history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        # history.update_from_diff(diff)
-        # print 'saving history'
-        # history.save()
-
-        print "\nTRYING TO ADD HISTORY"
-
         if diff.hdf:
             History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data=diff.hdf)
 
