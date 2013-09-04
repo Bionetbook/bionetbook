@@ -409,7 +409,7 @@ class ProtocolChangeLog(object):
 
         for key in old_ids:     # UPDATED AN DELETED NODES
             if key in new_ids:  # CHECK FOR NODE EDIT
-                print "\nNODE EDIT: %s" % key
+                # print "\nNODE EDIT: %s" % key
                 new_node = self.new_record.nodes[key]
                 node_type = new_node.__class__.__name__.lower()
 
