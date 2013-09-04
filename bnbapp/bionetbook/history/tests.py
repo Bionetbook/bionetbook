@@ -49,9 +49,6 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_history_logging_for_protocol(self):
         
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
         history = self.protocol.history_set.all()
 
         self.assertEquals(len(history), 1)
@@ -60,9 +57,7 @@ class HistoryModelTests(AutoBaseTest):
         
     
     def test_catch_change_in_protocol_values(self):
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
+        
         self.protocol.name = "New Test Protocol"
         self.protocol.save()
 
@@ -74,10 +69,6 @@ class HistoryModelTests(AutoBaseTest):
         
 
     def test_catch_change_in_published_protocol_values(self):
-
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
 
         self.protocol.name = "New Published Protocol"
         self.protocol.published = True
@@ -95,10 +86,6 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['update'][0]['attrs']['published'], True)
 
     def test_change_two_attrs_in_published_protocol_values(self):
-        
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
 
         self.protocol.name = "First Name Protocol"
         self.protocol.save()
@@ -118,10 +105,6 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_log_adding_step_to_protocol(self):
         
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
         self.protocol.published = True
         step = Step(self.protocol)
         self.protocol.add_node(step)
@@ -143,9 +126,7 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 
     def test_log_adding_two_protocols(self):
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
+        
         self.protocol.published = True
         protocol_two = self.createModelInstance(Protocol, name="Second Protocol", owner=self.org, raw="", author=self.user)
 
@@ -169,10 +150,7 @@ class HistoryModelTests(AutoBaseTest):
 
 
     def test_log_adding_multiple_nodes_to_protocol(self):
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
+        
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
@@ -195,10 +173,6 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_log_adding_multiple_component_nodes_to_protocol(self):
         
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
@@ -229,11 +203,6 @@ class HistoryModelTests(AutoBaseTest):
 
 
     def test_log_adding_and_removing_step_from_protocol(self):
-
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
         self.protocol.published = True
         step = Step(self.protocol)
         # print "ADDED STEP ID: %s" %step['objectid']
@@ -263,11 +232,6 @@ class HistoryModelTests(AutoBaseTest):
         #     pp.pprint( h.data )
 
     def test_log_adding_and_removing_action_from_step(self):
-
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
@@ -302,11 +266,6 @@ class HistoryModelTests(AutoBaseTest):
 
 
     def test_log_adding_two_actions_and_removing_one_action_from_step(self):
-
-        print "=========================================================================================="
-        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
-        print "__________________________________________________________________________________________"
-
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
         self.protocol.save()
