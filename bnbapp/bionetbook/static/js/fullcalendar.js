@@ -3986,48 +3986,8 @@ function AgendaEventRenderer() {
 		//  Custom Edit Area 				   //
 		//  Added data to  DOM nodes		   //
 		/////////////////////////////////////////
-		var isLocked = (event.locked == "true" || event.locked == true) ? "locked" : "unlocked";
-		html +=
-			
-			" class='" + classes.join(' ') + " " + weekDays[new Date(event._start).getDay()] + "'" +
-			// Data attributes
-			//------------------------------------------------//
-			// Use to group steps together after they've been added
-			" data-step-number='" + event.stepNumber + "'" +
-			" data-event-id='" + event.eventId + "'" +
-			" data-event-start='" + event._start + "'" +
-			" data-event-end='" + event._end + "'" +
-			" data-active='" + event.active + "'" +
-			" data-notes='" + event.notes + "'" +
-			" data-bg-color='" + event.backgroundColor + "'" +
-			" data-instance-id='" + event.instanceId + "'" +
-			" data-fc-id='" + event._id + "'" +
-			" data-locked='" + event.locked + "'" +
-
-			" style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px;" + skinCss + "'" +
-			">" +
-
-			// Lock + Notes Icons
-			"<span class='"+ isLocked +"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
-				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
-				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
-			"<img class='edit-notes' src='/static/img/gear.png' onclick='BNB.calendar.Notes.editNotes(this)'>" +
-
-			"<div class='fc-event-inner'>" +
-			"<div class='fc-event-time'>" +
-			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
-			"</div>" +
-			"<div class='fc-event-title'>" +
-			htmlEscape(event.verb || event.title) +
-			"</div>" +
-			"</div>" +
-			"<div class='fc-event-bg'></div>";
-		if (seg.isEnd && isEventResizable(event)) {
-			// html +=
-			// 	"<div class='ui-resizable-handle ui-resizable-s'>=</div>";
-		}
-		html +=
-			"</" + (url ? "a" : "div") + ">";
+		html += BNB.calendar.makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt);
+		html += "</" + (url ? "a" : "div") + ">";
 		return html;
 	}
 	
@@ -4644,7 +4604,6 @@ function View(element, calendar, viewName) {
 
 			});
 
-			console.log(actionsToMove);
 			// Move the actions
 			for(var i = 0; i < actionsToMove.length; i++){
 				BNB.calendar.renderUpdatedEvents(actionsToMove[i], dayDelta, minuteDelta);
@@ -5258,7 +5217,6 @@ function DayEventRenderer() {
 		var isRTL = opt('isRTL');
 		var event = segment.event;
 		var url = event.url;
-		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 		// generate the list of CSS classNames
 		var classNames = [ 'fc-event', 'fc-event-hori' ];
@@ -5292,67 +5250,8 @@ function DayEventRenderer() {
 		//  Custom Edit Area 					//
 		//	Add event data to the DOM element   //
 		//////////////////////////////////////////
-		var title = event.verb || event.title;
-		var isLocked = (event.locked === "true" || event.locked === true) ? "locked" : "unlocked";
-
-		html +=
-			" class='" + classNames.join(' ') + " " + weekDays[new Date(event._start).getDay()] + "'" +
-
-			// Data attributes
-			//------------------------------------------------//
-			// Use to group steps together after they've been added
-			" data-step-number='" + event.stepNumber + "'" +
-			" data-event-id='" + event.eventId + "'" +
-			" data-event-start='" + event._start + "'" +
-			" data-event-end='" + event._end + "'" +
-			" data-active='" + event.active + "'" +
-			" data-notes='" + event.notes + "'" +
-			" data-bg-color='" + event.backgroundColor + "'" +
-			" data-instance-id='" + event.instanceId + "'" +
-			" data-fc-id='" + event._id + "'" +
-			" data-locked='" + event.locked + "'" +
-
-			" style=" +
-				"'" +
-				"position:absolute;" +
-				"z-index:8;" + // TODO: move this into a constant or put it in the stylesheet
-				"left:" + segment.left + "px;" +
-				skinCss +
-				"'" +
-			">" +
-
-			// Lock + Notes Icons
-			"<span class='"+isLocked+"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
-				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
-				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
-			"<img class='edit-notes' src='/static/img/gear.png' onclick='BNB.calendar.Notes.editNotes(this)'>" +
-
-
-			"<div class='fc-event-inner'>";
-		if (!event.allDay && segment.isStart) {
-			html +=
-				"<span class='fc-event-time'>" +
-				htmlEscape(
-					formatDates(event.start, event.end, opt('timeFormat'))
-				) +
-				"</span>";
-		}
-		html +=
-			"<span class='fc-event-title'>" + htmlEscape((event.verb || event.title)) + "</span>" +
-			"</div>";
-		if (segment.isEnd && isEventResizable(event)) {
-			html +=
-				"<div class='ui-resizable-handle ui-resizable-" + (isRTL ? 'w' : 'e') + "'>" +
-				"&nbsp;&nbsp;&nbsp;" + // makes hit area a lot better for IE6/7
-				"</div>";
-		}
+		html += BNB.calendar.makeHtmlFromJson(event, classNames, segment, skinCss, htmlEscape, formatDates, opt);
 		html += "</" + (url ? "a" : "div") + ">";
-
-		// TODO:
-		// When these elements are initially rendered, they will be briefly visibile on the screen,
-		// even though their widths/heights are not set.
-		// SOLUTION: initially set them as visibility:hidden ?
-
 		return html;
 	}
 

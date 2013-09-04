@@ -4,8 +4,10 @@
 //                                  //
 //////////////////////////////////////
 // Todo:
-// Construct Protocol object by using the .id field supplied with each event object
-
+// make sure all units of time match up
+// selectors need retooling - they need to use stepId/actionId
+// protocol actions need .active sent in the API
+// Make sure stepNumber checks it's position against only the step it's in
 
 $(document).ready(function() {
 	var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5cm87f28ljpog%40group.calendar.google.com/public/basic';
@@ -213,25 +215,25 @@ BNB.calendar = (function(){
 			timeTracker = date, // calc starting pos of actions on calendar
 			thisProtocol = getObjInObjWithKey(protocolList, 'id', that.getAttribute('data-id'));
 
-		// Create a random background color
-		// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
-		do{
-			instanceId = "xxx".replace(/[x]/g, function(c) {
-		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-		    	return v.toString(16);
-			});
-		} 
-		while(parseInt(instanceId[0], 16) < 5 || parseInt(instanceId[0], 16) > 12 ||
-			  parseInt(instanceId[1], 16) < 5 || parseInt(instanceId[1], 16) > 12 ||
-			  parseInt(instanceId[2], 16) < 5 || parseInt(instanceId[2], 16) > 12 )
-		var instanceBgColor = instanceId[0]+''+instanceId[1]+''+instanceId[2];
-
 		// Wtf I'm doing:
 		// Get stepId + actionID to reference getAttribute()
 
 		// Iterate through steps
 		for(var i = 0, len = thisProtocol.steps.length; i < len; i++){
 			var sId = thisProtocol.steps[i].id;
+
+			// Create a random background color per step
+			// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
+			do{
+				instanceId = "xxx".replace(/[x]/g, function(c) {
+			    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+			    	return v.toString(16);
+				});
+			} 
+			while(parseInt(instanceId[0], 16) < 5 || parseInt(instanceId[0], 16) > 12 ||
+				  parseInt(instanceId[1], 16) < 5 || parseInt(instanceId[1], 16) > 12 ||
+				  parseInt(instanceId[2], 16) < 5 || parseInt(instanceId[2], 16) > 12 )
+			var instanceBgColor = instanceId[0]+''+instanceId[1]+''+instanceId[2];
 
 			// Iterate through actions
 			for(var k = 0; k < thisProtocol.steps[i].actions.length; k++){
@@ -272,7 +274,6 @@ BNB.calendar = (function(){
 		evObj._start = evObj.start = new Date(evObj.start.getTime() + minDelta * 60000 + dayDelta * 86400000);
 		evObj._end = evObj.end = new Date(evObj.end.getTime() + minDelta * 60000 + dayDelta * 86400000);
 
-		console.log(evObj.verb + " edited")
 		// Update modified event
 		$('#calendar').fullCalendar( 'updateEvent', event );
 	}
@@ -436,13 +437,18 @@ BNB.calendar = (function(){
 
 	var protocolLock = (function(){
 		function toggleLock(ele){
-			var instanceId = ele.parentNode.getAttribute("data-instance-id");
+			// Remove last identifier '...-xxxx'
+			var instanceId = ele.parentNode.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
+				uId = ele.parentNode.getAttribute("data-event-id").split('-').pop();
 
 			// Change both the DOM and the actual event data to toggle and track locked status
 			if(ele.className == "locked"){
 
 				// Edit DOM - instant data value/not persistant
-				$("[data-instance-id="+instanceId+"]").each(function(){
+				$(".fc-event").each(function(){
+					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+					if(thisId != instanceId) return;
+
 					if(this.getElementsByClassName("locked")[0])
 						this.getElementsByClassName("locked")[0].className = "unlocked";
 					this.setAttribute("data-locked", 'false');
@@ -451,14 +457,17 @@ BNB.calendar = (function(){
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
 				for(ev in evList){
-					if(evList[ev].instanceId === instanceId)
+					if(evList[ev].eventId === instanceId + '-' + uId)
 						evList[ev].locked = false;
 				}
 
 			} else {
 
 				// Edit DOM - instant data value/not persistant
-				$("[data-instance-id="+ele.parentNode.getAttribute("data-instance-id")+"]").each(function(){
+				$(".fc-event").each(function(){
+					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+					if(thisId != instanceId) return;
+
 					if(this.getElementsByClassName("unlocked")[0])
 						this.getElementsByClassName("unlocked")[0].className = "locked";
 					this.setAttribute("data-locked",'true');
@@ -467,7 +476,7 @@ BNB.calendar = (function(){
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
 				for(ev in evList){
-					if(evList[ev].instanceId === instanceId)
+					if(evList[ev].eventId === instanceId + '-' + uId)
 						evList[ev].locked = true;
 				}
 			}
@@ -622,6 +631,7 @@ BNB.calendar = (function(){
 		body.appendChild(menu)
 	}
 
+	// TODO: Needs complete selector revamping
 	// Copy, Paste, Undo functionality for right click menu
 	var protocolStructure = (function (){
 		var copiedStructure = [],
@@ -798,6 +808,7 @@ BNB.calendar = (function(){
 		}
 	})();
 
+	// Return Json created from scraping DOM node's data
 	function makeJsonFromNode(node){
 		return {
 			verb : node.getElementsByClassName("fc-event-title")[0].innerHTML,
@@ -815,6 +826,66 @@ BNB.calendar = (function(){
 			length : (new Date(node.getAttribute("data-event-end")).getTime() - 
 					new Date(node.getAttribute("data-event-start")).getTime())/1000
 		};
+	}
+
+	// Return the HTML needed to display an event(action) on the calendar
+	// Args: eventObject, objects + functions from fullCalendar's scope
+	function makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt){
+		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+		var isLocked = (event.locked == "true" || event.locked == true) ? "locked" : "unlocked";
+
+		var html =
+
+			// Classes
+			" class='" + classes.join(' ') + " " + 
+				weekDays[new Date(event._start).getDay()] + "'" +
+
+			 // Data attributes
+			" data-step-number='" + event.stepNumber + "'" +
+			" data-event-id='" + event.eventId + "'" +
+			" data-event-start='" + event._start + "'" +
+			" data-event-end='" + event._end + "'" +
+			" data-active='" + event.active + "'" +
+			" data-notes='" + event.notes + "'" +
+			" data-bg-color='" + event.backgroundColor + "'" +
+			" data-instance-id='" + event.instanceId + "'" +
+			" data-fc-id='" + event._id + "'" +
+			" data-locked='" + event.locked + "'" +
+
+			// Css positioning
+			" style='position:absolute;z-index:8;top:" + seg.top + 
+			"px;left:" + seg.left + "px;border-color:"+ event.backgroundColor + ";" + skinCss + "'" +
+			">" +
+
+			// Lock + Notes Icon
+			"<span class='"+ isLocked +"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
+				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
+				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
+			"<span class='edit-notes' onclick='BNB.calendar.Notes.editNotes(this)'></span>"+
+
+			// Title + Date
+			"<div class='fc-event-inner'>" +
+			"<div class='fc-event-time'>" +
+			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
+			"</div>" +
+			"<div class='fc-event-title'>" +
+			htmlEscape(event.verb || event.title) +
+			"</div>";
+
+		// Add padding to start + end for passive events
+		if(event.active == "false" && classes.join(' ').indexOf('vert') != -1){
+			html +=
+				"<div class='passive-padding-start' style='background-color:" +
+					event.backgroundColor + "'></div>" +
+				"<div class='passive-padding-end' style='background-color:" +
+					event.backgroundColor + "'></div>";
+		}
+
+		html +=
+			"</div>" + // .fc-event-inner
+			"<div class='fc-event-bg'></div>";
+
+		return html;
 	}
 
 	// Find 1st object in an array by specifying a value it must have for a key
