@@ -1183,7 +1183,6 @@ Protocol = {
 
             actions: [{
                 id: tempUntilRecievedFromServer,
-                step: Protocol.steps[id],
                 name: userGivenName,
                 active: activeValue,
                 verb: verbName,

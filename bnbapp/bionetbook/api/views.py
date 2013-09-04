@@ -28,7 +28,9 @@ Up through version number should come from the main urls.py, everything after th
 Example (GET):
 http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
 http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
-http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
+
+(PUT)
+http://www.bionetbook.com/api/v1/calendar/2/bnb-o1-e1-p1-AXBAGS-FFGGAX/ - Returns details for the given event
 '''
 
 class JSONResponseMixin(object):
