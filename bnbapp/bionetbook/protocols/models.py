@@ -1199,8 +1199,10 @@ class Step(NodeBase):
 
     parent_key_name = "steps"
 
+    # NEED TO TEST BELOW AND REMOVE THE self.protocol.add_node FROM THE update_data METHOD
     # def __init__(self, protocol, parent=None, data=None, **kwargs):
     #     super(Step, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    #     self.register_with_parent()        
 
     def update_data(self, data={}, **kwargs):
         super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
@@ -1220,6 +1222,9 @@ class Step(NodeBase):
         self.protocol.add_node(self)
         # else:
         #     print "ALREADY THERE"
+
+    def register_with_parent(self):
+        self.protocol.add_node(self)
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
