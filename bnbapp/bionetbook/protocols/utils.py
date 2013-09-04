@@ -257,8 +257,8 @@ def get_timeunit(time_var, desired_unit = 'sec'):
                 time_var[1])
 
 def eval_time(node, value = 'min_time'):
-    ''' time_var = [value_str, 'units']
-    return (float(min_value), [,float(max_value)], 'units', 'original units')
+    ''' 
+    return a string in sec 'min_time - max_time'
     '''
 
     # action_min_time = 0
