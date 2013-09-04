@@ -138,11 +138,13 @@ class Protocol(TimeStampedModel):
 
         # LOG THIS HISTORY OBJECT HERE
         # print "create log in db"
-        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        # history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        history.update_from_diff(diff)
+        # history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        # history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", )
+        # history.update_from_diff(diff)
+        if diff.hdf: 
+            history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data = diff.hdf)
         # print 'saving history'
-        history.save()
+        # history.save()
 
 
     def user_has_access(self, user):
