@@ -5,6 +5,13 @@
 
 {% block page_title %}{{ request.user.first_name }}'s Dashboard{% endblock %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li class="active">{{ organization.name }}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="span4">
