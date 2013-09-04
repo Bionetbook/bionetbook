@@ -113,6 +113,7 @@ class Protocol(TimeStampedModel):
         self.update_duration()
         
         # DIFF DATA
+        # print 'determine old'
         if not self.pk and not self.parent_id: # protocol is new
             old_state = None            
         elif not self.pk and self.slug: # protocol is cloned
@@ -120,21 +121,27 @@ class Protocol(TimeStampedModel):
         else:     
             old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL
 
+        # print old_state    
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-        
+        # print 'triggered first save'
         new_slug = self.generate_slug()
 
         if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+            # print 'triggered second save'
         
+        # print 'determine new'
         new_state = self
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
 
         # LOG THIS HISTORY OBJECT HERE
-        history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        # print "create log in db"
+        history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
+        # history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
         history.update_from_diff(diff)
+        # print 'saving history'
         history.save()
 
 
