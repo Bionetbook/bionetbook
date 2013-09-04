@@ -258,11 +258,9 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
         self.assertEquals(history[0].data['delete'][0]['type'], 'step')
         
-
-        
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
     def test_log_adding_and_removing_action_from_step(self):
 
@@ -272,35 +270,78 @@ class HistoryModelTests(AutoBaseTest):
 
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
-        # print "ADDED STEP ID: %s" %step['objectid']
-        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
+        self.protocol.save()
+        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
 
-        action1 = Action(self.protocol, parent=step, verb="add")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
-        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
-        self.protocol.save()    # <- Not Currently being logged
-
-        history = self.protocol.history_set.all()
-        
-        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[0].data['create'][0]['type'], 'action')
-
-        self.protocol.delete_node(step['objectid'])
+        action = Action(self.protocol, parent=step, verb="add")     # ACTION NOT BEING ADDED CORRECTLY HERE
+        step.add_child_node(action)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
         self.protocol.save()
 
-        # print "\nSTEP ADDED:"
-        # pp.pprint( step )
-
-        # print "\nPROTOCOL STEP DATA:"
-        # pp.pprint( self.protocol.data )
         history = self.protocol.history_set.all()
-        
-        self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[0].data['delete'][0]['type'], 'step')
-        
 
-        
+        self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+
+
+        self.protocol.delete_node(action['objectid'])
+        self.protocol.save()
+
+    
         for h in history:
             print "\nHISTORY EVENT: %d" % h.pk
             pp.pprint( h.data )
 
+
+        history = self.protocol.history_set.all()
+        
+        self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['delete'][0]['type'], 'action')
+
+
+    def test_log_adding_two_actions_and_removing_one_action_from_step(self):
+
+        print "=========================================================================================="
+        print "\n running: %s" % sys._getframe().f_code.co_name.replace('_',' ') 
+        print "__________________________________________________________________________________________"
+
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save()
+        step = self.protocol.data['steps'][-1]                      # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action1 = Action(self.protocol, parent=step, verb="add")
+        action2 = Action(self.protocol, parent=step, verb="mix")     # ACTION NOT BEING ADDED CORRECTLY HERE
+        step.add_child_node(action1)
+        step.add_child_node(action2)                                     # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+
+        self.assertEquals(len(history[1].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[1].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[0].data['create'][1]['type'], 'action')
+
+        self.protocol.delete_node(action1['objectid'])
+        self.protocol.save()
+
+
+        history = self.protocol.history_set.all()
+        
+        self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['delete'][0]['type'], 'action')
+        
+
+        
+        
         
