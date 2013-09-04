@@ -70,7 +70,7 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
 
 class CalendarListView(LoginRequiredMixin, ListView):
     model = Calendar
-    template_name = "schedule/schedule_list.html"
+    template_name = "schedule/calendar_list.html"
     slug_url_kwarg = "owner_slug"
     def get_context_data(self, **kwargs):
         context = super(CalendarListView, self).get_context_data(**kwargs)

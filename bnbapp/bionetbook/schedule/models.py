@@ -105,7 +105,10 @@ class Calendar(TimeStampedModel):
                     eventObject = {}
                     eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk, element[0], element[1])
                     eventObject['start'] = '0'
-                    eventObject['duration'] = element[3].split('-')[1]
+                    if "-" in element[3]:
+                        eventObject['duration'] = element[3].split('-')[1]
+                    else:
+                        eventObject['duration'] = element[3]
                     eventObject['verb'] = element[2]
                     eventObject['title'] = element[4]
                     eventObject['protocol'] = p.title
@@ -129,7 +132,10 @@ class Calendar(TimeStampedModel):
                 eventObject = {}
                 eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (newExperiment.pk,p.pk, element[0], element[1])
                 eventObject['start'] = '0'
-                eventObject['duration'] = element[3].split('-')[1]
+                if "-" in element[3]:
+                    eventObject['duration'] = element[3].split('-')[1]
+                else:
+                    eventObject['duration'] = element[3]
                 eventObject['verb'] = element[2]
                 eventObject['title'] = element[4]
                 eventObject['protocol'] = p.title
