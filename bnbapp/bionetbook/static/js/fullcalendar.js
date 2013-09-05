@@ -4174,7 +4174,7 @@ function AgendaEventRenderer() {
 				// Make sure the protocol steps aren't out of order!
 				var eventId = ev.target.getAttribute("data-event-id"),
 					draggedStep = ev.target.getAttribute("data-step-number"),
-					instanceId = ev.target.getAttribute("data-instance-id"),
+					instanceId = ev.target.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
 					isLocked = !!ev.target.getElementsByClassName("locked"),
 					protocolSteps = [],
 					stepsAreInOrder = true;
@@ -4182,7 +4182,10 @@ function AgendaEventRenderer() {
 				// Put each element into an array and iterate over the array to see if the 
 				// elements' start dates are in the wrong order
 				// instanceId is used to only select the steps in the same protocol instance
-				$("[data-event-id=" + eventId + "][data-instance-id=" + instanceId + "]").each(function(){
+				$(".fc-event").each(function(){
+					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+					if(thisId != instanceId) return;
+
 					var stepNum = this.getAttribute("data-step-number");
 					var startTime = (new Date(this.getAttribute("data-event-start")).getTime()).toString();
 					protocolSteps[stepNum] = startTime;
@@ -4547,7 +4550,8 @@ function View(element, calendar, viewName) {
 		var eventId = event._id;
 		var eventID = ev.target.getAttribute("data-event-id"),
 			draggedStep = ev.target.getAttribute("data-step-number"),
-			instanceId = ev.target.getAttribute("data-instance-id"),
+			instanceId = ev.target.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
+			completeId = ev.target.getAttribute("data-event-id"),
 			isLocked = !!ev.target.getElementsByClassName("locked")[0],
 			isMonthView = !!$(ev.target).hasClass("fc-event-hori"),
 			protocolSteps = [],
@@ -4557,32 +4561,39 @@ function View(element, calendar, viewName) {
 		// Put each element into an array and iterate over the array to see if the 
 		// elements' start dates are in the wrong order
 		// instanceId is used to only select the steps in the same protocol instance
-		$("[data-event-id=" + eventID + "][data-instance-id=" + instanceId + "]").each(function(){
+		$(".fc-event").each(function(){
+			var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+			if(thisId != instanceId) return;
+
 			var stepNum = this.getAttribute("data-step-number");
 			var startTime = (new Date(this.getAttribute("data-event-start")).getTime()).toString();
 			protocolSteps[stepNum] = startTime;
 		});
 
-		// We start at Step1 so the array doesn't start counting at 0 (.length - 1)
-		// Count variable started at 1 (.length + 1)
-		for (var s = 1; s < protocolSteps.length; s++){
+		// Check for out of order
+		if(!isLocked && protocolSteps.length > 1){
 
-			// Add the deltaTime variables to the startTime before drag to get the endDrag time
-			var dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
-			
-			// Make sure we're not comparing the element to itself
-			if (draggedStep != s){
+			// We start at Step1 so the array doesn't start counting at 0 (.length - 1)
+			// Count variable started at 1 (.length + 1)
+			for (var s = 1; s < protocolSteps.length; s++){
 
-				if (draggedStep < s && 	// Element comes BEFORE other steps
-					parseInt(protocolSteps[draggedStep]) + dropDeltaTime > 
-					parseInt(protocolSteps[s])) {
-					stepsAreInOrder = false;
-				}
-				// Elements are out of order
-				if (draggedStep > s &&	// Element comes AFTER other steps
-					parseInt(protocolSteps[draggedStep]) + dropDeltaTime < 
-					parseInt(protocolSteps[s])) {
-					stepsAreInOrder = false;
+				// Add the deltaTime variables to the startTime before drag to get the endDrag time
+				var dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
+				
+				// Make sure we're not comparing the element to itself
+				if (draggedStep != s){
+
+					if (draggedStep < s && 	// Element comes BEFORE other steps
+						parseInt(protocolSteps[draggedStep]) + dropDeltaTime > 
+						parseInt(protocolSteps[s])) {
+						stepsAreInOrder = false;
+					}
+					// Elements are out of order
+					if (draggedStep > s &&	// Element comes AFTER other steps
+						parseInt(protocolSteps[draggedStep]) + dropDeltaTime < 
+						parseInt(protocolSteps[s])) {
+						stepsAreInOrder = false;
+					}
 				}
 			}
 		}
@@ -4590,7 +4601,10 @@ function View(element, calendar, viewName) {
 			var actionsToMove = [];
 
 			// Add each action to array
-			$(specificViewSelector+"[data-instance-id="+instanceId+"]").each(function(){
+			$(".fc-event").each(function(){
+				var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+				if(thisId != instanceId) return;
+
 				var alreadyAdded = false,
 					thisEvent = eventsByID[this.getAttribute("data-fc-id")][0];
 

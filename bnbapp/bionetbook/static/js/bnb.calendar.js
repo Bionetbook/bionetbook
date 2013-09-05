@@ -131,7 +131,7 @@ BNB.calendar = (function(){
 			if(p.meta.descriptions) protocolList[protocolId].description = p.meta.descriptions[protocolId];
 
 			// Add .stepNumber property to action
-			p.events[a].stepNumber = protocolList[protocolId].steps.length + 1;
+			p.events[a].stepNumber = protocolList[protocolId].steps.length;
 
 			// Server uses seconds, JavaScript uses milliseconds
 			p.events[a].duration *= 1000;
@@ -272,7 +272,7 @@ BNB.calendar = (function(){
 	function renderUpdatedEvents(evObj, dayDelta, minDelta){
 
 		evObj._start = evObj.start = new Date(evObj.start.getTime() + minDelta * 60000 + dayDelta * 86400000);
-		evObj._end = evObj.end = new Date(evObj.end.getTime() + minDelta * 60000 + dayDelta * 86400000);
+		if(evObj._end) evObj._end = evObj.end = new Date(evObj.end.getTime() + minDelta * 60000 + dayDelta * 86400000);
 
 		// Update modified event
 		$('#calendar').fullCalendar( 'updateEvent', event );
@@ -480,7 +480,6 @@ BNB.calendar = (function(){
 						evList[ev].locked = true;
 				}
 			}
-			
 		}
 
 		// Show lock icons on protocol step hover
