@@ -56,7 +56,7 @@ class Workflow(SlugStampMixin, TimeStampedModel):
             return 0
 
     def get_absolute_url(self):
-        return reverse("workflow_detail", kwargs={'owner_slug':self.user.organization_set.get(pk=1).slug,'workflow_slug':self.slug})
+        return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug,'workflow_slug':self.slug})
         
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''

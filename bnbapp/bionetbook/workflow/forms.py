@@ -4,9 +4,7 @@ from workflow.models import Workflow
 
 class WorkflowForm(forms.ModelForm):
 
-
-
-    class Meta:
-        model = Workflow
+	class Meta:
+		model = Workflow
         #exclude = ('parent', 'slug', 'duration_in_seconds', 'status','raw')
         exclude = ('data', 'slug', 'duration', 'author', 'owner', 'protocols')

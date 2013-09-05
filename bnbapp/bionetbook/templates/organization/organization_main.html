@@ -14,21 +14,8 @@
 
 {% block content %}
 <div class="row">
-    <div class="span3">
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Protocol</h3></li>
-            <li><a href="{% url protocol_create owner_slug=organization.slug %}">{{ 'New Protocol'}}</a></li>
-        </ul>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Workflow</h3></li>
-            <li><a href="{% url workflow_create owner_slug=organization.slug %}">{{ 'New Workflow'}}</a></li>
-        </ul>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Experiment</h3></li>
-        </ul>        
-    </div>
 
-    <div class="span9">
+    <div class="span12">
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Protocols</h3></li>
                 <table class="table table-striped">
