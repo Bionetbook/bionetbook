@@ -3,7 +3,6 @@ from django.http import Http404, HttpResponse
 from django.views.generic import ListView, View
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
-from braces.views import LoginRequiredMixin
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 from django.utils import simplejson
 
@@ -14,6 +13,7 @@ from organization.models import Organization
 from schedule.models import Calendar
 from experiment.models import Experiment
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+
 
 #class OrganizationDetailView(AuthorizedOrganizationMixin, DetailView):
 # class OrganizationDetailView(LoginRequiredMixin, DetailView):
