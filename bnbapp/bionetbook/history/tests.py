@@ -197,10 +197,10 @@ class HistoryModelTests(AutoBaseTest):
         # ADD TESTS FOR ACTION ADD LOG
         self.assertEquals(history[0].data['create'][0]['type'], 'component')
         self.assertEquals(history[0].data['create'][1]['type'], 'component')    
-
-
-
-
+            # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        self.assertEquals(len(history[0].data['update']), 2)
+        self.assertIn('duration', history[0].data['update'][0]['attrs'])
+        self.assertIn('duration', history[0].data['update'][1]['attrs'])
 
     def test_log_adding_and_removing_step_from_protocol(self):
         self.protocol.published = True
