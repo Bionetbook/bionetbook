@@ -98,7 +98,7 @@ class MachineForm(NodeForm):
     model = forms.CharField(required=False, help_text='only if it really matters')
     min_time = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
     max_time = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))
-    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds' )
+    time_units = forms.ChoiceField(required=False, choices=TIME_UNITS, help_text='in seconds', initial = 'sec' )
     time_comment = forms.CharField(required=False)
     min_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)
     max_temp = forms.FloatField(required=False, widget=forms.NumberInput(attrs={'step':'any'}))#, initial = 22.0)

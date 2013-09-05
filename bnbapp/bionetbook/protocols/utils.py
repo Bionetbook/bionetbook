@@ -1,5 +1,9 @@
 from protocols.forms import verbs as verb_forms
 from protocols.forms import forms
+import time
+
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 def get_verb_list():
     verb_list = []
@@ -253,8 +257,8 @@ def get_timeunit(time_var, desired_unit = 'sec'):
                 time_var[1])
 
 def eval_time(node, value = 'min_time'):
-    ''' time_var = [value_str, 'units']
-    return (float(min_value), [,float(max_value)], 'units', 'original units')
+    ''' 
+    return a string in sec 'min_time - max_time'
     '''
 
     # action_min_time = 0
@@ -285,4 +289,221 @@ def eval_time(node, value = 'min_time'):
         return 0
 
 
+class ProtocolChangeLog(object):
+    def __init__(self, old_state, new_state):
+        self.old_record = old_state
+        self.new_record = new_state
+        self.old = self.record_to_dict(self.old_record)
+        self.new = self.record_to_dict(self.new_record)
+        self.hdf  = {}
 
+        if self.old:
+            self.diff_protocol_keys()
+            self.diff_nodes()
+        else:
+            self.log_item(self.new_record.pk, 'create', 'protocol', self.new)
+
+    def record_to_dict(self, record):
+        result = {}
+        if record:
+            tmp_dict = record.__dict__
+
+            for key in tmp_dict:
+                if key[0] != "_":
+                    result[key] = tmp_dict[key]
+
+        return result
+
+    def log_item(self, objectid, event, otype, data, parent_id=None):
+        new = True
+
+        if not event in self.hdf:
+            self.hdf[event] = []
+
+        # CHECK TO SEE IF THIS ITEM IS ALREADY IN THE LOG OR NOT
+        for item in self.hdf[event]:
+            if item['id'] == objectid and item['type'] == otype:   # THEY ARE THE SAME OBJECT
+                item['attrs'].update( data )
+                new = False
+
+        if new:
+            self.hdf[event].append( { 'id':objectid, 'type':otype, 'attrs':data, 'parent_id':parent_id } )
+
+    def diff_protocol_keys(self):
+        ''' 
+        Takes the two Protocol Model Objects and diff's their attributes except for the JSON (data) & date fields.
+        '''
+        d = DataDiffer(self.old, self.new)
+        changed = d.changed()
+
+        if 'name' in changed: 
+            self.log_item(objectid = self.old['id'], event='update', otype="protocol", data = { "name": self.new['name']} )        
+
+        if 'id' in changed and 'author_id' not in changed:
+            self.log_item(objectid = self.old['id'], event = 'clone', otype="protocol", data = { "pk": self.new['id']} )
+            self.log_item(objectid = self.new['id'], event = 'create', otype="protocol", data = { "pk": self.new['data']} )
+
+        if 'user' in changed:
+            self.log_item(objectid = self.new['id'], event = 'forked', otype="protocol", data = { "author": self.new['author'] })
+            # self.log_item(objectid = self.new['id'], event = 'update', data = { "author": self.new.author })
+
+        if "published" in changed and 'id' not in changed:
+            self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "published": self.new['published'] })
+
+        if "public" in changed:
+            self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "public": self.new['public'] })    
+
+        if "description" in changed:
+            self.log_item(objectid = self.old['id'], event = 'update', otype="protocol", data = { "description": self.new['description'] }) 
+
+    # def diff_dict(self, objid=None):
+    #     '''this method takes a dict and finds the differences in it catching the following diffs:
+    #         key-value pairs: 
+    #         triggered by a unicode / int / float / str type. 
+    #         finds the added, removed, changed key value pairs and creates a log for each change
+            
+    #         list objects:
+    #         triggered by list type. calls the diff_list method
+    #     '''
+
+    #     if not objid: # if dict is protocol.data:
+    #         obj_old = self.old.data
+    #         obj_new = self.new.data
+    #         # print "diffing data_a and data_b"
+        
+    #     else: # all other dicts in protocol.nodes
+    #         obj_old = self.old.nodes[objid]
+    #         obj_new = self.new.nodes[objid] 
+    #         # print "diffing %s, %s "% (obj_old['name'], obj_new['name'])
+        
+    #     diff = DataDiffer(obj_old, obj_new) ## diff the step content
+    #     # print "added: %s, \n deleted: %s,  \n update: %s"% (diff.added(), diff.removed(), diff.changed())
+
+    #     all_keys = set(obj_old.keys()).union(set(obj_new.keys()))
+
+    #     for key in all_keys:
+    #         if key in diff.changed():
+    #             if isinstance(obj_old[key], list):       
+    #                 self.diff_list(obj_old[key], obj_new[key])
+    #                 # print "unpacking lisf of %s and %s"% (type(obj_old), type(obj_new))
+
+    #             if isinstance(obj_old[key], (int, float, unicode, str)):
+    #                 self.log_item(objectid = objid, event = "update", data = {key: obj_new[key]})
+    #                 # print "logged changed %s, %s "% (objid, obj_new[key])
+                
+    #         if key in diff.added():
+    #             self.log_item(objectid = objid, event = "create", data = { key: obj_new[key]} )
+    #             # print "logged add %s, %s "% (objid, obj_new[key])
+            
+    #         if key in diff.removed():
+    #             self.log_item(objectid = objid, event = "delete", data = { key: obj_old[key]} )                
+    #             # print "logged remove%s, %s "% (objid, obj_new[key])
+
+    def diff_nodes(self):
+        '''
+        Diff's nodes that are attached to protocols.
+        '''
+
+        old_ids = self.old_record.nodes.keys()
+        new_ids = self.new_record.nodes.keys()
+
+        for key in old_ids:     # UPDATED AN DELETED NODES
+            if key in new_ids:  # CHECK FOR NODE EDIT
+                # print "\nNODE EDIT: %s" % key
+                new_node = self.new_record.nodes[key]
+                node_type = new_node.__class__.__name__.lower()
+
+                changes = self.node_changes(self.clean_node_data(self.old_record.nodes[key]), self.clean_node_data(new_node))
+
+                for edit_type in ['create', 'update', 'delete']:
+                    if changes[edit_type]:
+                        self.log_item(key, edit_type, node_type, changes[edit_type], parent_id=new_node.parent.id )
+
+                new_ids.remove(key)
+            else:
+                node = self.old_record.nodes[key]
+                self.log_item(key, "delete", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
+
+        for key in new_ids:     # NEW NODES
+            node = self.new_record.nodes[key]
+            self.log_item(key, "create", node.__class__.__name__.lower(), self.clean_node_data(node), parent_id=node.parent.id )
+
+    def clean_node_data(self, node):
+        '''
+        Returns a Node in the cleaned up format for logging
+        '''
+        result = {}
+
+        for key, item in node.items():
+            if key not in ['steps', 'actions', 'machine', 'components', 'thermocycler']:
+                result[key] = node[key]
+
+        return result
+
+    def node_changes(self, old_node, new_node):
+        result = { 'create':{}, 'update':{}, 'delete':{} }
+        differ = DataDiffer(old_node, new_node)
+
+        for key in differ.changed():
+            result['update'][key] = new_node[key]
+
+        for key in differ.added():
+            result['create'][key] = new_node[key]
+
+        for key in differ.removed():
+            result['delete'][key] = new_node[key]
+
+        return result
+
+
+    # def diff_list(self, list_a, list_b):         
+    #     ''' this method takes a list of object ids and compares it between the old and the new list. 
+    #         it will catch a few events: 
+    #         1. turns the list of objects into a dict of objectids for ease of compare
+    #         2. finds the added removed or edited objects in each list
+    #         3. for added or removed objects it triggers a log event
+    #         4. for changed objects it recurses to diff_dict'''
+
+    #     print "DIFF LIST CALLED"
+
+    #     old_list = dict((item['objectid'],item) for item in list_a)
+    #     new_list = dict((item['objectid'],item) for item in list_b)
+        
+    #     # find changes between list objects (add, delete update)        
+    #     diff_list_items = DataDiffer(old_list, new_list)
+    #     changed = diff_list_items.changed()
+    #     added = diff_list_items.added()
+    #     removed = diff_list_items.removed()
+    #     # print "added: %s, \n deleted: %s,  \n update: %s"% (diff_list_items.added(), diff_list_items.removed(), diff_list_items.changed()) 
+        
+    #     ### Place Holder for finding chaned Order in list ###
+
+    #     all_objectids = set(old_list.keys()).union(set(new_list.keys()))
+    #     for objid in all_objectids:
+    #         if objid in added: 
+    #             self.log_item(objectid = objid, event = 'create', otype="step", data = self.new_record.nodes[objid])
+    #             # print "logged add%s, %s "% (objid, self.new.nodes[objid])
+
+    #         if objid in removed:
+    #             self.log_item(objectid = objid, event = 'delete', otype="", data = self.old_record.nodes[objid])
+    #             # print "logged remove%s, %s "% (objid, self.old.nodes[objid])
+            
+    #         if objid in changed: 
+    #            self.diff_dict(objid) # recursive call. 
+    #            # print 'recursing dict %s' %objid 
+
+class DataDiffer(object):    
+
+    def __init__(self, old_data, new_data, **kwargs):
+        self.old_data, self.new_data = old_data, new_data
+        self.set_a, self.set_b = set(old_data.keys()), set(new_data.keys())
+        self.intersect = self.set_a.intersection(self.set_b)
+    def removed(self):
+        return list(self.set_a - self.intersect)
+    def added(self):
+        return list(self.set_b - self.intersect)
+    def changed(self, **kwargs):
+        delta = list(o for o in self.intersect if self.new_data[o] != self.old_data[o])
+        return delta
+    def unchanged(self):
+        return list(o for o in self.intersect if self.new_data[o] == self.old_data[o])

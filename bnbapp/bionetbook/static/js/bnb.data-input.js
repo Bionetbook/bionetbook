@@ -1,36 +1,104 @@
 "use strict";
 
-// Create protocol data structure
-var newProtocol = {
-    id: "p1",
-    steps: []
-};
+unitTest1();
+
+// Creating a new Protocol - as opposed to editing an existing one
+var createMode = false;
+
+// Protocol global object creation
+if(typeof Protocol == 'undefined'){
+    var Protocol = {
+        id: "p1",
+        steps: []
+    };
+    createMode = true;
+}
 
 var BNB = BNB || {};
+
 BNB.dataInput = (function(){
 
     var verbList = [ "Select a verb" ];
 
-    // Populate verb list
-    $.ajax({
-        //url: apiUrlPrefix + 'action/types/',
-        url: 'files/verbList.js',
-        dataType: 'json',
-        success: function(e){
-            for(var i =0; i < e.data.length; i++){
-                verbList.push( e.data[i].name );
-            }
-        },
-        error: function(e){console.log("Ajax request failed. (Verb List)")}
-    });
+    init();
 
-    // Add new tab when the "add new tab" is clicked
-    $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
-        e.preventDefault();
-        addNewTab();
-    });
+    function init(){
+        // Populate verb list
+        $.ajax({
+            url: apiUrlPrefix + 'action/types/',
+            dataType: 'json',
+            success: function(e){
+                for(var i =0; i < e.data.length; i++){
+                    verbList.push( e.data[i].name );
+                }
+            },
+            error: function(e){console.log("Ajax request failed. (Verb List)")}
+        });
 
-    intro();
+        // Let title + desc be editible
+        fieldEditingFunctionality(document.getElementById("protocol-title"), "protocol name", "Name this protocol", Protocol, "title");
+        fieldEditingFunctionality(document.getElementById("protocol-description"), "description", "add a description", Protocol, "description");
+
+        // Add new tab when the "add new tab" is clicked
+        $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
+            e.preventDefault();
+            addNewTab();
+        });
+
+        // Decide what to do first
+        if(createMode) 
+            intro();
+        else
+            parseExistingProtocol();
+
+        // Add functionality to the save button
+        document.getElementById('save-protocol').onclick = function(){
+            $.ajax({
+                url: apiUrlPrefix + 'save-protocol',
+                dataType: 'json',
+                type: "POST",
+                data: Protocol,
+                success: function(e){ 
+                    var message = document.getElementById('save-protocol').parentNode
+                        .appendChild( document.createElement("div") );
+                    message.className = 'alert alert-error save-alert';
+                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
+                    message.innerHTML += '<strong>Success!</strong> ';
+                    message.innerHTML += 'This protocol has been saved.';
+                    $(message).hide().fadeIn(200);
+
+                    // Automatically remove alert
+                    setTimeout(function(){
+                        if(document.getElementsByClassName('save-alert')[0]){
+                            $(document.getElementsByClassName('save-alert')[0]).fadeOut(200, function(){
+                                $(document.getElementsByClassName('save-alert')[0]).remove();
+                            });
+                            message = null;
+                        }
+                    }, 10000);
+                },
+                error: function(e){ 
+                    var message = document.getElementById('save-protocol').parentNode
+                        .appendChild( document.createElement("div") );
+                    message.className = 'alert alert-error save-alert';
+                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
+                    message.innerHTML += '<strong>Whoops!</strong> ';
+                    message.innerHTML += 'Could not connect to the server; try again in just a second.';
+                    $(message).hide().fadeIn(200);
+
+                    // Automatically remove alert
+                    setTimeout(function(){
+                        if(document.getElementsByClassName('save-alert')[0]){
+                            $(document.getElementsByClassName('save-alert')[0]).fadeOut(200, function(){
+                                $(document.getElementsByClassName('save-alert')[0]).remove();
+                            });
+                            message = null;
+                        }
+                    }, 10000);
+                }
+            });
+        }
+    }
 
     // Hero unit overlay + blurred out text
     function intro(){ 
@@ -46,7 +114,8 @@ BNB.dataInput = (function(){
         }, false);
 
         submitBtn.onclick = function(){
-
+            var btn = $(this);
+            
             // Make sure they typed in a name or fire an error
             if(userInput.value.length < 2){
                 errorNode.className = "alert alert-error";
@@ -56,15 +125,18 @@ BNB.dataInput = (function(){
                 return;
             }
 
+            // Send title to API, give user a loading icon, 
+            // only remove hero unit when call comes back
+            // Show loading icon ->
+            btn.css('width', '4em').button('loading');
+            // On success ->
+            $(submitBtn.getElementsByTagName('i')[0]).removeClass('icon-time').addClass('icon-ok');
+
             // Add title to protocol object
-            newProtocol.title = userInput.value;
+            Protocol.title = userInput.value;
 
             // Change Title
             document.getElementById("protocol-title").innerHTML = userInput.value;
-
-            // Let title + desc be editible
-            fieldEditingFunctionality(document.getElementById("protocol-title"), "protocol name", "Name this protocol", newProtocol, "title");
-            fieldEditingFunctionality(document.getElementById("protocol-description"), "description", "add a description", newProtocol, "description");
 
             // Remove overlay
             $(introUnit).fadeOut("fast");
@@ -77,45 +149,70 @@ BNB.dataInput = (function(){
         }
     }
 
-    function addNewTab(){
+    function parseExistingProtocol(){
+
+        // Remove intro text
+        $('#protocol-intro').fadeOut("fast");
+        $(document.getElementById("nav-tabs")).removeClass("blur-text");
+
+        for(var i = 0, len = Protocol.steps.length; i < len; i++){
+            addNewTab( Protocol.steps[i] );
+        }
+    }
+
+    function addNewTab(existingStep){
         var tabContainer = document.getElementById('protocol-tabs'),
             newTab = document.createElement("li"),
             newLink = document.createElement("a"),
             tabNum = document.getElementById("protocol-tabs").getElementsByTagName("li").length;
 
-        // Create new step in newProtocol
-        var tempId = new Date().getTime();
-        newProtocol.steps.push({
-            id: tempId,
-            actions: []
-        });
-        newTab.setAttribute("data-id", tempId);
+        if(!existingStep){
+            // Create new step in Protocol
+            var tempId = new Date().getTime();
+            Protocol.steps.push({
+                id: tempId,
+                actions: []
+            });
 
-        // get real id from server and replace the tempId
-        $.ajax({
-            url: 'api/createStep',
-            dataType: 'json',
-            success: function(e){
+            newTab.setAttribute("data-id", tempId);
 
-                // Check for the step with the temporary id we just created and 
-                // give it the real id from the server
-                for(var step in newProtocol.steps){
-                    if(step.id == tempId){
-                        step.id = e.data.id; 
-                        newTab.setAttribute("data-id", e.data.id);
-                        break;
+            // get real id from server and replace the tempId
+            $.ajax({
+                url: 'api/createStep',
+                dataType: 'json',
+                success: function(e){
+
+                    // Check for the step with the temporary id we just created and 
+                    // give it the real id from the server
+                    for(var step in Protocol.steps){
+                        if(step.id == tempId){
+                            step.id = e.data.id; 
+                            newTab.setAttribute("data-id", e.data.id);
+                            break;
+                        }
                     }
-                }
 
-            },
-            error: function(e){console.log("Ajax request failed. (Step Creation)")}
-        });
+                },
+                error: function(e){console.log("Ajax request failed. (Step Creation)")}
+            });
+        } else {
+            newTab.setAttribute("data-id", existingStep.id);
+        }
 
         // Add attributes
-        newTab.className = "active";
+        newTab.className += "step-tab active";
         newLink.href = "#tabContent" + tabNum;
         newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
+        if(existingStep) newLink.setAttribute('value', existingStep.title)
+        fieldEditingFunctionality(
+            newLink,                        // Edit functionality
+            "step name",                    // Placeholder text
+            "Name this step",               // Empty submit message
+            Protocol.steps[numTabs],        // Reference to js object
+            "title"                         // Property of object to link this field to
+        );
 
+        // Construct tab content and append it to the tab content container
         createTabContent(tabNum, tempId);
 
         // Construct node heirarchy
@@ -125,9 +222,9 @@ BNB.dataInput = (function(){
 
 
         // Adding editing functionality to the tab onclick
-        var numTabs = document.getElementById("protocol-tabs").children.length - 2;
+        var numTabs = document.getElementById("protocol-tabs").getElementsByClassName('step-tab').length - 2;
         if(numTabs < 0) numTabs = 0;
-        fieldEditingFunctionality(newLink, "step name", "Name this step", newProtocol.steps[numTabs], "title");
+        
 
         // Switch active tabs
         $('.tab-pane').removeClass('active');
@@ -135,14 +232,21 @@ BNB.dataInput = (function(){
         $(".add-new-step").removeClass('active');
 
         // Reset event listeners
-        $('#nav-tabs li a').off('click.showTab');
+        $('#nav-tabs li.step-tab a').off('click.showTab');
         $('#nav-tabs li.add-new-step a').off('click.newTab');
 
         // Add listeners back
         // Clicking a tab shows it
-        $('#nav-tabs li a').on('click.showTab', function (e) {
+        $('#nav-tabs li.step-tab a').on('click.showTab', function (e) {
             e.preventDefault();
             $(this).tab('show');
+
+            // show actions underneath tab
+            var nextTab = this.parentNode.nextSibling;
+            while( $(nextTab).hasClass('action-tab')){
+                $(nextTab).addClass('active');
+                nextTab = nextTab.nextSibling;
+            }
         });
         // Add new tab when the "add new tab" is clicked
         $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
@@ -163,7 +267,7 @@ BNB.dataInput = (function(){
         // Step description label
         headerH2Small.innerHTML = "Step description: "
         // Step description
-        headerH2Edit.innerHTML = "add a descrription";
+        headerH2Edit.innerHTML = "add a description";
         headerH2Edit.className = "step-description";
         // Step description editing
         fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', getStep(containerTempId), "description");
@@ -215,13 +319,35 @@ BNB.dataInput = (function(){
             newAction.style.display = "none";
             this.parentNode.insertBefore(newAction, this);
             $(newAction).fadeIn();
+
+
+            // Add action link to tabs
+            /*var tabs = document.getElementById('protocol-tabs');
+            var activeTab = tabs.getElementsByClassName('active')[0],
+                nextTab = activeTab.nextSibling;
+            while( !$(nextTab).hasClass('step-tab') && !$(nextTab).hasClass('add-new-step') ){
+                nextTab = nextTab.nextSibling;
+            } 
+            var actionTab = document.createElement('li');
+            actionTab.className = 'action-tab active';
+            actionTab.innerHTML = 'new action';
+            tabs.insertBefore( actionTab, nextTab );*/
+
+            // TODO: 
+            // View action on action-tab click in tab contents area
+            // On action name change, change tab name as well
+            // Get indexOf() action-tab
+            // $().hide() all others in the .active tab-pane
+
         }
 
         document.getElementsByClassName("tab-content")[0].appendChild(tabContent);
 
-        $('#nav-tabs li a').click(function (e) {
+        // Show tabs on click
+        $('#nav-tabs li a').on('click.showTab', function (e) {
             e.preventDefault();
-            $(this).tab('show');
+            $(this).tab('show'); 
+            $('#protocol-tabs .action-tab').removeClass('active'); 
         });
     }
 
@@ -231,10 +357,15 @@ BNB.dataInput = (function(){
             header = document.createElement("tr"),
                 innerHeaderTd = document.createElement("td"),
                 innerHeaderh4 = document.createElement("h4"),
+                isActiveToggle = document.createElement("fieldset"),
+                    isActiveLabel = document.createElement("label"),
+                    isActive = document.createElement("input"),
             verb = document.createElement("tr"),
                 innerVerbTd = document.createElement("td"),
                 innerVerbSelect = document.createElement("select");
 
+        var parentStep = getStep(containerId);
+        var thisAction = parentStep.actions[ parentStep.actions.length -1 ];
         var tempId = new Date().getTime();
 
         // get real id from server and replace the tempId
@@ -253,15 +384,25 @@ BNB.dataInput = (function(){
         //------------------------------------
         //   Action header (naming action)
         //------------------------------------
+        // Verb
         innerHeaderh4.innerHTML = "Name this action";
         innerHeaderTd.setAttribute("colspan", "2");
         innerHeaderTd.appendChild(innerHeaderh4);
+        innerHeaderTd.appendChild(isActiveToggle);
         header.className = "action-header";
         header.appendChild(innerHeaderTd);
 
+        // is active
+        isActive.setAttribute("type", "checkbox");
+        isActiveLabel.appendChild(isActive);
+        isActiveLabel.onclick = function(){
+            thisAction.isActive = !!this.getElementsByTagName('input')[0].checked;
+        };
+        isActiveLabel.innerHTML += 'Is this action active?';
+        isActiveToggle.className = 'isactive-toggle';
+        isActiveToggle.appendChild(isActiveLabel);
+
         // Editing capabilities
-        var parentStep = getStep(containerId);
-        var thisAction = parentStep.actions[parentStep.actions.length -1 ];
         fieldEditingFunctionality( innerHeaderh4, "action name", "Name this action", thisAction, "title");
 
         // Add section to container
@@ -300,27 +441,6 @@ BNB.dataInput = (function(){
             // Arg: object
             function createFormControlGroup(data){
 
-                // Make the form label human readable. form_label -> Form label
-                // data.label = data.label.replace(/_/gi, " ");                       // Remove underscores
-                // data.label = data.label[0].toUpperCase() + data.label.slice(1);    // First letter uppercase
-
-                // // Assemble html
-                // var html = '<div class="control-group">';
-                // html += '<label class="control-label">'+ data.label +'</label>';
-                // html += !!data.addon ? '<div class="controls input-append">' : 
-                //                        '<div class="controls">';
-                // html += '<input type="text" placeholder="'+ (data.placeholder || "") +'"></input>';
-                // html += !!data.addon ? '<span class="add-on">'+ data.addon +'</span>' : "";
-                // html += !!data.help ? '<span class="help-block">'+ data.help +'</span>' : "";
-                // html += !!data.comments ? '<textarea class="comments" placeholder="comments"></textarea>' : "";
-                // html += '</div></div>';
-
-                // html = new DOMParser().parseFromString(html, "text/xml");
-                // html.getElementsByTagName('input')[0].onblur = function(){
-                //     data.objectReference[data.propertyReference] = this.value;
-                // }
-                // return html.firstChild;
-
                 var controlGroup = document.createElement("div");
                 controlGroup.className = 'control-group';
 
@@ -334,6 +454,9 @@ BNB.dataInput = (function(){
                 var userInput = controls.appendChild(document.createElement("input"));
                 userInput.setAttribute( 'type', 'text' );
                 userInput.setAttribute( 'placeholder', (data.placeholder || '') );
+                userInput.onblur = function(){
+                    data.objectReference[data.propertyReference] = this.value;
+                }
 
                 if(data.addon){
                     var addon = controls.appendChild(document.createElement("span"));
@@ -353,9 +476,6 @@ BNB.dataInput = (function(){
                     comments.innerHTML = data.comments;
                 }
 
-                userInput.onblur = function(){
-                    data.objectReference[data.propertyReference] = this.value;
-                }
                 return controlGroup;
             }
 
@@ -363,7 +483,7 @@ BNB.dataInput = (function(){
             function makeActionStoreVerbFields(e){
 
                 // if verb has fields specific to it, add them to the form
-                if(e.data.visible_fields){
+                if(e.visible_fields){
 
                     var verbTr = document.createElement("tr"),
                         verbTd = document.createElement("td"),
@@ -371,17 +491,17 @@ BNB.dataInput = (function(){
 
                     verbForm.className = "form-horizontal";
 
-                    for(var i = 0; i < e.data.visible_fields.length; i++){
+                    for(var i = 0; i < e.visible_fields.length; i++){
                          
                         verbForm.appendChild( 
                             createFormControlGroup({
-                                label : e.data.visible_fields[i].name,
-                                help : e.data.visible_fields[i].help_text,
-                                inputType : e.data.visible_fields[i].input_type,
-                                isRequired : e.data.visible_fields[i].is_required,
-                                isHidden : e.data.visible_fields[i].is_hidden,
+                                label : e.visible_fields[i].name,
+                                help : e.visible_fields[i].help_text,
+                                inputType : e.visible_fields[i].input_type,
+                                isRequired : e.visible_fields[i].is_required,
+                                isHidden : e.visible_fields[i].is_hidden,
                                 objectReference: thisAction.verbFormFieldValues,
-                                propertyReference: e.data.visible_fields[i].name
+                                propertyReference: e.visible_fields[i].name
                             })
                         );
                     }
@@ -423,7 +543,7 @@ BNB.dataInput = (function(){
                 spacer.appendChild(addProperty);
                 labels.appendChild(spacer);
 
-                addProperty.onclick = function(){ createNewProperty(this) };
+                addProperty.onclick = function(){ createNewProperty(this, thisAction.componentFields) };
 
                 addComponentRow.className = "add-new-component";
                 addComponentName.innerHTML = '<a href="javascript:void(0);">&plus; add new component</a>';
@@ -432,13 +552,21 @@ BNB.dataInput = (function(){
                 // Add new component to this action
                 addComponentRow.onclick = function(){
                     this.parentNode.insertBefore(
-                        createNewComponent(this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length), 
-                        this);
+                        createNewComponent(
+                            this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length,
+                            thisAction.componentFields
+                        ),    
+                        this 
+                    );
                 }
                 addComponentRow.addEventListener("focus", function(){
                     this.parentNode.insertBefore(
-                        createNewComponent(this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length),
-                        this);
+                        createNewComponent(
+                            this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length,
+                            thisAction.componentFields
+                        ),    
+                        this 
+                    );
                 }, true);
 
                 addComponentRow.appendChild(addComponentName);
@@ -466,11 +594,7 @@ BNB.dataInput = (function(){
                 title.className = "module-title";
                 title.innerHTML = "Machine";
                 inputForm.className = "form-horizontal";
-                console.log(createFormControlGroup({
-                        label: 'Name',
-                        objectReference: objReference,
-                        propertyReference: "name"
-                    }))
+
                 // Name
                 inputForm.appendChild(
                     createFormControlGroup({
@@ -589,34 +713,33 @@ BNB.dataInput = (function(){
             // Get data for each verb!
             // -----------------------
             $.ajax({
-                //url: apiUrlPrefix + 'action/fields/' + this.value.toLowerCase(),
-                url: 'files/' + this.value.toLowerCase() + '.js',
+                url: apiUrlPrefix + 'action/fields/' + this.value.toLowerCase(),
                 dataType: 'json',
                 success: function(e){
 
                     // Update data
-                    thisAction.verb = e.data.name;
-                    thisAction.isActive = e.data.isActive;
+                    thisAction.verb = e.name;
+                    thisAction.isActive = e.isActive;
 
                     // Show fields
                     thisAction.verbFormFieldValues = {};
                     makeActionStoreVerbFields(e);
 
-                    if(e.data.has_components){
-                        thisAction.componentFields = {};
+                    if(e.has_components){
+                        thisAction.componentFields = [];
                         makeActionStoreComponents(e); 
                     } else {
                         thisAction.componentFields = false;
                     }
 
-                    if(e.data.has_machine){
+                    if(e.has_machine){
                         thisAction.machineFields = {};
                         makeActionStoreMachine(e);
                     } else {
                         thisAction.machineFields = false;
                     }
 
-                    if(e.data.has_thermocycler){
+                    if(e.has_thermocycler){
                         thisAction.thermocyclerFields = {};
                         makeActionStoreThermocycler(e);
                     } else {
@@ -643,7 +766,9 @@ BNB.dataInput = (function(){
     }
 
     // Typeahead not working!
-    function createNewProperty(that){
+    // Well... it is, but the value is never added to input field on enter/click
+    // Also does not support minLength = 0
+    function createNewProperty(that, objReference){
         var newProperty = document.createElement("th"),
             addComponentTr = that.parentNode.parentNode.parentNode.getElementsByClassName("add-new-component")[0].getElementsByTagName("td")[0],
             components = that.parentNode.parentNode.parentNode.getElementsByClassName('component');
@@ -655,9 +780,14 @@ BNB.dataInput = (function(){
         if(components){
             for(var i = 0; i < components.length; i++){
                 var newComponentProperty = document.createElement("td");
+                newComponentProperty.className = 'component-property';
                 newComponentProperty.innerHTML = "<a href='javascript:void(0);'>amount</a>";
-                componentEditingFunctionality(newComponentProperty);
-                components[i].appendChild(newComponentProperty);
+                componentEditingFunctionality(newComponentProperty, objReference);
+                if(components[i].children.length > 1){
+                    components[i].insertBefore(newComponentProperty, components[i].children[1]);
+                } else {
+                    components[i].appendChild(newComponentProperty);
+                }
             }
         }
 
@@ -665,12 +795,11 @@ BNB.dataInput = (function(){
             'autocomplete="off" placeholder="mass, volume, etc" autofocus>';
 
         // Add editing functionality
-        propertyEditingFunctionality(newProperty);
+        propertyEditingFunctionality(newProperty, objReference);
 
         // Add this property to DOM
         that.parentNode.parentNode.insertBefore(newProperty, that.parentNode.nextSibling);
-        $("#property-input").hide();
-        $("#property-input").fadeIn("fast", function(){
+        $("#property-input").hide().fadeIn("fast", function(){
             // Add typeahead options
             $(this).typeahead({
                 name: "property",
@@ -680,14 +809,14 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createNewComponent(numOfProperties){
+    function createNewComponent(numOfProperties, objReference){
         var componentRow = document.createElement("tr"),
             componentName = document.createElement("td");
         
         componentRow.className = "component";
         componentName.innerHTML = '<input type="text" placeholder="component name" autofocus>';
         componentName.setAttribute("data-editing", true);
-        componentEditingFunctionality(componentName);   // Add editing functionality
+        componentEditingFunctionality(componentName, objReference);   // Add editing functionality
         componentRow.appendChild(componentName);
 
         // Add a property field for each available property (in the labels)
@@ -696,7 +825,7 @@ BNB.dataInput = (function(){
             // Set default value
             newComponentProperty.innerHTML = "<a href='javascript:void(0);'>amount</a>";
             // Add editing capabilities
-            componentEditingFunctionality(newComponentProperty);
+            componentEditingFunctionality(newComponentProperty, objReference);
             // Add to row
             componentRow.appendChild(newComponentProperty);
         }
@@ -704,68 +833,138 @@ BNB.dataInput = (function(){
         return componentRow;
     }
 
-    function componentEditingFunctionality(ele){
+    // Editing functionality for COMPONENT NAMES
+    function componentEditingFunctionality(ele, objReference){
+        // decode <sub>16</sub> to /16/
         ele.onclick = function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
                 this.setAttribute("data-editing", true);
                 var inputValue = this.getElementsByTagName('a')[0].innerHTML == "amount" ? "" : this.getElementsByTagName('a')[0].innerHTML;
-                this.innerHTML = '<input type="text" placeholder="amount" value="' +  inputValue + '" autofocus>';
+                this.innerHTML = '<input type="text" style="width:0;" placeholder="amount" value="' +  inputValue + '" autofocus>';
             }
+            // Animate input to get wider
+            if(this == this.parentNode.firstChild)
+                $(this.getElementsByTagName("input")[0]).animate({width:'15em'}, 200);
+            else
+                $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
         }
         ele.addEventListener("focus", function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
                 this.setAttribute("data-editing", true);
                 var inputValue = this.getElementsByTagName('a')[0].innerHTML == "amount" ? "" : this.getElementsByTagName('a')[0].innerHTML;
-                this.innerHTML = '<input type="text" placeholder="amount" value="' +  inputValue + '" autofocus>';
+                this.innerHTML = '<input type="text" style="width:0;" placeholder="amount" value="' +  inputValue + '" autofocus>';
             }
+            // Animate input to get wider
+            if(this == this.parentNode.firstChild)
+                $(this.getElementsByTagName("input")[0]).animate({width:'15em'}, 200);
+            else
+                $(this.getElementsByTagName("input")[0]).animate({width:'5em'}, 200);
         }, true);
+
         // Check for "Enter" keypress
         ele.addEventListener("keydown", function(e) {
             if (!e) { var e = window.event; }
             if (e.keyCode == 13) {
+                
                 e.preventDefault();
                 if(!this.getElementsByTagName("input")[0]) return;
 
                 // Delete node if there is no component name
-                if(!this.getElementsByTagName("input")[0].value &&      // No data in input field
-                    $(this.parentNode).hasClass("component") &&         // Element is a component
-                    this == this.parentNode.firstChild) {               // Blank field is component name
+                if(!this.getElementsByTagName("input")[0].value && this == this.parentNode.firstChild) { 
 
+                    // delete from data structure
+                    // -1 of getIndexOf() due to the '+ add property' field being the first field
+                    if(objReference[getIndexOf(this.parentNode) - 1]) delete objReference[getIndexOf(this.parentNode) - 1];
+
+                    // restructure component array
+                    restructureComponentArray(objReference, getIndexOf(this.parentNode) - 1);
+
+                    // Remove element from DOM
                     this.parentNode.parentNode.removeChild(this.parentNode);
                     return;
-
                 }
 
-                this.setAttribute("data-editing", false);
+                // Coponent Name Field
+                // Update the component object's title - or create the object if it doesn't exist
+                if(this == this.parentNode.firstChild){
+                    objReference[getIndexOf(this.parentNode) - 1] = objReference[getIndexOf(this.parentNode) - 1] || {};
+                    objReference[getIndexOf(this.parentNode) - 1].title = 
+                        htmlEntities( this.getElementsByTagName("input")[0].value );
+                }
 
-                this.innerHTML = '<a href="javascript:void(0)">' + 
-                                     (this.getElementsByTagName("input")[0].value || "amount") + 
+                // Coponent Property Field
+                else{
+                    // Get the property name
+                    //              td      tr       tbody    properties     same column as mod prop     <a>     prop value
+                    var propName = this.parentNode.parentNode.firstChild.children[ getIndexOf(this) ].firstChild.innerHTML;
+                    objReference[getIndexOf(this.parentNode) - 1][propName] = this.getElementsByTagName("input")[0].value;
+                }
+
+                // Set element back to original state of displaying the clickable value
+                this.setAttribute("data-editing", false);
+                var that = this;
+                // Animate input to get skinnier
+                $(this.getElementsByTagName("input")[0]).animate({width:'0'}, 200, "linear", function(){
+                    that.innerHTML = '<a href="javascript:void(0)">' + 
+                                     (htmlEntities( that.getElementsByTagName("input")[0].value ) || "quantity") + 
                                      '</a>';
+                });
             }
         }, true);
+
+        // onblur event listener
         ele.addEventListener("blur", function(){
+
+            // Make sure there's an input field before trying to act on it
             if(!this.getElementsByTagName("input")[0]) return;
 
-            // Delete node if there is no component name
-            if(!this.getElementsByTagName("input")[0].value &&      // No data in input field
-                $(this.parentNode).hasClass("component") &&         // Element is a component
-                this == this.parentNode.firstChild) {               // Blank field is component name
+            // Delete node if there is no component name - don't delete on empty component value
+            if(!this.getElementsByTagName("input")[0].value && this == this.parentNode.firstChild) { 
 
+                // delete from data structure
+                // -1 of getIndexOf() due to the '+ add property' field being the first field
+                if(objReference[getIndexOf(this.parentNode) - 1]) delete objReference[getIndexOf(this.parentNode) - 1];
+
+                // restructure component array
+                restructureComponentArray(objReference, getIndexOf(this.parentNode) - 1);
+
+                // Remove element from DOM
                 this.parentNode.parentNode.removeChild(this.parentNode);
                 return;
-
             }
 
+            // Coponent Name Field
+            // Update the component object's title - or create the object if it doesn't exist
+            if(this == this.parentNode.firstChild){
+                objReference[getIndexOf(this.parentNode) - 1] = objReference[getIndexOf(this.parentNode) - 1] || {};
+                objReference[getIndexOf(this.parentNode) - 1].title = this.getElementsByTagName("input")[0].value;
+            }
+
+            // Coponent Property Field
+            else{
+                // Get the property name
+                //              td      tr       tbody    properties     same column as mod prop     <a>     prop value
+                var propName = this.parentNode.parentNode.firstChild.children[ getIndexOf(this) ].firstChild.innerHTML;
+                objReference[getIndexOf(this.parentNode) - 1][propName] = this.getElementsByTagName("input")[0].value;
+            }
+
+            // Set element back to original state of displaying the clickable value
             this.setAttribute("data-editing", false);
-            this.innerHTML = '<a href="javascript:void(0)">' + 
-                             (this.getElementsByTagName("input")[0].value || "amount") + 
-                             '</a>';
+            var that = this;
+            // Animate input to get skinnier
+            $(this.getElementsByTagName("input")[0]).animate({width:'0'}, 200, "linear", function(){
+                that.innerHTML = '<a href="javascript:void(0)">' + 
+                                 (htmlEntities( that.getElementsByTagName("input")[0].value ) || "quantity") + 
+                                 '</a>';
+            });
         }, true);
     }
 
-    function propertyEditingFunctionality(ele){
+    // Editing functionality for PROPERTY NAMES
+    // objReference = array of component objects
+    function propertyEditingFunctionality(ele, objReference){
         ele.onclick = function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
@@ -786,7 +985,7 @@ BNB.dataInput = (function(){
         }, true);
 
         // Check for "Enter" keypress
-        // REMOVE everything that was just added! colspan, tds, etc if empty
+        // if empty: REMOVE everything that was just added! colspan, tds, etc
         ele.addEventListener("keydown", function(e) {
             if (!e) { var e = window.event; }
             if (e.keyCode == 13) {
@@ -796,6 +995,11 @@ BNB.dataInput = (function(){
                 if(!this.getElementsByTagName("input")[0].value) {
                     var component = this.parentNode.parentNode.getElementsByClassName("component"),
                         propNum = $(this).index();
+
+                    // Remove properties of the action when user deletes property
+                    for(var i = 0; i < objReference.length; i++){
+                        delete objReference[i][this.getAttribute("data-value")];
+                    }
 
                     // Delete the property field for each component
                     for(var i = 0; i < component.length; i++){
@@ -808,12 +1012,26 @@ BNB.dataInput = (function(){
                     return;
                 }
 
+                // Modify properties of the action to reflect new property name - on edit
+                for(var i = 0; i < objReference.length; i++){
+                    if(this.getElementsByTagName("input")[0].value != this.getAttribute("data-value")){
+                        objReference[i][htmlEntities( this.getElementsByTagName("input")[0].value )] = 
+                            objReference[i][this.getAttribute("data-value")];
+                        delete objReference[i][this.getAttribute("data-value")];
+                    }
+                }
+
                 this.setAttribute("data-editing", false);
+
+                // Track the value just before current change. Helps with property name changes + deletion
+                this.setAttribute("data-value", htmlEntities( this.getElementsByTagName("input")[0].value ));
+
+                // Show user the new name
                 this.innerHTML = '<a href="javascript:void(0)">' + 
-                    this.getElementsByTagName("input")[0].value + '</a>';
+                    htmlEntities( this.getElementsByTagName("input")[0].value ) + '</a>';
             }
         }, true);
-        // REMOVE everything that was just added! colspan, tds, etc if empty
+        // if empty: REMOVE everything that was just added! colspan, tds, etc
         ele.addEventListener("blur", function(){
             if(!this.getElementsByTagName("input")[0]) return;
 
@@ -821,6 +1039,11 @@ BNB.dataInput = (function(){
             if(!this.getElementsByTagName("input")[0].value) {
                 var component = this.parentNode.parentNode.getElementsByClassName("component"),
                     propNum = $(this).index();
+
+                // Remove properties of the action when user deletes property
+                for(var i = 0; i < objReference.length; i++){
+                    delete objReference[i][this.getAttribute("data-value")];
+                }
 
                 // Delete the property field for each component
                 for(var i = 0; i < component.length; i++){
@@ -833,9 +1056,23 @@ BNB.dataInput = (function(){
                 return;
             }
 
+            // Modify properties of the action to reflect new property name - on edit
+            for(var i = 0; i < objReference.length; i++){
+                if(this.getElementsByTagName("input")[0].value != this.getAttribute("data-value")){
+                    objReference[i][htmlEntities( this.getElementsByTagName("input")[0].value )] = 
+                        objReference[i][this.getAttribute("data-value")];
+                    delete objReference[i][this.getAttribute("data-value")];
+                }
+            }
+
             this.setAttribute("data-editing", false);
+
+            // Track the value just before current change. Helps with property name changes + deletion
+            this.setAttribute("data-value", htmlEntities( this.getElementsByTagName("input")[0].value ));
+
+            // Show user the new name
             this.innerHTML = '<a href="javascript:void(0)">' + 
-                this.getElementsByTagName("input")[0].value + '</a>';
+                htmlEntities( this.getElementsByTagName("input")[0].value ) + '</a>';
         }, true);
     }
 
@@ -895,48 +1132,63 @@ BNB.dataInput = (function(){
 
     // Find the step with the matching id
     function getStep(id){
-        for(var i = 0; i < newProtocol.steps.length; i++){
-            if(newProtocol.steps[i].id == id){
-                return newProtocol.steps[i];
+        for(var i = 0; i < Protocol.steps.length; i++){
+            if(Protocol.steps[i].id == id){
+                return Protocol.steps[i];
             }
         }
     }
 
+    // Get the position of a node in relation to its siblings
+    // a a b a      // b == 2
+    function getIndexOf(el){
+        var k=-1, e=el;
+        while (e) {
+            if ( "previousSibling" in e ) {
+                e = e.previousSibling;
+                k = k + 1;
+            } else {
+                k= -1;
+                break;
+            }
+        }
+        return k;
+    }
+
+    function restructureComponentArray(array, index){
+
+        // Make sure array needs restructuring (in case of multiple calls)
+        // if something exists at the starting index it's already restructured
+        if(array[index]) return;
+
+        for(var i = index; i < array.length; i++){
+
+            // Delete this property
+            // At init it's empty anyway, after the first loop it's a duplicate
+            if( array[i] ) delete array[i];
+
+            // check if next property exists
+            if(array[i + 1]){
+
+                // move the next property into this slot
+                array[i] = array[i + 1];
+
+            } else {
+                return;
+            }
+        }
+    }
+
+    function htmlEntities(str) {
+        return String(str).replace(/&amp;/g, '&').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     return {
-        verbList: verbList
+        verbList: verbList,
+        htmlEntities: htmlEntities
     }
 
 })();
-
-
-
-
-
-
-// Data structure so far:
-// newProtocol = {
-//     id: fake,
-//     title: userInputTitle,
-//     description: desc,
-//
-//     steps:[                  // each tab 
-//         {
-//             id: fake,
-//             title: textInputInTab,
-// 
-//             actions: [       // each action added to tab
-//                 {       
-//                     id: fake,
-//                     title: userInputTitle,
-//                     verb: selectedFromList
-//                 }
-//             ]
-//         }
-//     ]
-//
-// }
-
-
 
 
 // Sample data structure to send to server
@@ -945,7 +1197,7 @@ BNB.dataInput = (function(){
 http://127.0.0.1:8000/api/action/fields/mix/
 http://127.0.0.1:8000/api/action/types/
 
-newProtocol = {
+Protocol = {
 
     id: recievedFromServerOnPageLoad,
     title: userInputName,
@@ -959,7 +1211,6 @@ newProtocol = {
 
             actions: [{
                 id: tempUntilRecievedFromServer,
-                step: newProtocol.steps[id],
                 name: userGivenName,
                 active: activeValue,
                 verb: verbName,
@@ -990,5 +1241,13 @@ newProtocol = {
 }
 */
 
+// Edit an existing Protocol
+function unitTest1(){
+window.Protocol = {"id":"p1","steps":[{"id":1378403551299,"actions":[
+{"id":1378403552452,"verb":"Combine","isActive":true,"verbFormFieldValues":{},
+"componentFields":[],"machineFields":false,"thermocyclerFields":false}],
+"title":""},{"id":1378405288438,"actions":[]}],"title":"Unit Test Protocol",
+"description":"UnitTest1 Description"};
+}
 
 
