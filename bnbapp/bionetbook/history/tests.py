@@ -268,15 +268,67 @@ class HistoryModelTests(AutoBaseTest):
 
         history = self.protocol.history_set.all()
 
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
         
         self.assertEquals(len(history), 4)
         self.assertEquals(len(history[0].data['delete']), 1)                    # LOG THE DELETE CHANGE
         self.assertEquals(history[0].data['delete'][0]['type'], 'action')
         
-
+    def test_log_adding_and_deleting_a_component_to_actions(self):    
         
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save() #2 / 3
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action1 = Action(self.protocol, parent=step, verb="add")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save() #3 / 2
+
+        comp1 = Component(self.protocol, parent=action1, name='comp1')
+        comp2 = Component(self.protocol, parent=action1, name='comp2')
+        self.protocol.save() #4 / 1
+
+        self.protocol.delete_node(comp1['objectid'])
+        self.protocol.save() #5 / 0
+
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+        # TEST THAT OBJECT IS CONSTRUCTED PROPERLY
+
+        self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[2].data['create'][0]['type'], 'action')
+        
+        # TESTS FOR ADDING 2 COMPONENTS TO ACTION
+        self.assertEquals(history[1].data['create'][0]['type'], 'component')
+        self.assertEquals(history[1].data['create'][1]['type'], 'component')
+        
+        # TEST THAT COMPONENT IS BEING DELETED
+        self.assertEquals(len(history[0].data['delete']), 1)
+        self.assertEquals(history[0].data['delete'][0]['type'], 'component')
+
+            # TEST THAT DURATION IS GETTING UPDATED
+        self.assertEquals(len(history[0].data['update']), 2)                
+        self.assertIn('duration', history[0].data['update'][0]['attrs'])
+        self.assertIn('duration', history[0].data['update'][1]['attrs'])
+        
+        
+        
+                
+
+
+
+
+
+
+
+
+
         
         
