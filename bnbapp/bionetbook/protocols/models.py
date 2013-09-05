@@ -136,13 +136,9 @@ class Protocol(TimeStampedModel):
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
 
-        # LOG THIS HISTORY OBJECT HERE
-        # history = History(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        # history.update_from_diff(diff)
-        if diff.hdf: 
-            history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data = diff.hdf)
-        # history.save()
-
+        # LOG THIS HISTORY OBJECT HERE IF THERE IS A DIFF
+        if diff.hdf:
+            History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data=diff.hdf)
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
