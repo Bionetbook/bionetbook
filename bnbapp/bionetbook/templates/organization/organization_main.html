@@ -72,7 +72,7 @@
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Workflows</h3></li>
         {% for workflow in request.user.workflow_set.all %}
-            <li><a href="{{ workflow.get_absolute_url }}"><i class="icon-play-circle"></i> {{ workflow.name }}</a></li>
+            <li><a href="{% url workflow_detail owner_slug=organization.slug pk=workflow.pk %}"><i class="icon-play-circle"></i> {{ workflow.name }}</a></li>
         {% endfor %}
         </ul>
         <ul class="nav nav-tabs nav-stacked">

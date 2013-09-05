@@ -10,7 +10,6 @@ urlpatterns = patterns("",
     # url(regex=r'^protocols/$', view=views.ProtocolListView.as_view(), name='protocol_list'),
     # url(regex=r'^protocols/(?P<protocol_a_slug>[-\w]+)/layers/(?P<layers>[-\w]+)/$', view=cviews.CompareSingleLayersView.as_view(), name='draw_single_layers'),
     # PROTOCOL URLS
-    # url(regex=r'^(?P<owner_slug>[-\w]+)/$', view=oviews.OrganizationMainView.as_view(), name='organization_main'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/create/$', view=views.ProtocolCreateView.as_view(), name='protocol_create'),
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolDetailView.as_view(), name='protocol_detail'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolDetailView.as_view(), name='protocol_detail'),

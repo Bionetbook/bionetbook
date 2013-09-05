@@ -11,7 +11,6 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^feedback/', include('feedback.urls')),
-    url(r'^workflow/', include('workflow.urls')),
     url(r'^', include('core.urls')),
     url(r'^profiles/', include('profiles.urls')),
     url(r'^api/', include('api.urls')),
@@ -22,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/login/'}, 'logout',),
     url(r'^', include('protocols.urls')),
     url(r'^', include('organization.urls')),
+    url(r'^', include('workflow.urls')),
 )
 
 

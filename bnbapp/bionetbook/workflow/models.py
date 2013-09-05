@@ -41,6 +41,7 @@ class Workflow(SlugStampMixin, TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+
         
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''
