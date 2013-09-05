@@ -1,5 +1,7 @@
 "use strict";
 
+unitTest1();
+
 // Creating a new Protocol - as opposed to editing an existing one
 var createMode = false;
 
@@ -32,6 +34,10 @@ BNB.dataInput = (function(){
             },
             error: function(e){console.log("Ajax request failed. (Verb List)")}
         });
+
+        // Let title + desc be editible
+        fieldEditingFunctionality(document.getElementById("protocol-title"), "protocol name", "Name this protocol", Protocol, "title");
+        fieldEditingFunctionality(document.getElementById("protocol-description"), "description", "add a description", Protocol, "description");
 
         // Add new tab when the "add new tab" is clicked
         $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
@@ -108,7 +114,8 @@ BNB.dataInput = (function(){
         }, false);
 
         submitBtn.onclick = function(){
-
+            var btn = $(this);
+            
             // Make sure they typed in a name or fire an error
             if(userInput.value.length < 2){
                 errorNode.className = "alert alert-error";
@@ -118,15 +125,18 @@ BNB.dataInput = (function(){
                 return;
             }
 
+            // Send title to API, give user a loading icon, 
+            // only remove hero unit when call comes back
+            // Show loading icon ->
+            btn.css('width', '4em').button('loading');
+            // On success ->
+            $(submitBtn.getElementsByTagName('i')[0]).removeClass('icon-time').addClass('icon-ok');
+
             // Add title to protocol object
             Protocol.title = userInput.value;
 
             // Change Title
             document.getElementById("protocol-title").innerHTML = userInput.value;
-
-            // Let title + desc be editible
-            fieldEditingFunctionality(document.getElementById("protocol-title"), "protocol name", "Name this protocol", Protocol, "title");
-            fieldEditingFunctionality(document.getElementById("protocol-description"), "description", "add a description", Protocol, "description");
 
             // Remove overlay
             $(introUnit).fadeOut("fast");
@@ -140,7 +150,12 @@ BNB.dataInput = (function(){
     }
 
     function parseExistingProtocol(){
-        for(var i = 0; i < Protocol.steps.length; i++){
+
+        // Remove intro text
+        $('#protocol-intro').fadeOut("fast");
+        $(document.getElementById("nav-tabs")).removeClass("blur-text");
+
+        for(var i = 0, len = Protocol.steps.length; i < len; i++){
             addNewTab( Protocol.steps[i] );
         }
     }
@@ -151,40 +166,53 @@ BNB.dataInput = (function(){
             newLink = document.createElement("a"),
             tabNum = document.getElementById("protocol-tabs").getElementsByTagName("li").length;
 
-        // Create new step in Protocol
-        var tempId = new Date().getTime();
-        Protocol.steps.push({
-            id: tempId,
-            actions: []
-        });
+        if(!existingStep){
+            // Create new step in Protocol
+            var tempId = new Date().getTime();
+            Protocol.steps.push({
+                id: tempId,
+                actions: []
+            });
 
-        newTab.setAttribute("data-id", tempId);
+            newTab.setAttribute("data-id", tempId);
 
-        // get real id from server and replace the tempId
-        $.ajax({
-            url: 'api/createStep',
-            dataType: 'json',
-            success: function(e){
+            // get real id from server and replace the tempId
+            $.ajax({
+                url: 'api/createStep',
+                dataType: 'json',
+                success: function(e){
 
-                // Check for the step with the temporary id we just created and 
-                // give it the real id from the server
-                for(var step in Protocol.steps){
-                    if(step.id == tempId){
-                        step.id = e.data.id; 
-                        newTab.setAttribute("data-id", e.data.id);
-                        break;
+                    // Check for the step with the temporary id we just created and 
+                    // give it the real id from the server
+                    for(var step in Protocol.steps){
+                        if(step.id == tempId){
+                            step.id = e.data.id; 
+                            newTab.setAttribute("data-id", e.data.id);
+                            break;
+                        }
                     }
-                }
 
-            },
-            error: function(e){console.log("Ajax request failed. (Step Creation)")}
-        });
+                },
+                error: function(e){console.log("Ajax request failed. (Step Creation)")}
+            });
+        } else {
+            newTab.setAttribute("data-id", existingStep.id);
+        }
 
         // Add attributes
         newTab.className += "step-tab active";
         newLink.href = "#tabContent" + tabNum;
         newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
+        if(existingStep) newLink.setAttribute('value', existingStep.title)
+        fieldEditingFunctionality(
+            newLink,                        // Edit functionality
+            "step name",                    // Placeholder text
+            "Name this step",               // Empty submit message
+            Protocol.steps[numTabs],        // Reference to js object
+            "title"                         // Property of object to link this field to
+        );
 
+        // Construct tab content and append it to the tab content container
         createTabContent(tabNum, tempId);
 
         // Construct node heirarchy
@@ -196,7 +224,7 @@ BNB.dataInput = (function(){
         // Adding editing functionality to the tab onclick
         var numTabs = document.getElementById("protocol-tabs").getElementsByClassName('step-tab').length - 2;
         if(numTabs < 0) numTabs = 0;
-        fieldEditingFunctionality(newLink, "step name", "Name this step", Protocol.steps[numTabs], "title");
+        
 
         // Switch active tabs
         $('.tab-pane').removeClass('active');
@@ -455,7 +483,7 @@ BNB.dataInput = (function(){
             function makeActionStoreVerbFields(e){
 
                 // if verb has fields specific to it, add them to the form
-                if(e.data.visible_fields){
+                if(e.visible_fields){
 
                     var verbTr = document.createElement("tr"),
                         verbTd = document.createElement("td"),
@@ -463,17 +491,17 @@ BNB.dataInput = (function(){
 
                     verbForm.className = "form-horizontal";
 
-                    for(var i = 0; i < e.data.visible_fields.length; i++){
+                    for(var i = 0; i < e.visible_fields.length; i++){
                          
                         verbForm.appendChild( 
                             createFormControlGroup({
-                                label : e.data.visible_fields[i].name,
-                                help : e.data.visible_fields[i].help_text,
-                                inputType : e.data.visible_fields[i].input_type,
-                                isRequired : e.data.visible_fields[i].is_required,
-                                isHidden : e.data.visible_fields[i].is_hidden,
+                                label : e.visible_fields[i].name,
+                                help : e.visible_fields[i].help_text,
+                                inputType : e.visible_fields[i].input_type,
+                                isRequired : e.visible_fields[i].is_required,
+                                isHidden : e.visible_fields[i].is_hidden,
                                 objectReference: thisAction.verbFormFieldValues,
-                                propertyReference: e.data.visible_fields[i].name
+                                propertyReference: e.visible_fields[i].name
                             })
                         );
                     }
@@ -690,28 +718,28 @@ BNB.dataInput = (function(){
                 success: function(e){
 
                     // Update data
-                    thisAction.verb = e.data.name;
-                    thisAction.isActive = e.data.isActive;
+                    thisAction.verb = e.name;
+                    thisAction.isActive = e.isActive;
 
                     // Show fields
                     thisAction.verbFormFieldValues = {};
                     makeActionStoreVerbFields(e);
 
-                    if(e.data.has_components){
+                    if(e.has_components){
                         thisAction.componentFields = [];
                         makeActionStoreComponents(e); 
                     } else {
                         thisAction.componentFields = false;
                     }
 
-                    if(e.data.has_machine){
+                    if(e.has_machine){
                         thisAction.machineFields = {};
                         makeActionStoreMachine(e);
                     } else {
                         thisAction.machineFields = false;
                     }
 
-                    if(e.data.has_thermocycler){
+                    if(e.has_thermocycler){
                         thisAction.thermocyclerFields = {};
                         makeActionStoreThermocycler(e);
                     } else {
@@ -1213,5 +1241,13 @@ Protocol = {
 }
 */
 
+// Edit an existing Protocol
+function unitTest1(){
+window.Protocol = {"id":"p1","steps":[{"id":1378403551299,"actions":[
+{"id":1378403552452,"verb":"Combine","isActive":true,"verbFormFieldValues":{},
+"componentFields":[],"machineFields":false,"thermocyclerFields":false}],
+"title":""},{"id":1378405288438,"actions":[]}],"title":"Unit Test Protocol",
+"description":"UnitTest1 Description"};
+}
 
 
