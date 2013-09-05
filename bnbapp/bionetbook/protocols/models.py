@@ -136,7 +136,7 @@ class Protocol(TimeStampedModel):
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
 
-        # LOG THIS HISTORY OBJECT HERE
+        # LOG THIS HISTORY OBJECT HERE IF THERE IS A DIFF
         if diff.hdf:
             History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data=diff.hdf)
 
