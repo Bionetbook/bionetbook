@@ -5,6 +5,9 @@ from api import views
 
 urlpatterns = patterns("",
 	# incomplete ajax:
+	url(regex=r'^protocol/(?P<protocol_id>[-\d]+)/$', view=views.ProtocolAPI.as_view(), name='protocol_api'),			# TRY FOR THE ID FIRST
+	url(regex=r'^protocol/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolAPI.as_view(), name='protocol_api_slug'),
+
 	url(regex=r'^view/data_static/$', view=views.AjaxStaticView.as_view(), name='ajax_static_view'),
 	
 	url(regex=r'^json/data_dynamic/$', view='api.views.json_data_dynamic', name='json_data_dynamic'),
