@@ -29,7 +29,7 @@ class APIViewTests(AutoBaseTest):
       				"objectid": "8v5lak", 
       				"name": "1", 
       				"actions": [ {
-          				"name": "add", 
+          				"name": "first action", 
           				"objectid": "kxsl3b", 
           				"verb": "add", 
           				"duration": "0-0", 
@@ -56,10 +56,11 @@ class APIViewTests(AutoBaseTest):
 							 	'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
 							 	'start':'0',
 							 	'duration':'0',
-							 	'action':'add',
+							 	'title':'first action',
 							 	'protocol':'Test Protocol',
 							 	'experiment':'Test Experiment',
-							 	'notes':''
+							 	'notes':'',
+							 	'verb':'add'
 								} ]
 				}
 		self.assertEqual(json.loads(resp.content),cal)
@@ -89,7 +90,8 @@ class APIViewTests(AutoBaseTest):
 					'protocol':'Test Protocol',
 					'duration':'0',
 					'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
-					'action':'add',
+					'title':'first action',
+					'verb':'add',
 					'notes':'',
 					'experiment':'Test Experiment',
 					'start':'0'
@@ -126,7 +128,8 @@ class APIViewTests(AutoBaseTest):
 					'protocol':'Test Protocol',
 					'duration':'0',
 					'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
-					'action':'add',
+					'title':'first action',
+					'verb':'add',
 					'notes':'new notes',
 					'experiment':'Test Experiment',
 					'start':'5'
