@@ -252,8 +252,8 @@ BNB.calendar = (function(){
 				eventStep.textColor			= "#fff";
 				eventStep.start 			= (new Date(timeTracker.getTime()));
 				eventStep.end 				= (new Date(timeTracker.getTime() + eventStep.length * 1000));
-				// eventStep.notes = that.getAttribute("data-"+sId+"-"+aId+"-notes").length > 0 ? 
-				// 				  that.getAttribute("data-"+sId+"-"+aId+"-notes") : 'There are no notes for this event.';
+				eventStep.notes = that.getAttribute("data-"+sId+"-"+aId+"-notes").length > 0 ? 
+				 				  that.getAttribute("data-"+sId+"-"+aId+"-notes") : 'There are no notes for this event.';
 
 				// Use this to decide the next step's .start
 				timeTracker = eventStep.end;
@@ -394,7 +394,7 @@ BNB.calendar = (function(){
 			// Reposition the notes popup alongside the current node
 			var stepPos = currentStepNode.getBoundingClientRect();
 
-			formContainer.style.top = stepPos.top - 8 + "px";
+			formContainer.style.top = stepPos.top - 4 + "px";
 
 			// Switch popup to left side if it's editing a step on friday or saturday
 			if($(currentStepNode).hasClass("fri") || $(currentStepNode).hasClass("sat")){
@@ -402,7 +402,7 @@ BNB.calendar = (function(){
 				if($(currentStepNode).hasClass("fri")) formContainer.className += " fri";
 				if($(currentStepNode).hasClass("sat")) formContainer.className += " sat";
 			} else{
-				formContainer.style.left = stepPos.left + 390 + "px";
+				formContainer.style.left = stepPos.left + 360 + "px";
 			}
 
 			// Show notes form
@@ -846,9 +846,9 @@ BNB.calendar = (function(){
 			" data-event-start='" + event._start + "'" +
 			" data-event-end='" + event._end + "'" +
 			" data-active='" + event.active + "'" +
+			" data-verb='" + event.verb + "'" +
 			" data-notes='" + event.notes + "'" +
 			" data-bg-color='" + event.backgroundColor + "'" +
-			" data-instance-id='" + event.instanceId + "'" +
 			" data-fc-id='" + event._id + "'" +
 			" data-locked='" + event.locked + "'" +
 
@@ -916,6 +916,7 @@ BNB.calendar = (function(){
 
 	return {
 		makeJsonFromNode: makeJsonFromNode,
+		makeHtmlFromJson: makeHtmlFromJson,
 		displayTopError: displayTopError,
 		removeTopError: removeTopError,
 		getEvents: getEvents,
