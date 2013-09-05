@@ -83,7 +83,7 @@
                     </thead>
                     {% endif %}
                         <tbody>
-                            {% for workflow in request.user.workflow_set.all %}
+                            {% for workflow in organization.workflow_set.all %}
                             <tr>
                                 <td><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}">{{ workflow.name }}</a></td>
                                 <td>{{ workflow.numberOfProtocols }}</td>
@@ -94,7 +94,7 @@
                     </table>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Experiments</h3></li>
-        {% for experiment in request.user.experiment_set.all %}
+        {% for experiment in organization.experiment_set.all %}
             <li><a href="{{ experiment.get_absolute_url }}"><i class="icon-play-circle"></i> {{ experiment.name }}</a></li>
         {% endfor %}
         </ul>

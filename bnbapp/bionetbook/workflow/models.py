@@ -27,7 +27,7 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     name = models.CharField(_("Workflow Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-
+    owner = models.ForeignKey(Organization)
 
     def save(self, *args, **kwargs):
     	if not self.data:
