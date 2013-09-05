@@ -62,6 +62,7 @@ class Calendar(TimeStampedModel):
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
+    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
     def save(self, *args, **kwargs):
         # self.data = {}
@@ -70,6 +71,12 @@ class Calendar(TimeStampedModel):
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
+
+        new_slug = self.generate_slug()
+
+        if not new_slug == self.slug: # Triggered when its a clone method
+            self.slug = new_slug
+            super(Calendar, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def __unicode__(self):
         return self.name
@@ -89,6 +96,13 @@ class Calendar(TimeStampedModel):
     #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
     #     print ret
 
+    def generate_slug(self):
+        slug = slugify(self.name)
+        if self.pk:
+            return "%d-%s" % (self.pk, slug)
+        else:
+            return slug
+
     def setupCalendar(self):
         ret = {'meta':{},'events':[]}
         userExperimentList = self.user.experiment_set.all()
@@ -99,6 +113,7 @@ class Calendar(TimeStampedModel):
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
+                        print p.slug + " " + action['objectid']
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
                 for element in actionList:
