@@ -257,8 +257,8 @@ def get_timeunit(time_var, desired_unit = 'sec'):
                 time_var[1])
 
 def eval_time(node, value = 'min_time'):
-    ''' time_var = [value_str, 'units']
-    return (float(min_value), [,float(max_value)], 'units', 'original units')
+    ''' 
+    return a string in sec 'min_time - max_time'
     '''
 
     # action_min_time = 0
@@ -409,7 +409,7 @@ class ProtocolChangeLog(object):
 
         for key in old_ids:     # UPDATED AN DELETED NODES
             if key in new_ids:  # CHECK FOR NODE EDIT
-                print "\nNODE EDIT: %s" % key
+                # print "\nNODE EDIT: %s" % key
                 new_node = self.new_record.nodes[key]
                 node_type = new_node.__class__.__name__.lower()
 

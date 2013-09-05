@@ -113,6 +113,7 @@ class Protocol(TimeStampedModel):
         self.update_duration()
         
         # DIFF DATA
+        # print 'determine old'
         if not self.pk and not self.parent_id: # protocol is new
             old_state = None            
         elif not self.pk and self.slug: # protocol is cloned
@@ -120,23 +121,24 @@ class Protocol(TimeStampedModel):
         else:     
             old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL
 
+        # print old_state    
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-        
+        # print 'triggered first save'
         new_slug = self.generate_slug()
 
         if not new_slug == self.slug: # Triggered when its a clone method
             self.slug = new_slug
             super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+            # print 'triggered second save'
         
+        # print 'determine new'
         new_state = self
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
 
-        # LOG THIS HISTORY OBJECT HERE
-        history = History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT")
-        history.update_from_diff(diff)
-        history.save()
-
+        # LOG THIS HISTORY OBJECT HERE IF THERE IS A DIFF
+        if diff.hdf:
+            History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data=diff.hdf)
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
@@ -233,7 +235,7 @@ class Protocol(TimeStampedModel):
                         if 'objectid' in reagent: # hasattr doesn't work here I think because of unicode
                             uid_list.append(reagent['objectid'])
 
-        print "\nUID: %s" % uid
+        # print "\nUID: %s" % uid
 
         if uid not in uid_list:
             return uid
@@ -493,7 +495,8 @@ class Protocol(TimeStampedModel):
                     action['duration'] = ""
 
                 if action['verb'] in MANUAL_VERBS:    # if it should be a manual action, update
-                    if 'duration' in action and action['duration'] and 'min_time' not in action['verb']:
+                    print action['verb']
+                    if 'duration' in action and 'min_time' in action['verb']:
                         time = action['duration'].split('-')
                         if time and time[0]:
                             action_min_time = float(time[0])
@@ -732,18 +735,18 @@ class NodeBase(dict):
         # self.set_defaults()
 
     def register_with_parent(self):
-        if self.parent_key_name in parent and parent[self.parent_key_name]:                         # CHECK TO SEE IF THE KEY EXISTS
+        if self.parent_key_name in self.parent and self.parent[self.parent_key_name]:                         # CHECK TO SEE IF THE KEY EXISTS
             if self.parent_key_plural:                                                              # FALL THROUGH IF NOT PLURAL
-                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:   # CHECK IF THIS IS ALREADY A CHILD OF THE PARENT
-                    parent[self.parent_key_name].append(self)                                       # IF NOT APPEND
+                if self['objectid'] not in [x['objectid'] for x in self.parent[self.parent_key_name]]:   # CHECK IF THIS IS ALREADY A CHILD OF THE PARENT
+                    self.parent[self.parent_key_name].append(self)                                       # IF NOT APPEND
                 return                                                                              # RETURN
             # elif parent[self.parent_key_name]['objectid'] == self['objectid']:                      # IF IT IS ALREADY THE CHILD, RETURN
             #     return
 
         if self.parent_key_plural:
-            parent[self.parent_key_name] = [self]   # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+            self.parent[self.parent_key_name] = [self]   # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
         else:
-            parent[self.parent_key_name] = self     # NO HARM IN RE-ASSIGNING IF IT'S ALREADY THE CHILD?
+            self.parent[self.parent_key_name] = self     # NO HARM IN RE-ASSIGNING IF IT'S ALREADY THE CHILD?
 
     def clean_data(self, data):
         # OBJECT KEY GENERATOR IF MISSING
@@ -830,15 +833,7 @@ class Component(NodeBase):
         if 'name' in self and not['name'] and 'reagent_name' in self:
             self['name'] = self.pop("reagent_name")
 
-        if self.parent_key_name in parent:
-            if parent[self.parent_key_name]:
-                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
-                    parent[self.parent_key_name].append(self)
-                return
-
-        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
-
-        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
+        self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
         
     def get_absolute_url(self):
         return reverse("component_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'component_slug':self.slug  })
@@ -881,21 +876,8 @@ class Machine(NodeBase):
     default_attrs = ['name', 'objectid', 'min_time', 'max_time', 'time_comment', 'time_units', 'min_temp', 'max_temp', 'temp_comment', 'temp_units', 'min_speed', 'max_speed', 'speed_comment', 'speed_units']
 
     def __init__(self, protocol, parent=None, data=None, **kwargs):
-        #self.action = action
-        #self.parent = self.action
-
-        # MAKE SURE THESE ATTRIBUTES ARE IN THE MACHINE OBJECT
-        for item in self.default_attrs:
-            if item not in data:
-                data[item] = None
-
-        # if 'machine' in parent:
-        #     parent['machine'] = self
-        
-        parent['machine'] = self # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
-        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
-
         super(Machine, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+        self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
         
     def get_absolute_url(self):
         return reverse('machine_detail', kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.parent.parent.slug, 'action_slug':self.parent.slug, 'machine_slug':self.slug  })
@@ -937,15 +919,15 @@ class Thermocycle(NodeBase):
         #self.parent = parent
         super(Thermocycle, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
 
-        if self.parent_key_name in parent:
-            if parent[self.parent_key_name]:
-                if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
-                    parent[self.parent_key_name].append(self)
-                return
+        # if self.parent_key_name in parent:
+        #     if parent[self.parent_key_name]:
+        #         if self['objectid'] not in [x['objectid'] for x in parent[self.parent_key_name]]:
+        #             parent[self.parent_key_name].append(self)
+        #         return
         
-        parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
+        # parent[self.parent_key_name] = [self] # ANY OTHER CASE, MAKE SURE THIS IS REGISTERED WITH THE PARENT
 
-        # self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
+        self.register_with_parent()   # REPLACE THE ABOVE WITH THIS
 
         # if 'reagent_name' in self:
         #     self['name'] = self.pop("reagent_name")
@@ -986,13 +968,13 @@ class Action(NodeBase):
 
     parent_key_name = "actions"
 
-    # def __init__(self, protocol, parent=None, data=None, **kwargs):
-    #     #self.step = step
-    #     self.parent = parent
-    #     super(Action, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
+    def __init__(self, protocol, parent=None, data=None, **kwargs):
+        #self.step = step
+        # self.parent = parent
+        super(Action, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.            
     
-    #     REGISTER SELF WITH PARENT?
-    #     self.register_with_parent()
+        # REGISTER SELF WITH PARENT?
+        self.register_with_parent()
 
     def update_data(self, data={}, **kwargs):
         super(Action, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
@@ -1213,8 +1195,10 @@ class Step(NodeBase):
 
     parent_key_name = "steps"
 
+    # NEED TO TEST BELOW AND REMOVE THE self.protocol.add_node FROM THE update_data METHOD
     # def __init__(self, protocol, parent=None, data=None, **kwargs):
     #     super(Step, self).__init__(protocol, parent=parent, data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
+    #     self.register_with_parent()        
 
     def update_data(self, data={}, **kwargs):
         super(Step, self).update_data(data=data, **kwargs) # Method may need to be changed to handle giving it a new name.
@@ -1234,6 +1218,9 @@ class Step(NodeBase):
         self.protocol.add_node(self)
         # else:
         #     print "ALREADY THERE"
+
+    def register_with_parent(self):
+        self.protocol.add_node(self)
 
     def get_absolute_url(self):
         return reverse("step_detail", kwargs={'owner_slug':self.protocol.owner.slug, 'protocol_slug': self.protocol.slug, 'step_slug':self.slug })
