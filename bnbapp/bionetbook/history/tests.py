@@ -202,6 +202,27 @@ class HistoryModelTests(AutoBaseTest):
         self.assertIn('duration', history[0].data['update'][0]['attrs'])
         self.assertIn('duration', history[0].data['update'][1]['attrs'])
 
+
+    def test_log_adding_multiple_thermocycle_nodes_to_action(self):
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass
+
+    def test_log_adding_machine_node_to_action(self):
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass    
+
+    def test_log_editing_multiple_component_nodes_to_action(self):    
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass
+
+    def test_log_editing_multiple_thermocycle_nodes_to_action(self):    
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass    
+
+    def test_log_editing_machine_node_to_action(self):    
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass        
+
     def test_log_adding_and_removing_step_from_protocol(self):
         self.protocol.published = True
         step = Step(self.protocol)
@@ -319,7 +340,13 @@ class HistoryModelTests(AutoBaseTest):
         self.assertIn('duration', history[0].data['update'][1]['attrs'])
         
         
-        
+    def test_log_deleting_multiple_thermocycle_nodes_from_action(self):
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass
+
+    def test_log_deleting_machine_node_from_action(self):
+        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
+        pass    
                 
 
 
