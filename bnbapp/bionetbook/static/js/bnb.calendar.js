@@ -3,6 +3,8 @@
 //      Calendar functionality      //
 //                                  //
 //////////////////////////////////////
+// Last edit: Sept. 5, 2013
+//
 // Todo:
 // make sure all units of time match up
 // selectors need retooling - they need to use stepId/actionId
@@ -10,7 +12,9 @@
 // Make sure stepNumber checks it's position against only the step it's in
 
 $(document).ready(function() {
-	var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5cm87f28ljpog%40group.calendar.google.com/public/basic';
+	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
+	//				 'm87f28ljpog%40group.calendar.google.com/public/basic';
+	var gCalURL = '';
 
 	// initialize the draggable events
 	$('#external-events div.external-event').each(function() {

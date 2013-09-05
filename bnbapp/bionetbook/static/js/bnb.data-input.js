@@ -1,9 +1,8 @@
 "use strict";
 
-unitTest1();
-
 // Creating a new Protocol - as opposed to editing an existing one
 var createMode = false;
+var Protocol = {};
 
 // Protocol global object creation
 if(typeof Protocol == 'undefined'){
@@ -32,12 +31,8 @@ BNB.dataInput = (function(){
                     verbList.push( e.data[i].name );
                 }
             },
-            error: function(e){console.log("Ajax request failed. (Verb List)")}
+            error: function(e){console.log("Failed to get Verb List.")}
         });
-
-        // Let title + desc be editible
-        fieldEditingFunctionality(document.getElementById("protocol-title"), "protocol name", "Name this protocol", Protocol, "title");
-        fieldEditingFunctionality(document.getElementById("protocol-description"), "description", "add a description", Protocol, "description");
 
         // Add new tab when the "add new tab" is clicked
         $('#nav-tabs li.add-new-step a').on('click.newTab', function (e) {
@@ -49,7 +44,7 @@ BNB.dataInput = (function(){
         if(createMode) 
             intro();
         else
-            parseExistingProtocol();
+            getExistingProtocol();
 
         // Add functionality to the save button
         document.getElementById('save-protocol').onclick = function(){
@@ -146,14 +141,29 @@ BNB.dataInput = (function(){
 
             // Add first Step
             addNewTab();
+
+            // Let title + desc be editible
+            fieldEditingFunctionality(document.getElementById("protocol-title"), 
+                "protocol name", "Name this protocol", Protocol, "title");
+            fieldEditingFunctionality(document.getElementById("protocol-description"), 
+                "description", "add a description", Protocol, "description");
         }
     }
 
     function parseExistingProtocol(){
 
+        var title = document.getElementById("protocol-title"),
+            desc = document.getElementById("protocol-description");
         // Remove intro text
         $('#protocol-intro').fadeOut("fast");
         $(document.getElementById("nav-tabs")).removeClass("blur-text");
+
+        // Let title + desc be editible
+        fieldEditingFunctionality(title, "protocol name", "Name this protocol", Protocol, "title");
+        fieldEditingFunctionality(desc, "description", "add a description", Protocol, "description");
+
+        title.innerHTML = Protocol.title;
+        desc.innerHTML = Protocol.description;
 
         for(var i = 0, len = Protocol.steps.length; i < len; i++){
             addNewTab( Protocol.steps[i] );
@@ -208,12 +218,12 @@ BNB.dataInput = (function(){
             newLink,                        // Edit functionality
             "step name",                    // Placeholder text
             "Name this step",               // Empty submit message
-            Protocol.steps[numTabs],        // Reference to js object
+            Protocol.steps[tabNum-1],        // Reference to js object
             "title"                         // Property of object to link this field to
         );
 
         // Construct tab content and append it to the tab content container
-        createTabContent(tabNum, tempId);
+        createTabContent(tabNum, (tempId || existingStep.id));
 
         // Construct node heirarchy
         newTab.appendChild(newLink);
@@ -1081,6 +1091,7 @@ BNB.dataInput = (function(){
 
     // Generic editing capabilities for title, desc, and tabs
     function fieldEditingFunctionality(ele, placeholderText, messageOnEmpty, objReference, protocolProperty){
+
         ele.onclick = function(){
 
             // Exit if element already has an input field in it (it's already being edited)
@@ -1183,6 +1194,31 @@ BNB.dataInput = (function(){
         return String(str).replace(/&amp;/g, '&').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Edit an existing Protocol
+    function getExistingProtocol(){
+        // Get slug
+        var a = window.location.href.split('/');
+        while(a[a.length-1] == 'edit' || a[a.length -1] == 'test' || a[a.length -1] == false) a.pop();
+        var slug = a[a.length-1];
+
+        $.ajax({
+            url: apiUrlPrefix + 'protocol/' + slug,
+            dataType: 'json',
+            success: function(e){
+                // Construct Protocol structure
+                var p = e.data.data,
+                    d = e.data;
+                p.id = d.id;
+                p.description = d.description;
+                p.title = d.name;
+                p.slug = d.slug;
+                window.Protocol = p;
+                parseExistingProtocol();
+            },
+            error: function(e){console.log("Failed to recieve existing Protocol)")}
+        });
+    }
+
     return {
         verbList: verbList,
         htmlEntities: htmlEntities
@@ -1241,13 +1277,5 @@ Protocol = {
 }
 */
 
-// Edit an existing Protocol
-function unitTest1(){
-window.Protocol = {"id":"p1","steps":[{"id":1378403551299,"actions":[
-{"id":1378403552452,"verb":"Combine","isActive":true,"verbFormFieldValues":{},
-"componentFields":[],"machineFields":false,"thermocyclerFields":false}],
-"title":""},{"id":1378405288438,"actions":[]}],"title":"Unit Test Protocol",
-"description":"UnitTest1 Description"};
-}
 
 
