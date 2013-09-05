@@ -8,7 +8,7 @@ from django.utils import simplejson
 
 from braces.views import LoginRequiredMixin
 
-from workflow.forms import WorkflowForm
+from workflow.forms import WorkflowForm, WorkflowManualForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from schedule.models import Calendar
@@ -120,15 +120,15 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
         return super(WorkflowCreateView, self).form_valid(form)
 
 
-    def get_form(self, form_class):
-        """
-        Returns an instance of the form to be used in this view.
-        """
-        form = form_class(**self.get_form_kwargs())
-        form.instance.author = self.request.user
-        #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
-        # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
-        return form
+    # def get_form(self, form_class):
+    #     """
+    #     Returns an instance of the form to be used in this view.
+    #     """
+    #     form = form_class(**self.get_form_kwargs())
+    #     form.instance.author = self.request.user
+    #     #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
+    #     # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
+    #     return form
 
 
 # class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
