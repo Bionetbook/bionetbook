@@ -5,10 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 
 class WorkflowForm(forms.ModelForm):
 
-    class Meta:
-        model = Workflow
+	class Meta:
+		model = Workflow
         #exclude = ('parent', 'slug', 'duration_in_seconds', 'status','raw')
-        exclude = ('slug', 'duration', 'author', 'owner', 'protocols')
+        exclude = ('data', 'slug', 'duration', 'author', 'owner', 'protocols')
 
 
 class WorkflowManualForm(forms.Form):
