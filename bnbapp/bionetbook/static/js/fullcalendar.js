@@ -3986,48 +3986,8 @@ function AgendaEventRenderer() {
 		//  Custom Edit Area 				   //
 		//  Added data to  DOM nodes		   //
 		/////////////////////////////////////////
-		var isLocked = (event.locked == "true" || event.locked == true) ? "locked" : "unlocked";
-		html +=
-			
-			" class='" + classes.join(' ') + " " + weekDays[new Date(event._start).getDay()] + "'" +
-			// Data attributes
-			//------------------------------------------------//
-			// Use to group steps together after they've been added
-			" data-step-number='" + event.stepNumber + "'" +
-			" data-event-id='" + event.eventId + "'" +
-			" data-event-start='" + event._start + "'" +
-			" data-event-end='" + event._end + "'" +
-			" data-active='" + event.active + "'" +
-			" data-notes='" + event.notes + "'" +
-			" data-bg-color='" + event.backgroundColor + "'" +
-			" data-instance-id='" + event.instanceId + "'" +
-			" data-fc-id='" + event._id + "'" +
-			" data-locked='" + event.locked + "'" +
-
-			" style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px;" + skinCss + "'" +
-			">" +
-
-			// Lock + Notes Icons
-			"<span class='"+ isLocked +"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
-				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
-				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
-			"<img class='edit-notes' src='/static/img/gear.png' onclick='BNB.calendar.Notes.editNotes(this)'>" +
-
-			"<div class='fc-event-inner'>" +
-			"<div class='fc-event-time'>" +
-			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
-			"</div>" +
-			"<div class='fc-event-title'>" +
-			htmlEscape(event.verb || event.title) +
-			"</div>" +
-			"</div>" +
-			"<div class='fc-event-bg'></div>";
-		if (seg.isEnd && isEventResizable(event)) {
-			// html +=
-			// 	"<div class='ui-resizable-handle ui-resizable-s'>=</div>";
-		}
-		html +=
-			"</" + (url ? "a" : "div") + ">";
+		html += BNB.calendar.makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt);
+		html += "</" + (url ? "a" : "div") + ">";
 		return html;
 	}
 	
@@ -4214,7 +4174,7 @@ function AgendaEventRenderer() {
 				// Make sure the protocol steps aren't out of order!
 				var eventId = ev.target.getAttribute("data-event-id"),
 					draggedStep = ev.target.getAttribute("data-step-number"),
-					instanceId = ev.target.getAttribute("data-instance-id"),
+					instanceId = ev.target.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
 					isLocked = !!ev.target.getElementsByClassName("locked"),
 					protocolSteps = [],
 					stepsAreInOrder = true;
@@ -4222,7 +4182,10 @@ function AgendaEventRenderer() {
 				// Put each element into an array and iterate over the array to see if the 
 				// elements' start dates are in the wrong order
 				// instanceId is used to only select the steps in the same protocol instance
-				$("[data-event-id=" + eventId + "][data-instance-id=" + instanceId + "]").each(function(){
+				$(".fc-event").each(function(){
+					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+					if(thisId != instanceId) return;
+
 					var stepNum = this.getAttribute("data-step-number");
 					var startTime = (new Date(this.getAttribute("data-event-start")).getTime()).toString();
 					protocolSteps[stepNum] = startTime;
@@ -4587,7 +4550,8 @@ function View(element, calendar, viewName) {
 		var eventId = event._id;
 		var eventID = ev.target.getAttribute("data-event-id"),
 			draggedStep = ev.target.getAttribute("data-step-number"),
-			instanceId = ev.target.getAttribute("data-instance-id"),
+			instanceId = ev.target.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
+			completeId = ev.target.getAttribute("data-event-id"),
 			isLocked = !!ev.target.getElementsByClassName("locked")[0],
 			isMonthView = !!$(ev.target).hasClass("fc-event-hori"),
 			protocolSteps = [],
@@ -4597,32 +4561,39 @@ function View(element, calendar, viewName) {
 		// Put each element into an array and iterate over the array to see if the 
 		// elements' start dates are in the wrong order
 		// instanceId is used to only select the steps in the same protocol instance
-		$("[data-event-id=" + eventID + "][data-instance-id=" + instanceId + "]").each(function(){
+		$(".fc-event").each(function(){
+			var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+			if(thisId != instanceId) return;
+
 			var stepNum = this.getAttribute("data-step-number");
 			var startTime = (new Date(this.getAttribute("data-event-start")).getTime()).toString();
 			protocolSteps[stepNum] = startTime;
 		});
 
-		// We start at Step1 so the array doesn't start counting at 0 (.length - 1)
-		// Count variable started at 1 (.length + 1)
-		for (var s = 1; s < protocolSteps.length; s++){
+		// Check for out of order
+		if(!isLocked && protocolSteps.length > 1){
 
-			// Add the deltaTime variables to the startTime before drag to get the endDrag time
-			var dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
-			
-			// Make sure we're not comparing the element to itself
-			if (draggedStep != s){
+			// We start at Step1 so the array doesn't start counting at 0 (.length - 1)
+			// Count variable started at 1 (.length + 1)
+			for (var s = 1; s < protocolSteps.length; s++){
 
-				if (draggedStep < s && 	// Element comes BEFORE other steps
-					parseInt(protocolSteps[draggedStep]) + dropDeltaTime > 
-					parseInt(protocolSteps[s])) {
-					stepsAreInOrder = false;
-				}
-				// Elements are out of order
-				if (draggedStep > s &&	// Element comes AFTER other steps
-					parseInt(protocolSteps[draggedStep]) + dropDeltaTime < 
-					parseInt(protocolSteps[s])) {
-					stepsAreInOrder = false;
+				// Add the deltaTime variables to the startTime before drag to get the endDrag time
+				var dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
+				
+				// Make sure we're not comparing the element to itself
+				if (draggedStep != s){
+
+					if (draggedStep < s && 	// Element comes BEFORE other steps
+						parseInt(protocolSteps[draggedStep]) + dropDeltaTime > 
+						parseInt(protocolSteps[s])) {
+						stepsAreInOrder = false;
+					}
+					// Elements are out of order
+					if (draggedStep > s &&	// Element comes AFTER other steps
+						parseInt(protocolSteps[draggedStep]) + dropDeltaTime < 
+						parseInt(protocolSteps[s])) {
+						stepsAreInOrder = false;
+					}
 				}
 			}
 		}
@@ -4630,7 +4601,10 @@ function View(element, calendar, viewName) {
 			var actionsToMove = [];
 
 			// Add each action to array
-			$(specificViewSelector+"[data-instance-id="+instanceId+"]").each(function(){
+			$(".fc-event").each(function(){
+				var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
+				if(thisId != instanceId) return;
+
 				var alreadyAdded = false,
 					thisEvent = eventsByID[this.getAttribute("data-fc-id")][0];
 
@@ -4644,7 +4618,6 @@ function View(element, calendar, viewName) {
 
 			});
 
-			console.log(actionsToMove);
 			// Move the actions
 			for(var i = 0; i < actionsToMove.length; i++){
 				BNB.calendar.renderUpdatedEvents(actionsToMove[i], dayDelta, minuteDelta);
@@ -5258,7 +5231,6 @@ function DayEventRenderer() {
 		var isRTL = opt('isRTL');
 		var event = segment.event;
 		var url = event.url;
-		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 		// generate the list of CSS classNames
 		var classNames = [ 'fc-event', 'fc-event-hori' ];
@@ -5292,67 +5264,8 @@ function DayEventRenderer() {
 		//  Custom Edit Area 					//
 		//	Add event data to the DOM element   //
 		//////////////////////////////////////////
-		var title = event.verb || event.title;
-		var isLocked = (event.locked === "true" || event.locked === true) ? "locked" : "unlocked";
-
-		html +=
-			" class='" + classNames.join(' ') + " " + weekDays[new Date(event._start).getDay()] + "'" +
-
-			// Data attributes
-			//------------------------------------------------//
-			// Use to group steps together after they've been added
-			" data-step-number='" + event.stepNumber + "'" +
-			" data-event-id='" + event.eventId + "'" +
-			" data-event-start='" + event._start + "'" +
-			" data-event-end='" + event._end + "'" +
-			" data-active='" + event.active + "'" +
-			" data-notes='" + event.notes + "'" +
-			" data-bg-color='" + event.backgroundColor + "'" +
-			" data-instance-id='" + event.instanceId + "'" +
-			" data-fc-id='" + event._id + "'" +
-			" data-locked='" + event.locked + "'" +
-
-			" style=" +
-				"'" +
-				"position:absolute;" +
-				"z-index:8;" + // TODO: move this into a constant or put it in the stylesheet
-				"left:" + segment.left + "px;" +
-				skinCss +
-				"'" +
-			">" +
-
-			// Lock + Notes Icons
-			"<span class='"+isLocked+"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
-				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
-				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
-			"<img class='edit-notes' src='/static/img/gear.png' onclick='BNB.calendar.Notes.editNotes(this)'>" +
-
-
-			"<div class='fc-event-inner'>";
-		if (!event.allDay && segment.isStart) {
-			html +=
-				"<span class='fc-event-time'>" +
-				htmlEscape(
-					formatDates(event.start, event.end, opt('timeFormat'))
-				) +
-				"</span>";
-		}
-		html +=
-			"<span class='fc-event-title'>" + htmlEscape((event.verb || event.title)) + "</span>" +
-			"</div>";
-		if (segment.isEnd && isEventResizable(event)) {
-			html +=
-				"<div class='ui-resizable-handle ui-resizable-" + (isRTL ? 'w' : 'e') + "'>" +
-				"&nbsp;&nbsp;&nbsp;" + // makes hit area a lot better for IE6/7
-				"</div>";
-		}
+		html += BNB.calendar.makeHtmlFromJson(event, classNames, segment, skinCss, htmlEscape, formatDates, opt);
 		html += "</" + (url ? "a" : "div") + ">";
-
-		// TODO:
-		// When these elements are initially rendered, they will be briefly visibile on the screen,
-		// even though their widths/heights are not set.
-		// SOLUTION: initially set them as visibility:hidden ?
-
 		return html;
 	}
 
