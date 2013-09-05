@@ -190,6 +190,42 @@ class Protocol(TimeStampedModel):
     ##########
     # Generators
 
+    def as_dict(self, compressed=False):
+        '''
+        Similar to the __dict__ method but cleans up fields and properly formats the JSONField
+        Compressed will ignore root-level fields that are empty
+        '''
+        result = {}
+
+        tmp_dict = self.__dict__
+
+        for key, value in tmp_dict.items():
+            if compressed and not value:
+                continue
+
+            if isinstance(value, datetime.datetime):
+                result[key] = value.isoformat()
+            elif key[0] != "_":
+                result[key] = value
+
+
+        # result['data'] = dict(self.data)
+        # result['pk'] = self.pk
+
+        return result
+
+        # GET A LIST OF ALL THE ATTRS ON THE MODEL
+
+        # SERIALIZE THE ALLOWED ATTRS INTO A DICT
+
+        # ADD THE ID FIELD
+        # result['id'] = self.pk
+
+        # ADD THE DATA TO THE DICT
+
+        # RETURN
+        # return result
+
     def generate_name(self, name, count=0):
 
         if count:
