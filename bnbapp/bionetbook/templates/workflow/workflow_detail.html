@@ -1,5 +1,65 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
+{% block title %}{{ workflow.name }}{% endblock %}
 
+{% block page_title %}{{ workflow.name }} {% endblock %}
 
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
+      	<span class="divider">/</span></li>
+      <li class="active">{{ workflow.name }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Protocols</h3></li>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        	<th>#</th>
+                            <th>Title</th>
+                            {% if request.user.is_authenticated %}
+                            <th>Status</th>
+                            {% endif %}
+                            <th>Author</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                        {% for protocol in protocols %}
+                        <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
+                        <td>
+                        {% if not protocol.published %}
+                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% else %}
+                            <a href="#"><i class="icon-lock"></i></a>    
+                        {% endif %}
+                        {% if protocol.public %}
+                            <a href ="#"><i class="icon-globe"></i></a>
+                        {% else %}
+                            <a href ="#"><i class="icon-eye-open"></i></a>
+                        {% endif %}
+                    </td>
+                        <td>{{ protocol.author.last_name }}</td>
+                        <td>{{ protocol.duration|protocol_time_round_up }}</td>
+                        <td>{{ protocol.get_actions|length }}</td>
+                        <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
+                    </tr>
+                        {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+{% endblock %}

@@ -42,6 +42,21 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    def protocols(self):
+        if self.data['protocols']:
+            return self.data['protocols']
+        else:
+            self.setupWorkflow()
+            return self.data['protocols']
+
+    def numberOfProtocols(self):
+        if self.protocols:
+            return len(self.protocols())
+        else:
+            return 0
+
+    def get_absolute_url(self):
+        return reverse("workflow_detail", kwargs={'owner_slug':self.user.organization_set.get(pk=1).slug,'workflow_slug':self.slug})
         
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''

@@ -21,6 +21,7 @@
         </ul>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Create Workflow</h3></li>
+            <li><a href="{% url workflow_create owner_slug=organization.slug %}">{{ 'New Workflow'}}</a></li>
         </ul>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Create Experiment</h3></li>
@@ -71,10 +72,26 @@
         </table>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Workflows</h3></li>
-        {% for workflow in request.user.workflow_set.all %}
-            <li><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}"><i class="icon-play-circle"></i> {{ workflow.name }}</a></li>
-        {% endfor %}
-        </ul>
+                <table class="table table-striped">
+                    {% if request.user.workflow_set.all %}
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th># of Protocols</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    {% endif %}
+                        <tbody>
+                            {% for workflow in request.user.workflow_set.all %}
+                            <tr>
+                                <td><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}">{{ workflow.name }}</a></td>
+                                <td>{{ workflow.numberOfProtocols }}</td>
+                                <td>{{ workflow.modified|date:"M d,Y H:i"}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Experiments</h3></li>
         {% for experiment in request.user.experiment_set.all %}

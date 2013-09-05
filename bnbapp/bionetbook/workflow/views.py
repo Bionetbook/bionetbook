@@ -8,6 +8,7 @@ from django.utils import simplejson
 
 from braces.views import LoginRequiredMixin
 
+from workflow.forms import WorkflowForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from schedule.models import Calendar
@@ -25,13 +26,19 @@ class WorkflowDetailView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(WorkflowDetailView, self).get_context_data(**kwargs)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        wrkflw = self.request.user.workflow_set.get(slug=slug)
-        if wrkflw:
-            print "YESYEYSYSYS"
-            context['workflow'] = wrkflw
+        workflow = self.request.user.workflow_set.get(slug=slug)
+        org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+        if workflow:
+            context['workflow'] = workflow
         else:
-            print "NONONONONONO"
             context['workflow'] = None
+        if org:
+            context['organization'] = org
+        else:
+            context['organization'] = None
+            print "NONE"
+        protocols = [Protocol.objects.get(pk=p) for p in workflow.data['protocols']]
+        context['protocols'] = protocols
         return context
 
 
@@ -80,48 +87,48 @@ class WorkflowListView(LoginRequiredMixin, ListView):
 #     form_class = WorkflowForm
 
 
-# class WorkflowCreateView(LoginRequiredMixin, CreateView):
-#     '''
-#     View used to create new protocols
-#     '''
+class WorkflowCreateView(LoginRequiredMixin, CreateView):
+    '''
+    View used to create new protocols
+    '''
 
-#     model = Workflow
-#     form_class = WorkflowForm
-#     slug_url_kwarg = "owner_slug"
+    model = Workflow
+    form_class = WorkflowForm
+    slug_url_kwarg = "owner_slug"
 
-#     #def get_queryset(self):
-#     #slug = self.kwargs.get(self.slug_url_kwarg, None)
+    #def get_queryset(self):
+    #slug = self.kwargs.get(self.slug_url_kwarg, None)
 
-#     # def form_valid(self, form):
-#     #     form.instance.owner = self.request.user
-#     #     return super(ProtocolCreateView, self).form_valid(form)
+    # def form_valid(self, form):
+    #     form.instance.owner = self.request.user
+    #     return super(ProtocolCreateView, self).form_valid(form)
 
-#     def get_success_url(self):
-#         return self.object.get_absolute_url()
-
-
-#     def form_valid(self, form):
-#         # This method is called when valid form data has been POSTed.
-#         # It should return an HttpResponse.
-
-#         slug = self.kwargs.get(self.slug_url_kwarg, None)
-#         org = Organization.objects.get(slug=slug)
-
-#         form.instance.owner = org
-#         form.instance.author = self.request.user
-
-#         return super(WorkflowCreateView, self).form_valid(form)
+    def get_success_url(self):
+        return self.object.get_absolute_url()
 
 
-#     def get_form(self, form_class):
-#         """
-#         Returns an instance of the form to be used in this view.
-#         """
-#         form = form_class(**self.get_form_kwargs())
-#         form.instance.author = self.request.user
-#         #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
-#         # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
-#         return form
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        org = Organization.objects.get(slug=slug)
+
+        form.instance.owner = org
+        form.instance.author = self.request.user
+
+        return super(WorkflowCreateView, self).form_valid(form)
+
+
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = form_class(**self.get_form_kwargs())
+        form.instance.author = self.request.user
+        #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
+        # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
+        return form
 
 
 # class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
