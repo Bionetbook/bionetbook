@@ -1,74 +1,65 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}Protocol: {{ object.name }}{% endblock %}
+{% block title %}{{ workflow.name }}{% endblock %}
 
-{% block extracss %}
-  <style>
-  #sortable { list-style-type: none; margin: 0; padding: 0; }
-  </style>
-{% endblock%}
-
+{% block page_title %}{{ workflow.name }} {% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}">Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_list %}">Organizations</a> <span class="divider">/</span></li>
-      <li><a href="{{ object.owner.organization_protocol_list }}">{{ object.owner.name }}</a> <span class="divider">/</span></li>
-      <li><a href="{% url workflow_list object.owner.slug %}">Workflows</a> <span class="divider">/</span></li>
-      <li class="active">{{object.name}}</li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
+      	<span class="divider">/</span></li>
+      <li class="active">{{ workflow.name }}</li>
     </ul>
 {% endblock %}
 
-
-{% block page_title %}Workflow: {{ object.name }}    <small><a href="{{ object.get_update_url }}"><i class="icon-edit"></i> edit</a></small>
-{% endblock %}
-
-
 {% block content %}
 <div class="row">
-    <div class="span6">
-        <h2>Detail</h2>
-        {% object_data_table object %}
-        <small><a href="{{ object.get_delete_url }}"><i class="icon-trash"></i> Delete Workflow</a></small> 
+    <div class="span12">
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Protocols</h3></li>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        	<th>#</th>
+                            <th>Title</th>
+                            {% if request.user.is_authenticated %}
+                            <th>Status</th>
+                            {% endif %}
+                            <th>Author</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                        {% for protocol in protocols %}
+                        <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
+                        <td>
+                        {% if not protocol.published %}
+                            <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% else %}
+                            <a href="#"><i class="icon-lock"></i></a>    
+                        {% endif %}
+                        {% if protocol.public %}
+                            <a href ="#"><i class="icon-globe"></i></a>
+                        {% else %}
+                            <a href ="#"><i class="icon-eye-open"></i></a>
+                        {% endif %}
+                    </td>
+                        <td>{{ protocol.author.last_name }}</td>
+                        <td>{{ protocol.duration|protocol_time_round_up }}</td>
+                        <td>{{ protocol.get_actions|length }}</td>
+                        <td>{{ protocol.modified|date:"M d, Y H:i"}}</td>
+                    </tr>
+                        {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="span6">
-        <h2>Protocols</h2>
+    
+</div>
 
-        <form id="sort_order" method="post">
-          ORDER: <input type="text" name="order">
-          <input type="submit" value="Save">
-        </form>
-
-        <ul id="sortable">
-            {% for protocol in object.ordered_protocols %}
-            <li><div id="proto_{{protocol.pk}}" class="btn"><i class="icon-move"></i> {{ protocol.name }}</div></li>
-            {% endfor %}
-        </ul>
-
-    </div>
-    <!-- secondary form div -->
-</div>    
-
-{% endblock %}
-
-{% block extrajs %}
-  <script>
-  // When called this sets the form field 'order' to the order of the child divs in the sortable list.
-  function setOrder() {
-    var elms = $.map(document.getElementById("sortable").getElementsByTagName("div"), function(element) { return $(element).attr('id'); });
-    document.forms['sort_order'].elements["order"].value = elms.join();
-  };
-
-  // When an update event happens on the sortable, the setOrder() is called.
-  $(function() {
-    $( "#sortable" ).sortable( { 
-                          update: function(event, ui) { setOrder(); },
-                    } );
-    $( "#sortable" ).disableSelection();
-  });
-
-  setOrder();
-
-  </script>
 {% endblock %}

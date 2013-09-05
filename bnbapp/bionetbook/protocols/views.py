@@ -830,10 +830,10 @@ class ActionCreateView(NodeCreateViewBase):
 
         action = Action(protocol, parent=step, data=data)
 
-        if 'actions' in step:
-            step['actions'].append(action)
-        else:
-            step['actions'] = [action]
+        # if 'actions' in step:
+        #     step['actions'].append(action)
+        # else:
+        #     step['actions'] = [action]
         protocol.save()
 
         messages.add_message(self.request, messages.INFO, "Your action was added.")

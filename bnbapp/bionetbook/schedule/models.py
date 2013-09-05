@@ -36,6 +36,7 @@ class Calendar(TimeStampedModel):
                             'experiment':'experiment 1',
                             'notes':"",
                             'verb':"mix"
+                            'active':"active"
                         },
                         {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
                             'start':1376957033,
