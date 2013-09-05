@@ -69,12 +69,12 @@ class History(TimeStampedModel):
     #     '''
     #     self.history_event("create", node_id, data)
 
-    def history_event(self, etype, node_id, data={}):
-        if not etype in self.data: #Causes duplicate entries and cross object entries
-            self.data[etype] = []
+    # def history_event(self, etype, node_id, data={}):
+    #     if not etype in self.data: #Causes duplicate entries and cross object entries
+    #         self.data[etype] = []
 
-        self.data[etype].append({'id':node_id, "attrs": data })
-        # print 'data to save: %s'% self.data
+    #     self.data[etype].append({'id':node_id, "attrs": data })
+    #     # print 'data to save: %s'% self.data
 
     def update_from_diff(self, diff):
         if not self.data:
@@ -83,10 +83,10 @@ class History(TimeStampedModel):
         for key in diff.hdf:
             for item in diff.hdf[key]:
 
-                if not key in self.data:    # MAKE SURE THIS IS A LIST
-                    self.data[key] = []
+    #             if not key in self.data:    # MAKE SURE THIS IS A LIST
+    #                 self.data[key] = []
 
-                self.data[key].append( item )
+    #             self.data[key].append( item )
 
         # self.data[etype].append({'id':node_id, "attrs": data })
 
