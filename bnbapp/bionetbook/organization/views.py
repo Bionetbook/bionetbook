@@ -38,7 +38,8 @@ class OrganizationMainView(LoginRequiredMixin, TemplateView):
 	template_name = "organization/organization_main.html"    
 	def get_context_data(self, **kwargs):
 		context = super(OrganizationMainView, self).get_context_data(**kwargs)
-		org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+		slug = self.kwargs.get(self.slug_url_kwarg, None)	
+		org = self.request.user.organization_set.get(slug=slug)
 		if org:
 			context['organization'] = org
 		else:

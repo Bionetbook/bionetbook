@@ -31,6 +31,7 @@
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Protocols</h3></li>
                 <table class="table table-striped">
+                    {% if organization.protocol_set.all %}
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -43,6 +44,7 @@
                             <th>Last Modified</th>
                         </tr>
                     </thead>
+                    {% endif %}
                         <tbody>
                         {% for protocol in organization.protocol_set.all %}
                         <tr>
