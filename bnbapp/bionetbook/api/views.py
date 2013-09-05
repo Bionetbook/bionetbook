@@ -47,7 +47,6 @@ class JSONResponseMixin(object):
         if hasattr(request, '_post'):
             del request._post
             del request._files
-        
         try:
             request.method = "POST"
             request._load_post_and_files()
@@ -60,7 +59,19 @@ class JSONResponseMixin(object):
         request.PUT = request.POST
         return request
 
+    def context_package(self, **kwargs):
+        result = {}
 
+        for key in ['data', 'meta', 'error']:
+            if key in kwargs:
+                result[key] = kwargs[key]
+
+        return result
+
+
+##############
+# CALENDAR API
+##############
 
 class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
@@ -150,7 +161,67 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
 
-# class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):
+
+
+##############
+# PROTOCOL API
+##############
+
+class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):     # NEED A PREMISSION CHECK HERE
+    '''
+    Returns the Protocol in JSON form.  Will provide update and edit mehtods.
+
+    Can be used with either a Primary Key or Slug.
+
+    API Examples, CRUD
+
+    GET: {  'meta':{...},
+            'data':{...<PROTOCOL>...},
+            'error':
+            }
+    '''
+
+    # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def get_protocol(self):
+        '''Unified method to get a protocol via ID or Slug'''
+        if 'protocol_slug' in self.kwargs:
+            result = get_object_or_404( Protocol, slug=self.kwargs['protocol_slug'] )
+        else:
+            result = get_object_or_404( Protocol, id=self.kwargs['protocol_id'] )
+
+        #CHECK TO SEE IF THE USER HAS PERMISSIONS TO VIEW THIS PROTOCOL AND 404 IF NOT
+
+        return result
+
+    def get(self, request, *args, **kwargs):
+        '''Read only method for getting a protocol in JSON format'''
+        protocol = self.get_protocol()
+
+        if protocol.data:
+            return self.render_to_response( self.context_package( data=protocol.as_dict() ) )
+        else:
+            return self.render_to_response( self.context_package( error={'type':'NoObjectData', 'description':'Requested protocol has no data.'} ) )
+
+    def put(self, request, *args, **kwargs):
+        request = self.put_request_scrub(request)
+        print "PUT REQUEST:"
+        print request.PUT
+        # event = request.PUT
+        # eventID = self.kwargs['event_id']
+        # cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        # if eventID == event['id']:
+        #     for e in cal.data['events']:
+        #         if eventID in e.values():
+        #             e['start'] = event['start']
+        #             e['notes'] = event['notes']
+        #             cal.save()
+        #             return self.render_to_response ( { 'id':e['id'], 'start':e['start'], 'notes':e['notes'], 'status':'updated'} )
+        # raise Http404
+
+
+# class ProtocolDataAPI(JSONResponseMixin, LoginRequiredMixin, View):
 #     '''
 #     '''
 #     def get(self, request, *args, **kwargs):
