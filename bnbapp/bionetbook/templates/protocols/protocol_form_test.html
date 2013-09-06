@@ -58,13 +58,14 @@
 
     </div>
 </div>
+{% csrf_token %}
 {% endblock %}
 
 {% block extrajs %}
 <!-- EXTRA JS-->
 <script>
 // URL prefix for use in multiple enviorments
-var apiUrlPrefix = 'http://localhost:8000/api/';
+var apiUrlPrefix = '/api/';
 </script>
 <script src="{{ STATIC_URL }}js/bnb.data-input.js"></script>
 {% endblock extrajs %}
