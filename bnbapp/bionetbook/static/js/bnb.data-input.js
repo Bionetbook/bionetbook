@@ -1,17 +1,19 @@
+//////////////////////////////////////
+//                                  //
+//      Protocol functionality      //
+//        adding / editing          //
+//                                  //
+//////////////////////////////////////
+// Notes:
+//  stepsUsingTempId tracks use of a temporary id, but nothing is using it
+//  Not sure about the tracking of temporary ids
+
 "use strict";
 
-// Creating a new Protocol - as opposed to editing an existing one
-var createMode = false;
+// FOR TESTING - real data will be grabbed from server either way
 var Protocol = {};
 
-// Protocol global object creation
-if(typeof Protocol == 'undefined'){
-    var Protocol = {
-        id: "p1",
-        steps: []
-    };
-    createMode = true;
-}
+
 
 var BNB = BNB || {};
 
@@ -22,6 +24,20 @@ BNB.dataInput = (function(){
     init();
 
     function init(){
+        // Is this editing or making a new protocol?
+        var createMode = false;
+
+        // Protocol global object creation
+        if(typeof Protocol == 'undefined'){
+            window.Protocol = {
+                id: "p1",
+                steps: []
+            };
+            createMode = true;
+        }
+
+        document.body.setAttribute('data-create-mode', createMode);
+
         // Populate verb list
         $.ajax({
             url: apiUrlPrefix + 'action/types/',
@@ -30,6 +46,20 @@ BNB.dataInput = (function(){
                 for(var i =0; i < e.data.length; i++){
                     verbList.push( e.data[i].name );
                 }
+                // If there were actions made before the verbList was made
+                // go back and populate them
+                $('.verb-list').each(function(){
+                    var thisVerb = this.getAttribute('data-default');
+                    this.innerHTML = '';
+
+                    for(var i = 0, len = verbList.length; i < len; i++){
+                        var verb = document.createElement('option');
+                        verb.innerHTML = verbList[i];
+                        if(thisVerb === verbList[i]) verb.setAttribute('selected');
+                        this.appendChild(verb);
+                    }
+
+                });
             },
             error: function(e){console.log("Failed to get Verb List.")}
         });
@@ -49,10 +79,10 @@ BNB.dataInput = (function(){
         // Add functionality to the save button
         document.getElementById('save-protocol').onclick = function(){
             $.ajax({
-                url: apiUrlPrefix + 'save-protocol',
-                dataType: 'json',
-                type: "POST",
-                data: Protocol,
+                url: apiUrlPrefix + 'protocol/' + Protocol.id.slice(1) + '/',
+                contentType: 'application/json',
+                type: "PUT",
+                data: JSON.stringify(Protocol),
                 success: function(e){ 
                     var message = document.getElementById('save-protocol').parentNode
                         .appendChild( document.createElement("div") );
@@ -166,8 +196,18 @@ BNB.dataInput = (function(){
         desc.innerHTML = Protocol.description;
 
         for(var i = 0, len = Protocol.steps.length; i < len; i++){
+            // Conform fields from API to what input form uses
+            if( !Protocol.steps[i].title ) Protocol.steps[i].title = Protocol.steps[i].name;
+            if( !Protocol.steps[i].id ) Protocol.steps[i].id = Protocol.steps[i].objectid;
             addNewTab( Protocol.steps[i] );
         }
+
+        // HIDE all tabs/panes
+        $(".tab-pane").removeClass('active');
+        $(".step-tab").removeClass('active');
+        // SHOW first tab/pane
+        $(".step-tab:first-child").addClass('active');
+        $('.tab-pane:first-child').addClass('active');
     }
 
     function addNewTab(existingStep){
@@ -176,9 +216,14 @@ BNB.dataInput = (function(){
             newLink = document.createElement("a"),
             tabNum = document.getElementById("protocol-tabs").getElementsByTagName("li").length;
 
+        // Set up a new step
         if(!existingStep){
+
+            // Track objects using the temp ID so we can easily update them
+            var stepsUsingTempId = [];
+
             // Create new step in Protocol
-            var tempId = new Date().getTime();
+            var tempId = 'temp' + new Date().getTime();
             Protocol.steps.push({
                 id: tempId,
                 actions: []
@@ -192,8 +237,7 @@ BNB.dataInput = (function(){
                 dataType: 'json',
                 success: function(e){
 
-                    // Check for the step with the temporary id we just created and 
-                    // give it the real id from the server
+                    // Replace tempId with a real ID from server
                     for(var step in Protocol.steps){
                         if(step.id == tempId){
                             step.id = e.data.id; 
@@ -205,14 +249,18 @@ BNB.dataInput = (function(){
                 },
                 error: function(e){console.log("Ajax request failed. (Step Creation)")}
             });
-        } else {
+
+            newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
+        } 
+        // Everything exist, so just record the ID in the DOM
+        else {
             newTab.setAttribute("data-id", existingStep.id);
+            newLink.innerHTML = existingStep.title;
         }
 
         // Add attributes
-        newTab.className += "step-tab active";
+        newTab.className += " step-tab active";
         newLink.href = "#tabContent" + tabNum;
-        newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
         if(existingStep) newLink.setAttribute('value', existingStep.title)
         fieldEditingFunctionality(
             newLink,                        // Edit functionality
@@ -223,30 +271,31 @@ BNB.dataInput = (function(){
         );
 
         // Construct tab content and append it to the tab content container
-        createTabContent(tabNum, (tempId || existingStep.id));
+        // Track objs using the tempId with stepsUsingTempId so we can easily update them
+        if(!existingStep) 
+            createTabContent( tabNum, tempId, false, stepsUsingTempId );
+        else 
+            createTabContent( tabNum, existingStep.id, existingStep.actions); 
 
-        // Construct node heirarchy
+        // Add new tab to the tab list
         newTab.appendChild(newLink);
         tabContainer.insertBefore(newTab, document.getElementsByClassName('add-new-step')[0]);
 
 
-
-        // Adding editing functionality to the tab onclick
-        var numTabs = document.getElementById("protocol-tabs").getElementsByClassName('step-tab').length - 2;
-        if(numTabs < 0) numTabs = 0;
-        
-
         // Switch active tabs
         $('.tab-pane').removeClass('active');
         $("#tabContent" + tabNum).addClass('active');
+
+        // Because it's clicked, it recieves the .active class
         $(".add-new-step").removeClass('active');
 
-        // Reset event listeners
+        // Tabbing functionality - click to show
+        // The creation of a new element leaves it without an event listener,
+        // so the current ones must be stripped and reapplied(reapplies to new element)
+        // REMOVE
         $('#nav-tabs li.step-tab a').off('click.showTab');
         $('#nav-tabs li.add-new-step a').off('click.newTab');
-
-        // Add listeners back
-        // Clicking a tab shows it
+        // ADD
         $('#nav-tabs li.step-tab a').on('click.showTab', function (e) {
             e.preventDefault();
             $(this).tab('show');
@@ -265,23 +314,27 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createTabContent(tabNum, containerTempId){
+    function createTabContent(tabNum, tabId, existingActions, stepsUsingTempId){
         var tabContent = document.createElement("div"),
-            addAction = document.createElement("div"),
-            header = document.createElement("div"),
-                headerH2 = document.createElement("h2"),
-                    headerH2Small = document.createElement("small"),
-                        headerH2Edit = document.createElement("span");
+                addAction = document.createElement("div"),
+                header = document.createElement("div"),
+                    headerH2 = document.createElement("h2"),
+                        headerH2Small = document.createElement("small"),
+                            headerH2Edit = document.createElement("span");
+
+        stepsUsingTempId = stepsUsingTempId || false;
 
         header.className = "page-header";
         // Step description label
         headerH2Small.innerHTML = "Step description: "
         // Step description
-        headerH2Edit.innerHTML = "add a description";
+        headerH2Edit.innerHTML = existingActions ? getStep(tabId).description : "add a description";
         headerH2Edit.className = "step-description";
         // Step description editing
-        fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', getStep(containerTempId), "description");
-        
+        fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', getStep(tabId), "description");
+        // Track use of temporary id
+        if(!existingActions) stepsUsingTempId.push(headerH2Edit);
+
         headerH2Small.appendChild(headerH2Edit);
         headerH2.appendChild(headerH2Small);
         header.appendChild(headerH2);
@@ -289,15 +342,30 @@ BNB.dataInput = (function(){
 
         tabContent.className = "tab-pane";
         tabContent.id = "tabContent" + tabNum;
-        tabContent.setAttribute("data-id", containerTempId);
+        tabContent.setAttribute("data-id", tabId);
 
         addAction.className = "add-new-action";
         addAction.innerHTML='<h4>&plus; add new action</h4>';
         tabContent.appendChild(addAction);
         
+        // Create action from existing data
+        if(existingActions){
+            for(var i = 0, len = existingActions.length; i < len; i++){
+
+                // Conform API fields to what is in use
+                if(!existingActions[i].title) existingActions[i].title = existingActions[i].name;
+                if(!existingActions[i].id) existingActions[i].id = existingActions[i].objectid;
+
+                // Create action
+                var el = createNewAction(tabId, existingActions[i]);
+                addAction.parentNode.insertBefore(el, addAction);
+                $(el).hide().fadeIn();
+            }
+        }
+
         // Add another action
         addAction.onclick = function(){
-            var tempId = new Date().getTime();
+            var tempId = 'temp' + new Date().getTime();
 
             // Add action to containing Step
             var stepToAddActionTo = getStep($("[href=#tabContent"+ tabNum +"]").parent().attr("data-id"));
@@ -306,7 +374,9 @@ BNB.dataInput = (function(){
             });
 
             // Create action
-            var newAction = createNewAction(this.parentNode.getAttribute("data-id"));
+            var newAction = createNewAction(this.parentNode.getAttribute("data-id"), false, stepsUsingTempId);
+            // Track use of temporary id
+            if(!existingActions) stepsUsingTempId.push(newAction);
 
             // get real id from server and replace the tempId
             $.ajax({
@@ -348,7 +418,6 @@ BNB.dataInput = (function(){
             // On action name change, change tab name as well
             // Get indexOf() action-tab
             // $().hide() all others in the .active tab-pane
-
         }
 
         document.getElementsByClassName("tab-content")[0].appendChild(tabContent);
@@ -361,7 +430,7 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createNewAction(containerId){
+    function createNewAction(containerId, existingAction, stepsUsingTempId){
         var action = document.createElement("table"),
             tbody = document.createElement("tbody"),
             header = document.createElement("tr"),
@@ -374,28 +443,39 @@ BNB.dataInput = (function(){
                 innerVerbTd = document.createElement("td"),
                 innerVerbSelect = document.createElement("select");
 
+        action.className = "table table-bordered action-container";
+
         var parentStep = getStep(containerId);
         var thisAction = parentStep.actions[ parentStep.actions.length -1 ];
-        var tempId = new Date().getTime();
 
-        // get real id from server and replace the tempId
-        $.ajax({
-            url: 'api/createAction',
-            dataType: 'json',
-            success: function(e){
-                // e.data.id
-            },
-            error: function(e){console.log("Ajax request failed. (Action Creation)")}
-        });
- 
-        action.className = "table table-bordered action-container";
-        action.setAttribute("data-id", tempId)
+        // Make a tempId for this action
+        if(!existingAction){
+            var tempId = 'temp' + new Date().getTime();
+
+            // get real id from server and replace the tempId
+            $.ajax({
+                url: 'api/createAction',
+                dataType: 'json',
+                success: function(e){
+                    // e.data.id
+                },
+                error: function(e){console.log("Ajax request failed. (Action Creation)")}
+            });
+
+            action.setAttribute("data-id", tempId)
+            // Track use of tempId
+            if(stepsUsingTempId) stepsUsingTempId.push(action);
+        }
+        else{
+            action.setAttribute("data-id", existingAction.id)
+        }
+        
 
         //------------------------------------
         //   Action header (naming action)
         //------------------------------------
         // Verb
-        innerHeaderh4.innerHTML = "Name this action";
+        innerHeaderh4.innerHTML = existingAction.title || "Name this action";
         innerHeaderTd.setAttribute("colspan", "2");
         innerHeaderTd.appendChild(innerHeaderh4);
         innerHeaderTd.appendChild(isActiveToggle);
@@ -404,6 +484,11 @@ BNB.dataInput = (function(){
 
         // is active
         isActive.setAttribute("type", "checkbox");
+        if(existingAction){
+            if(existingAction.isActive){
+                isActive.setAttribute('checked');
+            }
+        } 
         isActiveLabel.appendChild(isActive);
         isActiveLabel.onclick = function(){
             thisAction.isActive = !!this.getElementsByTagName('input')[0].checked;
@@ -422,68 +507,99 @@ BNB.dataInput = (function(){
         //   Verb Selection (defining verb)
         //------------------------------------
 
+        innerVerbSelect.className = "verb-list";
+
         // Add verbs to select node
         for(var i = 0; i < verbList.length; i++){
 
             var verbOption = document.createElement("option");
 
-            verbOption.innerHTML = verbList[i];
-            verbOption.value = verbList[i];
+            // Check if verbList has been populated yet
+            if(verbList.length > 1){
+                verbOption.innerHTML = verbList[i];
+                verbOption.value = verbList[i];
+
+                // Display existing action's verb as default
+                if(existingAction){
+                    if(existingAction.verb === verbOption.value){
+                        verbOption.setAttribute('selected', 'selected');
+                    }
+                }
+            }else{
+                // Create one <option>Loading...</option>
+                // first ajax call for verbList will populate all verblists
+                verbOption.innerHTML = '<option>Loading verbs...</option>';
+
+                // Store the default verb so the ajax call can show it when finished
+                if(existingAction){
+                    innerVerbSelect.setAttribute('data-default', existingAction.verb.toLowerCase());
+                }
+            }
             innerVerbSelect.appendChild(verbOption);
         }
 
         // Add event handler for verb selection
-        innerVerbSelect.onchange = function(){
+        innerVerbSelect.onchange = function(data){
 
-            var container = this.parentNode.parentNode.parentNode;
+            // We don't want event data
+            if(data == event) data = false;
 
             // Clear previous verb selection
             // Lots of .parentNode so here's a respresentation of the structure:
             // tbody -> tr.verb -> td -> select(this) -> option
-            while(this.parentNode.parentNode.nextSibling){
-                this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode.nextSibling);
+            if(!data){
+                while(this.parentNode.parentNode.nextSibling){
+                    this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode.nextSibling);
+                }
+                thisAction.verb = "";
             }
 
-            // Clear data from last selection(useful if the ajax request fails)
-            thisAction.verb = "";
-
             // Create form elements
-            // Arg: object
-            function createFormControlGroup(data){
+            // Arg: object, property of data to look in for values
+            function createFormControlGroup(verbData){
 
                 var controlGroup = document.createElement("div");
                 controlGroup.className = 'control-group';
 
                 var label = controlGroup.appendChild(document.createElement("label"));
-                label.innerHTML = data.label;
+                label.innerHTML = verbData.label;
                 label.className = 'control-label';
 
                 var controls = controlGroup.appendChild(document.createElement("div"));
-                controls.className = data.addon ? 'controls input-append' : 'controls';
+                controls.className = verbData.addon ? 'controls input-append' : 'controls';
 
                 var userInput = controls.appendChild(document.createElement("input"));
                 userInput.setAttribute( 'type', 'text' );
-                userInput.setAttribute( 'placeholder', (data.placeholder || '') );
+                userInput.setAttribute( 'placeholder', (verbData.placeholder || '') );
+
+                // Populate value if the action already exists
+                if(data.hasOwnProperty(verbData.propertyReference))
+                    userInput.value = data[verbData.propertyReference];
+                // Check in sub-objects for containers like machineFields
+                if(data.hasOwnProperty(verbData.inputCreationFor))
+                    userInput.value = data[verbData.inputCreationFor][verbData.propertyReference];
+
+                // Save user input data to js object
                 userInput.onblur = function(){
-                    data.objectReference[data.propertyReference] = this.value;
+                    verbData.objectReference[verbData.propertyReference] = this.value;
                 }
 
-                if(data.addon){
+                if(verbData.addon){
                     var addon = controls.appendChild(document.createElement("span"));
                     addon.className = 'add-on';
-                    addon.innerHTML = data.addon;
+                    addon.innerHTML = verbData.addon;
                 }
 
-                if(data.help){
+                if(verbData.help){
                     var help = controls.appendChild(document.createElement("span"));
                     help.className = 'help-block';
-                    help.innerHTML = data.help;
+                    help.innerHTML = verbData.help;
                 }
 
-                if(data.comments){
+                if(verbData.comments){
                     var comments = controls.appendChild(document.createElement("textarea"));
                     comments.className = 'comments';
-                    comments.innerHTML = data.comments;
+                    comments.innerHTML = verbData.comments;
                 }
 
                 return controlGroup;
@@ -502,7 +618,6 @@ BNB.dataInput = (function(){
                     verbForm.className = "form-horizontal";
 
                     for(var i = 0; i < e.visible_fields.length; i++){
-                         
                         verbForm.appendChild( 
                             createFormControlGroup({
                                 label : e.visible_fields[i].name,
@@ -511,7 +626,8 @@ BNB.dataInput = (function(){
                                 isRequired : e.visible_fields[i].is_required,
                                 isHidden : e.visible_fields[i].is_hidden,
                                 objectReference: thisAction.verbFormFieldValues,
-                                propertyReference: e.visible_fields[i].name
+                                propertyReference: e.visible_fields[i].name,
+                                inputCreationFor: 'verbFormFieldValues'
                             })
                         );
                     }
@@ -524,7 +640,7 @@ BNB.dataInput = (function(){
             //------------------------------------
             //   Component Module
             //------------------------------------
-            function makeActionStoreComponents(data){
+            function makeActionStoreComponents(){
                 var title = document.createElement("div"),
                     componentsRow = document.createElement("tr"),
                     componentsTd = document.createElement("td"),
@@ -563,7 +679,8 @@ BNB.dataInput = (function(){
                 addComponentRow.onclick = function(){
                     this.parentNode.insertBefore(
                         createNewComponent(
-                            this.parentNode.getElementsByClassName("properties")[0].getElementsByTagName("th").length,
+                            this.parentNode.getElementsByClassName("properties")[0]
+                                .getElementsByTagName("th").length,
                             thisAction.componentFields
                         ),    
                         this 
@@ -587,12 +704,53 @@ BNB.dataInput = (function(){
                 componentsTd.appendChild(componentsTable);
                 componentsRow.appendChild(componentsTd);
                 tbody.appendChild(componentsRow);
+
+                // Populate component fields from existing data
+                if(data){
+
+                    // Check for existing component data
+                    for(var i = 0, len = data.componentFields.length; i < len; i++){
+                        addComponentRow.parentNode.insertBefore(
+                            createNewComponent(
+                                addComponentRow.parentNode.getElementsByClassName("properties")[0]
+                                    .getElementsByTagName("th").length,
+                                thisAction.componentFields,
+                                data.componentFields[i].title
+                            ),
+                            addComponentRow
+                        );
+                    }
+
+                    // Check for existing component Property data
+                    // Some components have fields that aren't set, so it won't work
+                    // to use a single component to get every property in use
+                    var propList = [];
+                    for(var a = 0, len = thisAction.componentFields.length; a < len; a++){
+                        // Go through each property in each component
+                        for(var p in thisAction.componentFields[a]){
+                            // Make sure it's a user-defined property
+                            if(thisAction.componentFields[a].hasOwnProperty(p)){
+                                var inPropList = false;
+                                // Does propList already have it?
+                                for(var b = 0, len = propList.length; b < len; b++){
+                                    if(p == propList[b]) inPropList = true;
+                                }
+                                if(!inPropList && p != 'title') propList.push(p);
+                                inPropList = undefined;
+                            }
+                        }
+                    }
+                    // Make properties
+                    for(var a = 0, len = propList.length; a < len; a++){
+                        createNewProperty(addProperty, thisAction.componentFields, propList[a])
+                    }
+                }
             }
 
             //------------------------------------
             //   Machine Module
             //------------------------------------
-            function makeActionStoreMachine(data){
+            function makeActionStoreMachine(){
                 var machineRow = document.createElement("tr"),
                     machineTd = document.createElement("td"),
                     title = document.createElement("div"),
@@ -610,7 +768,8 @@ BNB.dataInput = (function(){
                     createFormControlGroup({
                         label: 'Name',
                         objectReference: objReference,
-                        propertyReference: "name"
+                        propertyReference: "name",
+                        inputCreationFor: 'machineFields'
                     })
                 );
 
@@ -619,7 +778,8 @@ BNB.dataInput = (function(){
                     createFormControlGroup({
                         label: 'Model',
                         objectReference: objReference,
-                        propertyReference: "model"
+                        propertyReference: "model",
+                        inputCreationFor: 'machineFields'
                     })
                 );
 
@@ -630,7 +790,8 @@ BNB.dataInput = (function(){
                         placeholder: 'ex: 1:30:00 or 30:00-1:00:00',
                         help: "hr:min:sec",
                         objectReference: objReference,
-                        propertyReference: "time"
+                        propertyReference: "time",
+                        inputCreationFor: 'machineFields'
                     })
                 );
                 
@@ -641,7 +802,8 @@ BNB.dataInput = (function(){
                         placeholder: 'ex: 22 or 18-25', 
                         addon: '&deg;C',
                         objectReference: objReference,
-                        propertyReference: "temp"
+                        propertyReference: "temp",
+                        inputCreationFor: 'machineFields'
                     })
                 );
                 
@@ -652,7 +814,8 @@ BNB.dataInput = (function(){
                         placeholder: 'ex: 22 or 18-25', 
                         addon: 'rpm',
                         objectReference: objReference,
-                        propertyReference: "speed"
+                        propertyReference: "speed",
+                        inputCreationFor: 'machineFields'
                     })
                 );
 
@@ -665,7 +828,7 @@ BNB.dataInput = (function(){
             //------------------------------------
             //   Thermocycler Module
             //------------------------------------
-            function makeActionStoreThermocycler(data){
+            function makeActionStoreThermocycler(){
                 var thermocyclerRow = document.createElement("tr"),
                     thermocyclerTd = document.createElement("td"),
                     title = document.createElement("div"),
@@ -685,7 +848,8 @@ BNB.dataInput = (function(){
                         placeholder: 'ex: 22 or 18-25', 
                         addon: '&deg;C',
                         objectReference: objReference,
-                        propertyReference: "temp"
+                        propertyReference: "temp",
+                        inputCreationFor: 'thermocyclerFields'
                     })
                 );
 
@@ -696,7 +860,8 @@ BNB.dataInput = (function(){
                         placeholder: 'ex: 1:30:00 or 30:00-1:00:00', 
                         help: "hr:min:sec",
                         objectReference: objReference,
-                        propertyReference: "time"
+                        propertyReference: "time",
+                        inputCreationFor: 'thermocyclerFields'
                     })
                 );
                 
@@ -705,7 +870,8 @@ BNB.dataInput = (function(){
                     createFormControlGroup({
                         label: 'Cycles',
                         objectReference: objReference,
-                        propertyReference: "cycles"
+                        propertyReference: "cycles",
+                        inputCreationFor: 'thermocyclerFields'
                     })
                 );
 
@@ -721,45 +887,48 @@ BNB.dataInput = (function(){
             }
 
             // Get data for each verb!
-            // -----------------------
+            var verbForUrl = data ? data.verb.toLowerCase() : this.value.toLowerCase();
             $.ajax({
-                url: apiUrlPrefix + 'action/fields/' + this.value.toLowerCase(),
+                url: apiUrlPrefix + 'action/fields/' + verbForUrl,
                 dataType: 'json',
                 success: function(e){
 
                     // Update data
-                    thisAction.verb = e.name;
-                    thisAction.isActive = e.isActive;
+                    if(!data) thisAction.verb = e.name;
+                    if(!data) thisAction.isActive = e.isActive;
 
                     // Show fields
-                    thisAction.verbFormFieldValues = {};
+                    if(!data) thisAction.verbFormFieldValues = {};
                     makeActionStoreVerbFields(e);
 
                     if(e.has_components){
-                        thisAction.componentFields = [];
-                        makeActionStoreComponents(e); 
+                        if(!data) thisAction.componentFields = [];
+                        makeActionStoreComponents(); 
                     } else {
                         thisAction.componentFields = false;
                     }
 
                     if(e.has_machine){
-                        thisAction.machineFields = {};
-                        makeActionStoreMachine(e);
+                        if(!data) thisAction.machineFields = {};
+                        makeActionStoreMachine();
                     } else {
                         thisAction.machineFields = false;
                     }
 
                     if(e.has_thermocycler){
-                        thisAction.thermocyclerFields = {};
-                        makeActionStoreThermocycler(e);
+                        if(!data) thisAction.thermocyclerFields = {};
+                        makeActionStoreThermocycler();
                     } else {
                         thisAction.thermocyclerFields = false;
                     }
                 },
-                error: function(e){console.log("Ajax request failed. (Verb Components for "+ this.url +")")}
+                error: function(e){console.log("Ajax request failed. (Verb Components for "+ (data.verb.toLowerCase() || this.url) +")")}
             });
-
         }
+
+        // Trigger loading the fields if this action already exists
+        // This will allow the fields to populate with the action data
+        if(existingAction) innerVerbSelect.onchange(existingAction);
 
         innerVerbTd.setAttribute("colspan", "2");
         innerVerbTd.appendChild(innerVerbSelect);
@@ -775,15 +944,18 @@ BNB.dataInput = (function(){
         return action;
     }
 
-    // Typeahead not working!
+    // -- Typeahead not working! -- //
     // Well... it is, but the value is never added to input field on enter/click
     // Also does not support minLength = 0
-    function createNewProperty(that, objReference){
+    // --------
+    // Arg: element to insertBefore(), js object containing all components, 
+    //      property for an existing action
+    function createNewProperty(that, objReference, prop){
         var newProperty = document.createElement("th"),
             addComponentTr = that.parentNode.parentNode.parentNode.getElementsByClassName("add-new-component")[0].getElementsByTagName("td")[0],
             components = that.parentNode.parentNode.parentNode.getElementsByClassName('component');
 
-        // Increase colspan so element stay 100% wide
+        // Increase colspan so the element stays 100% wide
         addComponentTr.setAttribute('colspan', parseInt(addComponentTr.getAttribute("colspan")) + 1);
 
         // Add td elements to each component that already exists
@@ -791,7 +963,12 @@ BNB.dataInput = (function(){
             for(var i = 0; i < components.length; i++){
                 var newComponentProperty = document.createElement("td");
                 newComponentProperty.className = 'component-property';
-                newComponentProperty.innerHTML = "<a href='javascript:void(0);'>amount</a>";
+
+                // Set the component's field to the saved value for the property
+                newComponentProperty.innerHTML = 
+                    prop ? "<a href='javascript:void(0);'>"+ objReference[i][prop] +"</a>" :
+                           "<a href='javascript:void(0);'>amount</a>";
+
                 componentEditingFunctionality(newComponentProperty, objReference);
                 if(components[i].children.length > 1){
                     components[i].insertBefore(newComponentProperty, components[i].children[1]);
@@ -801,11 +978,18 @@ BNB.dataInput = (function(){
             }
         }
 
-        newProperty.innerHTML = '<input type="text" id="property-input" data-provide="typeahead" ' +
+        // If property isn't supplied, create an input field
+        newProperty.innerHTML = 
+            prop ? '<a href="javascript:void(0)">'+ prop +'</a>' :
+            '<input type="text" id="property-input" data-provide="typeahead" ' +
             'autocomplete="off" placeholder="mass, volume, etc" autofocus>';
 
         // Add editing functionality
         propertyEditingFunctionality(newProperty, objReference);
+
+        // the editing functionality sets this when the user enters data but
+        // since the data is already supplied this must be set here
+        if(prop) newProperty.setAttribute("data-value", prop);
 
         // Add this property to DOM
         that.parentNode.parentNode.insertBefore(newProperty, that.parentNode.nextSibling);
@@ -819,12 +1003,14 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createNewComponent(numOfProperties, objReference){
+    function createNewComponent(numOfProperties, objReference, existingVal){
         var componentRow = document.createElement("tr"),
             componentName = document.createElement("td");
         
         componentRow.className = "component";
-        componentName.innerHTML = '<input type="text" placeholder="component name" autofocus>';
+        componentName.innerHTML = existingVal ? 
+            '<a href="javascript:void(0)">'+ existingVal +'</a>' :
+            '<input type="text" placeholder="component name" autofocus>';
         componentName.setAttribute("data-editing", true);
         componentEditingFunctionality(componentName, objReference);   // Add editing functionality
         componentRow.appendChild(componentName);
@@ -832,11 +1018,10 @@ BNB.dataInput = (function(){
         // Add a property field for each available property (in the labels)
         for(var i = 0; i < numOfProperties - 1; i++){
             var newComponentProperty = document.createElement("td");
-            // Set default value
+
             newComponentProperty.innerHTML = "<a href='javascript:void(0);'>amount</a>";
-            // Add editing capabilities
-            componentEditingFunctionality(newComponentProperty, objReference);
-            // Add to row
+
+            componentEditingFunctionality(newComponentProperty, objReference)
             componentRow.appendChild(newComponentProperty);
         }
 
@@ -1141,7 +1326,7 @@ BNB.dataInput = (function(){
         }, true);
     }
 
-    // Find the step with the matching id
+    // Find the step with the matching id inside Protocol
     function getStep(id){
         for(var i = 0; i < Protocol.steps.length; i++){
             if(Protocol.steps[i].id == id){
@@ -1201,7 +1386,7 @@ BNB.dataInput = (function(){
         while(a[a.length-1] == 'edit' || a[a.length -1] == 'test' || a[a.length -1] == false) a.pop();
         var slug = a[a.length-1];
 
-        $.ajax({
+        /*$.ajax({
             url: apiUrlPrefix + 'protocol/' + slug,
             dataType: 'json',
             success: function(e){
@@ -1216,7 +1401,21 @@ BNB.dataInput = (function(){
                 parseExistingProtocol();
             },
             error: function(e){console.log("Failed to recieve existing Protocol)")}
-        });
+        });*/
+
+        window.Protocol = //    TESTING ONLY
+        {"id":"p1","steps":[{"id":"temp1378421980279","actions":[{"id":"temp1378421983864",
+        "verb":"Measure","isActive":true,"verbFormFieldValues":{"what_are_you_measuring":"I'm measuring stuff",
+        "measurement_value":"10","measurement_units":"ml","device":"Scale","file_of_measurement":""},
+        "componentFields":false,"machineFields":{"name":"Dat Machine","model":"mx2","time":"3:00:00-5:00:00",
+        "temp":"20-23","speed":"22-30"},"thermocyclerFields":false,"title":"Named, yo."}],"title":"First Step",
+        "description":"Descripsioso"},{"id":"temp1378422063483","actions":[{"id":"temp1378422092884",
+        "title":"Deez actions","verb":"Add","verbFormFieldValues":{"conditional_statement":"Nahh... nah."},
+        "componentFields":[{"title":"Comp1","Prop2":"10ml","Prop1":"2ml"},{"title":"component2","Prop2":"8",
+        "Prop1":"7"}],"machineFields":false,"thermocyclerFields":false}],"title":"Second Step Name",
+        "description":"Second descrip"}],"title":"Dat Protocol","description":"I'll tell you hwat"};
+
+        parseExistingProtocol();
     }
 
     return {

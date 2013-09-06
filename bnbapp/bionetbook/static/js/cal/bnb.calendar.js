@@ -3,16 +3,9 @@
 //      Calendar functionality      //
 //                                  //
 //////////////////////////////////////
-// Todo:
-// make sure all units of time match up
-// selectors need retooling - they need to use stepId/actionId
-// protocol actions need .active sent in the API
-// Make sure stepNumber checks it's position against only the step it's in
 
 $(document).ready(function() {
-	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
-	//				 'm87f28ljpog%40group.calendar.google.com/public/basic';
-	var gCalURL = '';
+	var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5cm87f28ljpog%40group.calendar.google.com/public/basic';
 
 	// initialize the draggable events
 	$('#external-events div.external-event').each(function() {
@@ -76,112 +69,63 @@ var BNB = BNB || {};
 
 BNB.calendar = (function(){
 
-	var protocolList = {};
+	var disableRightClickMenu = false;
 
 	// Sync external event Objects with the current calendar
 	// Arg: URL string
 	function getEvents(url){
-		$.getJSON(url)
-		.done(function(data){syncEvents(data);})
-		.fail(function(){console.log("Failed to get a list of events.")})
+		var a = {"containerEvent":{"container":true,"title":"ProtocolA","length":0,"description":"",
+		"steps":{"step1":{"eventId":10,"instanceId":0,"verb":"The First Step","active":true,"length":30000,
+		"container":false,"stepNumber":1,"notes":""},"step2":{"eventId":10,"instanceId":0,"verb":"The Second Step",
+		"active":false,"length":10000,"container":false,"stepNumber":2,"notes":"Step 2 requires extra precision."},
+		"step3":{"eventId":10,"instanceId":0,"verb":"The Third Step","active":true,"length":10000,"container":false,
+		"stepNumber":3,"notes":""},"step4":{"eventId":10,"instanceId":0,"verb":"The Fourth Step","active":true,
+		"length":7000,"container":false,"stepNumber":4,"notes":"This is the final step, make sure to clean up."}}}};
+		syncEvents(a)
 	}
 
 	// Get JSON objects from another file (done in getEvents()) and 
 	// add the data to the list of draggable events
-	// ----
-	// Construct a structure that's easy to use for the calendar
-	// protocolList = [  protocolID: {},  ]
-	// protocolID = {  steps : [  {verb:mix, id:id},  {verb:mix, id:id}  ]  }
-	// ----
 	// Arg: JSON object
-	function syncEvents(p){
+	function syncEvents(eventList){
 		var dragContainer = document.getElementById('external-events');
 
-		// Make protocolList structure from action id strings
-		// This loop: 
-		//		+ protocolList elements
-		//		+ .stepNumber
-		//		+ protocol description
-		//		+ protocol name
-		//		+ protocol id
-		for(var a = 0;  a < p.events.length; a++){
+		// Iterate over each item in eventList
+		for (var key in eventList) {
 
-			// Id string: bnb-orgId-expId-protocolId-stepId-actionId
-			var protocolId = p.events[a].id.split("-")[3],
-				stepId = p.events[a].id.split("-")[4];
+		   // don't touch the inherited properties
+		   if (!eventList.hasOwnProperty(key)) continue;
+		   
+		   // Create the draggable event node
+		   var eventNode = document.createElement('div');
+		   eventNode.className = 'custom-event';
 
-			// Create a Protocol object for this action if one doesn't exist with its ID
-			if(!protocolList[protocolId]){
-				protocolList[protocolId] = { 
-					id: protocolId,
-					title: p.events[a].protocol, 
-					steps: [] 
-				};
-			}
-			// Create a step object if it doesn't exist for this step ID
-			var curStep = getObjInArrayWithKey(protocolList[protocolId].steps, 'id', stepId);
-			if(!curStep){
-				protocolList[protocolId].steps.push({
-					id: stepId,
-					stepNumber: protocolList[protocolId].steps.length,
-					actions: []
-				});
-				curStep = getObjInArrayWithKey(protocolList[protocolId].steps, 'id', stepId);
-			}
+		   // Populate DOM data-* with JSON properties
+		   eventNode.innerHTML = eventList[key].title;
+		   //eventNode.style.backgroundColor = eventList[key].backgroundColor;
+		   eventNode.setAttribute("data-allDay", eventList[key].allDay);
+		   eventNode.setAttribute("data-active", eventList[key].active);
+		   eventNode.setAttribute("data-length", eventList[key].length);
+		   eventNode.setAttribute("data-container", eventList[key].container);
 
-			// Add description to Protocol object if description exist in [ p.meta.descriptions ]
-			if(p.meta.descriptions) protocolList[protocolId].description = p.meta.descriptions[protocolId];
-
-			// Add .stepNumber property to action
-			p.events[a].stepNumber = protocolList[protocolId].steps.length;
-
-			// Server uses seconds, JavaScript uses milliseconds
-			p.events[a].duration *= 1000;
-
-			// Add the action to its place in the structure
-			curStep.actions.push(p.events[a]);
-		}
-
-		// Show a draggable item for each protocol the user has access to
-		// This loop: 
-		//		makes drag node
-		for(var key in protocolList){
-
-			if (!protocolList.hasOwnProperty(key)) continue;
-			var thisProtocol = protocolList[key];
-
-			// Create draggable node
-			var eventNode = document.createElement('div');
-			eventNode.className = 'custom-event';
-
-			// Show name of Protocol to user
-			eventNode.innerHTML = thisProtocol.title;
-
-			// Set protocol id in DOM data
-			eventNode.setAttribute("data-id", thisProtocol.id);
-
-			// Iterate over each Step in in protocol
-			for(var i = 0; i < thisProtocol.steps.length; i++){ 	// Iterate over steps
-				var sId = thisProtocol.steps[i].id; // step id
-
-			   // Add properties of Actions to the DOM
-			   for(var k = 0; k < thisProtocol.steps[i].actions.length; k++){
-			   	var aId = thisProtocol.steps[i].actions[k].id.split("-")[5]; // action id
-
-			   		// data-s1-a1-title=""
-			   		eventNode.setAttribute("data-"+sId+"-"+aId+"-title", thisProtocol.steps[i].actions[k].title);
-			   		eventNode.setAttribute("data-"+sId+"-"+aId+"-verb", thisProtocol.steps[i].actions[k].verb);
-			   		eventNode.setAttribute("data-"+sId+"-"+aId+"-event-id", thisProtocol.steps[i].actions[k].id);
-			   		eventNode.setAttribute("data-"+sId+"-"+aId+"-step-number", thisProtocol.steps[i].actions[k].stepNumber);
-			   		eventNode.setAttribute("data-"+sId+"-"+aId+"-active", thisProtocol.steps[i].actions[k].active);
-					eventNode.setAttribute("data-"+sId+"-"+aId+"-notes", thisProtocol.steps[i].actions[k].notes);
-					// Data says duration, this uses length
-					eventNode.setAttribute("data-"+sId+"-"+aId+"-length", thisProtocol.steps[i].actions[k].duration);
+		   // If the event object is a container, add all the attributes of the child elements to the DOM
+		   if(eventList[key].container == true){
+			   var i = 1;
+			   while(eventList[key].steps["step" + i]){
+			   		eventNode.setAttribute("data-step"+i+"-verb", eventList[key].steps["step" + i].verb);
+			   		eventNode.setAttribute("data-step"+i+"-event-id", eventList[key].steps["step" + i].eventId);
+			   		eventNode.setAttribute("data-step"+i+"-step-number", eventList[key].steps["step" + i].stepNumber);
+			   		eventNode.setAttribute("data-step"+i+"-allDay", eventList[key].steps["step" + i].allDay);
+			   		eventNode.setAttribute("data-step"+i+"-active", eventList[key].steps["step" + i].active);
+					eventNode.setAttribute("data-step"+i+"-length", eventList[key].steps["step" + i].length);
+					eventNode.setAttribute("data-step"+i+"-container", eventList[key].steps["step" + i].container);
+					eventNode.setAttribute("data-step"+i+"-notes", eventList[key].steps["step" + i].notes);
+			   		i++;
 			   }
 			}
 
-			// Add draggable event element to the page
-			dragContainer.appendChild(eventNode);
+		   // Add draggable event element to the page
+		   dragContainer.appendChild(eventNode);
 		}
 
 		// Make them draggable
@@ -190,7 +134,7 @@ BNB.calendar = (function(){
 			var eventObject = {
 				title: $.trim($(this).text()),
 				backgroundColor : this.style.backgroundColor,
-				allDay : false,
+				allDay : this.getAttribute("data-allDay"),
 		   		length : this.getAttribute("data-length")
 			};
 			
@@ -213,49 +157,73 @@ BNB.calendar = (function(){
 	// Arg: Date object, bool, reference to this
 	function dropEventHandler(date, allDay, that){
 
-		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
-			timeTracker = date, // calc starting pos of actions on calendar
-			thisProtocol = getObjInObjWithKey(protocolList, 'id', that.getAttribute('data-id'));
+		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
-		// Wtf I'm doing:
-		// Get stepId + actionID to reference getAttribute()
+		// Create a unique ID for the steps of the protocol to share
+		var instanceId;
 
-		// Iterate through steps
-		for(var i = 0, len = thisProtocol.steps.length; i < len; i++){
-			var sId = thisProtocol.steps[i].id;
+		// Create a background color based on unique ID
+		// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
+		do{
+			instanceId = "xxxxxx".replace(/[x]/g, function(c) {
+		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		    	return v.toString(16);
+			});
+		} 
+		while(parseInt(instanceId[0], 16) < 5 || parseInt(instanceId[0], 16) > 12 ||
+			  parseInt(instanceId[2], 16) < 5 || parseInt(instanceId[2], 16) > 12 ||
+			  parseInt(instanceId[4], 16) < 5 || parseInt(instanceId[4], 16) > 12 )
+		
+		var instanceBgColor = instanceId[0].toString() + 
+							  instanceId[2].toString() + 
+							  instanceId[4].toString();
 
-			// Create a random background color per step
-			// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
-			do{
-				instanceId = "xxx".replace(/[x]/g, function(c) {
-			    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-			    	return v.toString(16);
-				});
-			} 
-			while(parseInt(instanceId[0], 16) < 5 || parseInt(instanceId[0], 16) > 12 ||
-				  parseInt(instanceId[1], 16) < 5 || parseInt(instanceId[1], 16) > 12 ||
-				  parseInt(instanceId[2], 16) < 5 || parseInt(instanceId[2], 16) > 12 )
-			var instanceBgColor = instanceId[0]+''+instanceId[1]+''+instanceId[2];
+		// Render a single step
+		if(that.getAttribute("data-container") == "false"){
 
-			// Iterate through actions
-			for(var k = 0; k < thisProtocol.steps[i].actions.length; k++){
-				var aId = thisProtocol.steps[i].actions[k].id.split("-")[5];
+			// retrieve the dropped element's stored Event Object
+			var originalEventObject = $(that).data('eventObject');
+			// we need to copy it, so that multiple events don't have a reference to the same object
+			var copiedEventObject = $.extend({}, originalEventObject);
 
+			// assign it the date that was reported
+			copiedEventObject.start = date;
+			copiedEventObject.end = (new Date(date.getTime() + that.getAttribute("data-length") * 1000));
+			copiedEventObject.allDay = that.getAttribute("data-allDay") === "true" ? true : false;
+
+			// Add step to database
+			modifyProtocolStep.enqueue(eventStep);
+
+			// render the event on the calendar
+			// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+			$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+		// Read each sub-step of the DOM element to render multiple steps into a protocol
+		} else {
+
+			// retrieve the dropped element's stored Event Object
+			var originalEventObject = $(that).data('eventObject');
+			var timeTracker = date;
+			var i = 1;
+
+			// Get each item in the container and add them to the calendar
+			while(that.getAttribute("data-step"+i+"-allDay")){
 				// Create an object to add to the calendar
 				var eventStep = {};
-				eventStep.eventId 			= that.getAttribute("data-"+sId+"-"+aId+"-event-id");
-				eventStep.verb 				= that.getAttribute("data-"+sId+"-"+aId+"-verb");
+				eventStep.eventId 			= that.getAttribute("data-step"+i+"-event-id");
+				eventStep.instanceId		= instanceId;
+				eventStep.verb 				= that.getAttribute("data-step"+i+"-verb");
 				eventStep.allDay 			= false;
 				eventStep.locked  			= true;
-				eventStep.active 			= !!that.getAttribute("data-"+sId+"-"+aId+"-active");
-				eventStep.length 			= that.getAttribute("data-"+sId+"-"+aId+"-length");
-				eventStep.stepNumber 		= that.getAttribute("data-"+sId+"-"+aId+"-step-number");
+				eventStep.active 			= that.getAttribute("data-step"+i+"-active");
+				eventStep.length 			= that.getAttribute("data-step"+i+"-length");
+				eventStep.stepNumber 		= that.getAttribute("data-step"+i+"-step-number");
 				eventStep.backgroundColor 	= "#" + instanceBgColor;
 				eventStep.textColor			= "#fff";
 				eventStep.start 			= (new Date(timeTracker.getTime()));
 				eventStep.end 				= (new Date(timeTracker.getTime() + eventStep.length * 1000));
-				eventStep.notes = that.getAttribute("data-"+sId+"-"+aId+"-notes").length > 0 ? 
-				 				  that.getAttribute("data-"+sId+"-"+aId+"-notes") : 'There are no notes for this event.';
+				eventStep.notes = that.getAttribute("data-step"+i+"-notes").length > 0 ? 
+								  that.getAttribute("data-step"+i+"-notes") : 'There are no notes for this event.';
 
 				// Use this to decide the next step's .start
 				timeTracker = eventStep.end;
@@ -265,7 +233,12 @@ BNB.calendar = (function(){
 
 				// Add event to calendar
 				$('#calendar').fullCalendar('renderEvent', eventStep, true);
+				i++;
 			}
+
+			// Send all the queued data
+			modifyProtocolStep.send();
+
 		}
 	}
 
@@ -274,7 +247,7 @@ BNB.calendar = (function(){
 	function renderUpdatedEvents(evObj, dayDelta, minDelta){
 
 		evObj._start = evObj.start = new Date(evObj.start.getTime() + minDelta * 60000 + dayDelta * 86400000);
-		if(evObj._end) evObj._end = evObj.end = new Date(evObj.end.getTime() + minDelta * 60000 + dayDelta * 86400000);
+		evObj._end = evObj.end = new Date(evObj.end.getTime() + minDelta * 60000 + dayDelta * 86400000);
 
 		// Update modified event
 		$('#calendar').fullCalendar( 'updateEvent', event );
@@ -396,7 +369,7 @@ BNB.calendar = (function(){
 			// Reposition the notes popup alongside the current node
 			var stepPos = currentStepNode.getBoundingClientRect();
 
-			formContainer.style.top = stepPos.top - 4 + "px";
+			formContainer.style.top = stepPos.top - 8 + "px";
 
 			// Switch popup to left side if it's editing a step on friday or saturday
 			if($(currentStepNode).hasClass("fri") || $(currentStepNode).hasClass("sat")){
@@ -404,7 +377,7 @@ BNB.calendar = (function(){
 				if($(currentStepNode).hasClass("fri")) formContainer.className += " fri";
 				if($(currentStepNode).hasClass("sat")) formContainer.className += " sat";
 			} else{
-				formContainer.style.left = stepPos.left + 360 + "px";
+				formContainer.style.left = stepPos.left + 390 + "px";
 			}
 
 			// Show notes form
@@ -439,18 +412,13 @@ BNB.calendar = (function(){
 
 	var protocolLock = (function(){
 		function toggleLock(ele){
-			// Remove last identifier '...-xxxx'
-			var instanceId = ele.parentNode.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
-				uId = ele.parentNode.getAttribute("data-event-id").split('-').pop();
+			var instanceId = ele.parentNode.getAttribute("data-instance-id");
 
 			// Change both the DOM and the actual event data to toggle and track locked status
 			if(ele.className == "locked"){
 
 				// Edit DOM - instant data value/not persistant
-				$(".fc-event").each(function(){
-					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
-					if(thisId != instanceId) return;
-
+				$("[data-instance-id="+instanceId+"]").each(function(){
 					if(this.getElementsByClassName("locked")[0])
 						this.getElementsByClassName("locked")[0].className = "unlocked";
 					this.setAttribute("data-locked", 'false');
@@ -459,17 +427,14 @@ BNB.calendar = (function(){
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
 				for(ev in evList){
-					if(evList[ev].eventId === instanceId + '-' + uId)
+					if(evList[ev].instanceId === instanceId)
 						evList[ev].locked = false;
 				}
 
 			} else {
 
 				// Edit DOM - instant data value/not persistant
-				$(".fc-event").each(function(){
-					var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
-					if(thisId != instanceId) return;
-
+				$("[data-instance-id="+ele.parentNode.getAttribute("data-instance-id")+"]").each(function(){
 					if(this.getElementsByClassName("unlocked")[0])
 						this.getElementsByClassName("unlocked")[0].className = "locked";
 					this.setAttribute("data-locked",'true');
@@ -478,10 +443,11 @@ BNB.calendar = (function(){
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
 				for(ev in evList){
-					if(evList[ev].eventId === instanceId + '-' + uId)
+					if(evList[ev].instanceId === instanceId)
 						evList[ev].locked = true;
 				}
 			}
+			
 		}
 
 		// Show lock icons on protocol step hover
@@ -516,6 +482,10 @@ BNB.calendar = (function(){
 
 	// Showing right click menu
 	function rightClickMenu(e){
+
+		// For testing purposes!
+		if(disableRightClickMenu) return;
+
 		var clickedElement = window.event.srcElement,
 			targetElement, 	// The element to get information from
 			menuToShow,
@@ -632,7 +602,6 @@ BNB.calendar = (function(){
 		body.appendChild(menu)
 	}
 
-	// TODO: Needs complete selector revamping
 	// Copy, Paste, Undo functionality for right click menu
 	var protocolStructure = (function (){
 		var copiedStructure = [],
@@ -847,9 +816,9 @@ BNB.calendar = (function(){
 			" data-event-start='" + event._start + "'" +
 			" data-event-end='" + event._end + "'" +
 			" data-active='" + event.active + "'" +
-			" data-verb='" + event.verb + "'" +
 			" data-notes='" + event.notes + "'" +
 			" data-bg-color='" + event.backgroundColor + "'" +
+			" data-instance-id='" + event.instanceId + "'" +
 			" data-fc-id='" + event._id + "'" +
 			" data-locked='" + event.locked + "'" +
 
@@ -889,45 +858,17 @@ BNB.calendar = (function(){
 		return html;
 	}
 
-	// Find 1st object in an array by specifying a value it must have for a key
-	function getObjInArrayWithKey(arr, key, val){
-		for (var i = 0, len = arr.length; i < len; i++) {
-		    if(arr[i][key] === val) return arr[i];
-		}
-		return false;
-	}
-
-	// Find 1st object in an Object by specifying a value it must have for a key
-	function getObjInObjWithKey(obj, key, val){
-		for(var i in obj){
-		    if(obj[i][key] === val) return obj[i];
-		}
-		return false;
-	}
-
-	function objectLength(o){
-		var c = 0;
-		for (var k in o) {
-		    if (o.hasOwnProperty(k)) {
-		       ++c;
-		    }
-		}
-		return c;
-	}
-
 	return {
-		makeJsonFromNode: makeJsonFromNode,
-		makeHtmlFromJson: makeHtmlFromJson,
-		displayTopError: displayTopError,
-		removeTopError: removeTopError,
-		getEvents: getEvents,
-		dropEventHandler: dropEventHandler,
-		protocolLock: protocolLock,
-		Notes: Notes,
-		rightClickMenu: rightClickMenu,
-		renderUpdatedEvents: renderUpdatedEvents,
-		syncEvents: syncEvents,
-		protocolList: protocolList
+		makeJsonFromNode : makeJsonFromNode,
+		displayTopError : displayTopError,
+		removeTopError : removeTopError,
+		getEvents : getEvents,
+		dropEventHandler : dropEventHandler,
+		protocolLock : protocolLock,
+		Notes : Notes,
+		rightClickMenu : rightClickMenu,
+		renderUpdatedEvents : renderUpdatedEvents,
+		makeHtmlFromJson : makeHtmlFromJson
 	}
 })();
 		
