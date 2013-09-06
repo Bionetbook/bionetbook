@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from braces.views import LoginRequiredMixin
 
@@ -27,6 +28,11 @@ Up through version number should come from the main urls.py, everything after th
 Example (GET):
 http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
 http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
+<<<<<<< HEAD
+
+(PUT)
+=======
+>>>>>>> master
 http://www.bionetbook.com/api/v1/calendar/2/bnb-o1-e1-p1-AXBAGS-FFGGAX/ - Returns details for the given event
 '''
 
@@ -41,7 +47,10 @@ class JSONResponseMixin(object):
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
-        return json.dumps(context)
+        if not settings.DEBUG:                  # USE THE MORE EFFICIENT WAY IN PROTDUCTION
+            return json.dumps(context)
+        else:
+            return json.dumps(context, indent = 4, separators=(',', ': '))
 
     def put_request_scrub(self, request):
         if hasattr(request, '_post'):
@@ -324,59 +333,60 @@ def get_verb_types_json(request):
     return HttpResponse(json.dumps(result, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
 
-def get_verb_fields_json(request, slug):
+
+
+
+class VerbFieldAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
-    Returns a JSON result that lists all the form fields the verb type requires
+    JSON call of a protocol diagram handling 1 and 2 protocols
     '''
-    form = VERB_FORM_DICT[slug]
+    def get(self, request, *args, **kwargs):
+        
+        form = VERB_FORM_DICT[ kwargs['slug'] ]
 
-    # print dir(form)
-    # 'add_initial_prefix', 'add_prefix', 'as_p', 'as_table', 'as_ul', 'base_fields', 'changed_data', 'clean', 'errors', 'full_clean', 'has_changed', 'has_component', 'has_machine', 'has_manual', 'has_thermocycler', 'hidden_fields', 'is_multipart', 'is_valid', 'layers', 'media', 'name', 'non_field_errors', 'slug', 'visible_fields'
+        data = {'name':form.name,
+                'has_components':form.has_component, 
+                'has_machine':form.has_machine, 
+                'has_thermocycler':form.has_thermocycler, 
+                'visible_fields':[],
+                'hidden_fields':[],
+                }
 
-    data = {'name':form.name,
-            'has_components':form.has_component, 
-            'has_machine':form.has_machine, 
-            'has_thermocycler':form.has_thermocycler, 
-            'visible_fields':[],
-            'hidden_fields':[],
-            }
+        for key in form.base_fields:
+            form_field = form.base_fields[key]
+            widget = self.field_to_json( key, form_field )
 
-    for key in form.base_fields:
+            # NEED TO ADD LABEL FIELD
+            if form_field.widget.is_hidden:
+                data['hidden_fields'].append( widget )
+            else:
+                data['visible_fields'].append( widget )
 
-        widget = field_to_json( form.base_fields[key] )
+        return self.render_to_response(data)
+
+    def field_to_json(self, key, field):
+        widget = {}
+
+        # print dir(field)
+        # 'bound_data', 'clean', 'creation_counter', 'default_error_messages', 'default_validators', 'error_messages', 'help_text', 'hidden_widget', 'initial', 'label', 'localize', 'max_value', 'min_value', 'prepare_value', 'required', 'run_validators', 'show_hidden_initial', 'to_python', 'validate', 'validators', 'widget', 'widget_attrs'
+
+        if field.help_text:
+            widget['help_text'] = field.help_text
+
+        # print field.widget.input_type
+        # 'attrs', 'build_attrs', 'context_instance', 'get_context', 'get_context_data', 'id_for_label', 'input_type', 'is_hidden', 'is_localized', 'is_required', 'media', 'needs_multipart_form', 'render', 'subwidgets', 'template_name', 'value_from_datadict'
+
+        widget['input_type'] = field.widget.input_type
         widget['name'] = key
 
-        data['visible_fields'].append( widget )
+        if field.label:
+            widget['label'] = field.label
+        else:
+            widget['label'] = " ".join([ x.capitalize() for x in key.split("_")] )
+        
+        widget['is_required'] = field.widget.is_required
 
-    result = {'meta':{}, 'data':data }
-
-    # return HttpResponse( json.dumps( result ), mimetype="application/json")
-    return HttpResponse(json.dumps(result, indent = 4, separators=(',', ': ')), mimetype="application/json")
-
-
-def field_to_json(field):
-    widget = {}
-
-    # print dir(field)
-    # 'bound_data', 'clean', 'creation_counter', 'default_error_messages', 'default_validators', 'error_messages', 'help_text', 'hidden_widget', 'initial', 'label', 'localize', 'max_value', 'min_value', 'prepare_value', 'required', 'run_validators', 'show_hidden_initial', 'to_python', 'validate', 'validators', 'widget', 'widget_attrs'
-
-    if field.help_text:
-        widget['help_text'] = field.help_text
-
-    # print field.widget.input_type
-    # 'attrs', 'build_attrs', 'context_instance', 'get_context', 'get_context_data', 'id_for_label', 'input_type', 'is_hidden', 'is_localized', 'is_required', 'media', 'needs_multipart_form', 'render', 'subwidgets', 'template_name', 'value_from_datadict'
-
-    widget['input_type'] = field.widget.input_type
-
-    # if field.widget.is_required:
-    widget['is_required'] = field.widget.is_required
-
-    # if field.widget.is_hidden:
-    widget['is_hidden'] = field.widget.is_hidden
-
-    return widget
-
-
+        return widget
 
 
 # TESTING VIEWS:
