@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 #from protocols.utils import MANUAL_VERBS
 from core.models import SlugStampMixin
-
+from organization.models import Organization
 from workflow.models import Workflow
 
 
@@ -26,6 +26,7 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     name = models.CharField(_("Experiment Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+    owner = models.ForeignKey(Organization)
 
     def save(self,*args,**kwargs):
     	new_slug = self.generate_slug()

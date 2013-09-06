@@ -98,7 +98,7 @@ class CalendarModelTests(AutoBaseTest):
                             'notes':"",
                             'verb':"mix"						
 						},
-{
+						{
 							'id':"bnb-o1-e2-p1-8v5lak-kxsl3b",
                             'start':'0',
                             'duration':'0',
