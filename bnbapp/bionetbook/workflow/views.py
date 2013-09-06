@@ -115,7 +115,7 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
         org = Organization.objects.get(slug=slug)
 
         form.instance.owner = org
-        form.instance.author = self.request.user
+        form.instance.user = self.request.user
 
         return super(WorkflowCreateView, self).form_valid(form)
 

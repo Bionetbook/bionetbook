@@ -2,13 +2,14 @@ from django import forms
 from workflow.models import Workflow
 from django.db.models.query import EmptyQuerySet
 from django.utils.translation import ugettext_lazy as _
+from organization.models import Organization
 
 class WorkflowForm(forms.ModelForm):
 
 	class Meta:
+
 		model = Workflow
-        #exclude = ('parent', 'slug', 'duration_in_seconds', 'status','raw')
-        exclude = ('data', 'slug', 'duration', 'author', 'owner', 'protocols')
+		exclude  = ('user','data','slug','owner')
 
 
 class WorkflowManualForm(forms.Form):

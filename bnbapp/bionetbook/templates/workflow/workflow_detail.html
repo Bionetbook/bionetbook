@@ -18,7 +18,8 @@
 <div class="row">
     <div class="span12">
         <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Protocols</h3></li>
+            <li class="nav-label"><h3>Execution of Protocols</h3></li>
+            {% if protocols %}
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -58,6 +59,7 @@
                         {% endfor %}
             </tbody>
         </table>
+        {% endif %}
     </div>
     
 </div>
