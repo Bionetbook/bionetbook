@@ -136,7 +136,7 @@ BNB.calendar = (function(){
 			p.events[a].stepNumber = protocolList[protocolId].steps.length;
 
 			// Server uses seconds, JavaScript uses milliseconds
-			p.events[a].duration *= 1000;
+			p.events[a].duration;
 
 			// Add the action to its place in the structure
 			curStep.actions.push(p.events[a]);
