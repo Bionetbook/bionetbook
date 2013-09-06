@@ -1212,18 +1212,6 @@ BNB.dataInput = (function(){
             error: function(e){console.log("Failed to recieve existing Protocol)")}
         });
 
-        /*window.Protocol = //    TESTING ONLY
-        {"id":"p1","steps":[{"id":"temp1378421980279","actions":[{"id":"temp1378421983864",
-        "verb":"Measure","isActive":true,"verbFormFieldValues":{"what_are_you_measuring":"I'm measuring stuff",
-        "measurement_value":"10","measurement_units":"ml","device":"Scale","file_of_measurement":""},
-        "componentFields":false,"machineFields":{"name":"Dat Machine","model":"mx2","time":"3:00:00-5:00:00",
-        "temp":"20-23","speed":"22-30"},"thermocyclerFields":false,"title":"Named, yo."}],"title":"First Step",
-        "description":"Descripsioso"},{"id":"temp1378422063483","actions":[{"id":"temp1378422092884",
-        "title":"Deez actions","verb":"Add","verbFormFieldValues":{"conditional_statement":"Nahh... nah."},
-        "componentFields":[{"title":"Comp1","Prop2":"10ml","Prop1":"2ml"},{"title":"component2","Prop2":"8",
-        "Prop1":"7"}],"machineFields":false,"thermocyclerFields":false}],"title":"Second Step Name",
-        "description":"Second descrip"}],"title":"Dat Protocol","description":"I'll tell you hwat"};*/
-
         parseExistingProtocol();
     }
 
@@ -1349,10 +1337,11 @@ BNB.dataInput = (function(){
             // Make sure they typed in a name or fire an error
             if(userInput.value.length < 2){
                 var errorNode = document.createElement('div');
-                errorNode.className = "alert alert-error";
+                errorNode.className = "alert alert-error save-alert";
                 errorNode.innerHTML = '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
                                       "You have to name the protocol before you can continue!";
-                userInput.parentNode.parentNode.insertBefore(errorNode, userInput.parentNode)
+                userInput.parentNode.parentNode.insertBefore(errorNode, userInput.parentNode);
+                removeAlert();
                 return;
             }
 
@@ -1425,57 +1414,3 @@ BNB.dataInput = (function(){
     })();
 
 })();
-
-
-// Sample data structure to send to server
-/*
-
-http://127.0.0.1:8000/api/action/fields/mix/
-http://127.0.0.1:8000/api/action/types/
-
-Protocol = {
-
-    id: recievedFromServerOnPageLoad,
-    title: userInputName,
-    description, userInputDescription,
-
-    steps: [
-        {
-            id: id,
-            name: name,
-            description: description,
-
-            actions: [{
-                id: tempUntilRecievedFromServer,
-                name: userGivenName,
-                active: activeValue,
-                verb: verbName,
-                verbFormFieldValues: {
-                    time: time,
-                    temp: temp
-                },
-                thermocyclerFields: false,
-                componentFields: false,
-                machineFields: {
-                    name: name,
-                    model: model,
-                    time: time
-                }
-            
-            },{
-
-                id: tempUntilRecievedFromServer
-
-            }]
-        },
-        {   
-            id: id,
-            name: name,
-            description: description
-        }
-    ]
-}
-*/
-
-
-
