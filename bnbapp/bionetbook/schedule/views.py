@@ -74,3 +74,7 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
     #   context['calendar'] = Calendar.objects.all()[0]
     #   return self.render_to_response(context)
 
+class ScheduleExample(TemplateView):
+    template_name = "schedule/schedule_example.html"
+
+
