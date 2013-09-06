@@ -15,7 +15,7 @@ class WorkflowForm(forms.ModelForm):
 class WorkflowManualForm(forms.Form):
     # name = forms.CharField( widget=forms.TextInput(attrs={'class':'special'}) )
     name = forms.CharField( widget=forms.TextInput() )
-    protocols = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Protocol"), widget=forms.CheckboxSelectMultiple())
-
+    protocols = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Protocols"), widget=forms.CheckboxSelectMultiple())
+    
     # UPDATE IT IN THE VIEW
     # form.fields['protocols'] = forms.ModelChoiceField( queryset=self.request.user.profile.get_published_protocols_qs(), label=_("Protocol"), widget=forms.CheckboxSelectMultiple() )

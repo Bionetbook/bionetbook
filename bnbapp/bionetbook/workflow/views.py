@@ -1,13 +1,15 @@
 from django import forms, http
 from django.http import Http404, HttpResponse
-from django.views.generic import ListView, View, CreateView
+from django.views.generic import ListView, View, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 from django.utils import simplejson
 
+from core.views import PathMixin
+from django.core.urlresolvers import reverse
 from braces.views import LoginRequiredMixin
-
+from django.template.defaultfilters import slugify
 from workflow.forms import WorkflowForm, WorkflowManualForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
@@ -87,14 +89,15 @@ class WorkflowListView(LoginRequiredMixin, ListView):
 #     form_class = WorkflowForm
 
 
-class WorkflowCreateView(LoginRequiredMixin, CreateView):
+class WorkflowCreateView(PathMixin, LoginRequiredMixin, FormView):
     '''
     View used to create new protocols
     '''
 
     model = Workflow
-    form_class = WorkflowForm
+    form_class = WorkflowManualForm
     slug_url_kwarg = "owner_slug"
+    template_name = "workflow/workflow_form.html"
 
     #def get_queryset(self):
     #slug = self.kwargs.get(self.slug_url_kwarg, None)
@@ -104,7 +107,7 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
     #     return super(ProtocolCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return self.get_absolute_url()
 
 
     def form_valid(self, form):
@@ -114,21 +117,31 @@ class WorkflowCreateView(LoginRequiredMixin, CreateView):
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         org = Organization.objects.get(slug=slug)
 
-        form.instance.owner = org
-        form.instance.user = self.request.user
+        # form.instance.owner = org
+        # form.instance.user = self.request.user
+        w = Workflow()
+        w.name = form.cleaned_data['name']
+        w.user = self.request.user
+        w.data = {'meta':{}, 'protocols':form.cleaned_data['protocols']}
+        w.slug = slugify(form.cleaned_data['name'])
+        w.owner = org
+        w.save()
+        return HttpResponseRedirect(w.get_absolute_url())
 
-        return super(WorkflowCreateView, self).form_valid(form)
-
-
-    # def get_form(self, form_class):
-    #     """
-    #     Returns an instance of the form to be used in this view.
-    #     """
-    #     form = form_class(**self.get_form_kwargs())
-    #     form.instance.author = self.request.user
-    #     #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
-    #     # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
-    #     return form
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = form_class(**self.get_form_kwargs())
+        protocols = Organization.objects.get(slug=self.kwargs['owner_slug']).protocol_set.all()
+        form.fields['protocols'] = forms.MultipleChoiceField(
+            label="Protocols",
+            choices=((x.pk,x) for x in protocols),
+            widget=forms.CheckboxSelectMultiple())
+        #form.fields['organization'] = Organization.objects.get(slug=self.kwargs['owner_slug'])
+        #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
+        # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
+        return form
 
 
 # class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
