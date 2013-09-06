@@ -25,7 +25,9 @@ class Calendar(TimeStampedModel):
     '''
     An Schedule is derived from an Experiment
 
-    data: { 'meta': {},
+    data: { 'meta': { 1: "sample description",
+                      2: "sample"
+                    },
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
                             'duration':300,
@@ -34,6 +36,7 @@ class Calendar(TimeStampedModel):
                             'experiment':'experiment 1',
                             'notes':"",
                             'verb':"mix"
+                            'active':"active"
                         },
                         {   'id': "bnb-o1-e1-p1-AXBAGS-GBRISH",
                             'start':1376957033,
@@ -60,6 +63,7 @@ class Calendar(TimeStampedModel):
     user = models.ForeignKey(User)
     name = models.CharField(_("Calendar Name"), max_length=255)
     data = JSONField(blank=True, null=True)
+    slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
 
     def save(self, *args, **kwargs):
         # self.data = {}
@@ -68,6 +72,12 @@ class Calendar(TimeStampedModel):
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
+
+        new_slug = self.generate_slug()
+
+        if not new_slug == self.slug: # Triggered when its a clone method
+            self.slug = new_slug
+            super(Calendar, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def __unicode__(self):
         return self.name
@@ -87,6 +97,13 @@ class Calendar(TimeStampedModel):
     #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
     #     print ret
 
+    def generate_slug(self):
+        slug = slugify(self.name)
+        if self.pk:
+            return "%d-%s" % (self.pk, slug)
+        else:
+            return slug
+
     def setupCalendar(self):
         ret = {'meta':{},'events':[]}
         userExperimentList = self.user.experiment_set.all()
@@ -97,19 +114,25 @@ class Calendar(TimeStampedModel):
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
+                        print p.slug + " " + action['objectid']
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
                 for element in actionList:
                     eventObject = {}
                     eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk, element[0], element[1])
                     eventObject['start'] = '0'
-                    eventObject['duration'] = element[3].split('-')[1]
+                    if "-" in element[3]:
+                        eventObject['duration'] = element[3].split('-')[1]
+                    else:
+                        eventObject['duration'] = element[3]
                     eventObject['verb'] = element[2]
                     eventObject['title'] = element[4]
                     eventObject['protocol'] = p.title
                     eventObject['experiment'] = e.name
                     eventObject['notes'] = ""
                     ret['events'].append(eventObject)
+                if p.pk not in ret['meta']:
+                    ret['meta'][p.pk] = p.description
         return ret
 
     def addExperiment(self, newExperiment):
@@ -125,7 +148,10 @@ class Calendar(TimeStampedModel):
                 eventObject = {}
                 eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (newExperiment.pk,p.pk, element[0], element[1])
                 eventObject['start'] = '0'
-                eventObject['duration'] = element[3].split('-')[1]
+                if "-" in element[3]:
+                    eventObject['duration'] = element[3].split('-')[1]
+                else:
+                    eventObject['duration'] = element[3]
                 eventObject['verb'] = element[2]
                 eventObject['title'] = element[4]
                 eventObject['protocol'] = p.title

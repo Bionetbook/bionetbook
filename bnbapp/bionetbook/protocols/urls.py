@@ -3,14 +3,15 @@ from django.conf.urls.defaults import patterns, url, include
 from protocols import views
 import compare.views as cviews
 # from compare import views
-
+import workflow.views as wviews
 
 urlpatterns = patterns("",
 
     # url(regex=r'^protocols/$', view=views.ProtocolListView.as_view(), name='protocol_list'),
     # url(regex=r'^protocols/(?P<protocol_a_slug>[-\w]+)/layers/(?P<layers>[-\w]+)/$', view=cviews.CompareSingleLayersView.as_view(), name='draw_single_layers'),
     # PROTOCOL URLS
-    url(regex=r'^(?P<owner_slug>[-\w]+)/$', view=views.ProtocolListView.as_view(), name='organization_protocol_list'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/workflows/create/$', view=wviews.WorkflowCreateView.as_view(), name='workflow_create'),
+    # url(regex=r'^(?P<owner_slug>[-\w]+)/workflows/(?P<workflow_slug>[-\w]+)/$', view=wviews.WorkflowDetailView.as_view(), name='workflow_detail'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/create/$', view=views.ProtocolCreateView.as_view(), name='protocol_create'),
     # url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolDetailView.as_view(), name='protocol_detail'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolDetailView.as_view(), name='protocol_detail'),

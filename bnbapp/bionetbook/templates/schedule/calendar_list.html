@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}{{ request.user.first_name }} Calendar List{% endblock %}
+
+{% block page_title %}
+{{ 'Calendar List' }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li class="active">{{ 'Calendars' }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="{% url calendar_list %}">Calendar List</a></li>
+    {% if request.user.is_authenticated %}
+  <li><a href="{% url calendar_list %}">New Calendar</a></li>
+    {% endif %}
+</ul>
+
+<div class="row">
+    <div class="span12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calendar in calendars %}
+                <tr>
+                    <td><a href="{% url single_calendar pk=calendar.pk%}">{{ calendar }}</a></td>
+                    <td>{{ calendar.modified|date:"M d, Y H:i"}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
