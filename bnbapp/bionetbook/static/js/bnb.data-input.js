@@ -4,39 +4,29 @@
 //        adding / editing          //
 //                                  //
 //////////////////////////////////////
-// Notes:
-//  stepsUsingTempId tracks use of a temporary id, but nothing is using it
-//  Not sure about the tracking of temporary ids
 
 "use strict";
-
-// FOR TESTING - real data will be grabbed from server either way
-var Protocol = {};
-
-
-
+var Protocol = {steps:[]};
 var BNB = BNB || {};
 
 BNB.dataInput = (function(){
+
+    // Is this editing or making a new protocol?
+    var createMode = false;
 
     var verbList = [ "Select a verb" ];
 
     init();
 
     function init(){
-        // Is this editing or making a new protocol?
-        var createMode = false;
 
         // Protocol global object creation
         if(typeof Protocol == 'undefined'){
             window.Protocol = {
-                id: "p1",
                 steps: []
             };
             createMode = true;
         }
-
-        document.body.setAttribute('data-create-mode', createMode);
 
         // Populate verb list
         $.ajax({
@@ -75,109 +65,18 @@ BNB.dataInput = (function(){
             intro();
         else
             getExistingProtocol();
-
-        // Add functionality to the save button
-        document.getElementById('save-protocol').onclick = function(){
-            $.ajax({
-                url: apiUrlPrefix + 'protocol/' + Protocol.id.slice(1) + '/',
-                contentType: 'application/json',
-                type: "PUT",
-                data: JSON.stringify(Protocol),
-                success: function(e){ 
-                    var message = document.getElementById('save-protocol').parentNode
-                        .appendChild( document.createElement("div") );
-                    message.className = 'alert alert-error save-alert';
-                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
-                    message.innerHTML += '<strong>Success!</strong> ';
-                    message.innerHTML += 'This protocol has been saved.';
-                    $(message).hide().fadeIn(200);
-
-                    // Automatically remove alert
-                    setTimeout(function(){
-                        if(document.getElementsByClassName('save-alert')[0]){
-                            $(document.getElementsByClassName('save-alert')[0]).fadeOut(200, function(){
-                                $(document.getElementsByClassName('save-alert')[0]).remove();
-                            });
-                            message = null;
-                        }
-                    }, 10000);
-                },
-                error: function(e){ 
-                    var message = document.getElementById('save-protocol').parentNode
-                        .appendChild( document.createElement("div") );
-                    message.className = 'alert alert-error save-alert';
-                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
-                    message.innerHTML += '<strong>Whoops!</strong> ';
-                    message.innerHTML += 'Could not connect to the server; try again in just a second.';
-                    $(message).hide().fadeIn(200);
-
-                    // Automatically remove alert
-                    setTimeout(function(){
-                        if(document.getElementsByClassName('save-alert')[0]){
-                            $(document.getElementsByClassName('save-alert')[0]).fadeOut(200, function(){
-                                $(document.getElementsByClassName('save-alert')[0]).remove();
-                            });
-                            message = null;
-                        }
-                    }, 10000);
-                }
-            });
-        }
     }
 
     // Hero unit overlay + blurred out text
     function intro(){ 
-        var introUnit = document.getElementById('protocol-intro'),
-            userInput = document.getElementById('protocol-intro').getElementsByTagName('input')[0],
-            submitBtn = document.getElementById('intro-submit'),
-            errorNode = document.createElement("div");
+        var userInput = document.getElementById('protocol-intro').getElementsByTagName('input')[0],
+            submitBtn = document.getElementById('intro-submit');
 
-        // Check for "Enter" keypress
+        // Check for "Enter" keypress in the hero unit
         userInput.addEventListener("keydown", function(e) {
             if (!e) { var e = window.event; }
             if (e.keyCode == 13) { submitBtn.click(); }
         }, false);
-
-        submitBtn.onclick = function(){
-            var btn = $(this);
-            
-            // Make sure they typed in a name or fire an error
-            if(userInput.value.length < 2){
-                errorNode.className = "alert alert-error";
-                errorNode.innerHTML = '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                                      "You have to name the protocol before you can continue!";
-                userInput.parentNode.parentNode.insertBefore(errorNode, userInput.parentNode)
-                return;
-            }
-
-            // Send title to API, give user a loading icon, 
-            // only remove hero unit when call comes back
-            // Show loading icon ->
-            btn.css('width', '4em').button('loading');
-            // On success ->
-            $(submitBtn.getElementsByTagName('i')[0]).removeClass('icon-time').addClass('icon-ok');
-
-            // Add title to protocol object
-            Protocol.title = userInput.value;
-
-            // Change Title
-            document.getElementById("protocol-title").innerHTML = userInput.value;
-
-            // Remove overlay
-            $(introUnit).fadeOut("fast");
-
-            // Remove blurred text
-            $(document.getElementById("nav-tabs")).removeClass("blur-text");
-
-            // Add first Step
-            addNewTab();
-
-            // Let title + desc be editible
-            fieldEditingFunctionality(document.getElementById("protocol-title"), 
-                "protocol name", "Name this protocol", Protocol, "title");
-            fieldEditingFunctionality(document.getElementById("protocol-description"), 
-                "description", "add a description", Protocol, "description");
-        }
     }
 
     function parseExistingProtocol(){
@@ -219,42 +118,13 @@ BNB.dataInput = (function(){
         // Set up a new step
         if(!existingStep){
 
-            // Track objects using the temp ID so we can easily update them
-            var stepsUsingTempId = [];
-
             // Create new step in Protocol
-            var tempId = 'temp' + new Date().getTime();
             Protocol.steps.push({
-                id: tempId,
                 actions: []
             });
 
-            newTab.setAttribute("data-id", tempId);
-
-            // get real id from server and replace the tempId
-            $.ajax({
-                url: 'api/createStep',
-                dataType: 'json',
-                success: function(e){
-
-                    // Replace tempId with a real ID from server
-                    for(var step in Protocol.steps){
-                        if(step.id == tempId){
-                            step.id = e.data.id; 
-                            newTab.setAttribute("data-id", e.data.id);
-                            break;
-                        }
-                    }
-
-                },
-                error: function(e){console.log("Ajax request failed. (Step Creation)")}
-            });
-
             newLink.innerHTML = '<input type="text" placeholder="step name" autofocus>';
-        } 
-        // Everything exist, so just record the ID in the DOM
-        else {
-            newTab.setAttribute("data-id", existingStep.id);
+        } else {
             newLink.innerHTML = existingStep.title;
         }
 
@@ -266,16 +136,15 @@ BNB.dataInput = (function(){
             newLink,                        // Edit functionality
             "step name",                    // Placeholder text
             "Name this step",               // Empty submit message
-            Protocol.steps[tabNum-1],        // Reference to js object
+            Protocol.steps[tabNum-1],       // Reference to js object
             "title"                         // Property of object to link this field to
         );
 
         // Construct tab content and append it to the tab content container
-        // Track objs using the tempId with stepsUsingTempId so we can easily update them
         if(!existingStep) 
-            createTabContent( tabNum, tempId, false, stepsUsingTempId );
+            createTabContent( tabNum, Protocol.steps[tabNum-1] );
         else 
-            createTabContent( tabNum, existingStep.id, existingStep.actions); 
+            createTabContent( tabNum, Protocol.steps[tabNum-1], existingStep.actions ); 
 
         // Add new tab to the tab list
         newTab.appendChild(newLink);
@@ -314,7 +183,7 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createTabContent(tabNum, tabId, existingActions, stepsUsingTempId){
+    function createTabContent(tabNum, stepObj, existingActions){
         var tabContent = document.createElement("div"),
                 addAction = document.createElement("div"),
                 header = document.createElement("div"),
@@ -322,18 +191,14 @@ BNB.dataInput = (function(){
                         headerH2Small = document.createElement("small"),
                             headerH2Edit = document.createElement("span");
 
-        stepsUsingTempId = stepsUsingTempId || false;
-
         header.className = "page-header";
         // Step description label
         headerH2Small.innerHTML = "Step description: "
         // Step description
-        headerH2Edit.innerHTML = existingActions ? getStep(tabId).description : "add a description";
+        headerH2Edit.innerHTML = existingActions ? stepObj.description : "add a description";
         headerH2Edit.className = "step-description";
         // Step description editing
-        fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', getStep(tabId), "description");
-        // Track use of temporary id
-        if(!existingActions) stepsUsingTempId.push(headerH2Edit);
+        fieldEditingFunctionality(headerH2Edit, 'description', 'add a description', stepObj, "description");
 
         headerH2Small.appendChild(headerH2Edit);
         headerH2.appendChild(headerH2Small);
@@ -342,7 +207,6 @@ BNB.dataInput = (function(){
 
         tabContent.className = "tab-pane";
         tabContent.id = "tabContent" + tabNum;
-        tabContent.setAttribute("data-id", tabId);
 
         addAction.className = "add-new-action";
         addAction.innerHTML='<h4>&plus; add new action</h4>';
@@ -357,7 +221,7 @@ BNB.dataInput = (function(){
                 if(!existingActions[i].id) existingActions[i].id = existingActions[i].objectid;
 
                 // Create action
-                var el = createNewAction(tabId, existingActions[i]);
+                var el = createNewAction(stepObj, existingActions[i]);
                 addAction.parentNode.insertBefore(el, addAction);
                 $(el).hide().fadeIn();
             }
@@ -365,35 +229,12 @@ BNB.dataInput = (function(){
 
         // Add another action
         addAction.onclick = function(){
-            var tempId = 'temp' + new Date().getTime();
 
             // Add action to containing Step
-            var stepToAddActionTo = getStep($("[href=#tabContent"+ tabNum +"]").parent().attr("data-id"));
-            stepToAddActionTo.actions.push({
-                id: tempId
-            });
+            stepObj.actions.push({});
 
             // Create action
-            var newAction = createNewAction(this.parentNode.getAttribute("data-id"), false, stepsUsingTempId);
-            // Track use of temporary id
-            if(!existingActions) stepsUsingTempId.push(newAction);
-
-            // get real id from server and replace the tempId
-            $.ajax({
-                url: 'api/createStep',
-                dataType: 'json',
-                success: function(e){
-
-                    // Find this action
-                    for(var i = 0; i < stepToAddActionTo.actions.length; i++){
-                        // Update to real id
-                        if(stepToAddActionTo.actions[i].id == tempId)
-                            stepToAddActionTo.actions[i].id = e.data.id;
-                    }
-
-                },
-                error: function(e){console.log("Ajax request failed. (Action ID Creation)")}
-            });
+            var newAction = createNewAction(stepObj);
 
             // show action
             newAction.style.display = "none";
@@ -430,7 +271,7 @@ BNB.dataInput = (function(){
         });
     }
 
-    function createNewAction(containerId, existingAction, stepsUsingTempId){
+    function createNewAction(stepObj, existingAction){
         var action = document.createElement("table"),
             tbody = document.createElement("tbody"),
             header = document.createElement("tr"),
@@ -445,37 +286,14 @@ BNB.dataInput = (function(){
 
         action.className = "table table-bordered action-container";
 
-        var parentStep = getStep(containerId);
-        var thisAction = parentStep.actions[ parentStep.actions.length -1 ];
-
-        // Make a tempId for this action
-        if(!existingAction){
-            var tempId = 'temp' + new Date().getTime();
-
-            // get real id from server and replace the tempId
-            $.ajax({
-                url: 'api/createAction',
-                dataType: 'json',
-                success: function(e){
-                    // e.data.id
-                },
-                error: function(e){console.log("Ajax request failed. (Action Creation)")}
-            });
-
-            action.setAttribute("data-id", tempId)
-            // Track use of tempId
-            if(stepsUsingTempId) stepsUsingTempId.push(action);
-        }
-        else{
-            action.setAttribute("data-id", existingAction.id)
-        }
+        var thisAction = stepObj.actions[ stepObj.actions.length - 1 ];
         
 
         //------------------------------------
         //   Action header (naming action)
         //------------------------------------
         // Verb
-        innerHeaderh4.innerHTML = existingAction.title || "Name this action";
+        innerHeaderh4.innerHTML = existingAction ? existingAction.title : "Name this action";
         innerHeaderTd.setAttribute("colspan", "2");
         innerHeaderTd.appendChild(innerHeaderh4);
         innerHeaderTd.appendChild(isActiveToggle);
@@ -1030,7 +848,7 @@ BNB.dataInput = (function(){
 
     // Editing functionality for COMPONENT NAMES
     function componentEditingFunctionality(ele, objReference){
-        // decode <sub>16</sub> to /16/
+
         ele.onclick = function(){
             if(this.getElementsByTagName("input")[0]) return;
             if(!this.getAttribute("data-editing") || this.getAttribute("data-editing") == "false"){
@@ -1326,15 +1144,6 @@ BNB.dataInput = (function(){
         }, true);
     }
 
-    // Find the step with the matching id inside Protocol
-    function getStep(id){
-        for(var i = 0; i < Protocol.steps.length; i++){
-            if(Protocol.steps[i].id == id){
-                return Protocol.steps[i];
-            }
-        }
-    }
-
     // Get the position of a node in relation to its siblings
     // a a b a      // b == 2
     function getIndexOf(el){
@@ -1386,7 +1195,7 @@ BNB.dataInput = (function(){
         while(a[a.length-1] == 'edit' || a[a.length -1] == 'test' || a[a.length -1] == false) a.pop();
         var slug = a[a.length-1];
 
-        /*$.ajax({
+        $.ajax({
             url: apiUrlPrefix + 'protocol/' + slug,
             dataType: 'json',
             success: function(e){
@@ -1401,9 +1210,9 @@ BNB.dataInput = (function(){
                 parseExistingProtocol();
             },
             error: function(e){console.log("Failed to recieve existing Protocol)")}
-        });*/
+        });
 
-        window.Protocol = //    TESTING ONLY
+        /*window.Protocol = //    TESTING ONLY
         {"id":"p1","steps":[{"id":"temp1378421980279","actions":[{"id":"temp1378421983864",
         "verb":"Measure","isActive":true,"verbFormFieldValues":{"what_are_you_measuring":"I'm measuring stuff",
         "measurement_value":"10","measurement_units":"ml","device":"Scale","file_of_measurement":""},
@@ -1413,15 +1222,207 @@ BNB.dataInput = (function(){
         "title":"Deez actions","verb":"Add","verbFormFieldValues":{"conditional_statement":"Nahh... nah."},
         "componentFields":[{"title":"Comp1","Prop2":"10ml","Prop1":"2ml"},{"title":"component2","Prop2":"8",
         "Prop1":"7"}],"machineFields":false,"thermocyclerFields":false}],"title":"Second Step Name",
-        "description":"Second descrip"}],"title":"Dat Protocol","description":"I'll tell you hwat"};
+        "description":"Second descrip"}],"title":"Dat Protocol","description":"I'll tell you hwat"};*/
 
         parseExistingProtocol();
     }
 
-    return {
-        verbList: verbList,
-        htmlEntities: htmlEntities
-    }
+    var sendToServer = (function(){
+        var saveButton = document.getElementById('save-protocol'),
+            createProtocolBtn = document.getElementById('intro-submit'),
+            csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+
+        // Remove from user view
+        $('input[name=csrfmiddlewaretoken]').remove();
+
+        // Add functionality to the buttons
+        document.getElementById('save-protocol').onclick = 
+            createMode ? create : save;
+        createProtocolBtn.onclick = create;
+
+
+        // Automatically remove alert
+        function removeAlert(){
+            setTimeout(function(){
+                var saveAlert = document.getElementsByClassName('save-alert')[0];
+                if(saveAlert){
+                    $(saveAlert).fadeOut(200, function(){
+                        $(saveAlert).remove();
+                    });
+                }
+            }, 10000);
+        }
+
+        $.ajaxSetup({ 
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // Only send the token to relative URLs
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            },
+            csrfmiddlewaretoken: csrfToken
+        });
+
+        function save(){
+            // Protocol's URL identifier - remove preceding 'p' in ID
+            var pSlug = Protocol.id[0] === 'p' ? Protocol.id.slice(1) : Protocol.id;
+
+            // Send Protocol object to server
+            $.ajax({
+                url: apiUrlPrefix + 'protocol/' + pSlug + '/',
+                contentType: 'application/json',
+                type: "PUT",
+                data: JSON.stringify(Protocol),
+                success: function(e){ 
+
+                    // Assumed location of Protocol object
+                    var newP = e.data;
+
+                    // Update Protocol id
+                    if(!Protocol.hasOwnProperty('id') && !Protocol.hasOwnProperty('objectid'))
+                        Protocol.id = newP.id;
+
+                    // Update all step/action ids
+                    for(var a = 0, sLen = Protocol.steps.length, pSteps = Protocol.steps; a < sLen; a++){
+
+                        // Check for step id
+                        if(!pSteps[a].hasOwnProperty('id') && !pSteps[a].hasOwnProperty('objectid'))
+                            pSteps[a].id = newP.steps[a].id;
+
+                        for(var b = 0, aLen = pSteps.actions.length, pActions = pSteps[a].actions; b < aLen; b++){
+
+                            // Check for action id
+                            if(!pActions[b].hasOwnProperty('id') && !pActions[b].hasOwnProperty('objectid'))
+                                pActions[b].id = newP.steps[b].id;
+                        }
+                    }
+
+                    if(document.getElementsByClassName('save-alert')[0])
+                        $('.save-alert').remove();
+
+                    // Show success message
+                    var message = saveButton.parentNode.appendChild(document.createElement("div"));
+                    message.className = 'alert alert-error save-alert';
+                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
+                    message.innerHTML += '<strong>Success!</strong> ';
+                    message.innerHTML += 'This protocol has been saved.';
+                    $(message).hide().fadeIn(200);
+
+                    removeAlert(); // Waits 10s then auto removes
+                },
+                error: function(e){ 
+                    if(document.getElementsByClassName('save-alert')[0])
+                        $('.save-alert').remove();
+
+                    var message = saveButton.parentNode.appendChild(document.createElement("div"));
+                    message.className = 'alert alert-error save-alert';
+                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
+                    message.innerHTML += '<strong>Whoops!</strong> ';
+                    message.innerHTML += 'Could not connect to the server; try again in just a second.';
+                    $(message).hide().fadeIn(200);
+
+                    removeAlert(); // Waits 10s then auto removes
+                }
+            });
+        }
+
+        function create(){
+
+            var userInput = document.getElementById('protocol-intro').getElementsByTagName('input')[0],
+                btn = $(this);
+
+            // Make sure they typed in a name or fire an error
+            if(userInput.value.length < 2){
+                var errorNode = document.createElement('div');
+                errorNode.className = "alert alert-error";
+                errorNode.innerHTML = '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                                      "You have to name the protocol before you can continue!";
+                userInput.parentNode.parentNode.insertBefore(errorNode, userInput.parentNode)
+                return;
+            }
+
+            // Show loading icon
+            btn.css('width', '4em').button('loading');
+
+            // Send Protocol object to server
+            $.ajax({
+                url: apiUrlPrefix + 'protocol/create',
+                contentType: 'application/json',
+                type: "POST",
+                data: Protocol,
+                success: function(e){ 
+
+                    Protocol = e.data;
+                    if(!Protocol.steps) Protocol.steps = [];
+
+                    // Change icon from loading to OK
+                    btn.get(0).getElementsByTagName('i')[0].className = 'icon-ok icon-white';
+
+                    // Add title to protocol object
+                    Protocol.title = userInput.value;
+
+                    // Change Title
+                    document.getElementById("protocol-title").innerHTML = userInput.value;
+
+                    // Remove overlay
+                    $(document.getElementById('protocol-intro')).fadeOut("fast");
+
+                    // Remove blurred text
+                    $(document.getElementById("nav-tabs")).removeClass("blur-text");
+
+                    // Add first Step
+                    addNewTab();
+
+                    // Let title + desc be editible
+                    fieldEditingFunctionality(document.getElementById("protocol-title"), 
+                        "protocol name", "Name this protocol", Protocol, "title");
+                    fieldEditingFunctionality(document.getElementById("protocol-description"), 
+                        "description", "add a description", Protocol, "description");
+                },
+                error: function(e){ 
+
+                    var userInput = document.getElementById('protocol-intro').getElementsByTagName('input')[0];
+
+                    // Stop Hero Unit from being removed
+
+                    // Change icon from loading to refresh
+                    btn.get(0).getElementsByTagName('i')[0].className = 'icon-refresh icon-white';
+                    btn.button('refresh');
+                   
+                    if(document.getElementsByClassName('save-alert')[0])
+                        $('.save-alert').remove();
+
+                    // Display error message (could not connect to server)
+                    var message = userInput.parentNode.appendChild(document.createElement("div"));
+                    message.className = 'alert alert-error save-alert';
+                    message.style.marginTop = '1em';
+                    message.innerHTML = '<button type="button" class="close" data-dismiss="alert">×</button>';
+                    message.innerHTML += '<strong>Whoops!</strong> ';
+                    message.innerHTML += 'Could not connect to the server; try again in just a second.';
+                    $(message).hide().fadeIn(200);
+
+                    removeAlert(); // Waits 10s then auto removes
+                }
+            });
+            // When Protocol creation returns successful
+            document.getElementById('save-protocol').onclick = save;
+        }
+    })();
 
 })();
 
