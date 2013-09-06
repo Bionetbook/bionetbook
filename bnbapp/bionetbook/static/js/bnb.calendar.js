@@ -3,8 +3,6 @@
 //      Calendar functionality      //
 //                                  //
 //////////////////////////////////////
-// Last edit: Sept. 5, 2013
-//
 // Todo:
 // make sure all units of time match up
 // selectors need retooling - they need to use stepId/actionId
