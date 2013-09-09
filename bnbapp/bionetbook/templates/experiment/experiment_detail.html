@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}{{ experiment.name }}{% endblock %}
+
+{% block page_title %}{{ experiment.name }} {% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
+      	<span class="divider">/</span></li>
+      <li class="active">{{ experiment.name }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <div class="span12">
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Exeriment Detail</h3></li>
+                <table class="table table-striped">
+                    {% if workflow %}
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th># of Protocols</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    {% endif %}
+                        <tbody>
+                            <tr>
+                                <td><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}">{{ workflow.name }}</a></td>
+                                <td>{{ workflow.numberOfProtocols }}</td>
+                                <td>{{ workflow.modified }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </div>
+        </div>
+{% endblock %}
