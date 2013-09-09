@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name="login"),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/login/'}, 'logout',),
     url(r'^', include('workflow.urls')),
+    url(r'^', include('experiment.urls')),
     url(r'^', include('protocols.urls')),
     url(r'^', include('organization.urls')),
 )
