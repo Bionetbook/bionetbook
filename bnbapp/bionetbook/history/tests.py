@@ -176,7 +176,7 @@ class HistoryModelTests(AutoBaseTest):
         # ADD TESTS FOR ACTION ADD LOG
         self.assertEquals(history[0].data['create'][0]['type'], 'action')   # ACTION SHOULD SHOW UP AS A CREATION
 
-    def test_log_adding_multiple_component_nodes_to_protocol(self):
+    def test_log_adding_multiple_component_nodes_to_action(self):
         
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
@@ -208,38 +208,40 @@ class HistoryModelTests(AutoBaseTest):
         self.assertIn('duration', history[0].data['update'][1]['attrs'])
 
 
-    # def test_log_adding_multiple_thermocycle_nodes_to_action(self):
-    #     # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-    #     self.protocol.published = True
-    #     step = Step(self.protocol, data={"name":"step1"})
-    #     self.protocol.save() # his[2]
-    #     step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
-
-    #     action1 = Action(self.protocol, parent=step, verb="thermocycle")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
-    #     step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
-    #     self.protocol.save() # his[1]
-
-    #     phase1 = Thermocycle(self.protocol, parent=action1, data = {"name": "first", "min_time": 0, "cycles": "","cycle_back_to":""})
-    #     phase2 = Thermocycle(self.protocol, parent=action1, data = {"name": "second", "min_time": 0, "cycles": "","cycle_back_to":""})
+    def test_log_adding_multiple_thermocycle_nodes_to_action(self):
         
-    #     self.protocol.save() # his[0]
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save() # his[2]
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
 
-    #     history = self.protocol.history_set.all()
-    #     for h in history:
-    #         print "\nHISTORY EVENT: %d" % h.pk
-    #         pp.pprint( h.data )
+        action1 = Action(self.protocol, parent=step, verb="thermocycle")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save() # his[1]
 
-    #     self.assertEquals(len(history[2].data['update']), 1)                # LOG THE PUBLISH CHANGE
-    #     self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
-
-    #     # ADD TESTS FOR ACTION ADD LOG
-    #     self.assertEquals(history[0].data['create'][0]['type'], 'thermocycle')
-    #     self.assertEquals(history[0].data['create'][1]['type'], 'thermocycle')    
+        phase1 = Thermocycle(self.protocol, parent=action1, data = {"name": "first", "min_time": 0, "cycles": "","cycle_back_to":""})
+        phase2 = Thermocycle(self.protocol, parent=action1, data = {"name": "second", "min_time": 0, "cycles": "","cycle_back_to":""})
         
-    #         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-    #     self.assertEquals(len(history[0].data['update']), 2)
-    #     self.assertIn('duration', history[0].data['update'][0]['attrs'])
-    #     self.assertIn('duration', history[0].data['update'][1]['attrs'])
+        self.protocol.save() # his[0]
+
+        history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
+
+        self.assertEquals(len(history[2].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[2].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # ADD TESTS FOR ACTION ADD LOG
+        self.assertEquals(len(history[0].data['create']), 2) # LOG NEW THERMO NODES
+        self.assertEquals(history[0].data['create'][0]['type'], 'thermocycle')
+        self.assertEquals(history[0].data['create'][1]['type'], 'thermocycle')    
+        
+        # TESTS THAT ACTION IS UPDATED
+        self.assertEquals(len(history[0].data['update'][0]['attrs']['thermocycle']), 2)
+
+        # self.assertIn('duration', history[0].data['update'][0]['attrs'])
+        # self.assertIn('duration', history[0].data['update'][1]['attrs'])
 
     def test_log_adding_machine_node_to_action(self):
         self.protocol.published = True
@@ -298,20 +300,55 @@ class HistoryModelTests(AutoBaseTest):
         self.protocol.save()
 
         history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
 
         self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
         self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
 
         # TEST THAT COMPONENT ATTRS WERE UPDATED
-        self.assertEquals(len(history[0].data['update'][0]['attrs']), 2)
-        self.assertEquals(len(history[0].data['update'][1]['attrs']), 2)
+        self.assertEquals(len(history[0].data['update'][0]['attrs']), 2)    # TEST THAT COMPONENT1 ATTRS WERE UPDATED
+        self.assertEquals(len(history[0].data['update'][1]['attrs']), 2)    # TEST THAT COMPONENT2 ATTRS WERE UPDATED
 
     def test_log_editing_multiple_thermocycle_nodes_to_action(self):    
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-        pass    
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save() # his[3]
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action1 = Action(self.protocol, parent=step, verb="thermocycle")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save() # his[2]
+
+        phase1 = Thermocycle(self.protocol, parent=action1, data = {"name": "first", "min_time": 0, "cycles": "","cycle_back_to":""})
+        phase2 = Thermocycle(self.protocol, parent=action1, data = {"name": "second", "min_time": 0, "cycles": "","cycle_back_to":""})
+        
+        self.protocol.save() # his[1]
+
+        phase1['min_time'] = 30
+        phase1['time_units'] = 'sec'
+        phase2['min_temp'] = 30
+        phase2['temp_units'] = 'C'
+        self.protocol.save() # his[0]
+
+        history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )    
+
+        self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # TEST THAT THERMOCYCLE ATTRS WERE UPDATED
+
+        updated_types = [item['type'] for item in history[0].data['update']]
+
+        self.assertEquals(updated_types.count('thermocycle'), 2)    # TEST THAT THERMO1 AND THERMO2 WERE UPDATED            
+        self.assertEquals(updated_types.count('action'), 1)         # TEST THAT ACTION ATTRS WERE UPDATED            
+
+
 
     def test_log_editing_machine_node_to_action(self):    
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
@@ -479,8 +516,44 @@ class HistoryModelTests(AutoBaseTest):
         
         
     def test_log_deleting_multiple_thermocycle_nodes_from_action(self):
-        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-        pass
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save() #hist[3]
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action1 = Action(self.protocol, parent=step, verb="add")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save() #hist[2]
+
+        phase1 = Thermocycle(self.protocol, parent=action1, data = {"name": "first", "min_time": 0, "cycles": "","cycle_back_to":""})
+        phase2 = Thermocycle(self.protocol, parent=action1, data = {"name": "second", "min_time": 0, "cycles": "","cycle_back_to":""})
+        self.protocol.save() #hist[1]
+
+        self.protocol.delete_node(phase1['objectid'])
+        self.protocol.save() #hist[0]
+
+        history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
+
+        # TEST THAT OBJECT IS CONSTRUCTED PROPERLY
+
+        self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+        self.assertEquals(history[2].data['create'][0]['type'], 'action')
+        
+        # TESTS FOR ADDING 2 THERMO TO ACTION
+        self.assertEquals(len(history[1].data['create']), 2) # LOG NEW THERMO NODES
+        self.assertEquals(history[1].data['create'][0]['type'], 'thermocycle')
+        self.assertEquals(history[1].data['create'][1]['type'], 'thermocycle')    
+        
+        # TEST THAT THERMO1 IS BEING DELETED
+        self.assertEquals(len(history[0].data['delete']), 1)
+        self.assertEquals(history[0].data['delete'][0]['type'], 'thermocycle')
+
+        # TEST THAT ACTION IS GETTING UPDATED
+        self.assertEquals(history[0].data['update'][0]['type'], 'action')        
 
     
 
