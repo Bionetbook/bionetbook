@@ -54,8 +54,10 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history), 1)
         self.assertEquals(history[0].data['create'][0]['id'], 1)
         self.assertEquals(history[0].data['create'][0]['attrs']['name'], "Test Protocol")
-        
-    
+
+###########
+# LOGGING CHANGES TO PROTOCOLS             
+
     def test_catch_change_in_protocol_values(self):
         
         self.protocol.name = "New Test Protocol"
@@ -103,28 +105,9 @@ class HistoryModelTests(AutoBaseTest):
         self.assertEquals(len(history), 3)
         self.assertEquals(history[0].data['update'][0]['attrs']['name'], "New Published Protocol")
 
-    def test_log_adding_step_to_protocol(self):
-        
-        self.protocol.published = True
-        step = Step(self.protocol)
-        self.protocol.add_node(step)
-        self.protocol.save()            # <- Not Currently being logged
-
-        # print "\nSTEP ADDED:"
-        # pp.pprint( step )
-
-        # print "\nPROTOCOL STEP DATA:"
-        # pp.pprint( self.protocol.data )
-
-        history = self.protocol.history_set.all()
-        # for h in history:
-        #     print "\nHISTORY EVENT: %d" % h.pk
-        #     pp.pprint( h.data )
-
-        # print history[0].data['create'][0]['attrs']
-        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
-
+    
+###########
+# LOGGING ADDITIONS TO PROTOCOLS
     def test_log_adding_two_protocols(self):
         
         self.protocol.published = True
@@ -147,9 +130,31 @@ class HistoryModelTests(AutoBaseTest):
         # self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
         # self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION
 
+ 
+    def test_log_adding_step_to_protocol(self):
+        
+        self.protocol.published = True
+        step = Step(self.protocol)
+        self.protocol.add_node(step)
+        self.protocol.save()            # <- Not Currently being logged
+
+        # print "\nSTEP ADDED:"
+        # pp.pprint( step )
+
+        # print "\nPROTOCOL STEP DATA:"
+        # pp.pprint( self.protocol.data )
+
+        history = self.protocol.history_set.all()
+        # for h in history:
+        #     print "\nHISTORY EVENT: %d" % h.pk
+        #     pp.pprint( h.data )
+
+        # print history[0].data['create'][0]['attrs']
+        self.assertEquals(len(history[0].data['update']), 1)                    # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[0].data['create'][0]['type'], 'step')    # STEP SHOULD SHOW UP AS A CREATION    
 
 
-    def test_log_adding_multiple_nodes_to_protocol(self):
+    def test_log_adding_action_node_to_step(self):
         
         self.protocol.published = True
         step = Step(self.protocol, data={"name":"step1"})
@@ -266,6 +271,10 @@ class HistoryModelTests(AutoBaseTest):
         self.assertIn('duration', history[0].data['update'][0]['attrs'])
         self.assertIn('duration', history[0].data['update'][1]['attrs'])
 
+###########
+# LOGGING UPDATE EVENTS
+
+
     def test_log_editing_multiple_component_nodes_to_action(self):    
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
         self.protocol.published = True
@@ -348,6 +357,9 @@ class HistoryModelTests(AutoBaseTest):
         self.assertIn('machine', updated_types)                      
         self.assertIn('name', updated['attrs']) 
         self.assertIn('min_time', updated['attrs']) 
+
+###########
+# LOGING DELETE EVENTS
 
     def test_log_adding_and_removing_step_from_protocol(self):
         self.protocol.published = True
