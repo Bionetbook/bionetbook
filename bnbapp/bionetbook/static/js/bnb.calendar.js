@@ -4,7 +4,6 @@
 //                                  //
 //////////////////////////////////////
 // Todo:
-// selectors need retooling - they need to use eid, pid, sid, aid
 // Make dragging node on calendar disable it, while deleting it restore it
 // Notes positioning needs work
 // NOTE: syncEvents() has FAKE length
@@ -281,7 +280,7 @@ BNB.calendar = (function(){
 					timeTracker = eventStep.end;
 
 					// Send data to database
-					modifyProtocolStep.enqueue(eventStep, "add");
+					saveAction.enqueue(eventStep);
 
 					// Add event to calendar
 					$('#calendar').fullCalendar('renderEvent', eventStep, true);
@@ -301,6 +300,9 @@ BNB.calendar = (function(){
 		if(evObj._end) $('[data-fc-id='+ evObj._id + ']').attr('data-event-end', evObj.start);
 
 		var evList = $('#calendar').fullCalendar( 'clientEvents' );
+
+		// Send updated action to server
+		saveAction.enqueue(evObj);
 
 		// Update modified event
 		$('#calendar').fullCalendar( 'updateEvent', evObj );
@@ -440,6 +442,8 @@ BNB.calendar = (function(){
 		}
 	})();
 
+	// ^-- Done --^
+
 	// Functions for editing and saving notes for selected steps
 	var Notes = (function(){
 
@@ -490,7 +494,7 @@ BNB.calendar = (function(){
 			currentStepNode.setAttribute("data-notes", updatedNotes);
 
 			// Save notes to database
-			modifyProtocolStep.enqueue( makeJsonFromNode(currentStepNode), "edit" );
+			saveAction.enqueue( makeJsonFromNode(currentStepNode));
 
 			// Remove popup
 			removeEditNotes(popup);
@@ -553,8 +557,6 @@ BNB.calendar = (function(){
 			removeEditNotes : removeEditNotes
 		}
 	})();
-
-	// ^-- Done --^
 
 	// Showing right click menu
 	function rightClickMenu(e){
@@ -826,28 +828,69 @@ BNB.calendar = (function(){
 		}
 	})();
 
-	// Add / Edit / Remove protocol steps by using Ajax calls
-	// Args: JSON Event object, Action string: add edit remove
+	// Arg: JSON action
 	// ## Look into cookies to store locally in case user closes window
 	// ## Check once a second if queue has items?
-	var modifyProtocolStep = (function(){
+	var saveAction = (function(){
+		/*
+		Server expects this structure
+		{
+	        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
+	        'start':12321311231,
+	        'notes':"",
+	        'status':"updated"
+	    }
+		*/
 		var queue = [],
-			hasCallFinished = true;
+			backlog = [],
+			hasCallFinished = true,
+			url = '/api/calendar';
 
 		function enqueue(stepData){
-			queue.push(stepData);
+			var s = {
+				id: stepData.id, 
+				start: stepData.start, 
+				notes: stepData.notes
+			};
+			s.notes = s.notes == "There are no notes for this event." ? "" : s.notes;
+
+			if(hasCallFinished){
+				queue.push(s);
+				sendQueue();
+			} else {
+				backlog.push(s);
+			}
 		}
 		
-		function send(){
-			// Nothing to do
+		function sendQueue(){
+
 			if(!hasCallFinished || queue.length < 1) return;
 
-			// when done, call send() again
+			$.ajax({
+				url: url,
+				type: 'PUT',
+				data: {events: queue},
+				dataType: 'json',
+            	success: function(){
+            		// Overwrite queue with deep copy of backlog
+            		queue = $.extend(true, [], backlog);
+            		hasCallFinished = true;
+            		console.log("connected")
+            	},
+            	error: function(){
+            		// Deep copy of backlog to concat with queue
+					queue = queue.concat($.extend(true, [], backlog));
+					console.log('could not connect', queue)
+            	},
+            	complete: function(){
+            		backlog = [];
+					sendQueue();
+            	}
+			});
 		}
 
 		return {
-			enqueue : enqueue,
-			send : send
+			enqueue : enqueue
 		}
 	})();
 
