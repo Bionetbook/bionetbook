@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from braces.views import LoginRequiredMixin
 
@@ -27,7 +28,12 @@ Up through version number should come from the main urls.py, everything after th
 Example (GET):
 http://www.bionetbook.com/api/v1/calendar/          - Returns a list of all calendars (names & ids) available to the USER:
 http://www.bionetbook.com/api/v1/calendar/2/        - Returns all the events in the given calendar
-http://www.bionetbook.com/api/v1/calendar/2/XRD234/ - Returns details for the given event
+<<<<<<< HEAD
+
+(PUT)
+=======
+>>>>>>> master
+http://www.bionetbook.com/api/v1/calendar/2/bnb-o1-e1-p1-AXBAGS-FFGGAX/ - Returns details for the given event
 '''
 
 class JSONResponseMixin(object):
@@ -41,8 +47,40 @@ class JSONResponseMixin(object):
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
-        return json.dumps(context)
+        if not settings.DEBUG:                  # USE THE MORE EFFICIENT WAY IN PROTDUCTION
+            return json.dumps(context)
+        else:
+            return json.dumps(context, indent = 4, separators=(',', ': '))
 
+    def put_request_scrub(self, request):
+        if hasattr(request, '_post'):
+            del request._post
+            del request._files
+        try:
+            request.method = "POST"
+            request._load_post_and_files()
+            request.method = "PUT"
+        except AttributeError:
+            request.META['REQUEST_METHOD'] = 'POST'
+            request._load_post_and_files()
+            request.META['REQUEST_METHOD'] = 'PUT'
+            
+        request.PUT = request.POST
+        return request
+
+    def context_package(self, **kwargs):
+        result = {}
+
+        for key in ['data', 'meta', 'error']:
+            if key in kwargs:
+                result[key] = kwargs[key]
+
+        return result
+
+
+##############
+# CALENDAR API
+##############
 
 class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
@@ -52,10 +90,11 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
     {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
         'start':1376957033,
         'duration':300,
-        'action':"First Action",
+        'title':"First Action",
         'protocol':'dna-jalkf',
         'experiment':'experiment 1',
-        'notes':""
+        'notes':"",
+        'verb':"mix"
     }
 
     PUT:
@@ -81,24 +120,7 @@ class SingleEventAPI(JSONResponseMixin, LoginRequiredMixin, View):
         raise Http404
 
     def put(self, request, *args, **kwargs):
-
-        if hasattr(request, '_post'):
-            del request._post
-            del request._files
-        
-        try:
-            request.method = "POST"
-            request._load_post_and_files()
-            request.method = "PUT"
-        except AttributeError:
-            request.META['REQUEST_METHOD'] = 'POST'
-            request._load_post_and_files()
-            request.META['REQUEST_METHOD'] = 'PUT'
-            
-        request.PUT = request.POST
-
-
-
+        request = self.put_request_scrub(request)
         event = request.PUT
         eventID = self.kwargs['event_id']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
@@ -136,31 +158,9 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     API Examples, CRUD
 
-    POST: { 'meta':{...},
-            'data':[ { 'id':'bnb-o1-e1-p1-AXBAGS-FFGGAX',
-                       'tmpid':"...",
-                       'status':'add'
-                      },
-                    ]
-            }
-
     GET: {  'meta':{...},
-            'data':[ {...},
+            'events':[ {...},
                    ]
-            }
-
-    PUT: { 'meta':{...},
-            'data':[ { 'id':'...',
-                       'status':'update'
-                      },
-                    ]
-            }
-
-    DELETE: { 'meta':{...},
-              'data':[ { 'id':'...',
-                       'status':'delete'
-                        },
-                     ]
             }
     '''
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
@@ -170,31 +170,67 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
 
-    # def put(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
-
-    # def post(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
-
-    # def delete(self, request, *args, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     result = {'meta':{}, 'data':context }
-    #     return self.render_to_response(result)
 
 
-# REPLACE WITH CLASS BASED VIEW ABOVE
+##############
+# PROTOCOL API
+##############
 
-# def calendar_json(request, pk):
-#     if request.method == 'GET':
-#         curCal = get_object_or_404(Calendar, pk=1)
-#         return HttpResponse( json.dumps( curCal.data ), mimetype="application/json" )
+class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):     # NEED A PREMISSION CHECK HERE
+    '''
+    Returns the Protocol in JSON form.  Will provide update and edit mehtods.
+
+    Can be used with either a Primary Key or Slug.
+
+    API Examples, CRUD
+
+    GET: {  'meta':{...},
+            'data':{...<PROTOCOL>...},
+            'error':
+            }
+    '''
+
+    # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def get_protocol(self):
+        '''Unified method to get a protocol via ID or Slug'''
+        if 'protocol_slug' in self.kwargs:
+            result = get_object_or_404( Protocol, slug=self.kwargs['protocol_slug'] )
+        else:
+            result = get_object_or_404( Protocol, id=self.kwargs['protocol_id'] )
+
+        #CHECK TO SEE IF THE USER HAS PERMISSIONS TO VIEW THIS PROTOCOL AND 404 IF NOT
+
+        return result
+
+    def get(self, request, *args, **kwargs):
+        '''Read only method for getting a protocol in JSON format'''
+        protocol = self.get_protocol()
+
+        if protocol.data:
+            return self.render_to_response( self.context_package( data=protocol.as_dict() ) )
+        else:
+            return self.render_to_response( self.context_package( error={'type':'NoObjectData', 'description':'Requested protocol has no data.'} ) )
+
+    def put(self, request, *args, **kwargs):
+        request = self.put_request_scrub(request)
+        print "PUT REQUEST:"
+        print request.PUT
+        # event = request.PUT
+        # eventID = self.kwargs['event_id']
+        # cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        # if eventID == event['id']:
+        #     for e in cal.data['events']:
+        #         if eventID in e.values():
+        #             e['start'] = event['start']
+        #             e['notes'] = event['notes']
+        #             cal.save()
+        #             return self.render_to_response ( { 'id':e['id'], 'start':e['start'], 'notes':e['notes'], 'status':'updated'} )
+        # raise Http404
 
 
-# class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):
+# class ProtocolDataAPI(JSONResponseMixin, LoginRequiredMixin, View):
 #     '''
 #     '''
 #     def get(self, request, *args, **kwargs):
@@ -297,59 +333,60 @@ def get_verb_types_json(request):
     return HttpResponse(json.dumps(result, indent = 4, separators=(',', ': ')), mimetype="application/json")
 
 
-def get_verb_fields_json(request, slug):
+
+
+
+class VerbFieldAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
-    Returns a JSON result that lists all the form fields the verb type requires
+    JSON call of a protocol diagram handling 1 and 2 protocols
     '''
-    form = VERB_FORM_DICT[slug]
+    def get(self, request, *args, **kwargs):
+        
+        form = VERB_FORM_DICT[ kwargs['slug'] ]
 
-    # print dir(form)
-    # 'add_initial_prefix', 'add_prefix', 'as_p', 'as_table', 'as_ul', 'base_fields', 'changed_data', 'clean', 'errors', 'full_clean', 'has_changed', 'has_component', 'has_machine', 'has_manual', 'has_thermocycler', 'hidden_fields', 'is_multipart', 'is_valid', 'layers', 'media', 'name', 'non_field_errors', 'slug', 'visible_fields'
+        data = {'name':form.name,
+                'has_components':form.has_component, 
+                'has_machine':form.has_machine, 
+                'has_thermocycler':form.has_thermocycler, 
+                'visible_fields':[],
+                'hidden_fields':[],
+                }
 
-    data = {'name':form.name,
-            'has_components':form.has_component, 
-            'has_machine':form.has_machine, 
-            'has_thermocycler':form.has_thermocycler, 
-            'visible_fields':[],
-            'hidden_fields':[],
-            }
+        for key in form.base_fields:
+            form_field = form.base_fields[key]
+            widget = self.field_to_json( key, form_field )
 
-    for key in form.base_fields:
+            # NEED TO ADD LABEL FIELD
+            if form_field.widget.is_hidden:
+                data['hidden_fields'].append( widget )
+            else:
+                data['visible_fields'].append( widget )
 
-        widget = field_to_json( form.base_fields[key] )
+        return self.render_to_response(data)
+
+    def field_to_json(self, key, field):
+        widget = {}
+
+        # print dir(field)
+        # 'bound_data', 'clean', 'creation_counter', 'default_error_messages', 'default_validators', 'error_messages', 'help_text', 'hidden_widget', 'initial', 'label', 'localize', 'max_value', 'min_value', 'prepare_value', 'required', 'run_validators', 'show_hidden_initial', 'to_python', 'validate', 'validators', 'widget', 'widget_attrs'
+
+        if field.help_text:
+            widget['help_text'] = field.help_text
+
+        # print field.widget.input_type
+        # 'attrs', 'build_attrs', 'context_instance', 'get_context', 'get_context_data', 'id_for_label', 'input_type', 'is_hidden', 'is_localized', 'is_required', 'media', 'needs_multipart_form', 'render', 'subwidgets', 'template_name', 'value_from_datadict'
+
+        widget['input_type'] = field.widget.input_type
         widget['name'] = key
 
-        data['visible_fields'].append( widget )
+        if field.label:
+            widget['label'] = field.label
+        else:
+            widget['label'] = " ".join([ x.capitalize() for x in key.split("_")] )
+        
+        widget['is_required'] = field.widget.is_required
 
-    result = {'meta':{}, 'data':data }
-
-    # return HttpResponse( json.dumps( result ), mimetype="application/json")
-    return HttpResponse(json.dumps(result, indent = 4, separators=(',', ': ')), mimetype="application/json")
-
-
-def field_to_json(field):
-    widget = {}
-
-    # print dir(field)
-    # 'bound_data', 'clean', 'creation_counter', 'default_error_messages', 'default_validators', 'error_messages', 'help_text', 'hidden_widget', 'initial', 'label', 'localize', 'max_value', 'min_value', 'prepare_value', 'required', 'run_validators', 'show_hidden_initial', 'to_python', 'validate', 'validators', 'widget', 'widget_attrs'
-
-    if field.help_text:
-        widget['help_text'] = field.help_text
-
-    # print field.widget.input_type
-    # 'attrs', 'build_attrs', 'context_instance', 'get_context', 'get_context_data', 'id_for_label', 'input_type', 'is_hidden', 'is_localized', 'is_required', 'media', 'needs_multipart_form', 'render', 'subwidgets', 'template_name', 'value_from_datadict'
-
-    widget['input_type'] = field.widget.input_type
-
-    # if field.widget.is_required:
-    widget['is_required'] = field.widget.is_required
-
-    # if field.widget.is_hidden:
-    widget['is_hidden'] = field.widget.is_hidden
-
-    return widget
-
-
+        return widget
 
 
 # TESTING VIEWS:

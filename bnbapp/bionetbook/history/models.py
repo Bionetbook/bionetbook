@@ -83,10 +83,10 @@ class History(TimeStampedModel):
     #     for key in diff.hdf:
     #         for item in diff.hdf[key]:
 
-    #             if not key in self.data:    # MAKE SURE THIS IS A LIST
-    #                 self.data[key] = []
+                if not key in self.data:    # MAKE SURE THIS IS A LIST
+                    self.data[key] = []
 
-    #             self.data[key].append( item )
+                self.data[key].append( item )
 
         # self.data[etype].append({'id':node_id, "attrs": data })
 

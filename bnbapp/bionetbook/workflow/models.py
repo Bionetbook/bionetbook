@@ -24,10 +24,10 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     	}
     '''
     user = models.ForeignKey(User)
-    name = models.CharField(_("Calendar Name"), max_length=255)
+    name = models.CharField(_("Workflow Name"), max_length=255)
     data = JSONField(blank=True, null=True)
     slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
-
+    owner = models.ForeignKey(Organization)
 
     def save(self, *args, **kwargs):
     	if not self.data:
@@ -41,6 +41,22 @@ class Workflow(SlugStampMixin, TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+
+    def protocols(self):
+        if self.data['protocols']:
+            return self.data['protocols']
+        else:
+            self.setupWorkflow()
+            return self.data['protocols']
+
+    def numberOfProtocols(self):
+        if self.protocols:
+            return len(self.protocols())
+        else:
+            return 0
+
+    def get_absolute_url(self):
+        return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug,'workflow_slug':self.slug})
         
 # class Workflow(TimeStampedModel):
 #     '''Collection of Protocols for working doing an experiment with'''

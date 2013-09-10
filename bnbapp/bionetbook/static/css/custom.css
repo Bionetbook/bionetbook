@@ -144,46 +144,126 @@ footer li a {
 */
 
 
-	#external-events {
-		float: left;
-		width: 150px;
-		padding: 0 10px;
-		border: 1px solid #ccc;
-		background: #eee;
-		text-align: left;
-		}
-		
-	#external-events h4 {
-		font-size: 16px;
-		margin-top: 0;
-		padding-top: 1em;
-		}
-		
-	.external-event, .custom-event { /* try to mimick the look of a real event */
-		margin: 10px 0;
-		padding: 2px 4px;
-		background: #3366CC;
-		color: #fff;
-		font-size: .85em;
-		cursor: pointer;
-		}
-		
-	#external-events p {
-		margin: 1.5em 0;
-		font-size: 11px;
-		color: #666;
-		}
-		
-	#external-events p input {
-		margin: 0;
-		vertical-align: middle
-		}
+#external-events {
+	float: left;
+	width: 150px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	background: #eee;
+	text-align: left;
+}
+	
+#external-events h4 {
+	font-size: 16px;
+	margin-top: 0;
+	padding-top: 1em;
+}
 
-	#calendar {
-		float: right;
-		width: 760px;
-		}
-	/* Edit Notes Popup */
+
+/* Pasive events */
+.fc-event-vert[data-active=false]{
+    background-color:transparent !important;
+    color:#000 !important;
+    border-left-style: dashed;
+    border-right-style: dashed;
+}
+.fc-event-vert[data-active=false] .fc-event-time{ margin-top:5px; }
+.passive-padding-start, .passive-padding-end{
+    position:absolute;
+    right:0;
+    left:0;
+    height:5px;
+    z-index:-1;
+}
+.passive-padding-start{ top: 0; }
+.passive-padding-end{ bottom:0; }
+.fc-event-vert .fc-event-bg { z-index:2; }
+.fc-event-inner > div{
+    float:left;
+}
+
+
+.external-event, .custom-event { /* try to mimick the look of a real event */
+	margin: 10px 0;
+	padding: 2px 4px;
+	background: #3366CC;
+	color: #fff;
+	font-size: .85em;
+	cursor: pointer;
+}
+	
+#external-events p {
+	margin: 1.5em 0;
+	font-size: 11px;
+	color: #666;
+}
+	
+#external-events p input {
+	margin: 0;
+	vertical-align: middle
+}
+
+#calendar {
+	float: right;
+	width: 760px;
+}
+/*------------------------
+       Notes Popup
+------------------------*/
+.fc-event:hover{
+    z-index: 100 !important;
+}
+div.fc-event:after{
+    content: attr(data-notes);
+    display:none;
+    width: 15em;
+    min-height:2em;
+    position: absolute;
+    top: -1em;
+    right: -18em;
+    color: #ddd;
+    padding: .5em;
+    border-radius: .5em;
+    background-color: #444;
+}
+div.fc-event:hover:before{
+    display: none;
+    border: solid transparent;
+    border-color: rgba(136, 183, 213, 0);
+    border-width: .6em;
+    border-right-color: #444;
+    position: absolute;
+    top: 0em;
+    right: -2em;
+    width: 0.5em;
+    height: 0;
+    content: " ";
+    pointer-events: none;
+}
+div.fc-event.fri:after, div.fc-event.sat:after{
+    right:auto;
+    left:-18em;
+}
+div.fc-event.fri:hover:before, div.fc-event.sat:hover:before{
+    right:auto;
+    left:-2em;
+    border-right-color:transparent;
+    border-left-color: #444;
+}
+div.fc-event:hover:after, div.fc-event:hover:before{
+    display:block;
+}
+div.fc-event-vert:hover:after{ top:0; }
+div.fc-event-vert:hover:before{ top:1em; }
+.fc-event[data-editing=true]:before, .fc-event[data-editing=true]:after, 
+.fc-event-vert[data-editing=true]:before, .fc-event-vert[data-editing=true]:after{
+    display:none !important;
+}
+div.fc-event[data-notes="There are no notes for this event."]:after{
+    font-style: italic;
+    color:#999;
+}
+/* Edit Notes Popup */
 .edit-notes{
     display:none;
     height: 1em;
@@ -193,6 +273,11 @@ footer li a {
     bottom: .2em;
     right: .2em;
     z-index: 10;
+    background-image: url("../img/gear.png");
+    background-size:100% auto;
+}
+[data-active=false] .edit-notes{
+    background-image: url("../img/gear-black.png");
 }
 .fc-event:hover .edit-notes{
     display:block;
@@ -288,6 +373,12 @@ footer li a {
 }
 .unlocked{
     background-image: url("../img/unlocked.png");
+}
+[data-active=false] .locked{
+    background-image: url("../img/locked-black.png");
+}
+[data-active=false] .unlocked{
+    background-image: url("../img/unlocked-black.png");
 }
 
 /*------------------------

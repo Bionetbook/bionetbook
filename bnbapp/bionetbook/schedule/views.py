@@ -4,7 +4,6 @@ from django.http import Http404, HttpResponse
 from django.views.generic import ListView, View
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
-from braces.views import LoginRequiredMixin
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 from django.utils import simplejson
 
@@ -41,14 +40,14 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 #       return context
 
 class ScheduleAPI(LoginRequiredMixin, TemplateView):
-    template_name = "schedule/schedule_list.html"
-    slug_url_kwarg = "owner_slug"
+    template_name = "schedule/single_calendar.html"
+    slug_url_kwarg = "calendar_slug"
     def get_context_data(self, **kwargs):
         context = super(ScheduleAPI,self).get_context_data(**kwargs)
 
-        calendars = self.request.user.calendar_set.all()
+        calendars = self.request.user.calendar_set.get(pk=self.kwargs['pk'])
         if calendars:
-            context['calendar'] = calendars[0]
+            context['calendar'] = calendars
         else:
             context['calendar'] = None
 
@@ -67,10 +66,29 @@ class ScheduleAPI(LoginRequiredMixin, TemplateView):
 
         return context
 
+
+class CalendarListView(LoginRequiredMixin, ListView):
+    model = Calendar
+    template_name = "schedule/calendar_list.html"
+    slug_url_kwarg = "owner_slug"
+    def get_context_data(self, **kwargs):
+        context = super(CalendarListView, self).get_context_data(**kwargs)
+        calendarList = self.request.user.calendar_set.all()
+        if calendarList:
+            context['calendars'] = calendarList
+        else:
+            context['calendars'] = None
+
+        return context
+
     # def get(self, request, *args, **kwargs):
     #   # context = Calendar.objects.all()[1].expToCalendar()
     #   # return HttpResponse(simplejson.dumps(context),mimetype='application/json')
     #   context = self.get_context_data()
     #   context['calendar'] = Calendar.objects.all()[0]
     #   return self.render_to_response(context)
+
+class ScheduleExample(TemplateView):
+    template_name = "schedule/schedule_example.html"
+
 

@@ -5,6 +5,9 @@ from api import views
 
 urlpatterns = patterns("",
 	# incomplete ajax:
+	url(regex=r'^protocol/(?P<protocol_id>[-\d]+)/$', view=views.ProtocolAPI.as_view(), name='protocol_api'),			# TRY FOR THE ID FIRST
+	url(regex=r'^protocol/(?P<protocol_slug>[-\w]+)/$', view=views.ProtocolAPI.as_view(), name='protocol_api_slug'),
+
 	url(regex=r'^view/data_static/$', view=views.AjaxStaticView.as_view(), name='ajax_static_view'),
 	
 	url(regex=r'^json/data_dynamic/$', view='api.views.json_data_dynamic', name='json_data_dynamic'),
@@ -20,6 +23,6 @@ urlpatterns = patterns("",
 	url(regex=r'^calendar/$', view=views.ListCalendarAPI.as_view(), name='ListCalendarAPI'),
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view=views.SingleCalendarAPI.as_view(), name='EventAPI'),
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/(?P<event_id>[-\w]+)/$', view=views.SingleEventAPI.as_view(), name='SingleEventAPI'),
-	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view='api.views.get_verb_fields_json', name='api_verb_fields'),
+	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view=views.VerbFieldAPI.as_view(), name='api_verb_fields'),
 	url(regex=r'^action/types/$', view='api.views.get_verb_types_json', name='api_verb_types'),
 )

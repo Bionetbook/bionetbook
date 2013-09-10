@@ -77,6 +77,21 @@ class Profile(TimeStampedModel):
         return result
 
 
+    def can_read_protocol(self, pid=None, slug=None):
+        '''Returns None if it can not read the protocol, the protocol object if they can'''
+
+        result = None
+        if pid:
+            protocols = Protocol.objects.filter(pk=pid, owner_id__in=u.organization_set.values_list('id', flat=True))
+        elif slug:
+            protocols = Protocol.objects.filter(slug=slug, owner_id__in=u.organization_set.values_list('id', flat=True))
+
+        if protocols:
+            result = protocols[0]
+
+        return result
+
+
     # def get_published_org_protocols(self):
     #     '''
     #     Returns a list of published protocols the user has access to.

@@ -2,5 +2,6 @@ from django.conf.urls.defaults import patterns, url, include
 from schedule import views
 
 urlpatterns = patterns("",
-    url(r'^$', views.ScheduleAPI.as_view(), name='schedule_experiment')
+    url(regex=r'^(?P<pk>[-\w]+)/$', view=views.ScheduleAPI.as_view(), name='single_calendar'),
+    url(r'^$', view=views.CalendarListView.as_view(), name='calendar_list')
 )
