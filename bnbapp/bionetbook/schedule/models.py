@@ -117,7 +117,7 @@ class Calendar(TimeStampedModel):
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
-                        print p.slug + " " + action['objectid']
+                        #print p.slug + " " + action['objectid']
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
                 for element in actionList:
