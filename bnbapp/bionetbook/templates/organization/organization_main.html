@@ -36,7 +36,7 @@
                         <tbody>
                         {% for protocol in protocols %}
                         <tr>
-                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
+                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a></td>
                         <td>
                         {% if not protocol.published %}
                             <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>

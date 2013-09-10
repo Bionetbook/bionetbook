@@ -81,7 +81,10 @@ class Calendar(TimeStampedModel):
 
     def __unicode__(self):
         return self.name
-        
+    
+    def events(self):
+        return self.data['events']
+
     # def dataToCalendar(self):
     #     ret = {}    # return dict
     #     stepsList = []

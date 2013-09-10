@@ -162,14 +162,32 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
             'events':[ {...},
                    ]
             }
+    PUT: Input: {
+            'events': [{ },{ }]
+        }
+        Output: 200
+        }
     '''
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'put', 'delete']
 
     def get(self, request, *args, **kwargs):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
         return self.render_to_response( curCal.data )
 
+    # Return 200 always unless wrong pk for calendar
+    def put(self,request, *args, **kwargs):
+        request = self.put_request_scrub(request)
+        eventList = request.PUT
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        for event in eventList['events']:   # [ {event}, { } ]
+            for eCal in cal.events():
+                if event['id'] in eCal:
+                    eCal['start'] = event['start']
+                    eCal['notes'] = event['notes']
+                    eCal.save()
+                    continue
+        return HttpResponse()        
 
 
 ##############
