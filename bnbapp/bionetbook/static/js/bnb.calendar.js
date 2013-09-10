@@ -853,7 +853,7 @@ BNB.calendar = (function(){
 
 		// Add primary key/slug of current calendar to url
 		while(urlComponents.shift() != "schedule"){}
-		url += urlComponents.shift();
+		url += urlComponents.shift() + '/';
 
 		// Nessasary for use with CSRF token
 		$.ajaxSetup({ 
@@ -882,8 +882,9 @@ BNB.calendar = (function(){
         });
 
 		function enqueue(stepData){
+			console.log(stepData)
 			var s = {
-				id: stepData.id, 
+				id: stepData.eventId, 
 				start: stepData.start, 
 				notes: stepData.notes
 			};
@@ -903,9 +904,9 @@ BNB.calendar = (function(){
 
 			$.ajax({
 				url: url,
-				type: 'PUT',
+				contentType: 'application/json',
+                type: "PUT",
 				data: {events: queue},
-				dataType: 'json',
             	success: function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);
@@ -915,7 +916,6 @@ BNB.calendar = (function(){
             	error: function(){
             		// Deep copy of backlog to concat with queue
 					queue = queue.concat($.extend(true, [], backlog));
-					console.log('could not connect', queue)
             	},
             	complete: function(){
             		backlog = [];
