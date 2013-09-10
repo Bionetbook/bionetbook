@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}{{ calendar.name }} Calendars {% endblock %}
-
-{% block page_title %}{{ calendar.name}}{% endblock %}
+{% block title %}Schedule{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
-      <li><a href="{% url calendar_list %}">{{ 'Calendars' }}
+      <li><a href="{{ organization.organization_protocol_list }}">{{ organization.name }}
       </a> <span class="divider">/</span></li>
-      <li class="active">{{ calendar.name }}</li>
+      <li class="active">{{ 'My Calendar' }}</li>
     </ul>
+{% endblock %}
+
+{% block page_title %}{{ organization.name|possesive }} Schedule
 {% endblock %}
 
 {% block extracss %}
@@ -27,8 +28,7 @@
 {% endblock %}
 
 {% block content %}
-<div id='external-events' class="well well-small" data-calendar='/api/calendar/{{ calendar.pk }}/'>
-	<h3>Experiments</h3>
+<div id='external-events' data-calendar='/api/calendar/{{ calendar.pk }}/'>
 </div> <!-- End Drag Events Container -->
 	<div id='calendar'></div>
 {% endblock %}
