@@ -268,7 +268,37 @@ class HistoryModelTests(AutoBaseTest):
 
     def test_log_editing_multiple_component_nodes_to_action(self):    
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-        pass
+        self.protocol.published = True
+        step = Step(self.protocol, data={"name":"step1"})
+        self.protocol.save()
+        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
+
+        action1 = Action(self.protocol, parent=step, verb="add")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
+        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        self.protocol.save()
+
+        comp1 = Component(self.protocol, parent=action1)
+        comp2 = Component(self.protocol, parent=action1)
+        # comp2 = Component(self.protocol, parent=action1)
+        self.protocol.save()
+        # comp1['name']='NaCl'
+        comp1["min_conc"]= 5
+        comp1["conc_units"]= "mM"
+        comp2["max_conc"]= 10
+        comp2["name"]= "bleach"
+        self.protocol.save()
+
+        history = self.protocol.history_set.all()
+        for h in history:
+            print "\nHISTORY EVENT: %d" % h.pk
+            pp.pprint( h.data )
+
+        self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
+        self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
+
+        # TEST THAT COMPONENT ATTRS WERE UPDATED
+        self.assertEquals(len(history[0].data['update'][0]['attrs']), 2)
+        self.assertEquals(len(history[0].data['update'][1]['attrs']), 2)
 
     def test_log_editing_multiple_thermocycle_nodes_to_action(self):    
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
