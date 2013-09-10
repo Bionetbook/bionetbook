@@ -7,6 +7,7 @@ import django.utils.simplejson as json
 from jsonfield import JSONField
 from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
+from django.core.urlresolvers import reverse
 #from protocols.utils import MANUAL_VERBS
 from core.models import SlugStampMixin
 from organization.models import Organization
@@ -43,10 +44,16 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     def __unicode__(self):
         return self.name
         
+    def generate_slug(self):
+        slug = slugify(self.name)
+        if self.pk:
+            return "%d-%s" % (self.pk, slug)
+        else:
+            return slug
 
 
-
-
+    def get_absolute_url(self):
+        return reverse("experiment_detail", kwargs={'owner_slug':self.owner.slug, 'experiment_slug':self.slug})
 
 # Create your models here.
 
