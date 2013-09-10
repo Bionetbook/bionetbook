@@ -634,7 +634,7 @@ BNB.calendar = (function(){
 
 		paste.innerHTML = "Paste Protocol";
 		copy.innerHTML = "Copy Protocol";
-		del.innerHTML = "Delete Protocol"
+		del.innerHTML = "Remove Experiment"
 		undo.innerHTML = "Undo";
 		cancel.innerHTML = "Cancel";
 
@@ -646,7 +646,7 @@ BNB.calendar = (function(){
 		};
 		// Delete structure of protocol
 		del.onclick = function(){ 
-			protocolStructure.del(targetElement.getAttribute("data-instance-id"));
+			protocolStructure.del(targetElement.getAttribute("data-eid"));
 			body.removeChild(menu);
 			body.onclick=""; 
 		};
@@ -815,7 +815,7 @@ BNB.calendar = (function(){
 
 		// Remove protocol that was last added
 		function del(id){
-			$("[data-instance-id="+ id +"]").each(function(){
+			$("[data-eid="+ id +"]").each(function(){
 				$('#calendar').fullCalendar("removeEvents", this.getAttribute("data-fc-id"));
 			});
 		}
