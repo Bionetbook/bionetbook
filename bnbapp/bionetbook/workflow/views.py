@@ -134,6 +134,7 @@ class WorkflowCreateView(PathMixin, LoginRequiredMixin, FormView):
         """
         form = form_class(**self.get_form_kwargs())
         protocols = Organization.objects.get(slug=self.kwargs['owner_slug']).protocol_set.all()
+        protocols = [p for p in protocols if p.author==self.request.user or p.published]
         form.fields['protocols'] = forms.MultipleChoiceField(
             label="Protocols",
             choices=((x.pk,x) for x in protocols),

@@ -74,6 +74,7 @@ class ExperimentCreateView(PathMixin, LoginRequiredMixin, FormView):
 	def get_form(self, form_class):
 		form = form_class(**self.get_form_kwargs())
 		workflows = Organization.objects.get(slug=self.kwargs['owner_slug']).workflow_set.all()
+		workflows = [w for w in workflows if w.user==self.request.user]
 		form.fields['workflows'] = forms.ChoiceField(
 			label="Workflows",
 			choices=((x.pk,x) for x in workflows))
