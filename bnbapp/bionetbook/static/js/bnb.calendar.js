@@ -844,7 +844,12 @@ BNB.calendar = (function(){
 		var queue = [],
 			backlog = [],
 			hasCallFinished = true,
-			url = '/api/calendar';
+			urlComponents = window.location.href.split('/'),
+			url = '/api/calendar/';
+
+		// Add primary key/slug of current calendar to url
+		while(urlComponents.shift() != "schedule"){}
+		url += urlComponents.shift();
 
 		function enqueue(stepData){
 			var s = {
