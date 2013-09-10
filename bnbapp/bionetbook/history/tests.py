@@ -470,44 +470,7 @@ class HistoryModelTests(AutoBaseTest):
         # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
         pass
 
-    def test_log_deleting_machine_node_from_action(self):
-        # TESTS THAT ACTION AND STEP DURATION ARE UPDATED
-        self.protocol.published = True
-        step = Step(self.protocol, data={"name":"step1"})
-        self.protocol.save()
-        step = self.protocol.data['steps'][-1]                              # UPDATE TO THE STEP IN THE PROTOCOL
-
-        action1 = Action(self.protocol, parent=step, verb="centrifuge")            # ACTION IS NOT ASSIGNING IT'S SELF TO THE PARENT, THIS NEEDS A DEEP FIX
-        step.add_child_node(action1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
-        self.protocol.save()
-
-        machine1 = Machine(self.protocol, parent=action1, data={'name':'microcentrifuge', "min_time": 1, "time_units": 'sec'})
-        # comp2 = Component(self.protocol, parent=action1)
-        self.protocol.save()
-        self.protocol.delete_node(machine1['objectid'])
-        self.protocol.save() #5 / 0
-
-        history = self.protocol.history_set.all()
-        for h in history:
-            print "\nHISTORY EVENT: %d" % h.pk
-            pp.pprint( h.data )
-
-        self.assertEquals(len(history[3].data['update']), 1)                # LOG THE PUBLISH CHANGE
-        self.assertEquals(history[3].data['create'][0]['type'], 'step')     # STEP SHOULD SHOW UP AS A CREATION
-        self.assertEquals(history[2].data['create'][0]['type'], 'action')
-        
-        # TESTS FOR ADDING A MACHINE TO AN ACTION
-        self.assertEquals(history[1].data['create'][0]['type'], 'machine')
     
-        # TEST THAT MACHINE IS BEING DELETED
-        self.assertEquals(len(history[0].data['delete']), 1)
-        self.assertEquals(history[0].data['delete'][0]['type'], 'machine')
-
-            # TEST THAT DURATION IS GETTING UPDATED
-        self.assertEquals(len(history[0].data['update']), 2)                
-        self.assertIn('duration', history[0].data['update'][0]['attrs'])
-        self.assertIn('duration', history[0].data['update'][1]['attrs'])
-
 
 
 
