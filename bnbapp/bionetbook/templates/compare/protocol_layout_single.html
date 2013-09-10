@@ -8,7 +8,7 @@
 {% block breadcrumbs %}
     <ul class="breadcrumb">
       <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{{ protocol_a.owner.organization_main }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
       <li class="active">{{ protocol_a.name }}</li>
     </ul>
 {% endblock %}

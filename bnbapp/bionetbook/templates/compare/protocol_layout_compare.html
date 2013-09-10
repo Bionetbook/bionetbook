@@ -14,7 +14,7 @@
 {% block content %}
 <ul class="nav nav-tabs">
   <!-- <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li> -->
-  <li class="active"><a href="{{ protocol_a.owner.organization_main }}">Protocol Diagram</a></li>
+  <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
   <li><a href="{% url compare_select %}">Compare Protocols</a></li>
     {% if request.user.is_authenticated %}
   <li><a href="{% url protocol_create protocol_a.owner.slug %}">New Protocol</a></li>
