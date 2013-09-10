@@ -8,6 +8,7 @@ from braces.views import LoginRequiredMixin
 from django import http
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+import ast
 
 from braces.views import LoginRequiredMixin
 
@@ -178,15 +179,17 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     # Return 200 always unless wrong pk for calendar
     def put(self,request, *args, **kwargs):
         request = self.put_request_scrub(request)
-        eventList = request.PUT
+        #print request.PUT.getlist('events')[0] + " " + request.PUT.getlist('events')[1]
+        eventList = dict(request.PUT.iterlists())['events']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
-        for event in eventList['events']:   # [ {event}, { } ]
+        for event in eventList:   # [ {event}, { } ]
+            event = ast.literal_eval(event)
             for eCal in cal.events():
-                if event['id'] in eCal:
+                if event['id'] in eCal.values():
                     eCal['start'] = event['start']
                     eCal['notes'] = event['notes']
-                    eCal.save()
                     continue
+        cal.save()    
         return HttpResponse()        
 
 
