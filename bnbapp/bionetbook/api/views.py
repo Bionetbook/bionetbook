@@ -170,7 +170,7 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
         }
     '''
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
-    http_method_names = ['get', 'put', 'delete']
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
