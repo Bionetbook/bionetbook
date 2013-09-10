@@ -30,5 +30,6 @@
 <div id='external-events' class="well well-small" data-calendar='/api/calendar/{{ calendar.pk }}/'>
 	<h3>Experiments</h3>
 </div> <!-- End Drag Events Container -->
-	<div id='calendar'></div>
+{% csrf_token %}
+<div id='calendar'></div>
 {% endblock %}

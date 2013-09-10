@@ -844,12 +844,42 @@ BNB.calendar = (function(){
 		var queue = [],
 			backlog = [],
 			hasCallFinished = true,
+			csrfToken = $('input[name=csrfmiddlewaretoken]').val(),
 			urlComponents = window.location.href.split('/'),
 			url = '/api/calendar/';
+
+		// Remove from user view
+        $('input[name=csrfmiddlewaretoken]').remove();
 
 		// Add primary key/slug of current calendar to url
 		while(urlComponents.shift() != "schedule"){}
 		url += urlComponents.shift();
+
+		// Nessasary for use with CSRF token
+		$.ajaxSetup({ 
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // Only send the token to relative URLs
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            },
+            csrfmiddlewaretoken: csrfToken
+        });
 
 		function enqueue(stepData){
 			var s = {
