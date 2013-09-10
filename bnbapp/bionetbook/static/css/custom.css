@@ -147,10 +147,6 @@ footer li a {
 #external-events {
 	float: left;
 	width: 150px;
-	padding: 0 10px;
-	border: 1px solid #ccc;
-	background: #eee;
-	text-align: left;
 }
 	
 #external-events h4 {
@@ -284,10 +280,10 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
 }
 .edit-notes-form{
     position:absolute;
-    top:-.6em;
-    right:-17.5em;
+    top:-3px;
+    right:-220px;
     z-index:100;
-    width:16em;
+    width:200px;
     background-color:#444;
     border-radius: .4em;
     text-align:left;
@@ -295,12 +291,12 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
 .edit-notes-form:before{
     border: solid transparent;
     border-color: rgba(136, 183, 213, 0);
-    border-width: .6em;
+    border-width: 7px;
     border-right-color: #444;
     position: absolute;
     top: 0.6em;
-    left: -1.6em;
-    width: 0.5em;
+    left: -20px;
+    width: 7px;
     height: 0;
     content: " ";
     pointer-events: none;
@@ -308,7 +304,7 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
 .edit-notes-form.fri:before, .edit-notes-form.sat:before{
     border-right-color: transparent;
     border-left-color: #444;
-    left: 16em;
+    left: 200px;
 }
 .edit-notes-form h3{
     color:#fff;
@@ -324,29 +320,25 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
     border-radius: .4em;
 }
 .edit-notes-form input[type=button]{
-    margin: 0 1em 1em 1em;
-    width: 8em;
-    padding: .5em 0;
-    background-color: #77c;
-    border: 1px solid #bbb;
-    border-radius: .4em;
-    color: #f3f3f3;
-    cursor: pointer;
-}
-.edit-notes-form input[type=button]:hover{
-    background-color:#99f;
+    margin: .2em 1em .5em .9em;
+    clear:both;
 }
 .edit-notes-form span.close{
-    cursor:pointer;
-    color:#fff;
+    cursor: pointer;
+    color: #fff;
     background-color: #444;
     display: block;
     position: absolute;
     top: -.5em;
     right: -.5em;
-    padding: .2em .5em;
+    width: 1.5em;
+    height: 1.5em;
     border-radius: 2em;
     border: 1px solid #fff;
+    font-size: 1em;
+    opacity: 1;
+    text-align: center;
+    padding: .2em;
 }
 .edit-notes-form.fri span.close, .edit-notes-form.sat span.close{
     right:auto;
@@ -426,8 +418,8 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
       Error Message
 ------------------------*/
 .top-error{
-    position:absolute;
-    top:0;
+    position:fixed;
+    top:56px;
     left:0;
     width:100%;
     padding:1em 0;
@@ -449,7 +441,7 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
     position: absolute;
     right: 1em;
     top: 0;
-    padding: 1em;
+    padding: .6em 1em 0 0;
 }
 
 

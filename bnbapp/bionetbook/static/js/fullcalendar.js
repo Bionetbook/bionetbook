@@ -4550,82 +4550,82 @@ function View(element, calendar, viewName) {
 		var eventId = event._id;
 		var eventID = ev.target.getAttribute("data-event-id"),
 			draggedStep = ev.target.getAttribute("data-step-number"),
-			instanceId = ev.target.getAttribute("data-event-id").split('-').slice(0,-1).join('-'),
-			completeId = ev.target.getAttribute("data-event-id"),
+			eId = ev.target.getAttribute("data-eid"),
+			pId = ev.target.getAttribute("data-pid"),
 			isLocked = !!ev.target.getElementsByClassName("locked")[0],
 			isMonthView = !!$(ev.target).hasClass("fc-event-hori"),
 			protocolSteps = [],
-			stepsAreInOrder = true;
+			fcIdOfSteps = [],
+			stepsAreInOrder = true,
+			dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
 		var specificViewSelector = isMonthView ? ".fc-event-hori" : ".fc-event-vert";
 
-		// Put each element into an array and iterate over the array to see if the 
-		// elements' start dates are in the wrong order
-		// instanceId is used to only select the steps in the same protocol instance
-		$(".fc-event").each(function(){
-			var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
-			if(thisId != instanceId) return;
-
-			var stepNum = this.getAttribute("data-step-number");
-			var startTime = (new Date(this.getAttribute("data-event-start")).getTime()).toString();
-			protocolSteps[stepNum] = startTime;
+		// Get _fc id of locked actions
+		$(specificViewSelector + "[data-eid="+eId+"][data-pid="+pId+"]").each(function(){
+			fcIdOfSteps.push(this.getAttribute('data-fc-id').slice(3));
 		});
 
 		// Check for out of order
-		if(!isLocked && protocolSteps.length > 1){
+		if(!isLocked && fcIdOfSteps.length > 1){
+			// 1) Put fc-id into array
+			// 2) .sort() array to ensure right Step order 
+			// 3) Add deltaTime to target's startTime
+			// 4) Make sure all actions will still be in order
 
-			// We start at Step1 so the array doesn't start counting at 0 (.length - 1)
-			// Count variable started at 1 (.length + 1)
-			for (var s = 1; s < protocolSteps.length; s++){
+			// Sort numerically ascending
+			fcIdOfSteps.sort(function(a,b){return a - b});
 
-				// Add the deltaTime variables to the startTime before drag to get the endDrag time
-				var dropDeltaTime = ((dayDelta * 86400) + (minuteDelta * 60)) * 1000;
-				
-				// Make sure we're not comparing the element to itself
-				if (draggedStep != s){
+			// Get the start times in order
+			for(var i = 0; i < fcIdOfSteps.length; i++){
+				var thisStep = $('[data-fc-id=_fc' + fcIdOfSteps[i] + "]").get(0);
+				var startTime = (new Date(thisStep.getAttribute("data-event-start")).getTime());
+				protocolSteps.push(startTime);
+			}
 
-					if (draggedStep < s && 	// Element comes BEFORE other steps
-						parseInt(protocolSteps[draggedStep]) + dropDeltaTime > 
-						parseInt(protocolSteps[s])) {
-						stepsAreInOrder = false;
-					}
-					// Elements are out of order
-					if (draggedStep > s &&	// Element comes AFTER other steps
-						parseInt(protocolSteps[draggedStep]) + dropDeltaTime < 
-						parseInt(protocolSteps[s])) {
-						stepsAreInOrder = false;
-					}
+			// Add delta time to the correct element in the array
+			for(var i = 0; i < protocolSteps.length; i++){
+				var startTime = (new Date(ev.target.getAttribute("data-event-start")).getTime());
+				if(protocolSteps[i] == startTime){
+					protocolSteps[i] += dropDeltaTime;
+					break;
+				}
+			}
+
+			// if a step earlier in array > step later in array; out of
+			for (var s = 0; s < protocolSteps.length; s++){
+				if(protocolSteps[s+1]){
+					if(protocolSteps[s] > protocolSteps[s+1]) stepsAreInOrder = false;
 				}
 			}
 		}
+
+		// Can action(s) move?
 		if(isLocked){
 			var actionsToMove = [];
 
 			// Add each action to array
-			$(".fc-event").each(function(){
-				var thisId = this.getAttribute('data-event-id').split('-').slice(0,-1).join('-');
-				if(thisId != instanceId) return;
-
+			$(specificViewSelector + "[data-eid="+eId+"][data-pid="+pId+"]").each(function(){
 				var alreadyAdded = false,
 					thisEvent = eventsByID[this.getAttribute("data-fc-id")][0];
 
-				// Sometimes actions are added twice, make sure no two are the same!
+				// Sometimes actions are added twice(jQuery bug), make sure no two are the same!
 				for(var i = 0; i < actionsToMove.length; i++){
-					if(actionsToMove[i].stepNumber == thisEvent.stepNumber) alreadyAdded = true;
+					if(actionsToMove[i].eventId == thisEvent.eventId) alreadyAdded = true;
 				}
 
 				// If the step doesn't already exist in the array, add it
 				if(!alreadyAdded) actionsToMove.push(eventsByID[this.getAttribute("data-fc-id")][0]);
-
 			});
 
 			// Move the actions
 			for(var i = 0; i < actionsToMove.length; i++){
-				BNB.calendar.renderUpdatedEvents(actionsToMove[i], dayDelta, minuteDelta);
+				BNB.calendar.renderUpdatedEvents(actionsToMove[i], dayDelta, minuteDelta, ev);
 			}
 
 		} else if(!isLocked && stepsAreInOrder){
 			// Accept the order of steps and move element 
-			moveEvents(eventsByID[eventId], dayDelta, minuteDelta, allDay);
+			//moveEvents(eventsByID[eventId], dayDelta, minuteDelta, allDay);
+			BNB.calendar.renderUpdatedEvents(eventsByID[eventId][0], dayDelta, minuteDelta, ev);
 		} else {
 			BNB.calendar.displayTopError("Oops, you can't drag your steps out of order!");
 		}
