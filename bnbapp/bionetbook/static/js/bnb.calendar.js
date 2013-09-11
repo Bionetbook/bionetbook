@@ -96,7 +96,7 @@ BNB.calendar = (function(){
 	function syncEvents(p){
 
 		var placedExperiments = [];
-
+		
 		// Make experiment structure from action id strings
 		for(var a = 0;  a < p.events.length; a++){
 
@@ -137,7 +137,7 @@ BNB.calendar = (function(){
 				});
 				
 			}
-			var step = getObjInArr(protocol.steps, 'id', stepId);
+			step = getObjInArr(protocol.steps, 'id', stepId);
 
 			// + extra properties
 			if(p.meta.descriptions) exp.description = p.meta.descriptions[expId];	// exp descrip
@@ -149,64 +149,64 @@ BNB.calendar = (function(){
 		}
 
 		// Show a draggable item for each protocol the user has access to
-		for(var e in experiments)
-			
-			var thisExp = experiments[e];
+		for(var e in experiments){
+			if(experiments.hasOwnProperty(e)){
 
-			// Create draggable node
-			var eventNode = document.createElement('div');
-			eventNode.className = 'custom-event';
-			eventNode.innerHTML = thisExp.title;
-			eventNode.setAttribute("data-id", thisExp.id);
+				// Create draggable node
+				var eventNode = document.createElement('div');
+				eventNode.className = 'custom-event';
+				eventNode.innerHTML = experiments[e].title;
+				eventNode.setAttribute("data-id", experiments[e].id);
 
-			// Check for already placed experiments (.start != 0)
-			var actionStart = thisExp.protocols[0].steps[0].actions[0].start;
-			if(actionStart !== 0 && actionStart !== '0' && 
-			   new Date(actionStart).getTime() != 946713600000){
-				placedExperiments.push(thisExp.id);
+				// Check for already placed experiments (.start != 0)
+				var actionStart = experiments[e].protocols[0].steps[0].actions[0].start;
+				if(actionStart !== 0 && actionStart !== '0' && 
+				   new Date(actionStart).getTime() != 946713600000){
+					placedExperiments.push(experiments[e].id);
+				}
+
+				// Protocols in experiment
+				for(var b = 0, pLen = experiments[e].protocols.length; b < pLen; b++){
+					var thisProtocol = experiments[e].protocols[b],
+						pId = experiments[e].protocols[b].id;
+
+				   // Steps in protocol
+				   for(var c = 0; c < thisProtocol.steps.length; c++){
+				   		var thisStep = thisProtocol.steps[c],
+				   			sId = thisProtocol.steps[c].id;
+
+				   		// Actions in step
+				   		for(var d = 0; d < thisStep.actions.length; d++){
+
+					   		var thisAction = thisStep.actions[d],
+					   			idArr = thisStep.actions[d].id.split("-");
+					   		var eId = idArr[2],  // Experiment
+					   			pId = idArr[3],  // Protocol
+					   			sId = idArr[4],  // Step
+					   			aId = idArr[5];  // Action
+					   		var domId = 'data-'+ eId +'-'+ pId +'-'+ sId +'-'+ aId + '-';
+
+					   		if(new Date(thisAction.start).getTime() == 946713600000){
+					   			thisAction.start = 0;
+					   		}
+
+					   		eventNode.setAttribute(domId + "title", thisAction.title);
+					   		eventNode.setAttribute(domId + "verb", thisAction.verb);
+					   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
+					   		eventNode.setAttribute(domId + "active", thisAction.active);
+							eventNode.setAttribute(domId + "notes", thisAction.notes);
+							eventNode.setAttribute(domId + "length", thisAction.duration);
+							eventNode.setAttribute(domId + "event-id", thisAction.id);
+							eventNode.setAttribute(domId + "eid", eId);
+							eventNode.setAttribute(domId + "pid", pId);
+							eventNode.setAttribute(domId + "sid", sId);
+							eventNode.setAttribute(domId + "aid", aId);
+						}
+				   }
+				}
+				// Add draggable event element to the page
+				dragContainer.appendChild(eventNode);
 			}
-
-			// Protocols in experiment
-			for(var b = 0, pLen = thisExp.protocols.length; b < pLen; b++){
-				var thisProtocol = thisExp.protocols[b],
-					pId = thisExp.protocols[b].id;
-
-			   // Steps in protocol
-			   for(var c = 0; c < thisProtocol.steps.length; c++){
-			   		var thisStep = thisProtocol.steps[c],
-			   			sId = thisProtocol.steps[c].id;
-
-			   		// Actions in step
-			   		for(var d = 0; d < thisStep.actions.length; d++){
-
-				   		var thisAction = thisStep.actions[d],
-				   			idArr = thisStep.actions[d].id.split("-");
-				   		var eId = idArr[2],  // Experiment
-				   			pId = idArr[3],  // Protocol
-				   			sId = idArr[4],  // Step
-				   			aId = idArr[5];  // Action
-				   		var domId = 'data-'+ eId +'-'+ pId +'-'+ sId +'-'+ aId + '-';
-
-				   		if(new Date(thisAction.start).getTime() == 946713600000){
-				   			thisAction.start = 0;
-				   		}
-
-				   		eventNode.setAttribute(domId + "title", thisAction.title);
-				   		eventNode.setAttribute(domId + "verb", thisAction.verb);
-				   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
-				   		eventNode.setAttribute(domId + "active", thisAction.active);
-						eventNode.setAttribute(domId + "notes", thisAction.notes);
-						eventNode.setAttribute(domId + "length", thisAction.duration);
-						eventNode.setAttribute(domId + "event-id", thisAction.id);
-						eventNode.setAttribute(domId + "eid", eId);
-						eventNode.setAttribute(domId + "pid", pId);
-						eventNode.setAttribute(domId + "sid", sId);
-						eventNode.setAttribute(domId + "aid", aId);
-			   }
-			}
-
-			// Add draggable event element to the page
-			dragContainer.appendChild(eventNode);
 		}
 
 		// Make them draggable
