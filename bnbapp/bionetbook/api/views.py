@@ -180,11 +180,9 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
     def put(self,request, *args, **kwargs):
         #print request
         request = self.put_request_scrub(request)
-        print request.PUT
-        eventList = dict(request.PUT.iterlists())['events']
+        eventList = json.loads(request.PUT.dict()['events'])
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
         for event in eventList:   # [ {event}, { } ]
-            event = ast.literal_eval(event)
             for eCal in cal.events():
                 if event['id'] in eCal.values():
                     eCal['start'] = event['start']
