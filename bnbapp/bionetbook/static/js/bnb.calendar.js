@@ -150,7 +150,7 @@ BNB.calendar = (function(){
 
 		// Show a draggable item for each protocol the user has access to
 		for(var e in experiments)
-			
+
 			var thisExp = experiments[e];
 
 			// Create draggable node

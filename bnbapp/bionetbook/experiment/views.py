@@ -29,9 +29,12 @@ class ExperimentDetailView(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(ExperimentDetailView, self).get_context_data(**kwargs)
 		slug = self.kwargs.get(self.slug_url_kwarg, None)
-		experiment = self.request.user.experiment_set.get(slug=slug)
-		org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
-		workflow = experiment.workflow
+		try:
+			experiment = self.request.user.experiment_set.get(slug=slug)
+			org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+			workflow = experiment.workflow
+		except:
+			raise Http404
 		if experiment:
 			context['experiment'] = experiment
 		else:
@@ -73,10 +76,17 @@ class ExperimentCreateView(PathMixin, LoginRequiredMixin, FormView):
 
 	def get_form(self, form_class):
 		form = form_class(**self.get_form_kwargs())
-		workflows = Organization.objects.get(slug=self.kwargs['owner_slug']).workflow_set.all()
-		workflows = [w for w in workflows if w.user==self.request.user]
-		form.fields['workflows'] = forms.ChoiceField(
-			label="Workflows",
-			choices=((x.pk,x) for x in workflows))
+		try:
+			org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+		except:
+			raise Http404
+		try:
+			workflows = org.workflow_set.all()
+			workflows = [w for w in workflows if w.user==self.request.user]
+			form.fields['workflows'] = forms.ChoiceField(
+				label="Workflows",
+				choices=((x.pk,x) for x in workflows))
+		except:
+			form.fields['workflows'] = None
 		return form
 
