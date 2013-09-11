@@ -160,7 +160,8 @@ BNB.calendar = (function(){
 			eventNode.setAttribute("data-id", thisExp.id);
 
 			// Check for already placed experiments (.start != 0)
-			if(thisExp.protocols[0].steps[0].actions[0].start !== 0){
+			if(thisExp.protocols[0].steps[0].actions[0].start !== 0 || 
+			   thisExp.protocols[0].steps[0].actions[0].start !== '0'){
 				placedExperiments.push(thisExp.id);
 			}
 
@@ -403,7 +404,7 @@ BNB.calendar = (function(){
 
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
-				for(ev in evList){
+				for(var ev in evList){
 					if(evList[ev].eventId.split('-')[3] === pId)
 						evList[ev].locked = false;
 				}
