@@ -69,6 +69,7 @@ class Calendar(TimeStampedModel):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
+            self.full_clean()
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
