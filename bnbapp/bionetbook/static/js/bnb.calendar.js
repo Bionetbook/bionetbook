@@ -187,6 +187,10 @@ BNB.calendar = (function(){
 				   			aId = idArr[5];  // Action
 				   		var domId = 'data-'+ eId +'-'+ pId +'-'+ sId +'-'+ aId + '-';
 
+				   		if(new Date(thisAction.start).getTime() == 946713600000){
+				   			thisAction.start = 0;
+				   		}
+
 				   		eventNode.setAttribute(domId + "title", thisAction.title);
 				   		eventNode.setAttribute(domId + "verb", thisAction.verb);
 				   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
