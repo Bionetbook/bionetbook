@@ -905,8 +905,7 @@ BNB.calendar = (function(){
 
 			$.ajax({
 				url: url,
-				dataType: 'json',
-                type: "POST",
+                type: "PUT",
 				data: {'events': queue},
             	success: function(){
             		// Overwrite queue with deep copy of backlog
