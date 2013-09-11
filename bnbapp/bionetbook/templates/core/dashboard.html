@@ -30,6 +30,8 @@
         
     </div>
 
+ 
+    <!-- <div class="span8"> -->
     <div class="span8 accordion" id="accordion2">
 
         <div class="accordion-group">
@@ -125,12 +127,22 @@
         
 
 
-        <!-- <ul class="nav nav-tabs nav-stacked">
-            <a class="accordion-toggle" data-toggle="collapse" href ="#col1"><li class="nav-label"><h3>Private Protocols</h3></li></a>
-          {% for protocol in request.user.get_profile.get_private_protocols %}
-            <li><a href="{{ protocol.get_absolute_url }}" class = "collapse in", id = "col1"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
+        <!-- 
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Draft Protocols</h3></li>
+          {% for protocol in request.user.get_profile.get_private_draft_protocols %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
           {% endfor %}
         </ul>
+        
+
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Private Protocols</h3></li>
+          {% for protocol in request.user.get_profile.get_private_protocols %}
+            <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
+          {% endfor %}
+        </ul>
+
 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Public Protocols</h3></li>
