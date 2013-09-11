@@ -5,8 +5,8 @@
 //////////////////////////////////////
 // Todo:
 // NOTE: syncEvents() has FAKE length
-// Fake a form on send
-// Might have to escape eventlist string
+
+"use strict";
 
 $(document).ready(function() {
 	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
@@ -883,9 +883,12 @@ BNB.calendar = (function(){
 
 			if(!hasCallFinished || queue.length < 1) return;
 
+			// The data must be passed in as FormData or else 
+			// Django will reformat it, rendering it useless
 			var fd = new FormData();
 			fd.append("events", JSON.stringify(queue));
 
+			// contentType and processData MUST be set to false!
 			$.ajax({
 				url: url,
                 type: "PUT",
@@ -903,7 +906,7 @@ BNB.calendar = (function(){
             	},
             	complete: function(){
             		backlog = [];
-					//sendQueue();
+					sendQueue();
             	}
 			});
 		}
