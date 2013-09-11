@@ -160,8 +160,9 @@ BNB.calendar = (function(){
 			eventNode.setAttribute("data-id", thisExp.id);
 
 			// Check for already placed experiments (.start != 0)
-			if(thisExp.protocols[0].steps[0].actions[0].start !== 0 || 
-			   thisExp.protocols[0].steps[0].actions[0].start !== '0'){
+			var actionStart = thisExp.protocols[0].steps[0].actions[0].start;
+			if(actionStart !== 0 && actionStart !== '0' && 
+			   new Date(actionStart).getTime() != 946713600000){
 				placedExperiments.push(thisExp.id);
 			}
 
@@ -228,6 +229,7 @@ BNB.calendar = (function(){
 
 		// Add already placed experiments to the calendar
 		if(placedExperiments.length > 0){
+
 			for(var i = 0, len = placedExperiments.length; i < len; i++){
 
 				var date = new Date(experiments[placedExperiments[i]].protocols[0].steps[0].actions[0].start);
