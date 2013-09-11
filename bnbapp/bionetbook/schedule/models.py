@@ -69,6 +69,7 @@ class Calendar(TimeStampedModel):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
+            self.full_clean()
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
@@ -117,7 +118,7 @@ class Calendar(TimeStampedModel):
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
-                        print p.slug + " " + action['objectid']
+                        #print p.slug + " " + action['objectid']
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
                 for element in actionList:
@@ -161,6 +162,8 @@ class Calendar(TimeStampedModel):
                 eventObject['experiment'] = newExperiment.name
                 eventObject['notes'] = ""
                 events.append(eventObject)
+            if p.pk not in self.data['meta']:
+                self.data['meta'][p.pk] = p.description
         self.data['events'] = events
         self.save()        
 
