@@ -6,6 +6,7 @@
 //////////////////////////////////////
 
 "use strict";
+
 var Protocol = {steps:[]};
 var BNB = BNB || {};
 
@@ -1270,12 +1271,19 @@ BNB.dataInput = (function(){
             // Protocol's URL identifier - remove preceding 'p' in ID
             var pSlug = Protocol.id[0] === 'p' ? Protocol.id.slice(1) : Protocol.id;
 
+            // The data must be passed in as FormData or else 
+            // Django will reformat it, rendering it useless
+            var fd = new FormData();
+            fd.append("events", JSON.stringify(Protocol));
+
             // Send Protocol object to server
+            // contentType and processData MUST be set to false!
             $.ajax({
                 url: apiUrlPrefix + 'protocol/' + pSlug + '/',
-                contentType: 'application/json',
+                contentType: false,
+                processData: false,
                 type: "PUT",
-                data: JSON.stringify(Protocol),
+                data: fd,
                 success: function(e){ 
 
                     // Assumed location of Protocol object

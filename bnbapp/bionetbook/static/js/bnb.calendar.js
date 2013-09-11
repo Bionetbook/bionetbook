@@ -5,8 +5,8 @@
 //////////////////////////////////////
 // Todo:
 // NOTE: syncEvents() has FAKE length
-// Fake a form on send
-// Might have to escape eventlist string
+
+"use strict";
 
 $(document).ready(function() {
 	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
@@ -71,7 +71,7 @@ $(document).ready(function() {
 	})(window.event);
 
 });
-$("footer").remove();
+
 var BNB = BNB || {};
 
 BNB.calendar = (function(){
@@ -94,6 +94,8 @@ BNB.calendar = (function(){
 	// add the data to the list of draggable events
 	// Arg: JSON object
 	function syncEvents(p){
+
+		var placedExperiments = [];
 
 		// Make experiment structure from action id strings
 		for(var a = 0;  a < p.events.length; a++){
@@ -157,6 +159,11 @@ BNB.calendar = (function(){
 			eventNode.innerHTML = thisExp.title;
 			eventNode.setAttribute("data-id", thisExp.id);
 
+			// Check for already placed experiments (.start != 0)
+			if(thisExp.protocols[0].steps[0].actions[0].start !== 0){
+				placedExperiments.push(thisExp.id);
+			}
+
 			// Protocols in experiment
 			for(var b = 0, pLen = thisExp.protocols.length; b < pLen; b++){
 				var thisProtocol = thisExp.protocols[b],
@@ -183,7 +190,7 @@ BNB.calendar = (function(){
 				   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
 				   		eventNode.setAttribute(domId + "active", thisAction.active);
 						eventNode.setAttribute(domId + "notes", thisAction.notes);
-						eventNode.setAttribute(domId + "length", /*thisAction.duration*/ 6000);
+						eventNode.setAttribute(domId + "length", thisAction.duration);
 						eventNode.setAttribute(domId + "event-id", thisAction.id);
 						eventNode.setAttribute(domId + "eid", eId);
 						eventNode.setAttribute(domId + "pid", pId);
@@ -217,6 +224,20 @@ BNB.calendar = (function(){
 			});
 			
 		});
+
+		// Add already placed experiments to the calendar
+		if(placedExperiments.length > 0){
+			for(var i = 0, len = placedExperiments.length; i < len; i++){
+
+				var date = new Date(experiments[placedExperiments[i]].protocols[0].steps[0].actions[0].start);
+
+				dropEventHandler(
+					date,
+					false,
+					$("[data-id="+ placedExperiments[i] +"]").get(0)
+				);
+			}
+		}
 	}
 
 	// Add an event to the calendar when it's dropped in place
@@ -230,7 +251,7 @@ BNB.calendar = (function(){
 		// Create a random background color
 		// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
 		do{
-			instanceId = "xxx".replace(/[x]/g, function(c) {
+			var instanceId = "xxx".replace(/[x]/g, function(c) {
 		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 		    	return v.toString(16);
 			});
@@ -270,11 +291,18 @@ BNB.calendar = (function(){
 					eventStep.locked  			= true;
 					eventStep.backgroundColor 	= "#" + instanceBgColor;
 					eventStep.textColor			= "#fff";
-					eventStep.start 			= (new Date(timeTracker.getTime()));
-					eventStep.end 				= (new Date(timeTracker.getTime() + eventStep.length * 1000));
+
+					eventStep.start = action.start ? 
+						new Date(action.start) : 
+						new Date(timeTracker.getTime());
+
+					eventStep.end = action.end ? 
+						new Date(new Date(action.start).getTime() + eventStep.length * 1000) : 
+						new Date(timeTracker.getTime() + eventStep.length * 1000);
+
 					eventStep.notes = that.getAttribute(domId + "notes").length > 0 ? 
-					 				  that.getAttribute(domId + "notes") : 
-					 				  'There are no notes for this event.';
+						that.getAttribute(domId + "notes") : 
+						'There are no notes for this event.';
 
 					// Use this to decide the next step's .start
 					timeTracker = eventStep.end;
@@ -884,9 +912,12 @@ BNB.calendar = (function(){
 
 			if(!hasCallFinished || queue.length < 1) return;
 
+			// The data must be passed in as FormData or else 
+			// Django will reformat it, rendering it useless
 			var fd = new FormData();
 			fd.append("events", JSON.stringify(queue));
 
+			// contentType and processData MUST be set to false!
 			$.ajax({
 				url: url,
                 type: "PUT",
@@ -905,7 +936,7 @@ BNB.calendar = (function(){
             	},
             	complete: function(){
             		backlog = [];
-					//sendQueue();
+					sendQueue();
             	}
 			});
 		}
