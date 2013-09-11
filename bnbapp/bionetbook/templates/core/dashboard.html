@@ -31,8 +31,8 @@
     </div>
 
  
-    <!-- <div class="span8"> -->
-    <div class="span8 accordion" id="accordion2">
+    <div class="span8">
+    <!-- <div class="span8 accordion" id="accordion2">
 
         <div class="accordion-group">
             <div class="accordion-heading">
@@ -122,12 +122,12 @@
                     </table>                    
                 </div>
             </div>
-        </div>
+        </div> -->
 
         
 
 
-        <!-- 
+        
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Draft Protocols</h3></li>
           {% for protocol in request.user.get_profile.get_private_draft_protocols %}
@@ -149,7 +149,7 @@
         {% for protocol in request.user.get_profile.get_public_protocols %}
             <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}/</a></li>
         {% endfor %}
-        </ul> -->
+        </ul>
         
         {% if request.user.is_superuser or request.user.is_staff %}
         <ul class="nav nav-tabs nav-stacked">
