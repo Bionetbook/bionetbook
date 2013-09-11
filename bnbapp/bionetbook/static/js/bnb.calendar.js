@@ -881,7 +881,7 @@ BNB.calendar = (function(){
 		function sendQueue(){
 
 			if(!hasCallFinished || queue.length < 1) return;
-			
+
 			$.ajax({
 				url: url,
                 type: "PUT",
@@ -891,7 +891,6 @@ BNB.calendar = (function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);
             		hasCallFinished = true;
-            		console.log("connected")
             	},
             	error: function(){
             		// Deep copy of backlog to concat with queue
@@ -899,7 +898,7 @@ BNB.calendar = (function(){
             	},
             	complete: function(){
             		backlog = [];
-					sendQueue();
+					//sendQueue();
             	}
 			});
 		}
