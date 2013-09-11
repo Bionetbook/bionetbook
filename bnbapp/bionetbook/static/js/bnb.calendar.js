@@ -869,6 +869,7 @@ BNB.calendar = (function(){
 				start: stepData.start, 
 				notes: stepData.notes
 			};
+
 			s.notes = s.notes == "There are no notes for this event." ? "" : s.notes;
 
 			if(hasCallFinished){
@@ -895,6 +896,7 @@ BNB.calendar = (function(){
 				data: fd,
 				processData: false,
   				contentType: false,
+
             	success: function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);

@@ -170,7 +170,7 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
         }
     '''
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
-    http_method_names = ['get', 'put', 'delete']
+    http_method_names = ['get', 'post', 'put']
 
     def get(self, request, *args, **kwargs):
         curCal = get_object_or_404( Calendar, pk=self.kwargs['pk'])
@@ -178,9 +178,23 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
 
     # Return 200 always unless wrong pk for calendar
     def put(self,request, *args, **kwargs):
+        #print request
         request = self.put_request_scrub(request)
+        eventList = json.loads(request.PUT.dict()['events'])
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        for event in eventList:   # [ {event}, { } ]
+            for eCal in cal.events():
+                if event['id'] in eCal.values():
+                    eCal['start'] = event['start']
+                    eCal['notes'] = event['notes']
+                    continue
+        cal.save()    
+        return HttpResponse()  
+
+    def post(self,request, *args, **kwargs):
+        print request.POST
         #print request.PUT.getlist('events')[0] + " " + request.PUT.getlist('events')[1]
-        eventList = dict(request.PUT.iterlists())['events']
+        eventList = dict(request.POST.iterlists())['events']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
         for event in eventList:   # [ {event}, { } ]
             event = ast.literal_eval(event)

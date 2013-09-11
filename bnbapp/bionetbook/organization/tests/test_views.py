@@ -36,10 +36,13 @@ class OrganizationViewTests(AutoBaseTest):
 		self.workflow2 = self.createModelInstance(Workflow, user=self.user2, name="TestFlow2", data={'meta':{},'protocols':[3,2]}, owner=self.org)
 		self.workflow3 = self.createModelInstance(Workflow, user=self.user3, name="TestFlow3", data={'meta':{},'protocols':[4]}, owner=self.org2)
 		self.experiment = self.createModelInstance(Experiment, owner=self.org, user=self.user, name="Exp1", workflow=self.workflow)
-		self.experiment = self.createModelInstance(Experiment, owner=self.org, user=self.user2, name="Exp2", workflow=self.workflow2)
-		self.experiment = self.createModelInstance(Experiment, owner=self.org2, user=self.user3, name="Exp3", workflow=self.workflow3)
+		self.experiment2 = self.createModelInstance(Experiment, owner=self.org, user=self.user2, name="Exp2", workflow=self.workflow2)
+		self.experiment3 = self.createModelInstance(Experiment, owner=self.org2, user=self.user3, name="Exp3", workflow=self.workflow3)
 
-
+	'''
+	1. Test access to org with user who is a member of the org
+	2. Test correct context
+	'''
 	def test_organization_main(self):
 
 		# Testing user to verify context is correct
@@ -47,3 +50,11 @@ class OrganizationViewTests(AutoBaseTest):
 		c.login(username="testuser1", password="pass")
 		resp = c.get('/testorg/')
 		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['workflows'], [self.workflow])
+		self.assertEqual(resp.context['organization'],self.org)
+		self.assertEqual(resp.context['experiments'],[self.experiment])
+		self.assertEqual(resp.context['protocols'],[self.protocol,self.protocol3])
+		resp = c.get('/test2org/')
+		self.assertEqual(resp.status_code, 404)
+		c.login(username="testuser2", password="pass")
+		resp = c.get('/testorg/')
