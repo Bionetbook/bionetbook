@@ -4,8 +4,9 @@
 //                                  //
 //////////////////////////////////////
 // Todo:
-// Make dragging node on calendar disable it, while deleting it restore it
 // NOTE: syncEvents() has FAKE length
+// Fake a form on send
+// Might have to escape eventlist string
 
 $(document).ready(function() {
 	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
@@ -882,11 +883,15 @@ BNB.calendar = (function(){
 
 			if(!hasCallFinished || queue.length < 1) return;
 
+			var fd = new FormData();
+			fd.append("events", JSON.stringify(queue));
+
 			$.ajax({
 				url: url,
                 type: "PUT",
-				// data: {"events": JSON.stringify(queue)},
-				data: JSON.stringify({events: queue}),
+				data: fd,
+				processData: false,
+  				contentType: false,
             	success: function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);
