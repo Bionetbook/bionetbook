@@ -78,15 +78,12 @@ class ExperimentCreateView(PathMixin, LoginRequiredMixin, FormView):
 		form = form_class(**self.get_form_kwargs())
 		try:
 			org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
-		except:
-			raise Http404
-		try:
 			workflows = org.workflow_set.all()
 			workflows = [w for w in workflows if w.user==self.request.user]
 			form.fields['workflows'] = forms.ChoiceField(
 				label="Workflows",
 				choices=((x.pk,x) for x in workflows))
 		except:
-			form.fields['workflows'] = None
+			raise Http404
 		return form
 
