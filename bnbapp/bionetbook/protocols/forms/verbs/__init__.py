@@ -19,6 +19,7 @@ from cut import CutForm
 # from decant import DecantForm
 # from digest import DigestForm
 from discard import DiscardForm
+from dilute import DiluteForm
 # from drain import DrainForm
 from dry import DryForm
 from electrophorese import ElectrophoreseForm
@@ -27,7 +28,8 @@ from elute import EluteForm
 from excise import ExciseForm
 # from extract import ExtractForm
 # from filter import FilterForm
-from quickfreeze import QuickFreezeForm
+from follow_instructions import FollowInstructionsForm
+from freeze import FreezeForm
 from grind import GrindForm
 # from grow import GrowForm
 # from harvest import HarvestForm
@@ -53,6 +55,7 @@ from place import PlaceForm
 from precipitate import PrecipitateForm
 from prepare import PrepareForm
 # from purify import PurifyForm
+from quickfreeze import QuickFreezeForm
 # from recover import RecoverForm
 from remove import RemoveForm
 from repeat import RepeatForm
@@ -60,6 +63,7 @@ from resuspend import ResuspendForm
 # from rinse import RinseForm
 # from seal import SealForm
 # from shake import ShakeForm
+from sonicate import SonicateForm
 from spin import SpinForm
 # from split import SplitForm
 # from spool import SpoolForm

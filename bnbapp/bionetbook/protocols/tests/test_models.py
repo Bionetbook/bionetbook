@@ -47,14 +47,14 @@ class ProtocolModelTests(AutoBaseTest):
     #     # self.assertRaises(KeyError, Action, (protocol, parent=step1))
 
         act1 = Action(self.protocol, parent=step1, data={'verb':"add"})
-        step1.add_child_node(act1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
-        # print "ACTION 1 ID: %s" % act1['objectid']
+        # step1.add_child_node(act1)                                        # <- WORKS ONLY AFTER STEP IS RE-ASSIGNED
+        print "ACTION 1 ID: %s" % act1['objectid']
 
-    #     # print "PROTOCOL DATA:"
-    #     # print protocol.data
+        # print "PROTOCOL DATA:"
+        # print protocol.data
 
-        # print "PROTOCOL NODES:"
-        # print self.protocol.nodes
+        print "PROTOCOL NODES:"
+        print self.protocol.nodes
 
         self.assertEquals(len(step1.actions), 1)            # ASSERT THE ACTION IS ATTACHED TO THE STEP
         self.assertTrue('objectid' in act1)                   # ACTION SHOULD GET OBJECT ID AFTER REGISTERED

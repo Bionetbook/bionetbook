@@ -448,7 +448,7 @@ class ProtocolChangeLog(object):
             result['update'][key] = new_node[key]
 
         for key in differ.added():
-            result['create'][key] = new_node[key]
+            result['update'][key] = new_node[key]
 
         for key in differ.removed():
             result['delete'][key] = new_node[key]

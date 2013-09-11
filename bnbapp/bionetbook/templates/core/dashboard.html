@@ -16,9 +16,8 @@
             <hr>
             <h4>Cool Stats</h4>
             <br>
-            <p>Authored Protocols: </p>
-            <p>Workflows: </p>
-            <p>Experiments: </p>
+            <p>Public Protocols: {{ request.user.get_profile.get_public_protocols|length }} </p>
+            
           </div>
         </div>
         <br>
@@ -28,27 +27,114 @@
             <li><a href="{% url protocol_create owner_slug=org.slug %}">{{ org.name }}</a><li>
             {% endfor %}
         </ul>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Workflow for...</h3></li>
-            {% for org in request.user.organization_set.all %}
-            <li><a href="{% url workflow_create owner_slug=org.slug %}">{{ org.name }}</a><li>
-            {% endfor %}
-        </ul>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Create Experiment for...</h3></li>
-            {% for org in request.user.organization_set.all %}
-            <li><a href="{% url experiment_create owner_slug=org.slug %}">{{ org.name }}</a><li>
-            {% endfor %}
-        </ul>
+        
     </div>
 
-    <div class="span8">
+ 
+    <!-- <div class="span8"> -->
+    <div class="span8 accordion" id="accordion2">
+
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                    <h3>Draft Protocols ({{ request.user.get_profile.get_private_draft_protocols|length}})</h3>
+                </a>
+            </div>    
+            <div id="collapseOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                          <tr>
+                              <th>Protocol</th>
+                              <th>Duration</th>
+                              <th>Steps</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in request.user.get_profile.get_private_draft_protocols %}
+                            <tr>
+                                <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
+                                <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.steps|length}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                    <h3>Private Protocols ({{ request.user.get_profile.get_private_protocols|length}})</h3>
+                </a>
+            </div>    
+            <div id="collapseTwo" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                          <tr>
+                              <th>Protocol</th>
+                              <th>Duration</th>
+                              <th>Steps</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in request.user.get_profile.get_private_protocols %}
+                            <tr>
+                                <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
+                                <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.steps|length}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+                    <h3>Public Protocols ({{ request.user.get_profile.get_public_protocols|length}})</h3>
+                </a>
+            </div>    
+            <div id="collapseThree" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                          <tr>
+                              <th>Protocol</th>
+                              <th>Duration</th>
+                              <th>Steps</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in request.user.get_profile.get_public_protocols %}
+                            <tr>
+                                <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
+                                <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.steps|length}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+
+        
+
+
+        <!-- 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Draft Protocols</h3></li>
           {% for protocol in request.user.get_profile.get_private_draft_protocols %}
             <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}</a></li>
           {% endfor %}
         </ul>
+        
 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Private Protocols</h3></li>
@@ -57,12 +143,13 @@
           {% endfor %}
         </ul>
 
+
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Public Protocols</h3></li>
         {% for protocol in request.user.get_profile.get_public_protocols %}
             <li><a href="{{ protocol.get_absolute_url }}"><i class="icon-play-circle"></i> {{ protocol.name }}-{{ protocol.owner.name }}/</a></li>
         {% endfor %}
-        </ul>
+        </ul> -->
         
         {% if request.user.is_superuser or request.user.is_staff %}
         <ul class="nav nav-tabs nav-stacked">

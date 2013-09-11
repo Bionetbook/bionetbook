@@ -7,7 +7,7 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
       <li class="active">{{ organization.name }}</li>
     </ul>
 {% endblock %}
@@ -19,7 +19,7 @@
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Protocols</h3></li>
                 <table class="table table-striped">
-                    {% if protocols %}
+                    {% if organization.protocol_set.all %}
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -34,9 +34,9 @@
                     </thead>
                     {% endif %}
                         <tbody>
-                        {% for protocol in protocols %}
+                        {% for protocol in organization.protocol_set.all %}
                         <tr>
-                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a></td>
+                        <td><a href="{{ protocol.get_absolute_url }}">{{ protocol }}</a></td>
                         <td>
                         {% if not protocol.published %}
                             <a href="{{ protocol.get_absolute_url }}"><i class="icon-edit"></i></a>
@@ -57,34 +57,7 @@
                         {% endfor %}
             </tbody>
         </table>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Workflows</h3></li>
-                <table class="table table-striped">
-                    {% if workflows %}
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th># of Protocols</th>
-                            <th>Last Modified</th>
-                        </tr>
-                    </thead>
-                    {% endif %}
-                        <tbody>
-                            {% for workflow in workflows %}
-                            <tr>
-                                <td><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}">{{ workflow.name }}</a></td>
-                                <td>{{ workflow.numberOfProtocols }}</td>
-                                <td>{{ workflow.modified|date:"M d,Y H:i"}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Experiments</h3></li>
-        {% for experiment in experiments %}
-            <li><a href="{% url experiment_detail owner_slug=organization.slug experiment_slug=experiment.slug %}"> {{ experiment.name }}</a></li>
-        {% endfor %}
-        </ul>
+        
     </div>
     
 </div>
