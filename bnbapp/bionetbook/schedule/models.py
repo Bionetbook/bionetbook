@@ -161,6 +161,8 @@ class Calendar(TimeStampedModel):
                 eventObject['experiment'] = newExperiment.name
                 eventObject['notes'] = ""
                 events.append(eventObject)
+            if p.pk not in ret['meta']:
+                self.data['meta'][p.pk] = p.description
         self.data['events'] = events
         self.save()        
 
