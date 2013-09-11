@@ -11,11 +11,12 @@ from experiment.models import Experiment
 from schedule.models import Calendar
 from organization.tests.core import AutoBaseTest
 from django.utils import simplejson as json
+from experiment.models import Experiment
 
-class OrganizationViewTests(AutoBaseTest):
+class ExperimentViewTests(AutoBaseTest):
 
 	def setUp(self):
-		super(OrganizationViewTests, self).setUp()
+		super(ExperimentViewTests, self).setUp()
 
 		self.user = self.createUserInstance(username="testuser1", password="pass", email="test1@example.com")
 		self.user2 = self.createUserInstance(username="testuser2", password="pass", email="test2@example.com")
@@ -61,3 +62,22 @@ class OrganizationViewTests(AutoBaseTest):
 		self.assertEqual(resp.context['form'].fields['workflows'].choices, [(1,self.workflow)])
 		resp = c.get('/test2org/experiments/create/')
 		self.assertEqual(resp.status_code, 404)
+
+		# no fields
+		resp = c.post('/testorg/experiments/create/')
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['form'].errors, {'name':[u'This field is required.'],'workflows':[u'This field is required.']})
+
+		# Send junk POST data.
+		resp = c.post('/testorg/experiments/create/', {'foo': 'bar'})
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['form'].errors, {'name':[u'This field is required.'],'workflows':[u'This field is required.']})
+
+		# test post check status and redirect location
+		resp = c.post('/testorg/experiments/create/', {'name':'exp2', 'workflows':1})
+		self.assertEqual(resp.status_code, 302)
+		print resp['location']
+		self.assertEqual(resp['location'],'http://testserver/testorg/experiments/4-exp2/')
+
+		
+
