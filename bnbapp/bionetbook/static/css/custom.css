@@ -148,13 +148,11 @@ footer li a {
 	float: left;
 	width: 150px;
 }
-	
 #external-events h4 {
 	font-size: 16px;
 	margin-top: 0;
 	padding-top: 1em;
 }
-
 
 /* Pasive events */
 .fc-event-vert[data-active=false]{
@@ -187,7 +185,10 @@ footer li a {
 	font-size: .85em;
 	cursor: pointer;
 }
-	
+#external-events .custom-event.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
 #external-events p {
 	margin: 1.5em 0;
 	font-size: 11px;

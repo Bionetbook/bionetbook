@@ -5,7 +5,6 @@
 //////////////////////////////////////
 // Todo:
 // Make dragging node on calendar disable it, while deleting it restore it
-// Notes positioning needs work
 // NOTE: syncEvents() has FAKE length
 
 $(document).ready(function() {
@@ -287,6 +286,9 @@ BNB.calendar = (function(){
 				}
 			}
 		}
+
+		// Disable draggable node
+		$(that).addClass('disabled');
 	}
 
 	// The supplied renderer sucks
@@ -331,7 +333,10 @@ BNB.calendar = (function(){
 		var closeError = document.createElement("div");
 		closeError.className = "close";
 		closeError.innerHTML = "X";
-		closeError.onclick = removeTopError;
+		closeError.onclick = function(){
+			document.getElementsByClassName("top-error")[0].parentNode
+				.removeChild(document.getElementsByClassName("top-error")[0]);
+		}
 		error.appendChild(closeError);
 		
 		// Show error
@@ -341,24 +346,12 @@ BNB.calendar = (function(){
 		setTimeout(function(){
 			// Make sure the element hasn't been closed already
 			if(document.getElementsByClassName("top-error")[0]){
-				removeTopError(true);
+				$(document.getElementsByClassName("top-error")[0]).fadeOut(200, function(){
+					document.getElementsByClassName("top-error")[0].parentNode
+						.removeChild(document.getElementsByClassName("top-error")[0]);
+				});
 			}
 		},10000);
-	}
-
-	// Remove the error at the top of the page. No easing for user-closed error, only auto-close
-	function removeTopError(easing){
-		easing = easing || false;
-
-		// remove element without fading effects
-		if(!easing){
-			document.getElementsByClassName("top-error")[0].parentNode.removeChild(document.getElementsByClassName("top-error")[0]);
-		} else {
-			// fade out and remove element
-			$(document.getElementsByClassName("top-error")[0]).fadeOut(200, function(){
-				document.getElementsByClassName("top-error")[0].parentNode.removeChild(document.getElementsByClassName("top-error")[0]);
-			});
-		}
 	}
 
 	var protocolLock = (function(){
@@ -442,8 +435,6 @@ BNB.calendar = (function(){
 		}
 	})();
 
-	// ^-- Done --^
-
 	// Functions for editing and saving notes for selected steps
 	var Notes = (function(){
 
@@ -508,6 +499,7 @@ BNB.calendar = (function(){
 		function addEditNotes(ele, formContainer){
 
 			var loc = ele.parentNode.insertBefore(document.createElement('span'), ele.parentNode.firstChild);
+			loc.setAttribute("style", "position:absolute;top:0;left:0;");
 			// Appending to node won't accept pointer events!
 			document.body.appendChild(formContainer);
 
@@ -521,11 +513,11 @@ BNB.calendar = (function(){
 			if($(currentStepNode).hasClass("fri") || $(currentStepNode).hasClass("sat")){
 				if($(currentStepNode).hasClass("fri")) formContainer.className += " fri";
 				if($(currentStepNode).hasClass("sat")) formContainer.className += " sat";
-				formContainer.style.left = (locPos.left + 10) + 'px';
+				formContainer.style.left = (locPos.left - 215) + 'px';
 			} else {
 				// Sunday - Thursday
-				formContainer.style.left = (locPos.left + 120) + 'px';
-				formContainer.style.right = "0";
+				formContainer.style.left = (locPos.left + 115) + 'px';
+				//formContainer.style.right = "0";
 			}
 
 			// Show notes form
@@ -559,6 +551,7 @@ BNB.calendar = (function(){
 	})();
 
 	// Showing right click menu
+	// Supress normal right clicks if a day/step is right-clicked on
 	function rightClickMenu(e){
 		var clickedElement = (e.target || window.event.srcElement),
 			targetElement, 	// The element to get information from
@@ -578,10 +571,7 @@ BNB.calendar = (function(){
 			oldMenu = null;
 		}
 
-		//----------------------------------------------------------------//
-		// Supress normal right clicks if a day/step is right-clicked on  //
-		//----------------------------------------------------------------// 
-
+		// Check the element that was clicked on
 		// A STEP was clicked on
 		if (clickedElement.className == "fc-event-inner" || clickedElement.className == "edit-notes"){
 			targetElement = clickedElement.parentNode;
@@ -624,7 +614,7 @@ BNB.calendar = (function(){
 			return;
 		}
 
-		// Hide right click menu
+		// Hide browser's right click menu
 		document.oncontextmenu = function(){return false;}
 
 		// Place menu at the mouse cursor's position
@@ -632,8 +622,8 @@ BNB.calendar = (function(){
 		menu.style.left = (e.pageX || e.x) + "px";
 		menu.id = "right-click-menu";
 
-		paste.innerHTML = "Paste Protocol";
-		copy.innerHTML = "Copy Protocol";
+		paste.innerHTML = "Paste Experiment";
+		copy.innerHTML = "Copy Experiment";
 		del.innerHTML = "Remove Experiment"
 		undo.innerHTML = "Undo";
 		cancel.innerHTML = "Cancel";
@@ -641,12 +631,6 @@ BNB.calendar = (function(){
 		// Copy structure of protocol
 		copy.onclick = function(){ 
 			protocolStructure.copy(targetElement);
-			body.removeChild(menu);
-			body.onclick=""; 
-		};
-		// Delete structure of protocol
-		del.onclick = function(){ 
-			protocolStructure.del(targetElement.getAttribute("data-eid"));
 			body.removeChild(menu);
 			body.onclick=""; 
 		};
@@ -659,6 +643,12 @@ BNB.calendar = (function(){
 		// Paste structure of protocol
 		undo.onclick = function(){ 
 			protocolStructure.undo(targetElement);
+			body.removeChild(menu);
+			body.onclick=""; 
+		};
+		// Delete structure of protocol
+		del.onclick = function(){ 
+			protocolStructure.del(targetElement.getAttribute("data-eid"));
 			body.removeChild(menu);
 			body.onclick=""; 
 		};
@@ -676,15 +666,15 @@ BNB.calendar = (function(){
 		body.appendChild(menu)
 	}
 
-	// TODO: Needs complete selector revamping
+	// TODO: Copy/Paste/Undo is broken
 	// Copy, Paste, Undo functionality for right click menu
 	var protocolStructure = (function (){
 		var copiedStructure = [],
 			lastDatePastedInto;		// Used for Undo
 
 		function copy(ele){
-			var instanceId = ele.getAttribute("data-instance-id");
-			var selector = "[data-instance-id="+ instanceId +"]";
+			var eId = ele.getAttribute("data-eid");
+			var selector = "[data-eid="+ eId +"]";
 
 			// Only select the current view's steps
 			if(ele.className.indexOf("fc-event-vert") !== -1) selector = ".fc-event-vert" + selector;
@@ -692,19 +682,9 @@ BNB.calendar = (function(){
 
 			// Get each step in the protocol and add it to copiedStructure
 			$(selector).each(function(){
-				var copiedProtocolStep = {
-					verb: this.getElementsByClassName("fc-event-title")[0].innerHTML,
-					backgroundColor: this.getAttribute("data-bg-color"),
-					allDay: false,
-					start: this.getAttribute("data-event-start"),
-					active: this.getAttribute("data-active"),
-					end: this.getAttribute("data-event-end"),
-					container: false,
-					eventId: this.getAttribute("data-event-id"),
-				   	stepNumber: this.getAttribute("data-step-number"),
-					notes: this.getAttribute("data-notes")
-				};
+				var copiedProtocolStep = makeJsonFromNode(this);
 
+				// TODO: This doesn't work anymore. Experiments have many, many steps with identical numbers.
 				// Add copied step to the copied protocol structure
 				copiedStructure[copiedProtocolStep.stepNumber] = copiedProtocolStep;
 			});
@@ -818,6 +798,7 @@ BNB.calendar = (function(){
 			$("[data-eid="+ id +"]").each(function(){
 				$('#calendar').fullCalendar("removeEvents", this.getAttribute("data-fc-id"));
 			});
+			$("[data-id="+ id +"]").removeClass('disabled');
 		}
 		
 		return { 
@@ -882,7 +863,6 @@ BNB.calendar = (function(){
         });
 
 		function enqueue(stepData){
-			console.log(stepData)
 			var s = {
 				id: stepData.eventId, 
 				start: stepData.start, 
@@ -901,12 +881,12 @@ BNB.calendar = (function(){
 		function sendQueue(){
 
 			if(!hasCallFinished || queue.length < 1) return;
-
+			
 			$.ajax({
 				url: url,
-				contentType: 'application/json',
                 type: "PUT",
-				data: {events: queue},
+				// data: {"events": JSON.stringify(queue)},
+				data: JSON.stringify({events: queue}),
             	success: function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);
@@ -932,9 +912,9 @@ BNB.calendar = (function(){
 	// Return Json created from scraping DOM node's data
 	function makeJsonFromNode(node){
 		return {
-			verb : node.getElementsByClassName("fc-event-title")[0].innerHTML,
+			verb : node.getAttribute("data-verb"),
 			eventId : node.getAttribute("data-event-id"),
-			instanceId : node.getAttribute("data-instance-id"),
+			id : node.getAttribute("data-event-id"),   // Just in case
 			stepNumber : node.getAttribute("data-step-number"),
 			start : node.getAttribute("data-event-start"),
 			end : node.getAttribute("data-event-end"),
@@ -944,8 +924,8 @@ BNB.calendar = (function(){
 			locked : node.getAttribute("data-locked") || true,
 			container : false,
 			allDay : false,
-			length : (new Date(node.getAttribute("data-event-end")).getTime() - 
-					new Date(node.getAttribute("data-event-start")).getTime())/1000
+			length : (node.getAttribute("data-length") || (new Date(node.getAttribute("data-event-end")).getTime() - 
+					new Date(node.getAttribute("data-event-start")).getTime())/1000)
 		};
 	}
 
@@ -1045,14 +1025,12 @@ BNB.calendar = (function(){
 		makeJsonFromNode: makeJsonFromNode,
 		makeHtmlFromJson: makeHtmlFromJson,
 		displayTopError: displayTopError,
-		removeTopError: removeTopError,
 		getEvents: getEvents,
 		dropEventHandler: dropEventHandler,
 		protocolLock: protocolLock,
 		Notes: Notes,
 		rightClickMenu: rightClickMenu,
 		renderUpdatedEvents: renderUpdatedEvents,
-		syncEvents: syncEvents,
 		protocolList: protocolList
 	}
 })();
