@@ -178,9 +178,25 @@ class SingleCalendarAPI(JSONResponseMixin, LoginRequiredMixin, View):
 
     # Return 200 always unless wrong pk for calendar
     def put(self,request, *args, **kwargs):
+        #print request
         request = self.put_request_scrub(request)
-        #print request.PUT.getlist('events')[0] + " " + request.PUT.getlist('events')[1]
+        print request.PUT
         eventList = dict(request.PUT.iterlists())['events']
+        cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
+        for event in eventList:   # [ {event}, { } ]
+            event = ast.literal_eval(event)
+            for eCal in cal.events():
+                if event['id'] in eCal.values():
+                    eCal['start'] = event['start']
+                    eCal['notes'] = event['notes']
+                    continue
+        cal.save()    
+        return HttpResponse()  
+
+    def post(self,request, *args, **kwargs):
+        print request.POST
+        #print request.PUT.getlist('events')[0] + " " + request.PUT.getlist('events')[1]
+        eventList = dict(request.POST.iterlists())['events']
         cal = get_object_or_404(Calendar, pk=self.kwargs['pk'])
         for event in eventList:   # [ {event}, { } ]
             event = ast.literal_eval(event)

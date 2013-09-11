@@ -888,6 +888,7 @@ BNB.calendar = (function(){
 				start: stepData.start, 
 				notes: stepData.notes
 			};
+
 			s.notes = s.notes == "There are no notes for this event." ? "" : s.notes;
 
 			if(hasCallFinished){
@@ -904,9 +905,9 @@ BNB.calendar = (function(){
 
 			$.ajax({
 				url: url,
-				contentType: 'application/json',
-                type: "PUT",
-				data: {events: queue},
+				dataType: 'json',
+                type: "POST",
+				data: {'events': queue},
             	success: function(){
             		// Overwrite queue with deep copy of backlog
             		queue = $.extend(true, [], backlog);
