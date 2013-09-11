@@ -54,7 +54,25 @@ class OrganizationViewTests(AutoBaseTest):
 		self.assertEqual(resp.context['organization'],self.org)
 		self.assertEqual(resp.context['experiments'],[self.experiment])
 		self.assertEqual(resp.context['protocols'],[self.protocol,self.protocol3])
+
 		resp = c.get('/test2org/')
 		self.assertEqual(resp.status_code, 404)
+
 		c.login(username="testuser2", password="pass")
 		resp = c.get('/testorg/')
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['workflows'], [self.workflow2])
+		self.assertEqual(resp.context['organization'],self.org)
+		self.assertEqual(resp.context['experiments'],[self.experiment2])
+		self.assertEqual(resp.context['protocols'],[self.protocol2, self.protocol3])
+
+		c.login(username="testuser3", password="pass")
+		resp = c.get('/test2org/')
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['workflows'], [self.workflow3])
+		self.assertEqual(resp.context['organization'],self.org2)
+		self.assertEqual(resp.context['experiments'],[self.experiment3])
+		self.assertEqual(resp.context['protocols'],[self.protocol4])
+
+		
