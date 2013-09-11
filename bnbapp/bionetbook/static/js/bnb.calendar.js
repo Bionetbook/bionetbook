@@ -71,7 +71,7 @@ $(document).ready(function() {
 	})(window.event);
 
 });
-$("footer").remove();
+
 var BNB = BNB || {};
 
 BNB.calendar = (function(){
@@ -190,7 +190,7 @@ BNB.calendar = (function(){
 				   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
 				   		eventNode.setAttribute(domId + "active", thisAction.active);
 						eventNode.setAttribute(domId + "notes", thisAction.notes);
-						eventNode.setAttribute(domId + "length", /*thisAction.duration*/ 6000);
+						eventNode.setAttribute(domId + "length", thisAction.duration);
 						eventNode.setAttribute(domId + "event-id", thisAction.id);
 						eventNode.setAttribute(domId + "eid", eId);
 						eventNode.setAttribute(domId + "pid", pId);
