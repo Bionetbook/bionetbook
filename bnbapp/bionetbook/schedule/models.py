@@ -86,6 +86,9 @@ class Calendar(TimeStampedModel):
     def events(self):
         return self.data['events']
 
+    def get_absolute_url(self):
+        return reverse("single_calendar", kwargs={'pk':self.pk})
+
     # def dataToCalendar(self):
     #     ret = {}    # return dict
     #     stepsList = []

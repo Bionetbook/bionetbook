@@ -7,7 +7,7 @@ class CallForProtocolForm(forms.VerbForm):
     name = "Call For Protocol"
     slug = "call-for-protocol"
     has_manual = True
-    layers = ['item_to_act', 'input_to_track', 'output_to_track']
+    layers = ['item_to_act', 'input_to_track', 'output_to_track', 'settify']
 
     # protocol_name = forms.CharField(required = False, help_text='kit or protocol name')
     protocol_id = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Protocol"))
