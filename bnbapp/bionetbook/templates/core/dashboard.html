@@ -43,8 +43,8 @@
     </div>
 
  
-    <!-- <div class="span8"> -->
-    <div class="span8 accordion" id="accordion2">
+    <div class="span8">
+    <div class="accordion" id="accordion2">
 
         <div class="accordion-group">
             <div class="accordion-heading">
@@ -135,10 +135,76 @@
                 </div>
             </div>
         </div>
-
-        
-
-
+    </div>
+    <div class="accordion" id="accordion3">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseFour">
+                    <h3>Workflows ({{ request.user.workflow_set.all|length}})</h3>
+                </a>
+            </div>    
+            <div id="collapseFour" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                          <tr>
+                              <th>Workflow</th>
+                              <th># of Protocols</th>
+                              <th>Last Modified</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for workflow in request.user.workflow_set.all %}
+                            <tr>
+                                <td><a href="{{ workflow.get_absolute_url }}">{{ workflow.name}}</a></td>
+                                <td>{{ workflow.numberOfProtocols }}</td>     
+                                <td>{{ workflow.modified|date:"M d,Y H:i"}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion" id="accordion4">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion4" href="#collapseFive">
+                    <h3>Experiments ({{ request.user.experiment_set.all|length}})</h3>
+                </a>
+            </div>    
+            <div id="collapseFive" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                          <tr>
+                              <th>Experiment</th>
+                              <th>Last Modified</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for experiment in request.user.experiment_set.all %}
+                            <tr>
+                                <td><a href="{{ experiment.get_absolute_url }}">{{ experiment.name}}</a></td>
+                                <td>{{ experiment.modified|date:"M d,Y H:i"}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+    </div>
+        {% if request.user.is_superuser or request.user.is_staff %}
+        <ul class="span8 nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Admin Tools</h3></li>
+            <li><a href="{% url profile_list %}">Users</a></li>
+        </ul>
+        {% endif %}
+    </div>
+    
+</div>
         <!-- 
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Draft Protocols</h3></li>
@@ -174,16 +240,10 @@
             <li><a href="{{ experiment.get_absolute_url }}"><i class="icon-play-circle"></i> {{ experiment.name }}-{{ experiment.owner.name }}</a></li>
         {% endfor %}
         </ul> -->
-        
-        {% if request.user.is_superuser or request.user.is_staff %}
-        <ul class="nav nav-tabs nav-stacked">
-            <li class="nav-label"><h3>Admin Tools</h3></li>
-            <li><a href="{% url profile_list %}">Users</a></li>
-        </ul>
-        {% endif %}
 
-    </div>
+
+
     
-</div>
+
 
 {% endblock %}
