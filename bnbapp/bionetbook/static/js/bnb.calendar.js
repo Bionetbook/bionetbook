@@ -4,10 +4,9 @@
 //                                  //
 //////////////////////////////////////
 // Todo:
-// selectors need retooling - they need to use eid, pid, sid, aid
-// Make dragging node on calendar disable it, while deleting it restore it
-// Notes positioning needs work
 // NOTE: syncEvents() has FAKE length
+
+"use strict";
 
 $(document).ready(function() {
 	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
@@ -72,7 +71,7 @@ $(document).ready(function() {
 	})(window.event);
 
 });
-$("footer").remove();
+
 var BNB = BNB || {};
 
 BNB.calendar = (function(){
@@ -96,6 +95,8 @@ BNB.calendar = (function(){
 	// Arg: JSON object
 	function syncEvents(p){
 
+		var placedExperiments = [];
+		
 		// Make experiment structure from action id strings
 		for(var a = 0;  a < p.events.length; a++){
 
@@ -136,7 +137,7 @@ BNB.calendar = (function(){
 				});
 				
 			}
-			var step = getObjInArr(protocol.steps, 'id', stepId);
+			step = getObjInArr(protocol.steps, 'id', stepId);
 
 			// + extra properties
 			if(p.meta.descriptions) exp.description = p.meta.descriptions[expId];	// exp descrip
@@ -148,53 +149,64 @@ BNB.calendar = (function(){
 		}
 
 		// Show a draggable item for each protocol the user has access to
-		for(var e in experiments)
-			
-			var thisExp = experiments[e];
+		for(var e in experiments){
+			if(experiments.hasOwnProperty(e)){
 
-			// Create draggable node
-			var eventNode = document.createElement('div');
-			eventNode.className = 'custom-event';
-			eventNode.innerHTML = thisExp.title;
-			eventNode.setAttribute("data-id", thisExp.id);
+				// Create draggable node
+				var eventNode = document.createElement('div');
+				eventNode.className = 'custom-event';
+				eventNode.innerHTML = experiments[e].title;
+				eventNode.setAttribute("data-id", experiments[e].id);
 
-			// Protocols in experiment
-			for(var b = 0, pLen = thisExp.protocols.length; b < pLen; b++){
-				var thisProtocol = thisExp.protocols[b],
-					pId = thisExp.protocols[b].id;
+				// Check for already placed experiments (.start != 0)
+				var actionStart = experiments[e].protocols[0].steps[0].actions[0].start;
+				if(actionStart !== 0 && actionStart !== '0' && 
+				   new Date(actionStart).getTime() != 946713600000){
+					placedExperiments.push(experiments[e].id);
+				}
 
-			   // Steps in protocol
-			   for(var c = 0; c < thisProtocol.steps.length; c++){
-			   		var thisStep = thisProtocol.steps[c],
-			   			sId = thisProtocol.steps[c].id;
+				// Protocols in experiment
+				for(var b = 0, pLen = experiments[e].protocols.length; b < pLen; b++){
+					var thisProtocol = experiments[e].protocols[b],
+						pId = experiments[e].protocols[b].id;
 
-			   		// Actions in step
-			   		for(var d = 0; d < thisStep.actions.length; d++){
+				   // Steps in protocol
+				   for(var c = 0; c < thisProtocol.steps.length; c++){
+				   		var thisStep = thisProtocol.steps[c],
+				   			sId = thisProtocol.steps[c].id;
 
-				   		var thisAction = thisStep.actions[d],
-				   			idArr = thisStep.actions[d].id.split("-");
-				   		var eId = idArr[2],  // Experiment
-				   			pId = idArr[3],  // Protocol
-				   			sId = idArr[4],  // Step
-				   			aId = idArr[5];  // Action
-				   		var domId = 'data-'+ eId +'-'+ pId +'-'+ sId +'-'+ aId + '-';
+				   		// Actions in step
+				   		for(var d = 0; d < thisStep.actions.length; d++){
 
-				   		eventNode.setAttribute(domId + "title", thisAction.title);
-				   		eventNode.setAttribute(domId + "verb", thisAction.verb);
-				   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
-				   		eventNode.setAttribute(domId + "active", thisAction.active);
-						eventNode.setAttribute(domId + "notes", thisAction.notes);
-						eventNode.setAttribute(domId + "length", /*thisAction.duration*/ 6000);
-						eventNode.setAttribute(domId + "event-id", thisAction.id);
-						eventNode.setAttribute(domId + "eid", eId);
-						eventNode.setAttribute(domId + "pid", pId);
-						eventNode.setAttribute(domId + "sid", sId);
-						eventNode.setAttribute(domId + "aid", aId);
-			   }
+					   		var thisAction = thisStep.actions[d],
+					   			idArr = thisStep.actions[d].id.split("-");
+					   		var eId = idArr[2],  // Experiment
+					   			pId = idArr[3],  // Protocol
+					   			sId = idArr[4],  // Step
+					   			aId = idArr[5];  // Action
+					   		var domId = 'data-'+ eId +'-'+ pId +'-'+ sId +'-'+ aId + '-';
+
+					   		if(new Date(thisAction.start).getTime() == 946713600000){
+					   			thisAction.start = 0;
+					   		}
+
+					   		eventNode.setAttribute(domId + "title", thisAction.title);
+					   		eventNode.setAttribute(domId + "verb", thisAction.verb);
+					   		eventNode.setAttribute(domId + "step-number", thisAction.stepNumber);
+					   		eventNode.setAttribute(domId + "active", thisAction.active);
+							eventNode.setAttribute(domId + "notes", thisAction.notes);
+							eventNode.setAttribute(domId + "length", thisAction.duration);
+							eventNode.setAttribute(domId + "event-id", thisAction.id);
+							eventNode.setAttribute(domId + "eid", eId);
+							eventNode.setAttribute(domId + "pid", pId);
+							eventNode.setAttribute(domId + "sid", sId);
+							eventNode.setAttribute(domId + "aid", aId);
+						}
+				   }
+				}
+				// Add draggable event element to the page
+				dragContainer.appendChild(eventNode);
 			}
-
-			// Add draggable event element to the page
-			dragContainer.appendChild(eventNode);
 		}
 
 		// Make them draggable
@@ -218,6 +230,21 @@ BNB.calendar = (function(){
 			});
 			
 		});
+
+		// Add already placed experiments to the calendar
+		if(placedExperiments.length > 0){
+
+			for(var i = 0, len = placedExperiments.length; i < len; i++){
+
+				var date = new Date(experiments[placedExperiments[i]].protocols[0].steps[0].actions[0].start);
+
+				dropEventHandler(
+					date,
+					false,
+					$("[data-id="+ placedExperiments[i] +"]").get(0)
+				);
+			}
+		}
 	}
 
 	// Add an event to the calendar when it's dropped in place
@@ -231,7 +258,7 @@ BNB.calendar = (function(){
 		// Create a random background color
 		// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
 		do{
-			instanceId = "xxx".replace(/[x]/g, function(c) {
+			var instanceId = "xxx".replace(/[x]/g, function(c) {
 		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 		    	return v.toString(16);
 			});
@@ -271,23 +298,33 @@ BNB.calendar = (function(){
 					eventStep.locked  			= true;
 					eventStep.backgroundColor 	= "#" + instanceBgColor;
 					eventStep.textColor			= "#fff";
-					eventStep.start 			= (new Date(timeTracker.getTime()));
-					eventStep.end 				= (new Date(timeTracker.getTime() + eventStep.length * 1000));
+
+					eventStep.start = action.start ? 
+						new Date(action.start) : 
+						new Date(timeTracker.getTime());
+
+					eventStep.end = action.end ? 
+						new Date(new Date(action.start).getTime() + eventStep.length * 1000) : 
+						new Date(timeTracker.getTime() + eventStep.length * 1000);
+
 					eventStep.notes = that.getAttribute(domId + "notes").length > 0 ? 
-					 				  that.getAttribute(domId + "notes") : 
-					 				  'There are no notes for this event.';
+						that.getAttribute(domId + "notes") : 
+						'There are no notes for this event.';
 
 					// Use this to decide the next step's .start
 					timeTracker = eventStep.end;
 
 					// Send data to database
-					modifyProtocolStep.enqueue(eventStep, "add");
+					saveAction.enqueue(eventStep);
 
 					// Add event to calendar
 					$('#calendar').fullCalendar('renderEvent', eventStep, true);
 				}
 			}
 		}
+
+		// Disable draggable node
+		$(that).addClass('disabled');
 	}
 
 	// The supplied renderer sucks
@@ -301,6 +338,9 @@ BNB.calendar = (function(){
 		if(evObj._end) $('[data-fc-id='+ evObj._id + ']').attr('data-event-end', evObj.start);
 
 		var evList = $('#calendar').fullCalendar( 'clientEvents' );
+
+		// Send updated action to server
+		saveAction.enqueue(evObj);
 
 		// Update modified event
 		$('#calendar').fullCalendar( 'updateEvent', evObj );
@@ -329,7 +369,10 @@ BNB.calendar = (function(){
 		var closeError = document.createElement("div");
 		closeError.className = "close";
 		closeError.innerHTML = "X";
-		closeError.onclick = removeTopError;
+		closeError.onclick = function(){
+			document.getElementsByClassName("top-error")[0].parentNode
+				.removeChild(document.getElementsByClassName("top-error")[0]);
+		}
 		error.appendChild(closeError);
 		
 		// Show error
@@ -339,24 +382,12 @@ BNB.calendar = (function(){
 		setTimeout(function(){
 			// Make sure the element hasn't been closed already
 			if(document.getElementsByClassName("top-error")[0]){
-				removeTopError(true);
+				$(document.getElementsByClassName("top-error")[0]).fadeOut(200, function(){
+					document.getElementsByClassName("top-error")[0].parentNode
+						.removeChild(document.getElementsByClassName("top-error")[0]);
+				});
 			}
 		},10000);
-	}
-
-	// Remove the error at the top of the page. No easing for user-closed error, only auto-close
-	function removeTopError(easing){
-		easing = easing || false;
-
-		// remove element without fading effects
-		if(!easing){
-			document.getElementsByClassName("top-error")[0].parentNode.removeChild(document.getElementsByClassName("top-error")[0]);
-		} else {
-			// fade out and remove element
-			$(document.getElementsByClassName("top-error")[0]).fadeOut(200, function(){
-				document.getElementsByClassName("top-error")[0].parentNode.removeChild(document.getElementsByClassName("top-error")[0]);
-			});
-		}
 	}
 
 	var protocolLock = (function(){
@@ -379,7 +410,7 @@ BNB.calendar = (function(){
 
 				// Directly lock/unlock event data - persistant data value/not instant
 				var evList = $('#calendar').fullCalendar( 'clientEvents' );
-				for(ev in evList){
+				for(var ev in evList){
 					if(evList[ev].eventId.split('-')[3] === pId)
 						evList[ev].locked = false;
 				}
@@ -490,7 +521,7 @@ BNB.calendar = (function(){
 			currentStepNode.setAttribute("data-notes", updatedNotes);
 
 			// Save notes to database
-			modifyProtocolStep.enqueue( makeJsonFromNode(currentStepNode), "edit" );
+			saveAction.enqueue( makeJsonFromNode(currentStepNode));
 
 			// Remove popup
 			removeEditNotes(popup);
@@ -504,6 +535,7 @@ BNB.calendar = (function(){
 		function addEditNotes(ele, formContainer){
 
 			var loc = ele.parentNode.insertBefore(document.createElement('span'), ele.parentNode.firstChild);
+			loc.setAttribute("style", "position:absolute;top:0;left:0;");
 			// Appending to node won't accept pointer events!
 			document.body.appendChild(formContainer);
 
@@ -517,11 +549,11 @@ BNB.calendar = (function(){
 			if($(currentStepNode).hasClass("fri") || $(currentStepNode).hasClass("sat")){
 				if($(currentStepNode).hasClass("fri")) formContainer.className += " fri";
 				if($(currentStepNode).hasClass("sat")) formContainer.className += " sat";
-				formContainer.style.left = (locPos.left + 10) + 'px';
+				formContainer.style.left = (locPos.left - 215) + 'px';
 			} else {
 				// Sunday - Thursday
-				formContainer.style.left = (locPos.left + 120) + 'px';
-				formContainer.style.right = "0";
+				formContainer.style.left = (locPos.left + 115) + 'px';
+				//formContainer.style.right = "0";
 			}
 
 			// Show notes form
@@ -554,9 +586,8 @@ BNB.calendar = (function(){
 		}
 	})();
 
-	// ^-- Done --^
-
 	// Showing right click menu
+	// Supress normal right clicks if a day/step is right-clicked on
 	function rightClickMenu(e){
 		var clickedElement = (e.target || window.event.srcElement),
 			targetElement, 	// The element to get information from
@@ -576,10 +607,7 @@ BNB.calendar = (function(){
 			oldMenu = null;
 		}
 
-		//----------------------------------------------------------------//
-		// Supress normal right clicks if a day/step is right-clicked on  //
-		//----------------------------------------------------------------// 
-
+		// Check the element that was clicked on
 		// A STEP was clicked on
 		if (clickedElement.className == "fc-event-inner" || clickedElement.className == "edit-notes"){
 			targetElement = clickedElement.parentNode;
@@ -622,7 +650,7 @@ BNB.calendar = (function(){
 			return;
 		}
 
-		// Hide right click menu
+		// Hide browser's right click menu
 		document.oncontextmenu = function(){return false;}
 
 		// Place menu at the mouse cursor's position
@@ -630,21 +658,15 @@ BNB.calendar = (function(){
 		menu.style.left = (e.pageX || e.x) + "px";
 		menu.id = "right-click-menu";
 
-		paste.innerHTML = "Paste Protocol";
-		copy.innerHTML = "Copy Protocol";
-		del.innerHTML = "Delete Protocol"
+		paste.innerHTML = "Paste Experiment";
+		copy.innerHTML = "Copy Experiment";
+		del.innerHTML = "Remove Experiment"
 		undo.innerHTML = "Undo";
 		cancel.innerHTML = "Cancel";
 
 		// Copy structure of protocol
 		copy.onclick = function(){ 
 			protocolStructure.copy(targetElement);
-			body.removeChild(menu);
-			body.onclick=""; 
-		};
-		// Delete structure of protocol
-		del.onclick = function(){ 
-			protocolStructure.del(targetElement.getAttribute("data-instance-id"));
 			body.removeChild(menu);
 			body.onclick=""; 
 		};
@@ -657,6 +679,12 @@ BNB.calendar = (function(){
 		// Paste structure of protocol
 		undo.onclick = function(){ 
 			protocolStructure.undo(targetElement);
+			body.removeChild(menu);
+			body.onclick=""; 
+		};
+		// Delete structure of protocol
+		del.onclick = function(){ 
+			protocolStructure.del(targetElement.getAttribute("data-eid"));
 			body.removeChild(menu);
 			body.onclick=""; 
 		};
@@ -674,15 +702,15 @@ BNB.calendar = (function(){
 		body.appendChild(menu)
 	}
 
-	// TODO: Needs complete selector revamping
+	// TODO: Copy/Paste/Undo is broken
 	// Copy, Paste, Undo functionality for right click menu
 	var protocolStructure = (function (){
 		var copiedStructure = [],
 			lastDatePastedInto;		// Used for Undo
 
 		function copy(ele){
-			var instanceId = ele.getAttribute("data-instance-id");
-			var selector = "[data-instance-id="+ instanceId +"]";
+			var eId = ele.getAttribute("data-eid");
+			var selector = "[data-eid="+ eId +"]";
 
 			// Only select the current view's steps
 			if(ele.className.indexOf("fc-event-vert") !== -1) selector = ".fc-event-vert" + selector;
@@ -690,19 +718,9 @@ BNB.calendar = (function(){
 
 			// Get each step in the protocol and add it to copiedStructure
 			$(selector).each(function(){
-				var copiedProtocolStep = {
-					verb: this.getElementsByClassName("fc-event-title")[0].innerHTML,
-					backgroundColor: this.getAttribute("data-bg-color"),
-					allDay: false,
-					start: this.getAttribute("data-event-start"),
-					active: this.getAttribute("data-active"),
-					end: this.getAttribute("data-event-end"),
-					container: false,
-					eventId: this.getAttribute("data-event-id"),
-				   	stepNumber: this.getAttribute("data-step-number"),
-					notes: this.getAttribute("data-notes")
-				};
+				var copiedProtocolStep = makeJsonFromNode(this);
 
+				// TODO: This doesn't work anymore. Experiments have many, many steps with identical numbers.
 				// Add copied step to the copied protocol structure
 				copiedStructure[copiedProtocolStep.stepNumber] = copiedProtocolStep;
 			});
@@ -813,9 +831,10 @@ BNB.calendar = (function(){
 
 		// Remove protocol that was last added
 		function del(id){
-			$("[data-instance-id="+ id +"]").each(function(){
+			$("[data-eid="+ id +"]").each(function(){
 				$('#calendar').fullCalendar("removeEvents", this.getAttribute("data-fc-id"));
 			});
+			$("[data-id="+ id +"]").removeClass('disabled');
 		}
 		
 		return { 
@@ -826,37 +845,120 @@ BNB.calendar = (function(){
 		}
 	})();
 
-	// Add / Edit / Remove protocol steps by using Ajax calls
-	// Args: JSON Event object, Action string: add edit remove
+	// Arg: JSON action
 	// ## Look into cookies to store locally in case user closes window
 	// ## Check once a second if queue has items?
-	var modifyProtocolStep = (function(){
+	var saveAction = (function(){
+		/*
+		Server expects this structure
+		{
+	        'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX",
+	        'start':12321311231,
+	        'notes':"",
+	        'status':"updated"
+	    }
+		*/
 		var queue = [],
-			hasCallFinished = true;
+			backlog = [],
+			hasCallFinished = true,
+			csrfToken = $('input[name=csrfmiddlewaretoken]').val(),
+			urlComponents = window.location.href.split('/'),
+			url = '/api/calendar/';
+
+		// Remove from user view
+        $('input[name=csrfmiddlewaretoken]').remove();
+
+		// Add primary key/slug of current calendar to url
+		while(urlComponents.shift() != "schedule"){}
+		url += urlComponents.shift() + '/';
+
+		// Nessasary for use with CSRF token
+		$.ajaxSetup({ 
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // Only send the token to relative URLs
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            },
+            csrfmiddlewaretoken: csrfToken
+        });
 
 		function enqueue(stepData){
-			queue.push(stepData);
+			var s = {
+				id: stepData.eventId, 
+				start: stepData.start, 
+				notes: stepData.notes
+			};
+
+			s.notes = s.notes == "There are no notes for this event." ? "" : s.notes;
+
+			if(hasCallFinished){
+				queue.push(s);
+				sendQueue();
+			} else {
+				backlog.push(s);
+			}
 		}
 		
-		function send(){
-			// Nothing to do
+		function sendQueue(){
+
 			if(!hasCallFinished || queue.length < 1) return;
 
-			// when done, call send() again
+			// The data must be passed in as FormData or else 
+			// Django will reformat it, rendering it useless
+			var fd = new FormData();
+			fd.append("events", JSON.stringify(queue));
+
+			// contentType and processData MUST be set to false!
+			$.ajax({
+				url: url,
+                type: "PUT",
+				data: fd,
+				processData: false,
+  				contentType: false,
+
+            	success: function(){
+            		// Overwrite queue with deep copy of backlog
+            		queue = $.extend(true, [], backlog);
+            		hasCallFinished = true;
+            	},
+            	error: function(){
+            		// Deep copy of backlog to concat with queue
+					queue = queue.concat($.extend(true, [], backlog));
+            	},
+            	complete: function(){
+            		backlog = [];
+					sendQueue();
+            	}
+			});
 		}
 
 		return {
-			enqueue : enqueue,
-			send : send
+			enqueue : enqueue
 		}
 	})();
 
 	// Return Json created from scraping DOM node's data
 	function makeJsonFromNode(node){
 		return {
-			verb : node.getElementsByClassName("fc-event-title")[0].innerHTML,
+			verb : node.getAttribute("data-verb"),
 			eventId : node.getAttribute("data-event-id"),
-			instanceId : node.getAttribute("data-instance-id"),
+			id : node.getAttribute("data-event-id"),   // Just in case
 			stepNumber : node.getAttribute("data-step-number"),
 			start : node.getAttribute("data-event-start"),
 			end : node.getAttribute("data-event-end"),
@@ -866,8 +968,8 @@ BNB.calendar = (function(){
 			locked : node.getAttribute("data-locked") || true,
 			container : false,
 			allDay : false,
-			length : (new Date(node.getAttribute("data-event-end")).getTime() - 
-					new Date(node.getAttribute("data-event-start")).getTime())/1000
+			length : (node.getAttribute("data-length") || (new Date(node.getAttribute("data-event-end")).getTime() - 
+					new Date(node.getAttribute("data-event-start")).getTime())/1000)
 		};
 	}
 
@@ -967,14 +1069,12 @@ BNB.calendar = (function(){
 		makeJsonFromNode: makeJsonFromNode,
 		makeHtmlFromJson: makeHtmlFromJson,
 		displayTopError: displayTopError,
-		removeTopError: removeTopError,
 		getEvents: getEvents,
 		dropEventHandler: dropEventHandler,
 		protocolLock: protocolLock,
 		Notes: Notes,
 		rightClickMenu: rightClickMenu,
 		renderUpdatedEvents: renderUpdatedEvents,
-		syncEvents: syncEvents,
 		protocolList: protocolList
 	}
 })();

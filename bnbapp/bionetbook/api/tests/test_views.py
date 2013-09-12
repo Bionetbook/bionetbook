@@ -22,7 +22,6 @@ class APIViewTests(AutoBaseTest):
 		self.profile = self.createModelInstance(Profile, user=self.user)
 		self.org = self.createModelInstance(Organization, name="TestOrg")
 		self.member = self.createModelInstance(Membership, user=self.user, org=self.org)
-		self.workflow = self.createModelInstance(Workflow, user=self.user, name="TestWorkflow", data={'meta':{},'protocols':[1]})
 		self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, data=
   		{
   			"steps": [ {
@@ -40,7 +39,25 @@ class APIViewTests(AutoBaseTest):
       			"slug": "8v5lak", 
     		} ]
 		})
-		self.experiment = self.createModelInstance(Experiment, user=self.user, workflow=self.workflow, name="Test Experiment")
+		self.protocol2 = self.createModelInstance(Protocol, name="Test Protocol 2", owner=self.org, data=
+  		{
+  			"steps": [ {
+      				"objectid": "xxxxxx", 
+      				"name": "1", 
+      				"actions": [ {
+          				"name": "first action", 
+          				"objectid": "yyyyyy", 
+          				"verb": "add", 
+          				"duration": "0-0", 
+          				"slug": "yyyyyy", 
+        			}
+      			], 
+      			"duration": "0-0", 
+      			"slug": "xxxxxx", 
+    		} ]
+		})
+		self.workflow = self.createModelInstance(Workflow, owner=self.org, user=self.user, name="TestWorkflow", data={'meta':{},'protocols':[1,2]})
+		self.experiment = self.createModelInstance(Experiment, owner=self.org, user=self.user, workflow=self.workflow, name="Test Experiment")
 		self.calendar = self.createModelInstance(Calendar, user=self.user, name="Test Schedule")
 
 	def test_single_calendar_api(self):
@@ -51,7 +68,7 @@ class APIViewTests(AutoBaseTest):
 		resp = c.get('/api/calendar/1/')
 		self.assertEqual(resp.status_code, 200)
 		cal = 	{
-					'meta':{},
+					'meta':{ '1': None, '2': None},
 					'events':[ {
 							 	'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
 							 	'start':'0',
@@ -61,6 +78,16 @@ class APIViewTests(AutoBaseTest):
 							 	'experiment':'Test Experiment',
 							 	'notes':'',
 							 	'verb':'add'
+								}, 
+								{
+								'id':'bnb-o1-e1-p2-xxxxxx-yyyyyy',
+								'start':'0',
+								'duration':'0',
+								'title':'first action',
+								'protocol':'Test Protocol 2',
+								'experiment': 'Test Experiment',
+								'notes':'',
+								'verb':'add'
 								} ]
 				}
 		self.assertEqual(json.loads(resp.content),cal)
@@ -68,6 +95,48 @@ class APIViewTests(AutoBaseTest):
 		# Testing failed GET, should return 404
 		resp2 = c.get('/api/calendar/2/')
 		self.assertEqual(resp2.status_code, 404)
+
+		# Testing PUT
+		p = {
+						'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+						'start':'5',
+						'notes':'new notes'
+				 }
+		p2 = {
+						'id':'bnb-o1-e1-p2-xxxxxx-yyyyyy',
+						'start':'10',
+						'notes':'new notes'
+				 }
+		events = {'events':[p, p2]}
+		resp3 = c.put('/api/calendar/1/', data=events)
+		self.assertEqual(resp3.status_code, 200)
+
+		resp4 = c.get('/api/calendar/1/')
+		self.assertEqual(resp4.status_code, 200)
+		cal = 	{
+					'meta':{ '1': None, '2': None},
+					'events':[ {
+							 	'id':'bnb-o1-e1-p1-8v5lak-kxsl3b',
+							 	'start':'5',
+							 	'duration':'0',
+							 	'title':'first action',
+							 	'protocol':'Test Protocol',
+							 	'experiment':'Test Experiment',
+							 	'notes':'new notes',
+							 	'verb':'add'
+								},
+								{
+								'id':'bnb-o1-e1-p2-xxxxxx-yyyyyy',
+								'start':'10',
+								'duration':'0',
+								'title':'first action',
+								'protocol':'Test Protocol 2',
+								'experiment': 'Test Experiment',
+								'notes':'new notes',
+								'verb':'add'
+								} ]
+				}
+		self.assertEqual(json.loads(resp4.content),cal)
 
 	def test_list_calendar_api(self):
 

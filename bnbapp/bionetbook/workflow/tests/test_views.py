@@ -12,10 +12,10 @@ from schedule.models import Calendar
 from organization.tests.core import AutoBaseTest
 from django.utils import simplejson as json
 
-class OrganizationViewTests(AutoBaseTest):
+class WorkflowViewTests(AutoBaseTest):
 
 	def setUp(self):
-		super(OrganizationViewTests, self).setUp()
+		super(WorkflowViewTests, self).setUp()
 
 		self.user = self.createUserInstance(username="testuser1", password="pass", email="test1@example.com")
 		self.user2 = self.createUserInstance(username="testuser2", password="pass", email="test2@example.com")
@@ -39,40 +39,45 @@ class OrganizationViewTests(AutoBaseTest):
 		self.experiment2 = self.createModelInstance(Experiment, owner=self.org, user=self.user2, name="Exp2", workflow=self.workflow2)
 		self.experiment3 = self.createModelInstance(Experiment, owner=self.org2, user=self.user3, name="Exp3", workflow=self.workflow3)
 
-	'''
-	1. Test access to org with user who is a member of the org
-	2. Test correct context
-	'''
-	def test_organization_main(self):
 
-		# Testing user to verify context is correct
+	def test_workflow_detail(self):
 		c = Client()
 		c.login(username="testuser1", password="pass")
-		resp = c.get('/testorg/')
+		resp = c.get('/testorg/workflows/1-testflow/')
 		self.assertEqual(resp.status_code, 200)
-		self.assertEqual(resp.context['workflows'], [self.workflow])
+		self.assertEqual(resp.context['workflow'],self.workflow)
 		self.assertEqual(resp.context['organization'],self.org)
-		self.assertEqual(resp.context['experiments'],[self.experiment])
-		self.assertEqual(resp.context['protocols'],[self.protocol,self.protocol3])
+		self.assertEqual(resp.context['protocols'], [self.protocol])
 
-		resp = c.get('/test2org/')
+		# testing bad urls w/ wrong org
+		resp = c.get('/test2org/workflows/1-testflow/')
+		self.assertEqual(resp.status_code, 404)
+		# testing bad url w/ wrong workflow slug
+		resp = c.get('/testorg/workflows/2-testflow/')
+		self.assertEqual(resp.status_code, 404)
+		# testing bad url w/ other users workflow
+		resp = c.get('/testorg/workflows/2-testflow2/')
 		self.assertEqual(resp.status_code, 404)
 
-		c.login(username="testuser2", password="pass")
-		resp = c.get('/testorg/')
+	def test_workflow_create(self):
+		c = Client()
+		c.login(username="testuser1", password="pass")
+		resp = c.get('/testorg/workflows/create/')
 		self.assertEqual(resp.status_code, 200)
-		self.assertEqual(resp.context['workflows'], [self.workflow2])
-		self.assertEqual(resp.context['organization'],self.org)
-		self.assertEqual(resp.context['experiments'],[self.experiment2])
-		self.assertEqual(resp.context['protocols'],[self.protocol2, self.protocol3])
+		self.assertEqual(resp.context['form'].fields['protocols'].choices,[(3,self.protocol3),(1, self.protocol)])
+		resp = c.get('/test2org/workflows/create/')
+		self.assertEqual(resp.status_code, 404)
 
-		c.login(username="testuser3", password="pass")
-		resp = c.get('/test2org/')
+		# no fields
+		resp = c.post('/testorg/workflows/create/')
 		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.context['form'].errors, {'name':[u'This field is required.'],'protocols':[u'This field is required.']})
+		#random data
+		resp = c.post('/testorg/workflows/create/', {'foo':'bar'})
 		self.assertEqual(resp.status_code, 200)
-		self.assertEqual(resp.context['workflows'], [self.workflow3])
-		self.assertEqual(resp.context['organization'],self.org2)
-		self.assertEqual(resp.context['experiments'],[self.experiment3])
-		self.assertEqual(resp.context['protocols'],[self.protocol4])
+		self.assertEqual(resp.context['form'].errors, {'name':[u'This field is required.'],'protocols':[u'This field is required.']})
+		#real data should redirect to detail
+		resp = c.post('/testorg/workflows/create/', {'name':'workflow4','protocols':[3,1]})
+		self.assertEqual(resp.status_code, 302)
+		self.assertEqual(resp['location'], 'http://testserver/testorg/workflows/4-workflow4/')
 
-		
