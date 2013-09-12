@@ -27,9 +27,17 @@ class WorkflowDetailView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(WorkflowDetailView, self).get_context_data(**kwargs)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        workflow = self.request.user.workflow_set.get(slug=slug)
-        org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+        try:
+            slug = self.kwargs.get(self.slug_url_kwarg, None)
+            workflow = self.request.user.workflow_set.get(slug=slug)
+            org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+            protocols = [Protocol.objects.get(pk=p) for p in workflow.data['protocols']]
+        except:
+            raise Http404
+        if protocols:
+            context['protocols'] = protocols
+        else:
+            context['protocols'] = None
         if workflow:
             context['workflow'] = workflow
         else:
@@ -38,9 +46,6 @@ class WorkflowDetailView(LoginRequiredMixin, TemplateView):
             context['organization'] = org
         else:
             context['organization'] = None
-            print "NONE"
-        protocols = [Protocol.objects.get(pk=p) for p in workflow.data['protocols']]
-        context['protocols'] = protocols
         return context
 
 
@@ -133,12 +138,15 @@ class WorkflowCreateView(PathMixin, LoginRequiredMixin, FormView):
         Returns an instance of the form to be used in this view.
         """
         form = form_class(**self.get_form_kwargs())
-        protocols = Organization.objects.get(slug=self.kwargs['owner_slug']).protocol_set.all()
-        protocols = [p for p in protocols if p.author==self.request.user or p.published]
-        form.fields['protocols'] = forms.MultipleChoiceField(
-            label="Protocols",
-            choices=((x.pk,x) for x in protocols),
-            widget=forms.CheckboxSelectMultiple())
+        try:
+            protocols = self.request.user.organization_set.get(slug=self.kwargs['owner_slug']).protocol_set.all()
+            protocols = [p for p in protocols if p.author==self.request.user or p.published]
+            form.fields['protocols'] = forms.MultipleChoiceField(
+                label="Protocols",
+                choices=((x.pk,x) for x in protocols),
+                widget=forms.CheckboxSelectMultiple())
+        except:
+            raise Http404
         #form.fields['organization'] = Organization.objects.get(slug=self.kwargs['owner_slug'])
         #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
         # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD

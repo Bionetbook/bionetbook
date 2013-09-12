@@ -69,6 +69,7 @@ class Calendar(TimeStampedModel):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
+            self.full_clean()
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
@@ -84,6 +85,9 @@ class Calendar(TimeStampedModel):
     
     def events(self):
         return self.data['events']
+
+    def get_absolute_url(self):
+        return reverse("single_calendar", kwargs={'pk':self.pk})
 
     # def dataToCalendar(self):
     #     ret = {}    # return dict
@@ -161,6 +165,8 @@ class Calendar(TimeStampedModel):
                 eventObject['experiment'] = newExperiment.name
                 eventObject['notes'] = ""
                 events.append(eventObject)
+            if p.pk not in self.data['meta']:
+                self.data['meta'][p.pk] = p.description
         self.data['events'] = events
         self.save()        
 
