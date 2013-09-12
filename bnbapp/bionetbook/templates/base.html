@@ -66,6 +66,7 @@
                   <a href="{% url single_calendar pk=cal.pk %}">{{ cal.name }}</a>
                 </li>
                 {% endfor %}
+                <li><a href="{% url create_calendar %}">{{ 'New Calendar' }}</a></li>
               </ul>
             </li>
             <li class="dropdown">

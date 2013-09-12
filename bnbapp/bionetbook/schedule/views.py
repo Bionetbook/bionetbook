@@ -1,14 +1,15 @@
 # Create your views here.
 from django import forms, http
 from django.http import Http404, HttpResponse
-from django.views.generic import ListView, View
+from django.views.generic import ListView, View, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
 from django.utils import simplejson
 
+from django.template.defaultfilters import slugify
 from braces.views import LoginRequiredMixin
-
+from schedule.forms import CalendarForm, CalendarManualForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from schedule.models import Calendar
@@ -81,7 +82,7 @@ class CalendarListView(LoginRequiredMixin, ListView):
 
         return context
 
-    # def get(self, request, *args, **kwargs):
+    # def get(self, request, *args, **kwargs):  
     #   # context = Calendar.objects.all()[1].expToCalendar()
     #   # return HttpResponse(simplejson.dumps(context),mimetype='application/json')
     #   context = self.get_context_data()
@@ -91,4 +92,25 @@ class CalendarListView(LoginRequiredMixin, ListView):
 class ScheduleExample(TemplateView):
     template_name = "schedule/schedule_example.html"
 
+
+class CalendarCreateView(LoginRequiredMixin, FormView):
+    model = Calendar
+    form_class = CalendarManualForm
+    template_name = "schedule/calendar_form.html"
+
+    def form_valid(self, form):
+        cal = Calendar()
+        cal.user = self.request.user
+        cal.name = form.cleaned_data['name']
+        cal.data = None
+        cal.slug = slugify(cal.name)
+        cal.save()
+        return HttpResponseRedirect(cal.get_absolute_url())
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def get_form(self, form_class):
+        form = form_class(**self.get_form_kwargs())
+        return form
 
