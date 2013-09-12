@@ -122,7 +122,11 @@ class Calendar(TimeStampedModel):
                 for step in p.data['steps']:
                     for action in step['actions']:
                         #print p.slug + " " + action['objectid']
-                        actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
+                        if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                            flag = "true"
+                        else:
+                            flag = "false"
+                        actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
 
                 for element in actionList:
                     eventObject = {}
@@ -137,6 +141,7 @@ class Calendar(TimeStampedModel):
                     eventObject['protocol'] = p.title
                     eventObject['experiment'] = e.name
                     eventObject['notes'] = ""
+                    eventObject['active'] = element[5]
                     ret['events'].append(eventObject)
                 if p.pk not in ret['meta']:
                     ret['meta'][p.pk] = p.description
@@ -149,6 +154,10 @@ class Calendar(TimeStampedModel):
             actionList = []
             for step in p.data['steps']:
                 for action in step['actions']:
+                    if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                        flag = "true"
+                    else:
+                        flag = "false"
                     actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
 
             for element in actionList:
@@ -164,6 +173,7 @@ class Calendar(TimeStampedModel):
                 eventObject['protocol'] = p.title
                 eventObject['experiment'] = newExperiment.name
                 eventObject['notes'] = ""
+                eventObject['active'] = element[5]
                 events.append(eventObject)
             if p.pk not in self.data['meta']:
                 self.data['meta'][p.pk] = p.description
