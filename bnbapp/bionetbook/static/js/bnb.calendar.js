@@ -13,29 +13,12 @@ $(document).ready(function() {
 	//				 'm87f28ljpog%40group.calendar.google.com/public/basic';
 	var gCalURL = '';
 
-	// initialize the draggable events
-	$('#external-events div.external-event').each(function() {
-	
-		var eventObject = {};
-		
-		// store the Event Object in the DOM element so we can get to it later
-		$(this).data('eventObject', eventObject);
-		
-		// make the event draggable using jQuery UI
-		$(this).draggable({
-			zIndex: 999,
-			revert: true,      // will cause the event to go back to its
-			revertDuration: 0  //  original position after the drag
-		});
-		
-	});
-
 	// initialize the calendar
 	$('#calendar').fullCalendar({
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,agendaWeek'
+			right: 'month,agendaWeek,agendaDay'
 		},
 		allDaySlot : false,
 		events: {
@@ -158,6 +141,18 @@ BNB.calendar = (function(){
 				eventNode.innerHTML = experiments[e].title;
 				eventNode.setAttribute("data-id", experiments[e].id);
 
+				// Create a random background color
+				// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
+				var r = 0, 
+					g = 0, 
+					b = 0;
+				while(r < 70 || r > 170) r = Math.round(Math.random() * 256);
+				while(g < 70 || g > 170) g = Math.round(Math.random() * 256);
+				while(b < 70 || b > 170) b = Math.round(Math.random() * 256);
+
+				eventNode.style.backgroundColor = 'rgb('+r+','+g+','+b+')';
+				eventNode.setAttribute('data-bg-color', 'rgb('+r+','+g+','+b+')');
+
 				// Check for already placed experiments (.start != 0)
 				var actionStart = experiments[e].protocols[0].steps[0].actions[0].start;
 				if(actionStart !== 0 && actionStart !== '0' && 
@@ -253,25 +248,20 @@ BNB.calendar = (function(){
 
 		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
 			timeTracker = date, // calc starting pos of actions on calendar
-			thisExp = getObjInObjWithKey(experiments, 'id', that.getAttribute('data-id'));
-
-		// Create a random background color
-		// But make sure it's a LIGHT color that can show white text! (ie 5-c hex)
-		do{
-			var instanceId = "xxx".replace(/[x]/g, function(c) {
-		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-		    	return v.toString(16);
-			});
-		} 
-		while(parseInt(instanceId[0], 16) < 5 || parseInt(instanceId[0], 16) > 12 ||
-			  parseInt(instanceId[1], 16) < 5 || parseInt(instanceId[1], 16) > 12 ||
-			  parseInt(instanceId[2], 16) < 5 || parseInt(instanceId[2], 16) > 12 )
-		var instanceBgColor = instanceId[0]+''+instanceId[1]+''+instanceId[2];
-
+			thisExp = getObjInObjWithKey(experiments, 'id', that.getAttribute('data-id')),
+			bgColor = that.getAttribute('data-bg-color').slice(4, -1).split(','),
+			pBg = {r:bgColor[0], g:bgColor[1], b:bgColor[2]};
 
 		// Protocols in experiment
 		for(var a = 0, pLen = thisExp.protocols.length; a < pLen; a++){
 			var thisProtocol = thisExp.protocols[a];
+				
+				// Lighter shade of bg color every protocol
+				if(a !== 0){
+					pBg.r = +pBg.r + Math.round((230 - pBg.r )/pLen);
+					pBg.g = +pBg.g + Math.round((230 - pBg.g )/pLen);
+					pBg.b = +pBg.b + Math.round((230 - pBg.b )/pLen);
+				}
 
 			// Steps in protocol
 			for(var b = 0, sLen = thisProtocol.steps.length; b < sLen; b++){
@@ -296,16 +286,15 @@ BNB.calendar = (function(){
 					eventStep.stepNumber 		= that.getAttribute(domId + "step-number");
 					eventStep.allDay 			= false;
 					eventStep.locked  			= true;
-					eventStep.backgroundColor 	= "#" + instanceBgColor;
+					eventStep.backgroundColor 	= 'rgb('+pBg.r+','+pBg.g+','+pBg.b+')';
 					eventStep.textColor			= "#fff";
 
 					eventStep.start = action.start ? 
 						new Date(action.start) : 
 						new Date(timeTracker.getTime());
 
-					eventStep.end = action.end ? 
-						new Date(new Date(action.start).getTime() + eventStep.length * 1000) : 
-						new Date(timeTracker.getTime() + eventStep.length * 1000);
+					eventStep.end = (eventStep.end || 
+						new Date(eventStep.start.getTime() + eventStep.length * 1000));
 
 					eventStep.notes = that.getAttribute(domId + "notes").length > 0 ? 
 						that.getAttribute(domId + "notes") : 
@@ -832,6 +821,19 @@ BNB.calendar = (function(){
 		// Remove protocol that was last added
 		function del(id){
 			$("[data-eid="+ id +"]").each(function(){
+				var action = makeJsonFromNode(this);
+				var idArr = action.id.split('-');
+
+				// Find object and reset start/end data
+				var p = getObjInArr(experiments[idArr[2]].protocols, 'id', idArr[3]);
+				var s = getObjInArr(p.steps, 'id', idArr[4]);
+				var a = getObjInArr(s.actions, 'id', action.id);
+				
+				a.start = a.end = 
+				action.start = action.end = 0;
+
+				// Save and remove
+				saveAction.enqueue(action);
 				$('#calendar').fullCalendar("removeEvents", this.getAttribute("data-fc-id"));
 			});
 			$("[data-id="+ id +"]").removeClass('disabled');
@@ -1024,7 +1026,8 @@ BNB.calendar = (function(){
 			"</div>";
 
 		// Add padding to start + end for passive events
-		if(event.active == "false" && classes.join(' ').indexOf('vert') != -1){
+		if((event.active === "false" || event.active === false) && 
+			classes.join(' ').indexOf('vert') != -1){
 			html +=
 				"<div class='passive-padding-start' style='background-color:" +
 					event.backgroundColor + "'></div>" +
