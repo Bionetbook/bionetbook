@@ -161,7 +161,8 @@ footer li a {
     border-left-style: dashed;
     border-right-style: dashed;
 }
-.fc-event-vert[data-active=false] .fc-event-time{ margin-top:5px; }
+.fc-event-vert[data-active=false] .fc-event-time,
+.fc-event-vert[data-active=false] .fc-event-title{ margin-top:5px; }
 .passive-padding-start, .passive-padding-end{
     position:absolute;
     right:0;

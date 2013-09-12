@@ -13,29 +13,12 @@ $(document).ready(function() {
 	//				 'm87f28ljpog%40group.calendar.google.com/public/basic';
 	var gCalURL = '';
 
-	// initialize the draggable events
-	$('#external-events div.external-event').each(function() {
-	
-		var eventObject = {};
-		
-		// store the Event Object in the DOM element so we can get to it later
-		$(this).data('eventObject', eventObject);
-		
-		// make the event draggable using jQuery UI
-		$(this).draggable({
-			zIndex: 999,
-			revert: true,      // will cause the event to go back to its
-			revertDuration: 0  //  original position after the drag
-		});
-		
-	});
-
 	// initialize the calendar
 	$('#calendar').fullCalendar({
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,agendaWeek'
+			right: 'month,agendaWeek,agendaDay'
 		},
 		allDaySlot : false,
 		events: {
@@ -310,9 +293,8 @@ BNB.calendar = (function(){
 						new Date(action.start) : 
 						new Date(timeTracker.getTime());
 
-					eventStep.end = action.end ? 
-						new Date(new Date(action.start).getTime() + eventStep.length * 1000) : 
-						new Date(timeTracker.getTime() + eventStep.length * 1000);
+					eventStep.end = (eventStep.end || 
+						new Date(eventStep.start.getTime() + eventStep.length * 1000));
 
 					eventStep.notes = that.getAttribute(domId + "notes").length > 0 ? 
 						that.getAttribute(domId + "notes") : 
@@ -1044,7 +1026,8 @@ BNB.calendar = (function(){
 			"</div>";
 
 		// Add padding to start + end for passive events
-		if(event.active == "false" && classes.join(' ').indexOf('vert') != -1){
+		if((event.active === "false" || event.active === false) && 
+			classes.join(' ').indexOf('vert') != -1){
 			html +=
 				"<div class='passive-padding-start' style='background-color:" +
 					event.backgroundColor + "'></div>" +
