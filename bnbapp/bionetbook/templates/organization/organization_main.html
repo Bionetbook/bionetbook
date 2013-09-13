@@ -112,7 +112,7 @@
 
          <div class="accordion-group">
                 <div class="accordion-heading">
-                        <a class="btn btn-medium btn-success pull-right centered" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Workflow</a>
+                        <a class="btn btn-medium btn-success pull-right" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Workflow</a>
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
                         <h3>Workflows ({{ workflows|length}})</h3>
                     </a>
@@ -120,7 +120,6 @@
                 <div id="collapseFour" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <table class="table table-hover table-condensed">
-                            <li><a href="{% url workflow_create owner_slug=organization.slug %}">{{ 'New Workflow'}}</a></li>
                             {% if workflows %}
                             <thead>
                               <tr>
