@@ -3986,7 +3986,17 @@ function AgendaEventRenderer() {
 		//  Custom Edit Area 				   //
 		//  Added data to  DOM nodes		   //
 		/////////////////////////////////////////
-		html += BNB.calendar.makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt);
+
+		// Render HTML through BNB.calendar
+		html += BNB.calendar.makeHtmlFromJson(
+			event, 
+			classes, 
+			seg, 
+			skinCss, 
+			htmlEscape, 
+			formatDates, 
+			opt
+		);
 		html += "</" + (url ? "a" : "div") + ">";
 		return html;
 	}
@@ -4544,7 +4554,7 @@ function View(element, calendar, viewName) {
 		////////////////////////////////////////////////
 		//  Custom Edit Area 			   			  //
 		//  Month View drop event handler  			  //
-		//  Week view drops are handled here too...?  //
+		//  Week view drops are handled here as well  //
 		////////////////////////////////////////////////
 		var oldAllDay = event.allDay;
 		var eventId = event._id;
@@ -4565,7 +4575,7 @@ function View(element, calendar, viewName) {
 			fcIdOfSteps.push(this.getAttribute('data-fc-id').slice(3));
 		});
 
-		// Check for out of order
+		// Check for out of order action times
 		if(!isLocked && fcIdOfSteps.length > 1){
 			// 1) Put fc-id into array
 			// 2) .sort() array to ensure right Step order 
@@ -5264,7 +5274,17 @@ function DayEventRenderer() {
 		//  Custom Edit Area 					//
 		//	Add event data to the DOM element   //
 		//////////////////////////////////////////
-		html += BNB.calendar.makeHtmlFromJson(event, classNames, segment, skinCss, htmlEscape, formatDates, opt);
+
+		// Render HTML through BNB.calendar app
+		html += BNB.calendar.makeHtmlFromJson(
+			event, 
+			classNames, 
+			segment, 
+			skinCss, 
+			htmlEscape, 
+			formatDates, 
+			opt
+		);
 		html += "</" + (url ? "a" : "div") + ">";
 		return html;
 	}
