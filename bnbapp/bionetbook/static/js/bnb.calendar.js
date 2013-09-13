@@ -980,6 +980,7 @@ BNB.calendar = (function(){
 	function makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt){
 		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 		var isLocked = (event.locked == "true" || event.locked == true) ? "locked" : "unlocked";
+		var iconColor = event.active ? "" : "color:#000;";
 
 		var html =
 
@@ -1014,7 +1015,8 @@ BNB.calendar = (function(){
 			"<span class='"+ isLocked +"' onclick='BNB.calendar.protocolLock.toggleLock(this);' "+
 				"onmouseover='BNB.calendar.protocolLock.show(this)' " +
 				"onmouseout='BNB.calendar.protocolLock.hide(this)'></span>" +
-			"<span class='edit-notes' onclick='BNB.calendar.Notes.editNotes(this)'></span>"+
+			"<i class='edit-notes icon-pencil' style='"+ iconColor +"' "+
+				"onclick='BNB.calendar.Notes.editNotes(this)'></i>"+
 
 			// Title + Date
 			"<div class='fc-event-inner'>" +
