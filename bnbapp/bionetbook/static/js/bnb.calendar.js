@@ -3,15 +3,18 @@
 //      Calendar functionality      //
 //                                  //
 //////////////////////////////////////
-// Todo:
-// NOTE: syncEvents() has FAKE length
 
 "use strict";
 
 $(document).ready(function() {
+
+	// To implement Google Calendar: the user must paste their public Google Calendar
+	// URL somehwere for it to be saved. It won't break anything if it's empty/doesn't exist.
+	// As soon as gCalURL points to the public calendar, the events will be displayed
+	// (may require refresh after the user first inputs the URL)
 	// var gCalURL = 'https://www.google.com/calendar/feeds/nk1n38oqstjhj5c'+
 	//				 'm87f28ljpog%40group.calendar.google.com/public/basic';
-	var gCalURL = '';
+	var gCalURL = gCalURL || '';
 
 	// initialize the calendar
 	$('#calendar').fullCalendar({
@@ -37,7 +40,6 @@ $(document).ready(function() {
 	document.body.onmousedown = (function(){
 
 		return function(e){ 
-
 			var rightClick,
 				e = e || window.event;
 
@@ -45,7 +47,7 @@ $(document).ready(function() {
 			if (e.which) rightClick = (e.which == 3);
 			else if (e.button) rightClick = (e.button == 2);
 			
-			// User right clicked -- open menu
+			// User right clicked
 			if(rightClick) {
 				BNB.calendar.rightClickMenu(e); 
 				return false;
@@ -66,7 +68,6 @@ BNB.calendar = (function(){
 	getEvents(dragContainer.getAttribute('data-calendar'));
 
 	// Sync external event Objects with the current calendar
-	// Arg: URL string
 	function getEvents(url){
 		$.getJSON(url)
 		.done(function(data){syncEvents(data);})
@@ -379,6 +380,8 @@ BNB.calendar = (function(){
 		},10000);
 	}
 
+	// When locked: a dragged action will move its entire protocol
+	// When unlocked: a dragged action will move by itself
 	var protocolLock = (function(){
 
 		function toggleLock(ele){
@@ -460,7 +463,7 @@ BNB.calendar = (function(){
 		}
 	})();
 
-	// Functions for editing and saving notes for selected steps
+	// Functions for editing and saving notes for selected actions
 	var Notes = (function(){
 
 		var currentStepNode;
@@ -976,6 +979,7 @@ BNB.calendar = (function(){
 	}
 
 	// Return the HTML needed to display an event(action) on the calendar
+	// fullcalendar.js is modified to use this every time it creates an element
 	// Args: eventObject, objects + functions from fullCalendar's scope
 	function makeHtmlFromJson(event, classes, seg, skinCss, htmlEscape, formatDates, opt){
 		var weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
