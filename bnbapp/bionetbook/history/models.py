@@ -21,7 +21,7 @@ class History(TimeStampedModel):
     '''
     History log attached to the Project
     '''
-    name = models.CharField(_("Name"), max_length=255, blank=True, null=True, unique=False)
+    name = models.CharField(_("Name"), max_length=255)
     htype = models.CharField(_("History Type"), max_length=10, choices=HISTORY_EVENT_CHOICES, default='EDIT')
     # keyword = models.CharField(_("Keyword"), max_length=10 )
     # description = models.TextField(_("Description"), blank=True, null=True)
