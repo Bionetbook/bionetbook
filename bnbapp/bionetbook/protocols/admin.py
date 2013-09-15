@@ -7,7 +7,7 @@ class ProtocolAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.rebuild_steps()     # THIS GETS TWEAKED BY THE ADMIN FORM
-        obj.save()
+        obj.save(editor=request.user)
 
 
 admin.site.register(Protocol, ProtocolAdmin)
