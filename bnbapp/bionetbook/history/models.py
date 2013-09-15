@@ -36,7 +36,7 @@ class History(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         self.name = "%s - %s (%s)" % (self.htype, self.protocol.name, self.username)
-        super(History, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+        super(History, self).save(*args, **kwargs)
 
     # def __init__(self, *args, **kwargs):    
     #     super(History, self).__init__(*args, **kwargs)
