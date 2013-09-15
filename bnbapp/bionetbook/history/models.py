@@ -34,6 +34,10 @@ class History(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.name = "%s - %s (%s)" % (self.htype, self.protocol.name, self.username)
+        super(History, self).save(*args, **kwargs)
+
     # def __init__(self, *args, **kwargs):    
     #     super(History, self).__init__(*args, **kwargs)
 
