@@ -28,17 +28,20 @@ class History(TimeStampedModel):
     data = JSONField(_("Data"), blank=True)
     protocol = models.ForeignKey('protocols.Protocol')
     org = models.ForeignKey(Organization, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User)
     # slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+
+    class Meta:
+        verbose_name_plural = "histories"
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.name = "%s - %s (%s)" % (self.htype, self.protocol.name, self.username)
+        self.name = "%s - %s (%s)" % (self.htype, self.protocol.name, self.user.username)
         super(History, self).save(*args, **kwargs)
 
-    # def __init__(self, *args, **kwargs):    
+    # def __init__(self, *args, **kwargs):
     #     super(History, self).__init__(*args, **kwargs)
 
 
