@@ -114,6 +114,11 @@ class Protocol(TimeStampedModel):
                 self.name = self.data['Name']
 
         self.update_duration()
+
+        if 'editor' in kwargs:
+            user = kwargs.pop('editor')
+        else:
+            user = self.author
         
         # DIFF DATA
         # print 'determine old'
@@ -139,9 +144,10 @@ class Protocol(TimeStampedModel):
         diff = None
         diff = ProtocolChangeLog(old_state, new_state)
 
-        # LOG THIS HISTORY OBJECT HERE IF THERE IS A DIFF
+
+        # LOG THIS HISTORY OBJECT HERE IF THERE IS A DIFF, CURRENTLY MAKE ASSUMPTION THAT THE AUTHOR IS MAKING THE EDITS
         if diff.hdf:
-            History.objects.create(org=self.owner, user=self.author, protocol=self, htype="EDIT", data=diff.hdf)
+            History.objects.create(org=self.owner, user=user, protocol=self, htype="EDIT", data=diff.hdf)
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES

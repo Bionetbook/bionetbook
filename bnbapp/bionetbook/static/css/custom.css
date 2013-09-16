@@ -271,11 +271,11 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
     bottom: .2em;
     right: .2em;
     z-index: 10;
-    background-image: url("../img/gear.png");
+    /* background-image: url("../img/gear.png"); */
     background-size:100% auto;
 }
 [data-active=false] .edit-notes{
-    background-image: url("../img/gear-black.png");
+    /* background-image: url("../img/gear-black.png"); */
 }
 .fc-event:hover .edit-notes{
     display:block;
