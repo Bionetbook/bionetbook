@@ -110,7 +110,6 @@ class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
         return self.render_to_response({'protocols':protocolList})
 
     def post(self, request, *args, **kwargs):
-        print json.loads(request.POST.dict()['protocols'])
         try:
             #print ast.literal_eval(request.POST.getlist('protocols')[0])
             protocolList = [p['pk'] for p in json.loads(request.POST.dict()['protocols'])]
