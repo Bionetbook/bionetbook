@@ -19,10 +19,10 @@ urlpatterns = patterns("",
 	url(regex=r'^json/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.get_layout_compare_json', name='get_layout_compare_json'),
 	url(regex=r'^json/clone_ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view='api.views.get_layout_clone_json', name='get_layout_clone_json'),
 	# url(regex=r'^view/ajax/(?P<protocol_a_slug>[-\w]+)/(?P<protocol_b_slug>[-\w]+)/$', view=views.AjaxView.as_view(), name='ajax_view'),
-	
 	url(regex=r'^calendar/$', view=views.ListCalendarAPI.as_view(), name='ListCalendarAPI'),
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/$', view=views.SingleCalendarAPI.as_view(), name='EventAPI'),
 	url(regex=r'^calendar/(?P<pk>[-\w]+)/(?P<event_id>[-\w]+)/$', view=views.SingleEventAPI.as_view(), name='SingleEventAPI'),
 	url(regex=r'^action/fields/(?P<slug>[-\w]+)/$', view=views.VerbFieldAPI.as_view(), name='api_verb_fields'),
 	url(regex=r'^action/types/$', view='api.views.get_verb_types_json', name='api_verb_types'),
+	url(regex=r'^(?P<owner_slug>[-\w]+)/protocolList/$', view=views.ProtocolListAPI.as_view(), name='protocol_list'),
 )

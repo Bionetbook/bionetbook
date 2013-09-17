@@ -10,12 +10,15 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 import ast
 
+from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
-
+from django.template.defaultfilters import slugify
 from compare.models import ProtocolPlot, DictDiffer, Compare, CompareVerb, CompareChildren
 from protocols.models import Protocol
 from schedule.models import Calendar
+from organization.models import Organization
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
+from workflow.models import Workflow
 
 '''
 API Documentation
@@ -77,6 +80,50 @@ class JSONResponseMixin(object):
                 result[key] = kwargs[key]
 
         return result
+
+
+##############
+# Workflow API
+##############
+    '''
+    Returns a list of protocol names + pks that the user can construct workflows from (published + draft)
+    GET:
+    {
+        'protocols' : [ {
+                            'name':'rna',
+                            'pk':1
+                        },
+                        {
+                            'name':rna-1,
+                            'pk':2
+                        } ]
+    }
+    '''
+
+class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
+    http_method_names = ['get','post']
+
+    def get(self, request, *args, **kwargs):
+        slug = self.kwargs['owner_slug']
+        org = self.request.user.organization_set.get(slug=slug)
+        protocolList = [{'name':p.name,'pk':p.pk} for p in org.protocol_set.all() if p.published or p.author==self.request.user]
+        return self.render_to_response({'protocols':protocolList})
+
+    def post(self, request, *args, **kwargs):
+        print json.loads(request.POST.dict()['protocols'])
+        try:
+            #print ast.literal_eval(request.POST.getlist('protocols')[0])
+            protocolList = [p['pk'] for p in json.loads(request.POST.dict()['protocols'])]
+            w = Workflow()
+            w.name = dict(request.POST.iterlists())['name'][0]
+            w.user = self.request.user
+            w.owner = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+            w.data = {'meta':{},'protocols':protocolList}
+            w.slug = slugify(w.name)
+            w.save()
+            return HttpResponse(w.get_absolute_url())
+        except:
+            raise Http404
 
 
 ##############

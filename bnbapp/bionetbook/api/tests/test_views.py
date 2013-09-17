@@ -32,7 +32,8 @@ class APIViewTests(AutoBaseTest):
           				"objectid": "kxsl3b", 
           				"verb": "add", 
           				"duration": "0-0", 
-          				"slug": "kxsl3b", 
+          				"slug": "kxsl3b",
+          				"physical_commitment":"Passive" 
         			}
       			], 
       			"duration": "0-0", 
@@ -50,6 +51,7 @@ class APIViewTests(AutoBaseTest):
           				"verb": "add", 
           				"duration": "0-0", 
           				"slug": "yyyyyy", 
+          				"physical_commitment":"Passive"
         			}
       			], 
       			"duration": "0-0", 
@@ -59,6 +61,15 @@ class APIViewTests(AutoBaseTest):
 		self.workflow = self.createModelInstance(Workflow, owner=self.org, user=self.user, name="TestWorkflow", data={'meta':{},'protocols':[1,2]})
 		self.experiment = self.createModelInstance(Experiment, owner=self.org, user=self.user, workflow=self.workflow, name="Test Experiment")
 		self.calendar = self.createModelInstance(Calendar, user=self.user, name="Test Schedule")
+
+	def test_protocol_list_api(self):
+		c = Client()
+		c.login(username="testuser", password="pass")
+		resp = c.post('/api/testorg/protocolList/', data={'name':'workflow2','protocols':[{'name':'test2','pk':2},{'name':'test1','pk':1}]})
+		self.assertEqual(resp.status_code, 302)
+		self.assertEqual(resp['location'],'http://testserver/testorg/workflows/2-workflow2/')
+		resp = c.get('/testorg/workflows/2-workflow2/')
+		self.assertEqual(resp.context['protocols'],[self.protocol2,self.protocol])
 
 	def test_single_calendar_api(self):
 
@@ -77,7 +88,8 @@ class APIViewTests(AutoBaseTest):
 							 	'protocol':'Test Protocol',
 							 	'experiment':'Test Experiment',
 							 	'notes':'',
-							 	'verb':'add'
+							 	'verb':'add',
+							 	'active':'false'
 								}, 
 								{
 								'id':'bnb-o1-e1-p2-xxxxxx-yyyyyy',
@@ -87,7 +99,8 @@ class APIViewTests(AutoBaseTest):
 								'protocol':'Test Protocol 2',
 								'experiment': 'Test Experiment',
 								'notes':'',
-								'verb':'add'
+								'verb':'add',
+								'active':'false'
 								} ]
 				}
 		self.assertEqual(json.loads(resp.content),cal)
@@ -123,7 +136,8 @@ class APIViewTests(AutoBaseTest):
 							 	'protocol':'Test Protocol',
 							 	'experiment':'Test Experiment',
 							 	'notes':'new notes',
-							 	'verb':'add'
+							 	'verb':'add',
+							 	'active':'false'
 								},
 								{
 								'id':'bnb-o1-e1-p2-xxxxxx-yyyyyy',
@@ -133,7 +147,8 @@ class APIViewTests(AutoBaseTest):
 								'protocol':'Test Protocol 2',
 								'experiment': 'Test Experiment',
 								'notes':'new notes',
-								'verb':'add'
+								'verb':'add',
+								'active':'false'
 								} ]
 				}
 		self.assertEqual(json.loads(resp4.content),cal)
@@ -163,7 +178,8 @@ class APIViewTests(AutoBaseTest):
 					'verb':'add',
 					'notes':'',
 					'experiment':'Test Experiment',
-					'start':'0'
+					'start':'0',
+					'active':'false'
 				}
 		self.assertEqual(json.loads(resp.content), event)
 		
@@ -201,7 +217,8 @@ class APIViewTests(AutoBaseTest):
 					'verb':'add',
 					'notes':'new notes',
 					'experiment':'Test Experiment',
-					'start':'5'
+					'start':'5',
+					'active':'false'
 				}
 		self.assertEqual(json.loads(resp5.content), eventUpdated)
 		self.assertEqual(resp5.status_code, 200)
