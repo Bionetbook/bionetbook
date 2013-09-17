@@ -114,7 +114,6 @@ class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
         try:
             #print ast.literal_eval(request.POST.getlist('protocols')[0])
             protocolList = [p['pk'] for p in json.loads(request.POST.dict()['protocols'])]
-            print protocolList
             w = Workflow()
             w.name = dict(request.POST.iterlists())['name'][0]
             w.user = self.request.user
@@ -122,7 +121,7 @@ class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
             w.data = {'meta':{},'protocols':protocolList}
             w.slug = slugify(w.name)
             w.save()
-            return HttpResponseRedirect(w.get_absolute_url())
+            return HttpResponse(w.get_absolute_url())
         except:
             raise Http404
 

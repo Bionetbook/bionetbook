@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load wysiwyg %}
+{% load workflow_filters %}
 
 {% block title %}Workflow{% if object %}: {{ object }}{% endif %}{% endblock %}
 
@@ -9,16 +10,18 @@
 {% block content %}
 <div class="row">
   <ul id="nameField">
-    <form name="title">
- Name: <input type="text" name="fname" id="nameField"><br></ul></form>
+    <form>
+<div class="form-group has-error">
+  <label for="name">Name</label>
+<input type="text" id="workflowName" placeholder="Enter Workflow Name" required></ul>
 </div>
 <div id="dhtmlgoodies_dragDropContainer">
   <div id="dhtmlgoodies_listOfItems">
     <div>
       <p>Protocol List</p>
     <ul id="allItems">
-      {% for protocol in form.fields.protocols.choices %}
-      <li id="node1">{{ protocol.1.name }}</li>
+      {% for protocol in protocols %}
+      <li id="node1">{{ protocol.name }}</li>
       {% endfor %}
     </ul>
     </div>
@@ -33,7 +36,8 @@
   </div>
 </div>
 <div id="footer">
-  <form action="#" method="post"><input type="button" onclick="saveDragDropNodes()" value="Submit"></form>
+  <button class="btn btn-medium btn-primary" type="button" onclick="return saveDragDropNodes()">Submit</button>
+</form>
 </div>
 <ul id="dragContent"></ul>
 <div id="dragDropIndicator"></div>
@@ -64,7 +68,7 @@
   Owner of DHTMLgoodies.com
 
   ************************************************************************************************************/
-  var protocolList = new Array();
+  var protocolList = {{ protocols|as_json }};
   /* VARIABLES YOU COULD MODIFY */
   var boxSizeArray = [4,4,4,3,7]; // Array indicating how many items there is rooom for in the right column ULs
 
@@ -327,18 +331,15 @@
     // }
 
     function verifyProtocols(url, p){
-      $.getJSON(url)
-      .done(function(data){
-        var protocols = new Array();
-        for(var i=0;i<p.length;i++){
-          for(var j=0;j<data.protocols.length;j++){
-           if(data.protocols[j].name = p[i]){
-            protocols.push(data.protocols[j]);
-            data.protocols.splice(j,1);       
+      var protocols = new Array();
+      for(var i = 0;i<p.length;i++){
+        for(var j = 0;j<protocolList.length;j++){
+          if(p[i]==protocolList[j].name) {
+            protocols.push({"name":protocolList[j].name,"pk":protocolList[j].pk});
+            break;
           }
         }
       }
-      console.log(protocols);
     function sendPost() {
     $.ajaxSetup({ 
             beforeSend: function(xhr, settings) {
@@ -373,12 +374,17 @@
       data: fd,
       processData: false,
       contentType: false,
+      success: function(response) {
+        console.log(response);
+        if (response) {
+            // data.redirect contains the string URL to redirect to
+            window.location.href = response;
+        }
+      }
     });
   }
     sendPost();
-      })
-      .fail(function(){console.log("Failed to get protocols.")})
-    }
+  }
     var saveList = new Array();
     var uls = dragDropTopContainer.getElementsByTagName('UL');
     for(var no=0;no<uls.length;no++){ // LOoping through all <ul>
@@ -390,7 +396,15 @@
         }
       } 
     }
-    var inputName = document.title.fname.value;
+    if (saveList == null || saveList.length<1) {
+      alert("Must select at least 1 protocol.");
+      return false;
+    }
+    var inputName = $('#workflowName').val();
+    if (inputName == null || inputName == "") {
+      alert("Name field must be filled out.");
+      return false;
+    }
 
     var urlArray = window.location.pathname.split('/');
     var url = '/api/'+urlArray[1]+'/protocolList/';
@@ -460,6 +474,7 @@
   body{
     font-family: Trebuchet MS, Lucida Sans Unicode, Arial, sans-serif;  /* Font to use */
   }
+
   #footer{
     vertical-align:middle;
     text-align:left;
