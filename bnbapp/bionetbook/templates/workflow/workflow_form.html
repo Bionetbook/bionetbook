@@ -70,7 +70,7 @@
   ************************************************************************************************************/
   var protocolList = {{ protocols|as_json }};
   /* VARIABLES YOU COULD MODIFY */
-  var boxSizeArray = [4,4,4,3,7]; // Array indicating how many items there is rooom for in the right column ULs
+  var boxSizeArray = [protocolList.length]; // Array indicating how many items there is rooom for in the right column ULs
 
 
   var verticalSpaceBetweenListItems = 3;  // Pixels space between one <li> and next
@@ -468,7 +468,6 @@
 </body>
 {% endblock %}
 {% csrf_token %}
-
 {% block extracss %}
   <style type="text/css">
   body{
@@ -523,8 +522,8 @@
 
     /* CSS HACK */
     width: 180px; /* IE 5.x */
-    width/* */:/**/160px; /* Other browsers */
-    width: /**/160px;
+    width/* */:/**/240px; /* Other browsers */
+    width: /**/240px;
 
   }
   #dhtmlgoodies_listOfItems ul{ /* Left(Sources) column <ul> */
@@ -556,8 +555,13 @@
   /* Start main container CSS */
 
   div#dhtmlgoodies_mainContainer{ /* Right column DIV */
-    width:170px;
+    width:240px;
     float:left;
+    padding-right:10px;
+        /* CSS HACK */
+    width: 240px; /* IE 5.x */
+    width/* */:/**/240px; /* Other browsers */
+    width: /**/240px;
   }
 
   #dhtmlgoodies_mainContainer div{  /* Parent <div> of small boxes */
@@ -566,12 +570,7 @@
     margin-bottom:10px;
     margin-top:0px;
     border:1px solid #999;
-    height:509px;
-
-    /* CSS HACK */
-    width: 172px; /* IE 5.x */
-    width/* */:/**/170px; /* Other browsers */
-    width: /**/170px;
+    height:507px;
 
   }
   #dhtmlgoodies_mainContainer div ul{
@@ -589,7 +588,7 @@
   }
 
   #dhtmlgoodies_mainContainer ul{ /* Small box in right column ,i.e <ul> */
-    width:152px;
+    width:240px;
     height:480px;
     border:0px;
     margin-bottom:0px;
@@ -598,7 +597,7 @@
 
   #dragContent{ /* Drag container */
     position:absolute;
-    width:150px;
+    width:170px;
     height:20px;
     display:none;
     margin:0px;
@@ -632,6 +631,7 @@
   }
   </style>
 {% endblock extracss %}
+
 
 {% block extrajs %}
 <script>

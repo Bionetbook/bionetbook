@@ -120,7 +120,6 @@ class WorkflowCreateView(PathMixin, LoginRequiredMixin, TemplateView):
             raise Http404
         if protocols:
             context['protocols'] = protocols
-            print protocols
         else:
             context['protocols'] = None
         return context
