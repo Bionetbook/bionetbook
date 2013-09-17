@@ -122,8 +122,11 @@ class Calendar(TimeStampedModel):
                 for step in p.data['steps']:
                     for action in step['actions']:
                         #print p.slug + " " + action['objectid']
-                        if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
-                            flag = "true"
+                        if action['physical_commitment']:
+                            if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                                flag = "true"
+                            else:
+                                flag = "false"
                         else:
                             flag = "false"
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
@@ -154,11 +157,14 @@ class Calendar(TimeStampedModel):
             actionList = []
             for step in p.data['steps']:
                 for action in step['actions']:
-                    if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
-                        flag = "true"
+                    if action['physical_commitment']:
+                        if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                            flag = "true"
+                        else:
+                            flag = "false"
                     else:
-                        flag = "false"
-                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
+                        flag = "false"    
+                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
 
             for element in actionList:
                 eventObject = {}

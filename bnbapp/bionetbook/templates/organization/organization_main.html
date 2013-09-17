@@ -52,7 +52,7 @@
                         <h3>Private Protocols ({{ request.user.get_profile.get_private_protocols|length}})</h3>
                     </a>
                 </div>    
-                <div id="collapseTwo" class="accordion-body collapse in">
+                <div id="collapseTwo" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <table class="table table-hover table-condensed">
                             <thead>
@@ -82,7 +82,7 @@
                         <h3>Public Protocols ({{ request.user.get_profile.get_public_protocols|length}})</h3>
                     </a>
                 </div>    
-                <div id="collapseThree" class="accordion-body collapse in">
+                <div id="collapseThree" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <table class="table table-hover table-condensed">
                             <thead>
@@ -112,14 +112,14 @@
 
          <div class="accordion-group">
                 <div class="accordion-heading">
+                        <a class="btn btn-medium btn-success pull-right" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Workflow</a>
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
                         <h3>Workflows ({{ workflows|length}})</h3>
                     </a>
                 </div>    
-                <div id="collapseFour" class="accordion-body collapse in">
+                <div id="collapseFour" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <table class="table table-hover table-condensed">
-                            <li><a href="{% url workflow_create owner_slug=organization.slug %}">{{ 'New Workflow'}}</a></li>
                             {% if workflows %}
                             <thead>
                               <tr>
@@ -150,14 +150,14 @@
 
              <div class="accordion-group">
                     <div class="accordion-heading">
+                        <a class="btn btn-medium btn-success pull-right centered" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Experiment</a>
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseFive">
                             <h3>Experiments ({{ experiments|length}})</h3>
                         </a>
                     </div>    
-                    <div id="collapseFive" class="accordion-body collapse in">
+                    <div id="collapseFive" class="accordion-body collapse">
                         <div class="accordion-inner">
-                            <table class="table table-hover table-condensed">
-                            <li><a href="{% url experiment_create owner_slug=organization.slug %}">{{ 'New Experiment'}}</a></li>                                
+                            <table class="table table-hover table-condensed">                                
                                 {% if experiments %}
                                 <thead>
                                   <tr>

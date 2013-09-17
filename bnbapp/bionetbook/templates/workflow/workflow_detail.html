@@ -7,7 +7,7 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
       <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
       	<span class="divider">/</span></li>
       <li class="active">{{ workflow.name }}</li>
