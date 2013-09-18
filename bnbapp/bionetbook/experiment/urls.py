@@ -12,4 +12,5 @@ urlpatterns = patterns("",
     # url(regex=r'^(?P<owner_slug>[-\w]+)/workflows/(?P<workflow_slug>[-\w]+)/$', view=wviews.WorkflowDetailView.as_view(), name='workflow_detail'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/experiments/create/', view=views.ExperimentCreateView.as_view(), name='experiment_create'),
     url(regex=r'^(?P<owner_slug>[-\w]+)/experiments/(?P<experiment_slug>[-\w]+)/', view=views.ExperimentDetailView.as_view(), name='experiment_detail'),
+    url(regex=r'^(?P<owner_slug>[-\w]+)/experiments/(?P<experiment_slug>[-\w]+)/edit/', view=views.ExperimentUpdateView.as_view(), name='experiment_update'),
 )
