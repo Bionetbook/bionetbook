@@ -69,6 +69,7 @@ class Calendar(TimeStampedModel):
         # self.data = {}
         if not self.data:
             # self.data['steps'] = []
+            self.full_clean()
             self.data = self.setupCalendar()
 
         super(Calendar,self).save(*args,**kwargs)
@@ -81,7 +82,13 @@ class Calendar(TimeStampedModel):
 
     def __unicode__(self):
         return self.name
-        
+    
+    def events(self):
+        return self.data['events']
+
+    def get_absolute_url(self):
+        return reverse("single_calendar", kwargs={'pk':self.pk})
+
     # def dataToCalendar(self):
     #     ret = {}    # return dict
     #     stepsList = []
@@ -114,8 +121,15 @@ class Calendar(TimeStampedModel):
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
-                        print p.slug + " " + action['objectid']
-                        actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
+                        #print p.slug + " " + action['objectid']
+                        if action['physical_commitment']:
+                            if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                                flag = "true"
+                            else:
+                                flag = "false"
+                        else:
+                            flag = "false"
+                        actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
 
                 for element in actionList:
                     eventObject = {}
@@ -130,6 +144,7 @@ class Calendar(TimeStampedModel):
                     eventObject['protocol'] = p.title
                     eventObject['experiment'] = e.name
                     eventObject['notes'] = ""
+                    eventObject['active'] = element[5]
                     ret['events'].append(eventObject)
                 if p.pk not in ret['meta']:
                     ret['meta'][p.pk] = p.description
@@ -142,7 +157,14 @@ class Calendar(TimeStampedModel):
             actionList = []
             for step in p.data['steps']:
                 for action in step['actions']:
-                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name']))
+                    if action['physical_commitment']:
+                        if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+                            flag = "true"
+                        else:
+                            flag = "false"
+                    else:
+                        flag = "false"    
+                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
 
             for element in actionList:
                 eventObject = {}
@@ -157,7 +179,10 @@ class Calendar(TimeStampedModel):
                 eventObject['protocol'] = p.title
                 eventObject['experiment'] = newExperiment.name
                 eventObject['notes'] = ""
+                eventObject['active'] = element[5]
                 events.append(eventObject)
+            if p.pk not in self.data['meta']:
+                self.data['meta'][p.pk] = p.description
         self.data['events'] = events
         self.save()        
 

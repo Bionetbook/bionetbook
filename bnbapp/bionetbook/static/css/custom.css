@@ -148,13 +148,11 @@ footer li a {
 	float: left;
 	width: 150px;
 }
-	
 #external-events h4 {
 	font-size: 16px;
 	margin-top: 0;
 	padding-top: 1em;
 }
-
 
 /* Pasive events */
 .fc-event-vert[data-active=false]{
@@ -163,7 +161,8 @@ footer li a {
     border-left-style: dashed;
     border-right-style: dashed;
 }
-.fc-event-vert[data-active=false] .fc-event-time{ margin-top:5px; }
+.fc-event-vert[data-active=false] .fc-event-time,
+.fc-event-vert[data-active=false] .fc-event-title{ margin-top:5px; }
 .passive-padding-start, .passive-padding-end{
     position:absolute;
     right:0;
@@ -187,7 +186,10 @@ footer li a {
 	font-size: .85em;
 	cursor: pointer;
 }
-	
+#external-events .custom-event.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
 #external-events p {
 	margin: 1.5em 0;
 	font-size: 11px;
@@ -269,11 +271,11 @@ div.fc-event[data-notes="There are no notes for this event."]:after{
     bottom: .2em;
     right: .2em;
     z-index: 10;
-    background-image: url("../img/gear.png");
+    /* background-image: url("../img/gear.png"); */
     background-size:100% auto;
 }
 [data-active=false] .edit-notes{
-    background-image: url("../img/gear-black.png");
+    /* background-image: url("../img/gear-black.png"); */
 }
 .fc-event:hover .edit-notes{
     display:block;

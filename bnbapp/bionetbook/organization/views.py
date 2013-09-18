@@ -8,6 +8,7 @@ from django.utils import simplejson
 
 from braces.views import LoginRequiredMixin
 
+
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from schedule.models import Calendar
@@ -39,11 +40,31 @@ class OrganizationMainView(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(OrganizationMainView, self).get_context_data(**kwargs)
 		slug = self.kwargs.get(self.slug_url_kwarg, None)	
-		org = self.request.user.organization_set.get(slug=slug)
+		try:
+			org = self.request.user.organization_set.get(slug=slug)
+			viewableProtocols = [p for p in org.protocol_set.all() if p.author==self.request.user]
+			publishedProtocols = [p for p in org.protocol_set.all() if p.published]
+			viewableProtocols = list(set(viewableProtocols + publishedProtocols))
+			workflows = [w for w in self.request.user.workflow_set.all() if w.owner==org]
+			experiments = [e for e in self.request.user.experiment_set.all() if e.owner==org]
+		except:
+			raise Http404
+		if experiments:
+			context['experiments'] = experiments
+		else:
+			context['experiments'] = None
+		if workflows:
+			context['workflows'] = workflows
+		else:
+			context['workflows'] = None
 		if org:
 			context['organization'] = org
 		else:
 			context['organization'] = None
+		if viewableProtocols:
+			context['protocols'] = viewableProtocols
+		else:
+			context['protocols'] = None
 		return context
     
     # def get_context_data(self, **kwargs):

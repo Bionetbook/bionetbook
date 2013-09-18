@@ -6,7 +6,7 @@
 //////////////////////////////////////
 
 "use strict";
-var Protocol = {steps:[]};
+
 var BNB = BNB || {};
 
 BNB.dataInput = (function(){
@@ -20,12 +20,19 @@ BNB.dataInput = (function(){
 
     function init(){
 
-        // Protocol global object creation
-        if(typeof Protocol == 'undefined'){
-            window.Protocol = {
-                steps: []
-            };
-            createMode = true;
+        // Check for createMode in the page's URL
+        var urlPieces = window.location.href.split('/');
+        for(var i = 0, len = urlPieces.length; i < len; i++){
+            if(urlPieces[i] === "create"){
+                createMode = true;
+
+                // Create global Protocol object
+                window.Protocol = {
+                    steps: []
+                };
+
+                break;
+            }
         }
 
         // Populate verb list
@@ -79,10 +86,37 @@ BNB.dataInput = (function(){
         }, false);
     }
 
+    function getExistingProtocol(){
+        // Get slug
+        var a = window.location.href.split('/');
+        while(a[a.length-1] == 'edit' || a[a.length -1] == 'test' || a[a.length -1] == false) a.pop();
+        var slug = a[a.length-1];
+
+        $.ajax({
+            url: apiUrlPrefix + 'protocol/' + slug,
+            dataType: 'json',
+            success: function(e){
+                // Construct Protocol structure
+                var p = e.data.data,
+                    d = e.data;
+                p.id = d.id;
+                p.description = d.description;
+                p.title = d.name;
+                p.slug = d.slug;
+                window.Protocol = p;
+                parseExistingProtocol();
+            },
+            error: function(e){console.log("Failed to recieve existing Protocol)")}
+        });
+
+        parseExistingProtocol();
+    }
+
     function parseExistingProtocol(){
 
         var title = document.getElementById("protocol-title"),
             desc = document.getElementById("protocol-description");
+
         // Remove intro text
         $('#protocol-intro').fadeOut("fast");
         $(document.getElementById("nav-tabs")).removeClass("blur-text");
@@ -94,6 +128,7 @@ BNB.dataInput = (function(){
         title.innerHTML = Protocol.title;
         desc.innerHTML = Protocol.description;
 
+        // Creade Step tabs and fill in their content
         for(var i = 0, len = Protocol.steps.length; i < len; i++){
             // Conform fields from API to what input form uses
             if( !Protocol.steps[i].title ) Protocol.steps[i].title = Protocol.steps[i].name;
@@ -183,6 +218,7 @@ BNB.dataInput = (function(){
         });
     }
 
+    // Append a new tab pane to the page
     function createTabContent(tabNum, stepObj, existingActions){
         var tabContent = document.createElement("div"),
                 addAction = document.createElement("div"),
@@ -271,6 +307,8 @@ BNB.dataInput = (function(){
         });
     }
 
+    // Return a DOM node with event listeners that populate dynamic
+    // field forms and data
     function createNewAction(stepObj, existingAction){
         var action = document.createElement("table"),
             tbody = document.createElement("tbody"),
@@ -524,6 +562,16 @@ BNB.dataInput = (function(){
                 tbody.appendChild(componentsRow);
 
                 // Populate component fields from existing data
+                /*
+                    This expects data to be formatted as:
+                    action = {
+                        componentFields : [
+                            {title: "Glucose", Mass: "10g", Volume: "10ml"},
+                            {title: "Salt", Mass: "10g", Volume: "10ml"},
+                            {title: "Water", Mass: "10g", Volume: "10ml"}
+                        ]
+                    }
+                */
                 if(data){
 
                     // Check for existing component data
@@ -846,6 +894,62 @@ BNB.dataInput = (function(){
         return componentRow;
     }
 
+    // Generic editing capabilities for fields
+    // This replaces normal text with an input box when clicked, and
+    // switches back to text(the value from the input field) when the field loses focus
+    // Args: Element to use, placeholder text, what to show when blank field is submitted,
+    //       the object to tie the field to, the specific property the field is modifying 
+    function fieldEditingFunctionality(ele, placeholder, messageOnEmpty, obj, prop){
+
+        ele.onclick = function(){
+
+            // Exit if element already has an input field in it (it's already being edited)
+            if(this.getElementsByTagName("input")[0]) return;
+
+            // If the messageOnEmpty is being shown, delete it so the user is editing an empty field
+            var editableName = this.innerHTML == messageOnEmpty ? "" : this.innerHTML; 
+
+            // add input field for renaming
+            this.setAttribute("data-editing", true);
+            this.innerHTML = '<input type="text" placeholder="'+ placeholder +'" value="' + editableName + '" autofocus>';
+            $(this.getElementsByTagName("input")[0]).focus();
+            
+        }
+
+        // Tabbing accessible
+        ele.addEventListener("focus", function(){
+            if(this.getElementsByTagName("input")[0]) return;
+
+            // If the messageOnEmpty is being shown, delete it so the user is editing an empty field
+            var editableName = this.innerHTML == messageOnEmpty ? "" : this.innerHTML; 
+
+            this.setAttribute("data-editing", true);
+            this.innerHTML = '<input type="text" placeholder="'+ placeholder +'" value="' + editableName + '" autofocus>';
+            $(this.getElementsByTagName("input")[0]).focus();
+
+        }, true);
+
+        // Check for "Enter" keypress
+        ele.addEventListener("keydown", function(e) {
+            if (!e) { var e = window.event; }
+            if (e.keyCode == 13) {
+                if(!this.getElementsByTagName("input")[0]) return;
+
+                obj[prop] = this.getElementsByTagName("input")[0].value || "";
+                this.setAttribute("data-editing", false);
+                this.innerHTML = (this.getElementsByTagName("input")[0].value || messageOnEmpty);
+            }
+        }, true);
+
+        ele.addEventListener("blur", function(){
+            if(!this.getElementsByTagName("input")[0]) return;
+
+            obj[prop] = this.getElementsByTagName("input")[0].value || "";
+            this.setAttribute("data-editing", false);
+            this.innerHTML = (this.getElementsByTagName("input")[0].value || messageOnEmpty);
+        }, true);
+    }
+
     // Editing functionality for COMPONENT NAMES
     function componentEditingFunctionality(ele, objReference){
 
@@ -1089,62 +1193,7 @@ BNB.dataInput = (function(){
         }, true);
     }
 
-    function actionEditingFunctionality(ele){
-    }
-
-    // Generic editing capabilities for title, desc, and tabs
-    function fieldEditingFunctionality(ele, placeholderText, messageOnEmpty, objReference, protocolProperty){
-
-        ele.onclick = function(){
-
-            // Exit if element already has an input field in it (it's already being edited)
-            if(this.getElementsByTagName("input")[0]) return;
-
-            // If the messageOnEmpty is being shown, delete it so the user is editing an empty field
-            var editableName = this.innerHTML == messageOnEmpty ? "" : this.innerHTML; 
-
-            // add input field for renaming
-            this.setAttribute("data-editing", true);
-            this.innerHTML = '<input type="text" placeholder="'+ placeholderText +'" value="' + editableName + '" autofocus>';
-            $(this.getElementsByTagName("input")[0]).focus();
-            
-        }
-
-        // Tabbing accessible
-        ele.addEventListener("focus", function(){
-            if(this.getElementsByTagName("input")[0]) return;
-
-            // If the messageOnEmpty is being shown, delete it so the user is editing an empty field
-            var editableName = this.innerHTML == messageOnEmpty ? "" : this.innerHTML; 
-
-            this.setAttribute("data-editing", true);
-            this.innerHTML = '<input type="text" placeholder="'+ placeholderText +'" value="' + editableName + '" autofocus>';
-            $(this.getElementsByTagName("input")[0]).focus();
-
-        }, true);
-
-        // Check for "Enter" keypress
-        ele.addEventListener("keydown", function(e) {
-            if (!e) { var e = window.event; }
-            if (e.keyCode == 13) {
-                if(!this.getElementsByTagName("input")[0]) return;
-
-                objReference[protocolProperty] = this.getElementsByTagName("input")[0].value || "";
-                this.setAttribute("data-editing", false);
-                this.innerHTML = (this.getElementsByTagName("input")[0].value || messageOnEmpty);
-            }
-        }, true);
-
-        ele.addEventListener("blur", function(){
-            if(!this.getElementsByTagName("input")[0]) return;
-
-            objReference[protocolProperty] = this.getElementsByTagName("input")[0].value || "";
-            this.setAttribute("data-editing", false);
-            this.innerHTML = (this.getElementsByTagName("input")[0].value || messageOnEmpty);
-        }, true);
-    }
-
-    // Get the position of a node in relation to its siblings
+    // Get the position of a DOM node in relation to its siblings
     // a a b a      // b == 2
     function getIndexOf(el){
         var k=-1, e=el;
@@ -1160,6 +1209,7 @@ BNB.dataInput = (function(){
         return k;
     }
 
+    // Used when components are deleted, this removes blank spaces from the array
     function restructureComponentArray(array, index){
 
         // Make sure array needs restructuring (in case of multiple calls)
@@ -1184,37 +1234,12 @@ BNB.dataInput = (function(){
         }
     }
 
+    // Sanitizes user input so special characters won't break anything
     function htmlEntities(str) {
         return String(str).replace(/&amp;/g, '&').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Edit an existing Protocol
-    function getExistingProtocol(){
-        // Get slug
-        var a = window.location.href.split('/');
-        while(a[a.length-1] == 'edit' || a[a.length -1] == 'test' || a[a.length -1] == false) a.pop();
-        var slug = a[a.length-1];
-
-        $.ajax({
-            url: apiUrlPrefix + 'protocol/' + slug,
-            dataType: 'json',
-            success: function(e){
-                // Construct Protocol structure
-                var p = e.data.data,
-                    d = e.data;
-                p.id = d.id;
-                p.description = d.description;
-                p.title = d.name;
-                p.slug = d.slug;
-                window.Protocol = p;
-                parseExistingProtocol();
-            },
-            error: function(e){console.log("Failed to recieve existing Protocol)")}
-        });
-
-        parseExistingProtocol();
-    }
-
+    // Send current Protocol data to the server for processing 
     var sendToServer = (function(){
         var saveButton = document.getElementById('save-protocol'),
             createProtocolBtn = document.getElementById('intro-submit'),
@@ -1270,12 +1295,19 @@ BNB.dataInput = (function(){
             // Protocol's URL identifier - remove preceding 'p' in ID
             var pSlug = Protocol.id[0] === 'p' ? Protocol.id.slice(1) : Protocol.id;
 
+            // The data must be passed in as FormData or else 
+            // Django will reformat it, rendering it useless
+            var fd = new FormData();
+            fd.append("events", JSON.stringify(Protocol));
+
             // Send Protocol object to server
+            // contentType and processData MUST be set to false!
             $.ajax({
                 url: apiUrlPrefix + 'protocol/' + pSlug + '/',
-                contentType: 'application/json',
+                contentType: false,
+                processData: false,
                 type: "PUT",
-                data: JSON.stringify(Protocol),
+                data: fd,
                 success: function(e){ 
 
                     // Assumed location of Protocol object

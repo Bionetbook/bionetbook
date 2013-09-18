@@ -21,20 +21,27 @@ class History(TimeStampedModel):
     '''
     History log attached to the Project
     '''
-    name = models.CharField(_("Name"), max_length=255, blank=True, null=True, unique=False)
+    name = models.CharField(_("Name"), max_length=255)
     htype = models.CharField(_("History Type"), max_length=10, choices=HISTORY_EVENT_CHOICES, default='EDIT')
     # keyword = models.CharField(_("Keyword"), max_length=10 )
     # description = models.TextField(_("Description"), blank=True, null=True)
     data = JSONField(_("Data"), blank=True)
     protocol = models.ForeignKey('protocols.Protocol')
     org = models.ForeignKey(Organization, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User)
     # slug = models.SlugField(_("Slug"), blank=True, null=True, max_length=255)
+
+    class Meta:
+        verbose_name_plural = "histories"
 
     def __unicode__(self):
         return self.name
 
-    # def __init__(self, *args, **kwargs):    
+    def save(self, *args, **kwargs):
+        self.name = "%s - %s (%s)" % (self.htype, self.protocol.name, self.user.username)
+        super(History, self).save(*args, **kwargs)
+
+    # def __init__(self, *args, **kwargs):
     #     super(History, self).__init__(*args, **kwargs)
 
 

@@ -4,7 +4,7 @@ from django.views.generic import ListView, View, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
 from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
-from django.utils import simplejson
+from django.utils import simplejson as json
 
 from core.views import PathMixin
 from django.core.urlresolvers import reverse
@@ -27,9 +27,17 @@ class WorkflowDetailView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(WorkflowDetailView, self).get_context_data(**kwargs)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        workflow = self.request.user.workflow_set.get(slug=slug)
-        org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+        try:
+            slug = self.kwargs.get(self.slug_url_kwarg, None)
+            workflow = self.request.user.workflow_set.get(slug=slug)
+            org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+            protocols = [Protocol.objects.get(pk=p) for p in workflow.data['protocols']]
+        except:
+            raise Http404
+        if protocols:
+            context['protocols'] = protocols
+        else:
+            context['protocols'] = None
         if workflow:
             context['workflow'] = workflow
         else:
@@ -38,9 +46,6 @@ class WorkflowDetailView(LoginRequiredMixin, TemplateView):
             context['organization'] = org
         else:
             context['organization'] = None
-            print "NONE"
-        protocols = [Protocol.objects.get(pk=p) for p in workflow.data['protocols']]
-        context['protocols'] = protocols
         return context
 
 
@@ -89,13 +94,12 @@ class WorkflowListView(LoginRequiredMixin, ListView):
 #     form_class = WorkflowForm
 
 
-class WorkflowCreateView(PathMixin, LoginRequiredMixin, FormView):
+class WorkflowCreateView(PathMixin, LoginRequiredMixin, TemplateView):
     '''
     View used to create new protocols
     '''
 
     model = Workflow
-    form_class = WorkflowManualForm
     slug_url_kwarg = "owner_slug"
     template_name = "workflow/workflow_form.html"
 
@@ -106,43 +110,19 @@ class WorkflowCreateView(PathMixin, LoginRequiredMixin, FormView):
     #     form.instance.owner = self.request.user
     #     return super(ProtocolCreateView, self).form_valid(form)
 
-    def get_success_url(self):
-        return self.get_absolute_url()
-
-
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        org = Organization.objects.get(slug=slug)
-
-        # form.instance.owner = org
-        # form.instance.user = self.request.user
-        w = Workflow()
-        w.name = form.cleaned_data['name']
-        w.user = self.request.user
-        w.data = {'meta':{}, 'protocols':form.cleaned_data['protocols']}
-        w.slug = slugify(form.cleaned_data['name'])
-        w.owner = org
-        w.save()
-        return HttpResponseRedirect(w.get_absolute_url())
-
-    def get_form(self, form_class):
-        """
-        Returns an instance of the form to be used in this view.
-        """
-        form = form_class(**self.get_form_kwargs())
-        protocols = Organization.objects.get(slug=self.kwargs['owner_slug']).protocol_set.all()
-        form.fields['protocols'] = forms.MultipleChoiceField(
-            label="Protocols",
-            choices=((x.pk,x) for x in protocols),
-            widget=forms.CheckboxSelectMultiple())
-        #form.fields['organization'] = Organization.objects.get(slug=self.kwargs['owner_slug'])
-        #form.fields['owner'].choices = [(org.pk, org.name) for org in self.request.user.organization_set.all()]
-        # NEED TO CHANGE THE FORM CLASS'S QUERYSET ON THE FIELD
-        return form
-
+    def get_context_data(self, **kwargs):
+        context = super(WorkflowCreateView, self).get_context_data(**kwargs)
+        try:
+            slug = self.kwargs.get(self.slug_url_kwarg, None)
+            org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+            protocols = [{'pk':p.pk,'name':p.name} for p in org.protocol_set.all() if p.published or p.author==self.request.user]
+        except:
+            raise Http404
+        if protocols:
+            context['protocols'] = protocols
+        else:
+            context['protocols'] = None
+        return context
 
 # class WorkflowUpdateView(LoginRequiredMixin, UpdateView):
 #     #pass
