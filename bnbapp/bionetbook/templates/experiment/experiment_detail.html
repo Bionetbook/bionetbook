@@ -1,18 +1,8 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}{{ experiment.name }}{% endblock %}
+{% block page_title %}Experiment Detail{% endblock %}
 
-{% block page_title %}{{ experiment.name }} {% endblock %}
-
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
-      	<span class="divider">/</span></li>
-      <li class="active">{{ experiment.name }}</li>
-    </ul>
-{% endblock %}
 
 {% block content %}
 <div class="row">

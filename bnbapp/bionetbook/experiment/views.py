@@ -19,8 +19,55 @@ from experiment.models import Experiment
 from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 from workflow.models import Workflow
 
+class ExperimentSetupMixin(PathMixin):
+	pathEnd = {}
+	titleMarks = {'suffix':"",'prefix':""}
 
-class ExperimentDetailView(LoginRequiredMixin, TemplateView):
+	def get_context_data(self, **kwargs):
+		context = super(ExperimentSetupMixin, self).get_context_data(**kwargs)
+		experiment_slug = self.kwargs.get('experiment_slug', None)
+
+		prefix = self.titleMarks['prefix']
+		suffix = self.titleMarks['suffix']
+		title = ""
+
+		if experiment_slug:
+			context['experiment'] = self.request.user.experiment_set.get(slug=experiment_slug)
+			context['organization'] = context['experiment'].owner
+			context['workflow'] = context['experiment'].workflow
+		else:
+			owner_slug = self.kwargs.get('owner_slug', None)
+			if owner_slug:
+				context['organization'] = self.request.user.organization_set.get(slug=owner_slug)
+
+		if 'organization' in context:
+			context['paths'].append({'name':context['organization'].name, 'url':context['organization'].get_absolute_url()})
+			title = context['organization'].name
+
+			if 'experiment' in context:
+				context['paths'].append({'name':context['experiment'].name, 'url':context['experiment'].get_absolute_url()})
+				prefix = title
+				title = context['experiment'].name
+
+		if self.pathEnd:
+			context['paths'].append( self.pathEnd )
+			suffix = self.pathEnd['name']
+		else:
+			del(context['paths'][-1]['url'])
+
+		if title:
+			context['titleBlock'] = {'prefix':prefix, 'title':title, 'suffix':suffix}
+		print context['paths']
+		return context
+
+
+class ExperimentUpdateView(LoginRequiredMixin, PathMixin, FormView):
+	model = Experiment
+	form_class = ExperimentManualForm
+	slug_url_kwarg = "owner_slug"
+	template_name = "experiment/experiment_form"
+
+class ExperimentDetailView(ExperimentSetupMixin, LoginRequiredMixin, TemplateView):
 
 	model = Experiment
 	slug_url_kwarg = "experiment_slug"
@@ -28,34 +75,36 @@ class ExperimentDetailView(LoginRequiredMixin, TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(ExperimentDetailView, self).get_context_data(**kwargs)
-		slug = self.kwargs.get(self.slug_url_kwarg, None)
-		try:
-			experiment = self.request.user.experiment_set.get(slug=slug)
-			org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
-			workflow = experiment.workflow
-		except:
-			raise Http404
-		if experiment:
-			context['experiment'] = experiment
-		else:
-			context['experiment'] = None
-		if workflow:
-			context['workflow'] = workflow
-		else:
-			context['workflow'] = None
-		if org:
-			context['organization'] = org
-		else:
-			context['organization'] = None
+		# slug = self.kwargs.get(self.slug_url_kwarg, None)
+		# try:
+		# 	experiment = self.request.user.experiment_set.get(slug=slug)
+		# 	org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+		# 	workflow = experiment.workflow
+		# except:
+		# 	raise Http404
+		# if experiment:
+		# 	context['experiment'] = experiment
+		# else:
+		# 	context['experiment'] = None
+		# if workflow:
+		# 	context['workflow'] = workflow
+		# else:
+		# 	context['workflow'] = None
+		# if org:
+		# 	context['organization'] = org
+		# else:
+		# 	context['organization'] = None
+
 		return context
 
 
-class ExperimentCreateView(PathMixin, LoginRequiredMixin, FormView):
+class ExperimentCreateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 
 	model = Experiment
 	form_class = ExperimentManualForm
 	slug_url_kwarg = "owner_slug"
 	template_name = "experiment/experiment_form.html"
+	pathEnd = {'name':'New Experiment'}
 
 	def get_success_url(self):
 		return self.get_absolute_url()
