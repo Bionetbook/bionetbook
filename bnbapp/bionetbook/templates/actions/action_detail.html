@@ -29,7 +29,7 @@
         {% if action.has_machine %}
           <h2>Machine: {{ action.machine.name }}</h2>
           {% if action.machine %}
-            <a class="btn btn-primary" href="{{ action.machine.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ action.machine.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+            <a class="btn btn-primary" href="{{ action.machine.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> 
             {% object_data_table action.machine %}
           {% else %}
             <a class="btn btn-success" href="{{ action.machine_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Machine</a>
