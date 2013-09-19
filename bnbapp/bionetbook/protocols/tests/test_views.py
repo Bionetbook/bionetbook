@@ -18,7 +18,7 @@ class ProtocolViewTests(AutoBaseTest):
         self.profile = self.createModelInstance(Profile, user=self.user)        # USER PROFILE SETUP
         self.org = self.createModelInstance(Organization, name="TestOrg")        # CREATE THE ORGANIZATION
         self.member = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
-        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org)        # CREATE PROTOCOL
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, author=self.user)        # CREATE PROTOCOL
 
     def test_create_protocol(self):
         url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
