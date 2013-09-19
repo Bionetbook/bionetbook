@@ -54,8 +54,7 @@ class Experiment(SlugStampMixin, TimeStampedModel):
             return slug
 
     def experiment_update_url(self):
-        print self.slug + " " + self.owner.slug
-        return reverse("experiment_update", kwargs={'experiment_slug':self.slug, 'owner_slug':self.owner.slug})
+        return reverse("experiment_update", kwargs={'owner_slug':self.owner.slug, 'experiment_slug':self.slug})
 
 
     def get_absolute_url(self):

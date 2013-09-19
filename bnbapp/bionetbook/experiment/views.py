@@ -72,12 +72,13 @@ class ExperimentDetailView(ExperimentSetupMixin, LoginRequiredMixin, TemplateVie
 		return context
 
 
-class ExperimentUpdateView(ExperimentSetupMixin, LoginRequiredMixin, UpdateView):
+class ExperimentUpdateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 	model = Experiment
 	form_class = ExperimentManualForm
 	slug_url_kwarg = "owner_slug"
-	template_name_suffix = "experiment/experiment_form.html"
+	template_name = "experiment/experiment_form.html"
 	pathEnd = {'name':'Edit'}
+
 
 	def form_valid(self, form):
 		slug = self.kwargs.get(self.slug_url_kwarg, None)
@@ -89,22 +90,46 @@ class ExperimentUpdateView(ExperimentSetupMixin, LoginRequiredMixin, UpdateView)
 		exp.name = form.cleaned_data['name']
 		exp.slug = slugify(exp.name)
 		exp.save()
-		# return HttpResponseRedirect(exp.get_absolute_url())
-		raise Http404
+		return HttpResponseRedirect(exp.get_absolute_url())
 
 	def get_form(self, form_class):
 		form = form_class(**self.get_form_kwargs())
 		try:
+			exp = self.request.user.experiment_set.get(slug=self.kwargs['experiment_slug'])
 			org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
 			workflows = org.workflow_set.all()
-			workflows = [w for w in workflows if w.user==self.request.user]
+			workflows = [w for w in workflows if w.user==self.request.user and w!=exp.workflow]
+			workflows.insert(0,exp.workflow)
+			form.initial['name'] = exp.name
 			form.fields['workflows'] = forms.ChoiceField(
 				label="Workflows",
 				choices=((x.pk,x) for x in workflows))
+			return form
 		except:
+			# try:
+			# 	org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
+			# 	workflows = org.workflow_set.all()
+			# 	workflows = [w for w in workflows if w.user==self.request.user]
+			# 	form.fields['workflows'] = forms.ChoiceField(
+			# 		label="Workflows",
+			# 		choices=((x.pk,x) for x in workflows))
+			# except:
+			# 	raise Http404
+			# return form
 			raise Http404
-		print form
 
+
+	# def post(self, request, *args, **kwargs):
+	# 	'''This is done to handle the two forms'''
+	# 	form = self.form_class(request.POST)
+
+	# 	if form.is_valid():
+	# 		return self.form_valid(form)
+	# 	else:
+	# 		return self.form_invalid(form)
+
+	# def form_invalid(self, form):
+	# 	return self.render_to_response(self.get_context_data(form=form))
 
 class ExperimentCreateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 
