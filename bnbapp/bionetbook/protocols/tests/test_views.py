@@ -18,7 +18,7 @@ class ProtocolViewTests(AutoBaseTest):
         self.profile = self.createModelInstance(Profile, user=self.user)        # USER PROFILE SETUP
         self.org = self.createModelInstance(Organization, name="TestOrg")        # CREATE THE ORGANIZATION
         self.member = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
-        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org)        # CREATE PROTOCOL
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, author=self.user)        # CREATE PROTOCOL
 
     def test_create_protocol(self):
         url = reverse("protocol_create", kwargs={'owner_slug': self.org.slug})
@@ -26,13 +26,13 @@ class ProtocolViewTests(AutoBaseTest):
         
         data = dict(name="Test Protoco 2l", raw="blag nlag")
         response = self.client.post(url, data, follows=True)
-        
-    # def test_protocol_detail(self):        
+
+    # def test_protocol_detail(self):
     #     self.assertTrue(self.client.login(username='testuser', password='password'))
     #     url = self.protocol.get_absolute_url()
     #     response = self.client.get(url)
     #     self.assertContains(response, '<td><a href="/protocols/test-protocol/steps/test-step/">Test Step</a></td>')
-        
+
     def test_index(self):
         resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
