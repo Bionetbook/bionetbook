@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 # from django.contrib import messages
 from protocols.models import Protocol
-from django.http import Http404
+from django.http import Http404, Http403
 
 # class ConfirmProfile(object):
 
@@ -44,10 +44,10 @@ class ProtocolAccess(object):
                 try:
                     protocol = Protocol.objects.get(slug=view_kwargs["protocol_slug"])
                 except Protocol.DoesNotExist:
-                    raise Http404
+                    raise Http403
 
                 if not protocol.user_has_access(user):
-                    raise Http404   # How about returning a 404 response
+                    raise Http403   # How about returning a 404 response
 
         return
 
