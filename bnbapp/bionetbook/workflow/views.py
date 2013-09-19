@@ -33,7 +33,7 @@ class WorkflowSetupMixin(PathMixin):
         if workflow_slug:
             context['workflow'] = self.request.user.workflow_set.get(slug=workflow_slug)
             context['organization'] = context['workflow'].owner
-            context['protocols'] = [Protocol.objects.get(pk=p) for p in context['workflow'].data['protocols']]
+            context['protocols'] = context['workflow'].listOfProtocols()
         else:
             owner_slug = self.kwargs.get('owner_slug', None)
             if owner_slug:
@@ -68,7 +68,7 @@ class WorkflowDetailView(WorkflowSetupMixin,LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(WorkflowDetailView, self).get_context_data(**kwargs)
         try:
-            protocols = [Protocol.objects.get(pk=p) for p in context['workflow'].data['protocols']]
+            protocols = context['workflow'].listOfProtocols()
         except:
             raise Http404
         if protocols:
@@ -123,6 +123,35 @@ class WorkflowListView(LoginRequiredMixin, ListView):
 #     form_class = WorkflowForm
 
 
+class WorkflowUpdateView(WorkflowSetupMixin, LoginRequiredMixin, TemplateView):
+
+    model = Workflow
+    slug_url_kwarg = "owner_slug"
+    template_name = "workflow/workflow_update.html"
+    pathEnd = {'name':'Edit'}
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkflowUpdateView, self).get_context_data(**kwargs)
+        try:
+            orgProtocols = [{'pk':p.pk,'name':p.name} for p in context['organization'].protocol_set.all() if p.published or p.author==self.request.user]
+            workflowProtocols = [{'pk':p.pk, 'name':p.name} for p in context['protocols']]
+            temp = [p for p in orgProtocols if p not in workflowProtocols]
+            protocols = [{'pk':p.pk,'name':p.name} for p in context['organization'].protocol_set.all() if p.published or p.author==self.request.user]
+        except:
+            raise Http404
+        if protocols:
+            context['protocols'] = protocols
+        if orgProtocols:
+            context['orgProtocols'] = temp
+        else:
+            context['orgProtocols'] = None
+        if workflowProtocols:
+            context['workflowProtocols'] = workflowProtocols
+        else:
+            context['workflowProtocols'] = None
+        return context
+
+
 class WorkflowCreateView(WorkflowSetupMixin, LoginRequiredMixin, TemplateView):
     '''
     View used to create new protocols
@@ -143,9 +172,7 @@ class WorkflowCreateView(WorkflowSetupMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(WorkflowCreateView, self).get_context_data(**kwargs)
         try:
-            slug = self.kwargs.get(self.slug_url_kwarg, None)
-            org = self.request.user.organization_set.get(slug=self.kwargs['owner_slug'])
-            protocols = [{'pk':p.pk,'name':p.name} for p in org.protocol_set.all() if p.published or p.author==self.request.user]
+            protocols = [{'pk':p.pk,'name':p.name} for p in context['organization'].protocol_set.all() if p.published or p.author==self.request.user]
         except:
             raise Http404
         if protocols:

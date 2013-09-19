@@ -42,6 +42,9 @@ class Workflow(SlugStampMixin, TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    def listOfProtocols(self):
+        return [Protocol.objects.get(pk=p) for p in self.data['protocols']]
+
     def protocols(self):
         if self.data['protocols']:
             return self.data['protocols']
@@ -54,6 +57,9 @@ class Workflow(SlugStampMixin, TimeStampedModel):
             return len(self.protocols())
         else:
             return 0
+
+    def get_update_url(self):
+        return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug':self.slug})
 
     def get_absolute_url(self):
         return reverse("workflow_detail", kwargs={'owner_slug':self.owner.slug,'workflow_slug':self.slug})
