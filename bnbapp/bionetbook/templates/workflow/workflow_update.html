@@ -13,14 +13,14 @@
     <form>
 <div class="form-group has-error">
   <label for="name">Name</label>
-<input type="text" id="workflowName" placeholder="Enter Workflow Name" required></ul>
+<input type="text" id="workflowName" value="{{workflow.name}}" required></ul>
 </div>
 <div id="dhtmlgoodies_dragDropContainer">
   <div id="dhtmlgoodies_listOfItems">
     <div>
       <p>Protocol List</p>
     <ul id="allItems">
-      {% for protocol in protocols %}
+      {% for protocol in orgProtocols %}
       <li id="node1">{{ protocol.name }}</li>
       {% endfor %}
     </ul>
@@ -31,6 +31,9 @@
     <div>
       <p>Selected Protocols</p>
       <ul id="box1">
+      {% for protocol in workflowProtocols %}
+      <li id="node1">{{ protocol.name }}</li>
+      {% endfor %}
       </ul>
     </div>
   </div>
@@ -72,7 +75,7 @@
   /* VARIABLES YOU COULD MODIFY */
   var boxSizeArray = [protocolList.length]; // Array indicating how many items there is rooom for in the right column ULs
 
-
+  var workflow_slug = {{ workflow.slug|as_json }};
   var verticalSpaceBetweenListItems = 3;  // Pixels space between one <li> and next
                       // Same value or higher as margin bottom in CSS for #dhtmlgoodies_dragDropContainer ul li,#dragContent li
 
@@ -368,14 +371,15 @@
     var fd = new FormData();
     fd.append("name", inputName);
     fd.append("protocols", JSON.stringify(protocols));
+    fd.append("workflow_slug", workflow_slug);
     $.ajax({
       url: url,
-      type: "POST",
+      type: "PUT",
       data: fd,
       processData: false,
       contentType: false,
       success: function(response) {
-        console.log(response);
+        //console.log(response);
         if (response) {
             // data.redirect contains the string URL to redirect to
             window.location.href = response;
@@ -522,8 +526,8 @@
 
     /* CSS HACK */
     width: 180px; /* IE 5.x */
-    width/* */:/**/300px; /* Other browsers */
-    width: /**/300px;
+    width/* */:/**/240px; /* Other browsers */
+    width: /**/240px;
 
   }
   #dhtmlgoodies_listOfItems ul{ /* Left(Sources) column <ul> */
@@ -557,13 +561,13 @@
   /* Start main container CSS */
 
   div#dhtmlgoodies_mainContainer{ /* Right column DIV */
-    width:300px;
+    width:240px;
     float:left;
     padding-right:10px;
         /* CSS HACK */
-    width: 300px; /* IE 5.x */
-    width/* */:/**/300px; /* Other browsers */
-    width: /**/300px;
+    width: 240px; /* IE 5.x */
+    width/* */:/**/240px; /* Other browsers */
+    width: /**/240px;
   }
 
   #dhtmlgoodies_mainContainer div{  /* Parent <div> of small boxes */
@@ -591,7 +595,7 @@
   }
 
   #dhtmlgoodies_mainContainer ul{ /* Small box in right column ,i.e <ul> */
-    width:300px;
+    width:240px;
     height:480px;
     border:0px;
     margin-bottom:0px;

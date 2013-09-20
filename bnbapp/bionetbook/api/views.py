@@ -98,10 +98,12 @@ class JSONResponseMixin(object):
                             'pk':2
                         } ]
     }
+
     '''
 
+
 class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
-    http_method_names = ['get','post']
+    http_method_names = ['get','post', 'put']
 
     def get(self, request, *args, **kwargs):
         slug = self.kwargs['owner_slug']
@@ -124,6 +126,20 @@ class ProtocolListAPI(JSONResponseMixin, LoginRequiredMixin, View):
         except:
             raise Http404
 
+    def put(self, request, *args, **kwargs):
+        request = self.put_request_scrub(request)
+        try:
+            #print ast.literal_eval(request.POST.getlist('protocols')[0])
+            protocolList = [p['pk'] for p in json.loads(request.POST.dict()['protocols'])]
+            slug = dict(request.PUT.iterlists())['workflow_slug'][0]
+            w = self.request.user.workflow_set.get(slug=slug)
+            w.name = dict(request.PUT.iterlists())['name'][0]
+            w.data = {'meta':{},'protocols':protocolList}
+            w.slug = slugify(w.name)
+            w.save()
+            return HttpResponse(w.get_absolute_url())
+        except:
+            raise Http404
 
 ##############
 # CALENDAR API

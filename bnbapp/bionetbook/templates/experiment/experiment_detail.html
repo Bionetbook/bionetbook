@@ -1,22 +1,14 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}{{ experiment.name }}{% endblock %}
+{% block page_title %}Experiment Detail{% endblock %}
 
-{% block page_title %}{{ experiment.name }} {% endblock %}
-
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li><a href="{% url organization_main owner_slug=organization.slug %}"> {{ organization.name }}</a>
-      	<span class="divider">/</span></li>
-      <li class="active">{{ experiment.name }}</li>
-    </ul>
-{% endblock %}
 
 {% block content %}
 <div class="row">
-
+        <div class="span1" id="graph_switches">
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{% url experiment_update owner_slug=organization.slug experiment_slug=experiment.slug %}"><i class="icon-edit icon-white"></i> Edit</a>
+    </div>
     <div class="span12">
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Exeriment Detail</h3></li>
