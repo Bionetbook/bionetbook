@@ -19,7 +19,7 @@
         <div class="accordion-group">
             <div class="accordion-heading">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-                    <h3>Draft Protocols ({{ request.user.get_profile.get_private_draft_protocols|length}})</h3>
+                    <h3>Draft Protocols ({{ draft|length}})</h3>
                 </a>
             </div>    
             <div id="collapseOne" class="accordion-body collapse in">
@@ -33,7 +33,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                            {% for item in request.user.get_profile.get_private_draft_protocols %}
+                            {% for item in draft %}
                             <tr>
                                 <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
                                 <td>{{ item.duration|protocol_time_compact }}</td>     
@@ -49,7 +49,7 @@
             <div class="accordion-group">
                 <div class="accordion-heading">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo">
-                        <h3>Private Protocols ({{ request.user.get_profile.get_private_protocols|length}})</h3>
+                        <h3>Private Protocols ({{ published|length}})</h3>
                     </a>
                 </div>    
                 <div id="collapseTwo" class="accordion-body collapse">
@@ -63,7 +63,7 @@
                               </tr>
                             </thead>
                             <tbody>
-                                {% for item in request.user.get_profile.get_private_protocols %}
+                                {% for item in published %}
                                 <tr>
                                     <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
                                     <td>{{ item.duration|protocol_time_compact }}</td>     

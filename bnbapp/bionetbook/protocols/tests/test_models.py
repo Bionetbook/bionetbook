@@ -15,7 +15,7 @@ class ProtocolModelTests(AutoBaseTest):
         self.user = self.createUserInstance( username="testuser", password="password", email="test@example.com" )        # CREATE THE USER
         self.org = self.createModelInstance(Organization, name="testorg")        # CREATE THE ORGANIZATION
         self.membership = self.createModelInstance(Membership, user=self.user, org=self.org)        # ADD THE MEMBERSHIP
-        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?")
+        self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, raw="what?", author=self.user)
 
     def test_create_protocol(self):
         self.assertEquals(self.protocol.raw, "what?")

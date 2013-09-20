@@ -36,8 +36,6 @@ class Experiment(SlugStampMixin, TimeStampedModel):
         if not self.data:
             self.data = self.setupExperiment() 
     	super(Experiment,self).save(*args,**kwargs)
-        for cal in self.user.calendar_set.all():
-            cal.addExperiment(self)
 
     def setupExperiment(self):
         ret = {'meta':{}}
@@ -52,6 +50,9 @@ class Experiment(SlugStampMixin, TimeStampedModel):
             return "%d-%s" % (self.pk, slug)
         else:
             return slug
+
+    def experiment_update_url(self):
+        return reverse("experiment_update", kwargs={'owner_slug':self.owner.slug, 'experiment_slug':self.slug})
 
 
     def get_absolute_url(self):
