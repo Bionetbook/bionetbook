@@ -64,38 +64,33 @@ class AuthorizedOrganizationMixin(object):
     # NEEDS TO BE UPDATE TO HANDLE NO PROTOCOL PASSED AND JUST AN ORG
 
     def get_protocol(self):
-        if hasattr(self, "protocol"):
+        if hasattr(self, "protocol"):       # IF THE ATTR IS ALREADY SET, USE THAT
             return self.protocol
             
         slug = self.kwargs.get('protocol_slug', None)
 
-        if slug is None:
+        if slug is None:                    # IF THERE IS NO SLUG PASSED, ERROR (IS THIS NEEDED?)
             print "No slug passed"
             raise Http404()
 
         # Is there an object attached to self?
-        if hasattr(self, "object"):
+        if hasattr(self, "object"):                         
             # If so, and it's a Protocol, then use that
             if isinstance(self.object, Protocol):
                 protocol = self.object
             else:
                 # Otherwise find the protocol normally
                 protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
-                print "object isn't a protocol`"
+                # print "object isn't a protocol`"
         else:
-            # Find the protocol normall
+            # Find the protocol normally
             protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
-            print "protocol isn't an object"
+            # print "protocol isn't an object"
 
-        # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
             if self.request.user.is_superuser or self.request.user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
                 return protocol
-            else:         
-                print "line 93"
-                raise PermissionDenied
-
-            try:
+            try:                                                                # IF THEY ARE NOT AN ADMIN OR SUPERUSER, SEE IF THEY HAVE MEMBERSHIP FOR THE PROTOCOL
                 membership = self.request.user.membership_set.get(pk=protocol.owner.pk)
                 return protocol
             except ObjectDoesNotExist: 
@@ -104,19 +99,17 @@ class AuthorizedOrganizationMixin(object):
         # if published just show it.
         if protocol.published:
             return protocol
-        # else: 
-        # unpublished and not authenticated or part of the org that owns it.
-            # raise Http404()
+
+        raise Http404()
 
     def get_context_data(self, **kwargs):
         self.protocol = self.get_protocol()
         context = super(AuthorizedOrganizationMixin, self).get_context_data(**kwargs)
-        context['protocol'] = self.protocol
-        # context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
+        # context['protocol'] = self.protocol
         return context
 
 
-class AuthorizedOrganizationEditMixin(object):
+class AuthorizedOrganizationEditMixin(AuthorizedOrganizationMixin):
 
     def check_authorization(self):
         if self.request.user.is_superuser or self.request.user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
