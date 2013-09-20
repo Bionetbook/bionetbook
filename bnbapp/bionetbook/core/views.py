@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django import http
 from django.core.urlresolvers import reverse
 # import django.template as template
-
+from django.core.exceptions import PermissionDenied
 from braces.views import LoginRequiredMixin
 
 from core.utils import check_owner_edit_authorization, check_owner_view_authorization
@@ -89,13 +89,14 @@ class AuthorizedOrganizationMixin(object):
         if self.request.user.is_authenticated:
             if check_owner_view_authorization(protocol, self.request.user):
                 return protocol
-
+            else:         
+                raise PermissionDenied
         # if published just show it.
         if protocol.published:
             return protocol
-
+        # else: 
         # unpublished and not authenticated or part of the org that owns it.
-        raise Http404()
+            # raise Http404()
 
     def get_context_data(self, **kwargs):
         self.protocol = self.get_protocol()
