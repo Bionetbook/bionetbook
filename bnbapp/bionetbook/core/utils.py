@@ -43,10 +43,11 @@ def check_owner_view_authorization(protocol, user):
     '''
 
     if user.is_superuser or user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
+        print 'user is superuser or staff'
         return True
 
     try:
-        print "owner edit protocol pk:%s"%protocol.owner.pk  
+        print "owner edit protocol pk:%s" %protocol.owner.pk  
         membership = user.membership_set.get(pk=protocol.owner.pk)
         print "view authorship member", membership
         return True
