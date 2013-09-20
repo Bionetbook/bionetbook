@@ -69,6 +69,7 @@ class AuthorizedOrganizationMixin(object):
         slug = self.kwargs.get('protocol_slug', None)
         if slug is None:
             raise Http404()
+            print "no slug"
 
         # Is there an object attached to self?
         if hasattr(self, "object"):
@@ -78,9 +79,11 @@ class AuthorizedOrganizationMixin(object):
             else:
                 # Otherwise find the protocol normally
                 protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+                print "object isn't a protocol`"
         else:
             # Find the protocol normall
             protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+            print "protocol isn't an object"
 
         # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
