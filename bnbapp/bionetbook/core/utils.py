@@ -48,7 +48,7 @@ def check_owner_view_authorization(protocol, user):
 
     try:
         print "owner edit protocol pk:%s" %protocol.owner.pk  
-        membership = user.membership_set.get(pk=protocol.owner.pk)
+        membership = user.membership_set.get(org=protocol.owner)
         print "view authorship member", membership
         return True
     except ObjectDoesNotExist:
