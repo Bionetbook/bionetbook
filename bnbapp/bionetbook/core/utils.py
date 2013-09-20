@@ -24,9 +24,13 @@ def check_owner_edit_authorization(item, user):
 
     try:
         membership = user.membership_set.get(pk=item.owner.pk)
+        print "memebership for edit auth", membership
         if membership.role in ['a','w']:                                # ADMIN OR WRITE PERMISSIONS
             return True
+        else: 
+            print "not admin or write"
     except ObjectDoesNotExist:
+        print "no object"
        pass
     
     return False
@@ -42,9 +46,12 @@ def check_owner_view_authorization(protocol, user):
         return True
 
     try:
+        print "owner edit protocol pk:" protocol.owner.pk  
         membership = user.membership_set.get(pk=protocol.owner.pk)
+        print "view authorship member", membership
         return True
     except ObjectDoesNotExist:
+        print "no membership object"
        pass
     
     return False
