@@ -91,6 +91,7 @@ class AuthorizedOrganizationMixin(object):
                 return protocol
             else:         
                 raise PermissionDenied
+                print "line 94"
         # if published just show it.
         if protocol.published:
             return protocol
