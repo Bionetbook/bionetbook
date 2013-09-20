@@ -73,7 +73,6 @@ class OrganizationMainView(LoginRequiredMixin, TemplateView):
 			context['draft'] = draftProtocols
 		else:
 			context['draft'] = []
-		print context
 		return context
     
     # def get_context_data(self, **kwargs):

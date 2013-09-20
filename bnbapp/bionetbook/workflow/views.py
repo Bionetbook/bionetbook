@@ -67,14 +67,6 @@ class WorkflowDetailView(WorkflowSetupMixin,LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(WorkflowDetailView, self).get_context_data(**kwargs)
-        try:
-            protocols = context['workflow'].listOfProtocols()
-        except:
-            raise Http404
-        if protocols:
-            context['protocols'] = protocols
-        else:
-            context['protocols'] = None
         return context
 
 
@@ -136,13 +128,11 @@ class WorkflowUpdateView(WorkflowSetupMixin, LoginRequiredMixin, TemplateView):
             orgProtocols = [{'pk':p.pk,'name':p.name} for p in context['organization'].protocol_set.all() if p.published or p.author==self.request.user]
             workflowProtocols = [{'pk':p.pk, 'name':p.name} for p in context['protocols']]
             temp = [p for p in orgProtocols if p not in workflowProtocols]
-            protocols = [{'pk':p.pk,'name':p.name} for p in context['organization'].protocol_set.all() if p.published or p.author==self.request.user]
         except:
             raise Http404
-        if protocols:
-            context['protocols'] = protocols
         if orgProtocols:
             context['orgProtocols'] = temp
+            context['protocols'] = orgProtocols
         else:
             context['orgProtocols'] = None
         if workflowProtocols:
