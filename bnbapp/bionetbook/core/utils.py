@@ -31,7 +31,7 @@ def check_owner_edit_authorization(item, user):
             print "not admin or write"
     except ObjectDoesNotExist:
         print "no object"
-       pass
+        pass
     
     return False
 
