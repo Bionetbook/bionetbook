@@ -66,8 +66,11 @@ class AuthorizedOrganizationMixin(object):
     def get_protocol(self):
         if hasattr(self, "protocol"):
             return self.protocol
+            
         slug = self.kwargs.get('protocol_slug', None)
+
         if slug is None:
+            print "No slug passed"
             raise Http404()
 
         # Is there an object attached to self?
@@ -78,39 +81,58 @@ class AuthorizedOrganizationMixin(object):
             else:
                 # Otherwise find the protocol normally
                 protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+                print "object isn't a protocol`"
         else:
             # Find the protocol normall
             protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
+            print "protocol isn't an object"
 
         # If superuser, staff, or owner show it
         if self.request.user.is_authenticated:
-            if check_owner_view_authorization(protocol, self.request.user):
+            if self.request.user.is_superuser or self.request.user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
                 return protocol
+            else:         
+                print "line 93"
+                raise PermissionDenied
+
+            try:
+                membership = self.request.user.membership_set.get(pk=protocol.owner.pk)
+                return protocol
+            except ObjectDoesNotExist: 
+               pass
 
         # if published just show it.
         if protocol.published:
             return protocol
-
+        # else: 
         # unpublished and not authenticated or part of the org that owns it.
-        raise Http404()
+            # raise Http404()
 
     def get_context_data(self, **kwargs):
         self.protocol = self.get_protocol()
         context = super(AuthorizedOrganizationMixin, self).get_context_data(**kwargs)
         context['protocol'] = self.protocol
-        context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
+        # context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
         return context
 
 
 class AuthorizedOrganizationEditMixin(object):
 
     def check_authorization(self):
-        if not check_owner_edit_authorization(self.protocol, self.request.user):
-            raise Http404
+        if self.request.user.is_superuser or self.request.user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
+            return True
 
-    def get_context_data(self, **kwargs):
-        self.check_authorization()
-        return super(AuthorizedOrganizationEditMixin, self).get_context_data(**kwargs)
+        try:
+            membership = self.request.user.membership_set.get(pk=item.owner.pk)
+            if membership.role in ['a','w']:                                # ADMIN OR WRITE PERMISSIONS
+                return True
+        except ObjectDoesNotExist:
+           pass
+        
+        raise Http404
+
+        # if not check_owner_edit_authorization(self.protocol, self.request.user):
+        #     raise Http404
 
 
 class ConfirmationMixin(object):
