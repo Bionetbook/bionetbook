@@ -36,8 +36,6 @@ class Experiment(SlugStampMixin, TimeStampedModel):
         if not self.data:
             self.data = self.setupExperiment() 
     	super(Experiment,self).save(*args,**kwargs)
-        for cal in self.user.calendar_set.all():
-            cal.addExperiment(self)
 
     def setupExperiment(self):
         ret = {'meta':{}}

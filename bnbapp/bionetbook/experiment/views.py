@@ -154,6 +154,8 @@ class ExperimentCreateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 		e.slug = slugify(form.cleaned_data['name'])
 		e.owner = org
 		e.save()
+		for cal in self.request.user.calendar_set.all():
+			cal.addExperiment(e)
 		return HttpResponseRedirect(e.get_absolute_url())
 
 	def get_form(self, form_class):
