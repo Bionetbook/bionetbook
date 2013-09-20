@@ -489,7 +489,7 @@ class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
         return form
 
 
-class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, UpdateView):
+class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
