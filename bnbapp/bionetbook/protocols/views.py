@@ -403,7 +403,7 @@ class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedO
     template_name = "protocols/protocol_form_test.html"  
 
 
-class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
     template_name = "protocols/protocol_layout_single.html"           
 
     # def get_context_data(self, **kwargs):
