@@ -44,9 +44,11 @@ class ProtocolAccess(object):
                 try:
                     protocol = Protocol.objects.get(slug=view_kwargs["protocol_slug"])
                 except Protocol.DoesNotExist:
+                    print "%s failed to access non-existant protocol" % (user)
                     raise Http404
 
                 if not protocol.user_has_access(user):
+                    print "%s failed to access %s" % (user, protocol)
                     raise Http404   # How about returning a 404 response
 
         return
