@@ -90,8 +90,9 @@ class AuthorizedOrganizationMixin(object):
             if check_owner_view_authorization(protocol, self.request.user):
                 return protocol
             else:         
+                print "line 93"
                 raise PermissionDenied
-                print "line 94"
+
         # if published just show it.
         if protocol.published:
             return protocol
