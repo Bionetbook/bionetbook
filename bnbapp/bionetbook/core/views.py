@@ -91,7 +91,7 @@ class AuthorizedOrganizationMixin(object):
             if self.request.user.is_superuser or self.request.user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
                 return protocol
             try:                                                                # IF THEY ARE NOT AN ADMIN OR SUPERUSER, SEE IF THEY HAVE MEMBERSHIP FOR THE PROTOCOL
-                membership = self.request.user.membership_set.get(pk=protocol.owner.pk)
+                membership = self.request.user.membership_set.get(org=protocol.owner)
                 return protocol
             except ObjectDoesNotExist: 
                pass
@@ -116,7 +116,7 @@ class AuthorizedOrganizationEditMixin(AuthorizedOrganizationMixin):
             return True
 
         try:
-            membership = self.request.user.membership_set.get(pk=item.owner.pk)
+            membership = self.request.user.membership_set.get(pk=self.object.owner)
             if membership.role in ['a','w']:                                # ADMIN OR WRITE PERMISSIONS
                 return True
         except ObjectDoesNotExist:
