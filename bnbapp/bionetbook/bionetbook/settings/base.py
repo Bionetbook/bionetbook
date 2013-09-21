@@ -66,6 +66,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'profiletools.middleware.LazyProfileMiddleware',
     'profiles.middleware.ConfirmProfile',
+    'protocols.middleware.ProtocolSetup',
     'protocols.middleware.ProtocolAccess',
 )
 

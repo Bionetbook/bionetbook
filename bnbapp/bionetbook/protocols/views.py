@@ -41,8 +41,10 @@ class ProtocolSetupMixin(PathMixin):
         suffix = self.titleMarks['suffix']
         title = ""
 
+        print dir(self.request)
+
         if protocol_slug:
-            context['protocol'] = Protocol.objects.get(slug=protocol_slug)
+            context['protocol'] = self.request.protocol #Protocol.objects.get(slug=protocol_slug)
             context['organization'] = context['protocol'].owner
 
             step_slug = self.kwargs.get('step_slug', None)
@@ -406,8 +408,9 @@ class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedO
 class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
     template_name = "protocols/protocol_layout_single.html"           
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(ProtocolDetailView, self).get_context_data(**kwargs)
+    def get_context_data(self, **kwargs):
+        # print "PROTOCOL OBJECT: %s" % self.request.protocol.owner.slug
+        context = super(ProtocolDetailView, self).get_context_data(**kwargs)
     #     del(context['paths'][-1]['url'])
     #     return context
 

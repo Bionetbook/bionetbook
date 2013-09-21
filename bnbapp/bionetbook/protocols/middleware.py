@@ -4,6 +4,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from protocols.models import Protocol
 from django.http import Http404
 
+
+class ProtocolSetup(object):
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+
+        if "protocol_slug" in view_kwargs:
+            request.protocol = Protocol.objects.get(slug=view_kwargs["protocol_slug"])
+        else:
+            request.protocol = None
+
 # class ConfirmProfile(object):
 
 #     def process_response(self, request, response):
@@ -32,10 +42,14 @@ from django.http import Http404
 #         return response
 
 
-
 class ProtocolAccess(object):
 
+#     def process_request(self, request):       # SETUP THE PROTOCOL HERE?
+#         request.foo = 'bar'
+
     def process_view(self, request, view_func, view_args, view_kwargs):
+
+        # OR SETUP THE PROTOCOL HERE?
 
         if "protocol_slug" in view_kwargs:
             user = getattr(request, "user", None)
