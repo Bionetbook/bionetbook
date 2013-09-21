@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponse
 from django.views.generic import ListView, View, CreateView, FormView, UpdateView
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
-from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
+from core.views import ConfirmationObjectView
 from django.utils import simplejson
 
 from core.views import PathMixin
