@@ -22,7 +22,7 @@ class APIViewTests(AutoBaseTest):
 		self.profile = self.createModelInstance(Profile, user=self.user)
 		self.org = self.createModelInstance(Organization, name="TestOrg")
 		self.member = self.createModelInstance(Membership, user=self.user, org=self.org)
-		self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, data=
+		self.protocol = self.createModelInstance(Protocol, name="Test Protocol", owner=self.org, author=self.user, data=
   		{
   			"steps": [ {
       				"objectid": "8v5lak", 
@@ -40,7 +40,7 @@ class APIViewTests(AutoBaseTest):
       			"slug": "8v5lak", 
     		} ]
 		})
-		self.protocol2 = self.createModelInstance(Protocol, name="Test Protocol 2", owner=self.org, data=
+		self.protocol2 = self.createModelInstance(Protocol, name="Test Protocol 2", owner=self.org, author=self.user, data=
   		{
   			"steps": [ {
       				"objectid": "xxxxxx", 
