@@ -13,17 +13,17 @@ TEMPERATURE_UNITS = (("C","Celsius"),("K","Kelvin"),("F","Ferinheit"),)
 VESSELS = (("","None"),('epi','1.8 ml tube'), ('pcr','200 ul tube'), ('15 ml','Falcon 15 ml'), ('50 ml', 'Falcon 50 ml'),)
 
 
-def check_owner_edit_authorization(item, user):
+def check_owner_edit_authorization(protocol, user):
     '''
-    Checks the Authorization for a user to see if they can edit a given item based on the 
-    item's owner, if the user is a member of that organization and the role the user has.
+    Checks the Authorization for a user to see if they can edit a given protocol based on the 
+    protocol's owner, if the user is a member of that organization and the role the user has.
     '''
 
     if user.is_superuser or user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
         return True
 
     try:
-        membership = user.membership_set.get(pk=item.owner.pk)
+        membership = user.membership_set.get(org=protocol.owner)
         print "memebership for edit auth", membership
         if membership.role in ['a','w']:                                # ADMIN OR WRITE PERMISSIONS
             return True
@@ -38,8 +38,8 @@ def check_owner_edit_authorization(item, user):
 
 def check_owner_view_authorization(protocol, user):
     '''
-    Checks the Authorization for a user to see if they can view a given item based on the 
-    item's owner and if the user is a member of that organization.
+    Checks the Authorization for a user to see if they can view a given protocol based on the 
+    protocol's owner and if the user is a member of that organization.
     '''
 
     if user.is_superuser or user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
