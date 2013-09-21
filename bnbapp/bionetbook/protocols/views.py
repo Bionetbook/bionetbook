@@ -14,7 +14,7 @@ from django import forms
 from django.db.models.query import EmptyQuerySet
 
 from braces.views import LoginRequiredMixin
-from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView, PathMixin
+from core.views import ConfirmationObjectView, PathMixin
 
 from protocols.forms import ProtocolPublishForm, StepForm, ActionForm, ComponentForm, MachineForm, ThermocyclerForm, OrganizationListForm
 from protocols.forms.baseforms import ProtocolForm
@@ -40,7 +40,7 @@ class ProtocolSetupMixin(PathMixin):
         suffix = self.titleMarks['suffix']
         title = ""
 
-        print dir(self.request)
+        # print dir(self.request)
 
         if self.request.protocol:
             context['protocol'] = self.request.protocol #Protocol.objects.get(slug=protocol_slug)
@@ -105,7 +105,7 @@ class ProtocolSetupMixin(PathMixin):
 # BASE CLASSES
 #####################
 
-class NodeDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, DetailView):
+class NodeDetailView(ProtocolSetupMixin, LoginRequiredMixin, DetailView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -124,7 +124,7 @@ class NodeDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
         return context
 
 
-class NodeCreateViewBase(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, SingleObjectMixin, FormView):
+class NodeCreateViewBase(ProtocolSetupMixin, LoginRequiredMixin, SingleObjectMixin, FormView):
     '''This view needs to properly create a view, set a form and process the form'''
 
     model = Protocol
@@ -224,7 +224,7 @@ class NodeCreateViewBase(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
             return self.form_invalid(form)
 
 
-class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, UpdateView):
+class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, UpdateView):
 
     slugs = []
     node_type = None
@@ -320,7 +320,7 @@ class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -402,11 +402,11 @@ class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
 class ProtocolCreateTestView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
     template_name = "protocols/protocol_form_test.html"  
 
-class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+class ProtocolUpdateTestView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
     template_name = "protocols/protocol_form_test.html"  
 
 
-class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, TemplateView):
+class ProtocolDetailView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
     template_name = "protocols/protocol_layout_single.html"           
 
     def get_context_data(self, **kwargs):
@@ -493,7 +493,7 @@ class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
         return form
 
 
-class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, UpdateView):
+class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
@@ -560,7 +560,7 @@ class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return obj
 
 
-class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -580,7 +580,7 @@ class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrga
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
 
-class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -601,7 +601,7 @@ class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return http.HttpResponseRedirect(url)
 
 
-class ProtocolDuplicateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolDuplicateView(ProtocolSetupMixin, LoginRequiredMixin, ConfirmationObjectView):
 
     # NEED TO VALIDATE THE FORM TO GET THE OWNER
     # NEED TO CONFIRM THE PROTOCOL IS PUBLISHED BEFORE DUPLICATING
@@ -740,7 +740,7 @@ class ActionDetailView(NodeDetailView):
     slugs = ['step_slug', 'action_slug']
 
 
-class ActionVerbListView(ProtocolSetupMixin, AuthorizedOrganizationMixin, DetailView):
+class ActionVerbListView(ProtocolSetupMixin, DetailView):
 
     model = Protocol
     template_name = "actions/action_verb_list.html"
@@ -830,7 +830,7 @@ class ActionCreateView(NodeCreateViewBase):
         verb_slug = self.kwargs.get('verb_slug', None)                              # ADD THE VERB
         data['verb'] = verb_slug
 
-        print data
+        # print data
 
         action = Action(protocol, parent=step, data=data)
 
