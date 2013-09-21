@@ -115,7 +115,9 @@ class Calendar(TimeStampedModel):
         ret = {'meta':{},'events':[]}
         userExperimentList = self.user.experiment_set.all()
         for e in userExperimentList:                    # loop through each experiment for user
-            protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
+            # protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
+            protocolList = Protocol.objects.filter(id__in=e.workflow.data['protocols'])
+
             for p in protocolList:      # loop through each experiments protocols
                 #stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
                 actionList = []
@@ -151,8 +153,10 @@ class Calendar(TimeStampedModel):
         return ret
 
     def addExperiment(self, newExperiment):
-        events = self.data['events']             
-        protocolList = [Protocol.objects.get(pk=p) for p in newExperiment.workflow.data['protocols']]
+        events = self.data['events']
+        # protocolList = [Protocol.objects.get(pk=p) for p in newExperiment.workflow.data['protocols']]
+        protocolList = Protocol.objects.filter(id__in=newExperiment.workflow.data['protocols'])
+
         for p in protocolList:      # loop through each experiments protocols
             actionList = []
             for step in p.data['steps']:

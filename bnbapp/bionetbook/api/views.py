@@ -290,23 +290,22 @@ class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):     # NEED A PRE
     # NEEDS TO HANDLE GET, POST, UPDATE AND DELETE
     http_method_names = ['get', 'post', 'put', 'delete']
 
-    def get_protocol(self):
-        '''Unified method to get a protocol via ID or Slug'''
-        if 'protocol_slug' in self.kwargs:
-            result = get_object_or_404( Protocol, slug=self.kwargs['protocol_slug'] )
-        else:
-            result = get_object_or_404( Protocol, id=self.kwargs['protocol_id'] )
+    # def get_protocol(self):
+    #     '''Unified method to get a protocol via ID or Slug'''
+    #     if 'protocol_slug' in self.kwargs:
+    #         result = get_object_or_404( Protocol, slug=self.kwargs['protocol_slug'] )
+    #     else:
+    #         result = get_object_or_404( Protocol, id=self.kwargs['protocol_id'] )
 
-        #CHECK TO SEE IF THE USER HAS PERMISSIONS TO VIEW THIS PROTOCOL AND 404 IF NOT
+    #     #CHECK TO SEE IF THE USER HAS PERMISSIONS TO VIEW THIS PROTOCOL AND 404 IF NOT
 
-        return result
+    #     return result
 
     def get(self, request, *args, **kwargs):
         '''Read only method for getting a protocol in JSON format'''
-        protocol = self.get_protocol()
-
-        if protocol.data:
-            return self.render_to_response( self.context_package( data=protocol.as_dict() ) )
+        # protocol = self.get_protocol()
+        if request.protocol.data:
+            return self.render_to_response( self.context_package( data=request.protocol.as_dict() ) )
         else:
             return self.render_to_response( self.context_package( error={'type':'NoObjectData', 'description':'Requested protocol has no data.'} ) )
 
@@ -341,10 +340,8 @@ class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):     # NEED A PRE
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
         if request.protocol:
-            # p = Protocol.objects.get(slug=protocol_slug)
-            p = request.protocol
-            if p.data:
-                return HttpResponse(json.dumps(p.data), mimetype="application/json")
+            if request.protocol.data:
+                return HttpResponse(json.dumps(request.protocol.data), mimetype="application/json")
             else:
                 return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
         else:
@@ -355,22 +352,22 @@ class ProtocolLayoutAPI(JSONResponseMixin, LoginRequiredMixin, View):
     '''
     JSON call of a protocol diagram handling 1 and 2 protocols
     '''
-    def get(self, request, *args, **kwargs):
-        single_protocol = True
-        protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
-        protocols = [protocol_a]
+    def get(self, request, *args, **kwargs):                # NEEDS TO BE UPDATED TO RELY ON MIDDLEWARE FOR THE ACCESS
+        # single_protocol = True
+        # protocol_a = get_object_or_404( Protocol, slug=kwargs['protocol_a_slug'] )
+        # protocols = [protocol_a]
 
-        if 'protocol_b_slug' in kwargs:
-            protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
-            protocols.append( protocol_b )
-            single_protocol = False
+        # if 'protocol_b_slug' in kwargs:
+        #     protocol_b = get_object_or_404( Protocol, slug=kwargs['protocol_b_slug'] )
+        #     protocols.append( protocol_b )
+        #     single_protocol = False
 
-        comp = Compare( protocols )
+        comp = Compare( request.protocols )
         comp.get_layout_by_objectid()
         data = list(comp.layout)
 
-        if single_protocol:
-            data.append( { 'text':protocol_a.get_verbatim_text(numbers=True) } )
+        if len(request.protocols) == 1:
+            data.append( { 'text':request.protocols[0].get_verbatim_text(numbers=True) } )
 
         return self.render_to_response(data)
 
@@ -396,10 +393,11 @@ def get_layout_compare_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare
     '''
-    A = Protocol.objects.get(slug=protocol_a_slug)
-    B = Protocol.objects.get(slug=protocol_b_slug)
-    protocols = [A,B]
-    G = Compare(protocols)
+    # A = Protocol.objects.get(slug=protocol_a_slug)
+    # B = Protocol.objects.get(slug=protocol_b_slug)
+    # protocols = [A,B]
+    # G = Compare(protocols)
+    G = Compare(request.protocols)
     G.get_layout_by_objectid()
     data = list(G.layout)
     return HttpResponse(json.dumps(data, indent = 4, separators=(',', ': ')), mimetype="application/json")     
@@ -409,10 +407,11 @@ def get_layout_clone_json(request, protocol_a_slug ,protocol_b_slug):
     '''
     JSON call of a 2-protocol compare
     '''
-    A = Protocol.objects.get(slug=protocol_a_slug)
-    B = Protocol.objects.get(slug=protocol_b_slug)
-    protocols = [A,B]
-    G = Compare(protocols)
+    # A = Protocol.objects.get(slug=protocol_a_slug)
+    # B = Protocol.objects.get(slug=protocol_b_slug)
+    # protocols = [A,B]
+    # G = Compare(protocols)
+    G = Compare(request.protocols)
     G.get_layout_by_objectid()
     [r.update(child_diff = "True") for r in G.layout]
     data = list(G.layout)

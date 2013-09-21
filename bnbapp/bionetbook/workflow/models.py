@@ -43,7 +43,8 @@ class Workflow(SlugStampMixin, TimeStampedModel):
         return self.name
 
     def listOfProtocols(self):
-        return [Protocol.objects.get(pk=p) for p in self.data['protocols']]
+        # return [Protocol.objects.get(pk=p) for p in self.data['protocols']]
+        return Protocol.objects.filter(id__in=self.data['protocols'])
 
     def protocols(self):
         if self.data['protocols']:

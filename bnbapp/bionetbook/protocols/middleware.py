@@ -21,6 +21,8 @@ class ProtocolAccess(object):
             if key in view_kwargs:
                 request.protocols.append(user, view_kwargs[key])
 
+        # return Protocol.objects.filter(id__in=self.data['protocols'])     # <- SHOULD USE SOMETHING MORE LIKE THIS
+
         return
 
     def get_protocol(self, user, slug):
