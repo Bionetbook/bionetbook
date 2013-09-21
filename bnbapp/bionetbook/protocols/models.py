@@ -153,18 +153,35 @@ class Protocol(TimeStampedModel):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
             return True
 
-        pk = getattr(user, "pk", None)                  
+        pk = getattr(user, "pk", None)          # MAKE SURE USER HAS PK (NOT SURE IF THIS IS NEEDED?)
 
-        if not pk:                              # NO ANONYMOUS USER ACCESS EXCEPT FOR PUBLIC PROTOCOLS?
+        if not pk:                              # NO ANONYMOUS USER ACCESS CHECK
             return False
 
-        if self.author:
-            if pk == self.author.pk:                # IF THEY ARE THE AUTHOR THEN YES
+        if user.is_superuser or user.is_staff:  # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
+            return True
+
+        if self.author:                         # CHECK THAT AN AUTHOR IS SET ON THE PROTOCOL
+            if pk == self.author.pk:            # IF THEY ARE THE AUTHOR THEN YES
                 return True
 
-        if self.published:
+        if self.published:                      # IF THE PROTOCOL IS PUBLISHED, ARE THEY IN THE ORG?
             return bool( user.organization_set.filter( pk=self.owner.pk ) )   # IF IT IS PUBLISHED ARE THEY ARE THEY A MEMBER OF THE ORG THEN YES
 
+        return False                            # FALBACKK TO FALSE
+
+    def user_can_edit(self, user):
+        if user.is_superuser or user.is_staff:      # IF THEY ARE SYSTEM ADMIN THE CAN SEE THE PROTOCOL
+            return True
+
+        if not user.is_anonymous():
+            try:
+                membership = user.membership_set.get(org=self.owner)
+                if membership.role in ['a','w']:                                # ADMIN OR WRITE PERMISSIONS
+                    return True
+            except ObjectDoesNotExist:
+                pass
+        
         return False
 
     ##########
