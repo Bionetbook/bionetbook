@@ -16,27 +16,6 @@ class Organization(SlugStampMixin, TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-    #def get_absolute_url(self):
-    #    return reverse("organization_detail", kwargs={"slug": self.slug})
-
-
-    # def save(self, *args, **kwargs):
-    #     super(Organization, self).save(*args, **kwargs)
-    #     if not self.slug:
-    #         self.slug = self.generate_slug()
-    #         self.save()
-
-    ##########
-    # Generators
-
-    # def generate_slug(self):
-    #     slug = slugify(self.name)
-    #     try:
-    #         Organization.objects.get(slug=slug)
-    #         return "%s-%d" % (slug, self.pk)
-    #     except ObjectDoesNotExist:
-    #         return slug
-
     ##########
     # URLs
 
