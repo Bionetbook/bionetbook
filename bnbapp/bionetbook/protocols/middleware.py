@@ -15,7 +15,7 @@ class ProtocolAccess(object):
 
         if "protocol_slug" in view_kwargs and user:
             request.protocol = self.get_protocol(user, view_kwargs['protocol_slug'])
-            request.protocol_edit = request.protocol.user_can_edit()
+            request.protocol_edit = request.protocol.user_can_edit(user)
 
         for key in ['protocol_a_slug', 'protocol_b_slug']:          # THIS IF FOR HANDLING A LIST OF PROTOCOLS.  PROBABLY SHOULD UPDATE THIS AT SOME POINT.
             if key in view_kwargs:
@@ -27,7 +27,7 @@ class ProtocolAccess(object):
         protocol = get_object_or_404( Protocol, slug=slug )
 
         if not protocol.user_has_access(user):
-            print "%s has no access to %s" % (user, request.protocol)
+            print "%s has no access to %s" % (user, protocol)
             raise Http404()   # How about returning a 404 response
 
         return protocol
