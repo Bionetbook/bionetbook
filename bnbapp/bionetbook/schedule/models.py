@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 # from protocols.models import Protocol, Step, Action
 from django_extensions.db.models import TimeStampedModel
+from core.models import SlugStampMixin
 from jsonfield import JSONField
 
 from protocols.models import Protocol, Step, Action
@@ -20,7 +21,7 @@ import collections
 #from experiment.models import Experiment
 
 
-class Calendar(TimeStampedModel):
+class Calendar(SlugStampMixin, TimeStampedModel):
     
     '''
     An Schedule is derived from an Experiment
@@ -74,11 +75,11 @@ class Calendar(TimeStampedModel):
 
         super(Calendar,self).save(*args,**kwargs)
 
-        new_slug = self.generate_slug()
+        # new_slug = self.generate_slug()
 
-        if not new_slug == self.slug: # Triggered when its a clone method
-            self.slug = new_slug
-            super(Calendar, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+        # if not new_slug == self.slug: # Triggered when its a clone method
+        #     self.slug = new_slug
+        #     super(Calendar, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
 
     def __unicode__(self):
         return self.name
@@ -104,12 +105,12 @@ class Calendar(TimeStampedModel):
     #     ret[Protocol.slug] = SortedDict([('container','true'),('title',Protocol.title),('length',Protocol.duration),('description',Protocol.description),('steps',stepsList)])
     #     print ret
 
-    def generate_slug(self):
-        slug = slugify(self.name)
-        if self.pk:
-            return "%d-%s" % (self.pk, slug)
-        else:
-            return slug
+    # def generate_slug(self):
+    #     slug = slugify(self.name)
+    #     if self.pk:
+    #         return "%d-%s" % (self.pk, slug)
+    #     else:
+    #         return slug
 
     def setupCalendar(self):
         ret = {'meta':{},'events':[]}
