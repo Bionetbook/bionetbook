@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 import django.utils.simplejson as json
 from jsonfield import JSONField
 from django_extensions.db.models import TimeStampedModel
+from core.models import SlugStampMixin
 
 from organization.models import Organization
 from history.models import History
@@ -28,7 +29,7 @@ COMPONENT_KEY = "components"
 #MACHINE_VERBS = ['heat', 'chill', 'centrifuge', 'agitate', 'collect', 'cook', 'cool', 'electrophorese', 'incubate', 'shake', 'vortex']
 REFERENCE_TYPES = [('pmid',"PMID"), ('doi',"DOI")]
 
-class Protocol(TimeStampedModel):
+class Protocol(SlugStampMixin, TimeStampedModel):
 
     # STATUS_DRAFT = "draft"
     # STATUS_PUBLISHED = "published"
@@ -129,15 +130,17 @@ class Protocol(TimeStampedModel):
         else:     
             old_state = Protocol.objects.get(pk = self.pk)              # JUST A PROTOCOL
 
-        # print old_state    
+        # # print old_state    
         super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-        # print 'triggered first save'
-        new_slug = self.generate_slug()
+        # # print 'triggered first save'
 
-        if not new_slug == self.slug: # Triggered when its a clone method
-            self.slug = new_slug
-            super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
-            # print 'triggered second save'
+        # BELOW REPLACED WITH SlugStampMixin FOR CONSISTENCY
+        # new_slug = self.generate_slug()
+
+        # if not new_slug == self.slug: # Triggered when its a clone method
+        #     self.slug = new_slug
+        #     super(Protocol, self).save(*args, **kwargs) # Method may need to be changed to handle giving it a new name.
+        #     # print 'triggered second save'
         
         # print 'determine new'
         new_state = self
