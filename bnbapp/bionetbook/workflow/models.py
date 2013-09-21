@@ -20,7 +20,7 @@ class Workflow(SlugStampMixin, TimeStampedModel):
 
     data: { 'meta' : {}
 
-    		'protocols' : [ 1, 2 , 3]
+    		'protocols' : [1, 2 , 3]
     	}
     '''
     user = models.ForeignKey(User)
@@ -58,8 +58,8 @@ class Workflow(SlugStampMixin, TimeStampedModel):
         #     return len(self.protocols())
         # else:
         #     return 0
-        return len(self.protocols())
-        
+        return len( self.protocols() )
+
     def get_update_url(self):
         return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug':self.slug})
 
