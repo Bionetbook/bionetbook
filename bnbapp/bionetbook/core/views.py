@@ -54,63 +54,9 @@ class DocumentationView(TemplateView):
 class FAQView(TemplateView):
     template_name = "core/FAQ.html"    
 
+
 class ReleaseNotes(TemplateView):
     template_name = "core/release_notes.html"        
-
-
-class AuthorizedOrganizationMixin(object):
-    '''Checks to see if the user has the right to see the given protocol'''
-
-    # NEEDS TO BE UPDATE TO HANDLE NO PROTOCOL PASSED AND JUST AN ORG
-
-    def get_protocol(self):
-        if hasattr(self, "protocol"):
-            return self.protocol
-        slug = self.kwargs.get('protocol_slug', None)
-        if slug is None:
-            raise Http404()
-
-        # Is there an object attached to self?
-        if hasattr(self, "object"):
-            # If so, and it's a Protocol, then use that
-            if isinstance(self.object, Protocol):
-                protocol = self.object
-            else:
-                # Otherwise find the protocol normally
-                protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
-        else:
-            # Find the protocol normall
-            protocol = get_object_or_404(Protocol, slug=self.kwargs.get('protocol_slug', None))
-
-        # If superuser, staff, or owner show it
-        if self.request.user.is_authenticated:
-            if check_owner_view_authorization(protocol, self.request.user):
-                return protocol
-
-        # if published just show it.
-        if protocol.published:
-            return protocol
-
-        # unpublished and not authenticated or part of the org that owns it.
-        raise Http404()
-
-    def get_context_data(self, **kwargs):
-        self.protocol = self.get_protocol()
-        context = super(AuthorizedOrganizationMixin, self).get_context_data(**kwargs)
-        context['protocol'] = self.protocol
-        context['protocol_edit_authorization'] = check_owner_edit_authorization(self.protocol, self.request.user)
-        return context
-
-
-class AuthorizedOrganizationEditMixin(object):
-
-    def check_authorization(self):
-        if not check_owner_edit_authorization(self.protocol, self.request.user):
-            raise Http404
-
-    def get_context_data(self, **kwargs):
-        return super(AuthorizedOrganizationEditMixin, self).get_context_data(**kwargs)
-        self.check_authorization()
 
 
 class ConfirmationMixin(object):
