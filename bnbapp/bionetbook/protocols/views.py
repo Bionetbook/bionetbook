@@ -35,7 +35,6 @@ class ProtocolSetupMixin(PathMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ProtocolSetupMixin, self).get_context_data(**kwargs)
-        protocol_slug = self.kwargs.get('protocol_slug', None)
 
         prefix = self.titleMarks['prefix']
         suffix = self.titleMarks['suffix']
@@ -43,7 +42,7 @@ class ProtocolSetupMixin(PathMixin):
 
         print dir(self.request)
 
-        if protocol_slug:
+        if self.request.protocol:
             context['protocol'] = self.request.protocol #Protocol.objects.get(slug=protocol_slug)
             context['organization'] = context['protocol'].owner
 
@@ -96,6 +95,8 @@ class ProtocolSetupMixin(PathMixin):
 
         if title:
             context['titleBlock'] = {'prefix':prefix, 'title':title, 'suffix':suffix}
+
+        # print "SLUG: %s" % context['protocol'].owner.slug
 
         return context 
 

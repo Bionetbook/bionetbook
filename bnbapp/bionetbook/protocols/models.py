@@ -151,7 +151,6 @@ class Protocol(TimeStampedModel):
 
     def user_has_access(self, user):
         if self.published and self.public:      # IF IT IS A PUBLIC PUBLISHED PROTOCOL THEN YES
-            # print "PUBLISHED-PUBLIC"
             return True
 
         pk = getattr(user, "pk", None)                  
