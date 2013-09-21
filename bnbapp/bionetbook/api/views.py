@@ -340,13 +340,14 @@ class ProtocolAPI(JSONResponseMixin, LoginRequiredMixin, View):     # NEED A PRE
 # REPLACE WITH CLASS BASED VIEW ABOVE
 def protocol_detail(request, protocol_slug):
     if request.method == 'GET':
-        try:
-            p = Protocol.objects.get(slug=protocol_slug)
+        if request.protocol:
+            # p = Protocol.objects.get(slug=protocol_slug)
+            p = request.protocol
             if p.data:
                 return HttpResponse(json.dumps(p.data), mimetype="application/json")
             else:
                 return HttpResponse(json.dumps({'error':'NoObjectData', 'description':'Requested protocol has no data.'}), mimetype="application/json")
-        except ObjectDoesNotExist:
+        else:
             return HttpResponse(json.dumps({'error':'ObjectDoes`NotExist', 'description':'Requested protocol could not be found.'}), mimetype="application/json")
 
 
