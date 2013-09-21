@@ -6,7 +6,7 @@ from django.db.models import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from jsonfield import JSONField
-from django_extensions.db.models import TimeStampedModel
+# from django_extensions.db.models import TimeStampedModel
 from protocols.utils import MANUAL_VERBS, MACHINE_VERBS, COMPONENT_VERBS, THERMOCYCLER_VERBS, MANUAL_LAYER, settify, labeler 
 from compare.utils import LAYERS, OUTPUT_MASKS
 import itertools
