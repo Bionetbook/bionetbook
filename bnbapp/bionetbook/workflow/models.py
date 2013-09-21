@@ -54,11 +54,12 @@ class Workflow(SlugStampMixin, TimeStampedModel):
             return self.data['protocols']
 
     def numberOfProtocols(self):
-        if self.protocols:
-            return len(self.protocols())
-        else:
-            return 0
-
+        # if self.protocols():
+        #     return len(self.protocols())
+        # else:
+        #     return 0
+        return len(self.protocols())
+        
     def get_update_url(self):
         return reverse("workflow_update", kwargs={'owner_slug':self.owner.slug, 'workflow_slug':self.slug})
 
