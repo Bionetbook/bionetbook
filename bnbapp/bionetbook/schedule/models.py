@@ -196,7 +196,6 @@ class Calendar(TimeStampedModel):
             print events
             self.data['events'] = events
             self.data['meta']['experiments'].remove(updatedExperiment.pk)
-            self.save()
             self.addExperiment(updatedExperiment)
         else:
             if nameUpdated:
