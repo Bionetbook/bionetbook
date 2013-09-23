@@ -221,7 +221,7 @@ class NodeCreateViewBase(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
             return self.form_invalid(form)
 
 
-class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
+class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, UpdateView):
 
     slugs = []
     node_type = None
@@ -317,7 +317,7 @@ class NodeUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizat
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class NodeDeleteView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -489,7 +489,7 @@ class ProtocolCreateView(ProtocolSetupMixin, LoginRequiredMixin, CreateView):
         return form
 
 
-class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, UpdateView):
+class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, UpdateView):
 
     model = Protocol
     form_class = ProtocolForm
@@ -556,7 +556,7 @@ class ProtocolUpdateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return obj
 
 
-class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -576,7 +576,7 @@ class ProtocolPublishView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrga
         url = self.object.get_absolute_url()
         return http.HttpResponseRedirect(url)
 
-class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     model = Protocol
     slug_url_kwarg = "protocol_slug"
@@ -597,7 +597,7 @@ class ProtocolPublicView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrgan
         return http.HttpResponseRedirect(url)
 
 
-class ProtocolDuplicateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
+class ProtocolDuplicateView(ProtocolSetupMixin, LoginRequiredMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView):
 
     # NEED TO VALIDATE THE FORM TO GET THE OWNER
     # NEED TO CONFIRM THE PROTOCOL IS PUBLISHED BEFORE DUPLICATING
