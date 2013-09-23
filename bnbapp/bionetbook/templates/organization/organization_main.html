@@ -112,7 +112,7 @@
 
          <div class="accordion-group">
                 <div class="accordion-heading">
-                        <a class="btn btn-medium btn-success pull-right" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Workflow</a>
+                        <a class="btn btn-medium btn-success pull-right" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Workflow</a>
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
                         <h3>Workflows ({{ workflows|length}})</h3>
                     </a>
@@ -150,7 +150,7 @@
 
              <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="btn btn-medium btn-success pull-right centered" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus"></i> Create Experiment</a>
+                        <a class="btn btn-medium btn-success pull-right centered" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Experiment</a>
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseFive">
                             <h3>Experiments ({{ experiments|length}})</h3>
                         </a>
