@@ -27,6 +27,7 @@ class Calendar(TimeStampedModel):
 
     data: { 'meta': { 1: "sample description",
                       2: "sample"
+                      experiments: [1 ,2, 3]
                     },
             'events': [ {   'id':"bnb-o1-e1-p1-AXBAGS-FFGGAX":,
                             'start':1376957033,
@@ -112,28 +113,64 @@ class Calendar(TimeStampedModel):
             return slug
 
     def setupCalendar(self):
-        ret = {'meta':{},'events':[]}
-        userExperimentList = self.user.experiment_set.all()
-        for e in userExperimentList:                    # loop through each experiment for user
-            protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
+        ret = {'meta':{'experiments':[]},'events':[]}
+        # userExperimentList = self.user.experiment_set.all()
+        # for e in userExperimentList:                    # loop through each experiment for user
+        #     protocolList = [Protocol.objects.get(pk=p) for p in e.workflow.data['protocols']]
+        #     for p in protocolList:      # loop through each experiments protocols
+        #         #stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
+        #         actionList = []
+        #         for step in p.data['steps']:
+        #             for action in step['actions']:
+        #                 #print p.slug + " " + action['objectid']
+        #                 if action['physical_commitment']:
+        #                     if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
+        #                         flag = "true"
+        #                     else:
+        #                         flag = "false"
+        #                 else:
+        #                     flag = "false"
+        #                 actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
+
+        #         for element in actionList:
+        #             eventObject = {}
+        #             eventObject['id'] = 'bnb-o%d-e%d-p%d-%s-%s' % (e.owner.pk,e.pk,p.pk, element[0], element[1])
+        #             eventObject['start'] = '0'
+        #             if "-" in element[3]:
+        #                 eventObject['duration'] = element[3].split('-')[1]
+        #             else:
+        #                 eventObject['duration'] = element[3]
+        #             eventObject['verb'] = element[2]
+        #             eventObject['title'] = element[4]
+        #             eventObject['protocol'] = p.title
+        #             eventObject['experiment'] = e.name
+        #             eventObject['notes'] = ""
+        #             eventObject['active'] = element[5]
+        #             ret['events'].append(eventObject)
+        #         if p.pk not in ret['meta']:
+        #             ret['meta'][p.pk] = p.description
+        return ret
+
+    def addExperiment(self, newExperiment):
+        if newExperiment.pk not in self.data['meta']['experiments']:
+            events = self.data['events']             
+            protocolList = [Protocol.objects.get(pk=p) for p in newExperiment.workflow.data['protocols']]
             for p in protocolList:      # loop through each experiments protocols
-                #stepActionList = zip(p.get_steps(), p.get_actions(), p.get_action_verbs(), p.get_action_durations(), p.get_action_names())
                 actionList = []
                 for step in p.data['steps']:
                     for action in step['actions']:
-                        #print p.slug + " " + action['objectid']
                         if action['physical_commitment']:
                             if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
                                 flag = "true"
                             else:
                                 flag = "false"
                         else:
-                            flag = "false"
+                            flag = "false"    
                         actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
 
                 for element in actionList:
                     eventObject = {}
-                    eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (e.pk,p.pk, element[0], element[1])
+                    eventObject['id'] = 'bnb-o%d-e%d-p%d-%s-%s' % (newExperiment.owner.pk, newExperiment.pk,p.pk, element[0], element[1])
                     eventObject['start'] = '0'
                     if "-" in element[3]:
                         eventObject['duration'] = element[3].split('-')[1]
@@ -142,49 +179,35 @@ class Calendar(TimeStampedModel):
                     eventObject['verb'] = element[2]
                     eventObject['title'] = element[4]
                     eventObject['protocol'] = p.title
-                    eventObject['experiment'] = e.name
+                    eventObject['experiment'] = newExperiment.name
                     eventObject['notes'] = ""
                     eventObject['active'] = element[5]
-                    ret['events'].append(eventObject)
-                if p.pk not in ret['meta']:
-                    ret['meta'][p.pk] = p.description
-        return ret
+                    events.append(eventObject)
+                if p.pk not in self.data['meta']:
+                    self.data['meta'][p.pk] = p.description
+            self.data['events'] = events
+            self.data['meta']['experiments'].append(newExperiment.pk)
+            self.save()   
 
-    def addExperiment(self, newExperiment):
-        events = self.data['events']             
-        protocolList = [Protocol.objects.get(pk=p) for p in newExperiment.workflow.data['protocols']]
-        for p in protocolList:      # loop through each experiments protocols
-            actionList = []
-            for step in p.data['steps']:
-                for action in step['actions']:
-                    if action['physical_commitment']:
-                        if action['physical_commitment']=="Active" or action['physical_commitment']=="Setup":
-                            flag = "true"
-                        else:
-                            flag = "false"
-                    else:
-                        flag = "false"    
-                    actionList.append((step['objectid'],action['objectid'],action['verb'],action['duration'],action['name'],flag))
+    def updateCalendar(self, updatedExperiment, workflowUpdated, nameUpdated):
+        if workflowUpdated:
+            events = self.data['events']
+            events = [e for e in events if int(e['id'].split('-')[2][1])!=updatedExperiment.pk]
+            print events
+            self.data['events'] = events
+            self.data['meta']['experiments'].remove(updatedExperiment.pk)
+            self.save()
+            self.addExperiment(updatedExperiment)
+        else:
+            if nameUpdated:
+                events = self.data['events']
+                for e in events:
+                    #print int(e['id'].split('-')[2][1])
+                    if int(e['id'].split('-')[2][1])==updatedExperiment.pk:
+                        e['experiment'] = updatedExperiment.name
+                self.save()
 
-            for element in actionList:
-                eventObject = {}
-                eventObject['id'] = 'bnb-o1-e%d-p%d-%s-%s' % (newExperiment.pk,p.pk, element[0], element[1])
-                eventObject['start'] = '0'
-                if "-" in element[3]:
-                    eventObject['duration'] = element[3].split('-')[1]
-                else:
-                    eventObject['duration'] = element[3]
-                eventObject['verb'] = element[2]
-                eventObject['title'] = element[4]
-                eventObject['protocol'] = p.title
-                eventObject['experiment'] = newExperiment.name
-                eventObject['notes'] = ""
-                eventObject['active'] = element[5]
-                events.append(eventObject)
-            if p.pk not in self.data['meta']:
-                self.data['meta'][p.pk] = p.description
-        self.data['events'] = events
-        self.save()        
+
 
     # def expToCalendar(self):  # defaulted to take only 1 experiment
     #     scheduledExperiment = Experiment.objects.get(pk=1)

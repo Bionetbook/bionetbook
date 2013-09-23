@@ -19,3 +19,6 @@ class ExperimentManualForm(forms.Form):
     
     # UPDATE IT IN THE VIEW
     # form.fields['protocols'] = forms.ModelChoiceField( queryset=self.request.user.profile.get_published_protocols_qs(), label=_("Protocol"), widget=forms.CheckboxSelectMultiple() )
+
+class ExperimentAddForm(forms.Form):
+	calendars = forms.ModelChoiceField(required=False, queryset=EmptyQuerySet(), label=_("Calendars"))

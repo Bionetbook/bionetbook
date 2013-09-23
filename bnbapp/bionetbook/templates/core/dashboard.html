@@ -21,6 +21,7 @@
           </div>
         </div>
         <br>
+        <a class="btn btn-info" style="width:45%;margin-bottom:10px;" href="{% url compare_select %}"><i class="icon-search icon-white"></i> Compare Protocols</a>
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-label"><h3>Create Protocol for...</h3></li>
             {% for org in request.user.organization_set.all %}

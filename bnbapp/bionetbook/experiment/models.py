@@ -18,7 +18,7 @@ class Experiment(SlugStampMixin, TimeStampedModel):
     '''
     An Experiment is an execution of Workflows
 
-    data : { 'meta': {}
+    data : { 'meta': { }
 
             }
     '''

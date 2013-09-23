@@ -11,7 +11,7 @@ from core.views import PathMixin
 from django.core.urlresolvers import reverse
 from braces.views import LoginRequiredMixin
 from django.template.defaultfilters import slugify
-from experiment.forms import ExperimentManualForm
+from experiment.forms import ExperimentManualForm, ExperimentAddForm
 from protocols.models import Protocol, Step, Action, Thermocycle, Machine, Component
 from organization.models import Organization
 from schedule.models import Calendar
@@ -85,11 +85,23 @@ class ExperimentUpdateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 		org = self.request.user.organization_set.get(slug=slug)
 		slug = self.kwargs.get('experiment_slug', None)
 		exp = self.request.user.experiment_set.get(slug=slug)
-
+		oldWorkflow = exp.workflow
+		oldName = exp.name
 		exp.workflow = self.request.user.workflow_set.get(pk=form.cleaned_data['workflows'][0])
 		exp.name = form.cleaned_data['name']
 		exp.slug = slugify(exp.name)
 		exp.save()
+		if oldWorkflow != exp.workflow:
+			workflowChanged = True
+		else:
+			workflowChanged = False
+		if oldName != exp.name:
+			nameChanged = True
+		else:
+			nameChanged = False
+		for cal in self.request.user.calendar_set.all():
+			if exp.pk in cal.data['meta']['experiments']:
+				cal.updateCalendar(exp, workflowChanged, nameChanged) 
 		return HttpResponseRedirect(exp.get_absolute_url())
 
 	def get_form(self, form_class):
@@ -118,7 +130,35 @@ class ExperimentUpdateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 			# return form
 			raise Http404
 
+class ExperimentAddView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
+	model = Experiment
+	form_class = ExperimentAddForm
+	slug_url_kwarg = "experiment_slug"
+	template_name = "experiment/experiment_add.html"
+	pathEnd = {'name':'Add to Calendar'}
 
+	def form_valid(self, form):
+		try:
+			calendarPKs = [x[0] for x in form.cleaned_data['calendars']]
+			calendars = self.request.user.calendar_set.filter(pk__in=calendarPKs)
+			exp = self.request.user.experiment_set.get(slug=self.kwargs['experiment_slug'])
+			for cal in calendars:
+				cal.addExperiment(exp)
+			return HttpResponseRedirect(calendars[0].get_absolute_url())
+		except:
+			raise Http404
+
+	def get_form(self, form_class):
+		form = form_class(**self.get_form_kwargs())
+		try:
+			calendars = self.request.user.calendar_set.all()
+			form.fields['calendars'] = forms.MultipleChoiceField(
+				label="Calendars",
+				widget=forms.CheckboxSelectMultiple,
+				choices=((x.pk,x) for x in calendars))
+		except:
+			raise Http404
+		return form
 	# def post(self, request, *args, **kwargs):
 	# 	'''This is done to handle the two forms'''
 	# 	form = self.form_class(request.POST)
@@ -154,8 +194,6 @@ class ExperimentCreateView(ExperimentSetupMixin, LoginRequiredMixin, FormView):
 		e.slug = slugify(form.cleaned_data['name'])
 		e.owner = org
 		e.save()
-		for cal in self.request.user.calendar_set.all():
-			cal.addExperiment(e)
 		return HttpResponseRedirect(e.get_absolute_url())
 
 	def get_form(self, form_class):
