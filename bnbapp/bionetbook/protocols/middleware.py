@@ -2,7 +2,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 # from django.contrib import messages
 from protocols.models import Protocol
-from django.core.exceptions import PermissionDenied
 from django.http import Http404
 
 # class ConfirmProfile(object):
@@ -45,10 +44,12 @@ class ProtocolAccess(object):
                 try:
                     protocol = Protocol.objects.get(slug=view_kwargs["protocol_slug"])
                 except Protocol.DoesNotExist:
-                    raise PermissionDenied
+                    print "%s failed to access non-existant protocol" % (user)
+                    raise Http404
 
                 if not protocol.user_has_access(user):
-                    raise PermissionDenied   # How about returning a 404 response
+                    print "%s failed to access %s" % (user, protocol)
+                    raise Http404   # How about returning a 404 response
 
         return
 

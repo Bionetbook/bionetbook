@@ -8,8 +8,11 @@
 
 {% block content %}
 <div class="row">
-        <div class="span1" id="graph_switches">
+        <div class="span2" id="graph_switches">
         <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{% url workflow_update owner_slug=organization.slug workflow_slug=workflow.slug %}"><i class="icon-edit icon-white"></i> Edit</a>
+    </div>
+    <div class="span2" id="graph_switches">
+        <a class="btn btn-info" style="width:90%;margin-bottom:10px;" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus-sign icon-white"></i> Add to Experiment</a>
     </div>
     <div class="span12">
         <ul class="nav nav-tabs nav-stacked">

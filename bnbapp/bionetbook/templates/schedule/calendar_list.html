@@ -17,9 +17,6 @@
 {% block content %}
 <ul class="nav nav-tabs">
   <li class="active"><a href="{% url calendar_list %}">Calendar List</a></li>
-    {% if request.user.is_authenticated %}
-  <li><a href="{% url calendar_list %}">New Calendar</a></li>
-    {% endif %}
 </ul>
 
 <div class="row">

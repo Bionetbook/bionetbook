@@ -115,8 +115,8 @@ class AuthorizedOrganizationEditMixin(object):
             raise Http404
 
     def get_context_data(self, **kwargs):
-        self.check_authorization()
         return super(AuthorizedOrganizationEditMixin, self).get_context_data(**kwargs)
+        self.check_authorization()
 
 
 class ConfirmationMixin(object):
