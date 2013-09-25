@@ -3,17 +3,9 @@
 
 {% block title %}{{ organization.name }}{% endblock %}
 
-{% block page_title %}{{ request.user.first_name }}'s Dashboard{% endblock %}
-
-{% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
-      <li class="active">{{ organization.name }}</li>
-    </ul>
-{% endblock %}
+{% block page_title %} {{ organization.name }}'s Protocols{% endblock %}
 
 {% block content %}
-
 <div class="row">
     <div class="span12 accordion" id="accordion1">
         <div class="accordion-group">

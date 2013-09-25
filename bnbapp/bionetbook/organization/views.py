@@ -3,9 +3,9 @@ from django.http import Http404, HttpResponse
 from django.views.generic import ListView, View
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
-from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView
+from core.views import AuthorizedOrganizationMixin, AuthorizedOrganizationEditMixin, ConfirmationObjectView, PathMixin
 from django.utils import simplejson
-
+from protocols.views import ProtocolSetupMixin
 from braces.views import LoginRequiredMixin
 
 
@@ -33,7 +33,7 @@ from protocols.utils import VERB_CHOICES, VERB_FORM_DICT
 #	template_name = 'organization/organization_detail.html'
 
 
-class OrganizationMainView(LoginRequiredMixin, TemplateView):
+class OrganizationMainView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView):
 	model = Organization
 	slug_url_kwarg = "owner_slug"
 	template_name = "organization/organization_main.html"    
