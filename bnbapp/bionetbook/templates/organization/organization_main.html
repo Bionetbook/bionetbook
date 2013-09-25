@@ -18,11 +18,12 @@
     <div class="span12 accordion" id="accordion1">
         <div class="accordion-group">
             <div class="accordion-heading">
+                <a class="btn btn-medium btn-success pull-right centered" style="margin-top:8px;margin-right:8px;" href="{% url protocol_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Protocol</a>
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
                     <h3>Draft Protocols ({{ draft|length}})</h3>
                 </a>
             </div>    
-            <div id="collapseOne" class="accordion-body collapse in">
+            <div id="collapseOne" class="accordion-body collapse">
                 <div class="accordion-inner">
                     <table class="table table-hover table-condensed">
                         <thead>
@@ -112,7 +113,7 @@
 
          <div class="accordion-group">
                 <div class="accordion-heading">
-                        <a class="btn btn-medium btn-success pull-right" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Workflow</a>
+                        <a class="btn btn-medium btn-success pull-right" style="margin-top:8px;margin-right:8px;" href="{% url workflow_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Workflow</a>
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
                         <h3>Workflows ({{ workflows|length}})</h3>
                     </a>
@@ -150,7 +151,7 @@
 
              <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="btn btn-medium btn-success pull-right centered" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Experiment</a>
+                        <a class="btn btn-medium btn-success pull-right centered" style="margin-top:8px;margin-right:8px;" href="{% url experiment_create owner_slug=organization.slug %}"><i class="icon-plus-sign"></i> Create Experiment</a>
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseFive">
                             <h3>Experiments ({{ experiments|length}})</h3>
                         </a>
