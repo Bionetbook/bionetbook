@@ -70,9 +70,9 @@ def breadcrumb(value):
                 result.append( '<li class="active">%(name)s </li>' % item )
         else:
             if 'icon' in item:
-                result.append( '<li><a href="%(url)s"><i class="icon-%(icon)s"></i> %(name)s</a><span class="divider">/</span></li>' % item )
+                result.append( '<li><a href="%(url)s"><i class="icon-%(icon)s"></i> %(name)s</a><span class="divider"><i class="icon-chevron-right"></i></span></li>' % item )
             else:
-                result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider">/</span></li>' % item )
+                result.append( '<li><a href="%(url)s">%(name)s</a><span class="divider"><i class="icon-chevron-right"></i></span></li>' % item )
 
     return mark_safe("\n".join(result))
 
