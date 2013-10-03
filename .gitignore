@@ -76,3 +76,5 @@ bnbapp/bionetbook/public.crt
 bnbapp/bionetbook/server.csr
 bnbapp/bionetbook/server.key
 bnbapp/bionetbook/server.pass.key
+
+*.pem
