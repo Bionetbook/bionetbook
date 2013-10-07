@@ -12,7 +12,7 @@
           <img src="{{ STATIC_URL }}img/bnb_beaker_med.png" alt="300x200" style="width: 300px; height: 200px; " src="">
           <div class="caption">
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-            <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            
             <hr>
             <h4>Cool Stats</h4>
             <br>
@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-   
+            
     
         {% if request.user.is_superuser or request.user.is_staff %}
         <ul class="span8 nav nav-tabs nav-stacked">
