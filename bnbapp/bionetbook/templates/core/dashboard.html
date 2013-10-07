@@ -48,6 +48,7 @@
                           <tr>
                               <th>Protocol</th>
                               <th>Duration</th>
+                              <th>Organization</th>
                               <th>Steps</th>
                           </tr>
                         </thead>
@@ -56,6 +57,7 @@
                             <tr>
                                 <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
                                 <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.owner }}</td>     
                                 <td>{{ item.steps|length}}</td>
                             </tr>
                             {% endfor%}
@@ -78,6 +80,7 @@
                           <tr>
                               <th>Protocol</th>
                               <th>Duration</th>
+                              <th>Organization</th>
                               <th>Steps</th>
                           </tr>
                         </thead>
@@ -86,6 +89,7 @@
                             <tr>
                                 <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
                                 <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.owner }}</td>
                                 <td>{{ item.steps|length}}</td>
                             </tr>
                             {% endfor%}
@@ -108,6 +112,7 @@
                           <tr>
                               <th>Protocol</th>
                               <th>Duration</th>
+                              <th>Organization</th>
                               <th>Steps</th>
                           </tr>
                         </thead>
@@ -116,6 +121,7 @@
                             <tr>
                                 <td><a href="{{ item.get_absolute_url }}">{{ item.name}}</a></td>
                                 <td>{{ item.duration|protocol_time_compact }}</td>     
+                                <td>{{ item.owner }}</td>
                                 <td>{{ item.steps|length}}</td>
                             </tr>
                             {% endfor%}
