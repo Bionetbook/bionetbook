@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Step List for Protocol {{ protocol.name }}{% endblock %}
+
+{% block page_title %}Step List for Protocol <a href="{{ protocol.get_absolute_url }}">{{ protocol.name }}</a>{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        {% if protocol_edit_authorization %} 
+            <p><a class="btn btn-success" href="{% url step_create protocol.slug %}"><i class="icon-plus icon-white"></i></a> <a href="{% url step_create protocol.slug %}">Add Step</a></p>  
+        {% endif %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>    
+                    <td>
+                        {% if protocol_edit_authorization %} 
+                            <a href="{% url step_update protocol.slug object.slug %}"><i class="icon-edit"></i></a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url step_detail protocol.slug object.slug %}">{{ object }}</a>
+                    </td>
+                    <td>{{ object.duration_in_seconds|default:"0" }}</td>                    
+                    <td><a href="{% url action_list protocol.slug object.slug %}">{{ object.action_set.count }}</a></td>
+                    <td>{{ object.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+  </div>
+{% endblock %}
+

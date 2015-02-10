@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Protocol Form Test{% endblock %}
+
+{% block page_title %}Protocol Form Test{% endblock %}
+
+{% block extracss %}
+<link rel="stylesheet" type="text/css" href="/static/css/dataInput.css">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+
+      <div id="data-input-container">
+
+        <!-- Start Overlay -->
+        <div id="protocol-intro">
+            <div class="hero-unit data-input">
+                <h1>First, name this protocol</h1>
+                <div class="input-append">
+                    <input type="text" class="span4" placeholder="name" autofocus>
+                    <button class="btn" id="intro-submit" type="button" data-loading-text="<i class='icon-time icon-white'></i>">Got it!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Main Content -->
+         <div class="tabbable tabs-left blur-text" id="nav-tabs">
+
+            <!-- Protocol Meta -->
+            <div class="page-header">
+                <!-- Title -->
+                <h3 id="protocol-title">Name this protocol</h3>
+                <!-- Description -->
+                <span id="protocol-description">add a description</span>
+            </div>
+            
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="protocol-tabs">
+                <li class="add-new-step"><a href="">&plus; add new step</a></li>
+            </ul>
+
+            <!-- Content -->
+            <div class="tab-content">
+
+            </div>
+        </div>
+
+        <!-- End Main Content -->
+
+    </div> <!-- End Container -->
+
+    <div class="save-protocol-container">
+        <button class="btn btn-success" id="save-protocol">Save Protocol</button>
+    </div>
+
+    </div>
+</div>
+{% csrf_token %}
+{% endblock %}
+
+{% block extrajs %}
+<!-- EXTRA JS-->
+<script>
+// URL prefix for use in multiple enviorments
+var apiUrlPrefix = '/api/';
+</script>
+<script src="{{ STATIC_URL }}js/bnb.data-input.js"></script>
+{% endblock extrajs %}

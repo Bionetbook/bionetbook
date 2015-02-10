@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+{% load core_tags %}
+
+{% block title %}Machine Form{% endblock %}
+
+{% block page_title %}
+{% if object %}
+  Editing Machine: {{ step.name }} -> {{ action.name }} -> {{ action.machine.name }}
+{% else %}
+  Adding Machine to Action: {{ action.name }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form action="." method="post">
+  <div class="row">
+      <!-- main form div -->
+      <div class="span6">
+      {% csrf_token %}
+        <h2>Machine</h2>
+        <h3>Verb: {{action.verb}}</h3>
+        <div class="well">
+          {{ form|crispy }}
+        </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="span6">
+          <div class="actions" style="text-align:right">
+            <a href="{{ action.get_absolute_url }}" class="btn btn-warning">Cancel</a>
+            <input type="submit" class="btn btn-primary" value="Submit">
+          </div>
+      </div>
+  </div>      
+</form>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+
+        {% if object %}
+            var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/{{ object.verb }}/';
+            $.get(url, function(data) {
+                  $('.verb').html(data).show();
+            });             
+        {% endif %}
+
+        $("#id_verb").change(function(){
+            {% if object %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/{{ object.pk }}/' + this.value + '/';
+            {% else %}
+              var url = '/protocols/{{ protocol.slug }}/steps/{{ step.slug }}/actions/ajax/0/' + this.value + '/';
+            {% endif %}
+            $.get(url, function(data) {
+                  $('.verb').html(data).show("slow");
+            });             
+        });        
+    });
+</script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
+{% endblock extrajs %}

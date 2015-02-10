@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Calendar{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block page_title %}Calendar{% if object %}: {{ object }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- main form div -->
+    <div class="span6">
+      {% if object %}<h2>Calendar</h2>{% endif %}
+      <form action="." method="post" class="form-stacked well">{% csrf_token %}
+      {{ form|crispy }}
+        <div class="actions">
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div>
+
+    <!-- secondary form div -->
+
+  </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function(){
+        $("#id_name").focus();
+    });
+</script>
+{% wysiwyg_setup  %}    
+{% wysiwyg_editor "id_raw" %}
+{% endblock extrajs %}

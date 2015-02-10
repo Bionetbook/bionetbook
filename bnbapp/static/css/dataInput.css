@@ -1,0 +1,206 @@
+/*--------------------
+  Throwaway styles - for testing 
+--------------------*/
+footer{ display:none; }
+#data-input-container {
+    width: 960px;
+    margin: auto;
+    position: relative;
+    min-height: 32em;
+}
+#data-input-container .nav-tabs>li {width:13em;}
+#data-input-container .nav-tabs>li>a {
+    padding: 2em 1em;
+    text-align: right;
+}
+#data-input-container .nav-tabs>li>a input{
+    width:10em;
+}
+
+/*------------------------
+    Input Page styles 
+------------------------*/
+#data-input-container #protocol-intro{
+    content:"";
+    background-color:rgba(0,0,0,.3);
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:-1em;
+    right:-1em;
+    z-index:1;
+}
+#data-input-container .data-input.hero-unit{
+    position:absolute;
+    left: 15%;
+    right: 15%;
+    margin-top: 4em;
+    z-index: 2;
+}
+#data-input-container .data-input.hero-unit h1{
+    margin-bottom:.5em;
+}
+#data-input-container .data-input.hero-unit input, .data-input.hero-unit .btn{
+    padding:.5em;
+}
+#data-input-container #protocol-intro .alert{ font-size: .8em; }
+
+#data-input-container #protocol-title{
+    margin:0;
+}
+#data-input-container #protocol-description{
+    font-style: italic;
+    color: #777;
+}
+#data-input-container .blur-text *{
+    color: transparent !important;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5) !important;
+}
+#data-input-container .tab-content{
+    position:relative;
+    padding-bottom:5em;
+}
+#data-input-container .page-header .step-description{
+    color:#777;
+}
+.save-protocol-container{
+    border-top:1px solid #ddd;
+    padding-top:1em;
+    margin-top:1em;
+}
+.save-protocol-container #save-protocol{
+    float:right;
+    margin-bottom:.5em;
+    margin-top: 0.3em;
+    margin-left: 1em;
+}
+.save-protocol-container .alert{
+    display:inline;
+    float:right;
+}
+.table tbody tr:hover td, .table tbody tr:hover th{
+    background-color:inherit;
+}
+/* Stop input jump */
+a[data-editing=true]{
+    padding:1em inherit !important;
+}
+/*------------------------
+       Action styles 
+------------------------*/
+#data-input-container .verb > td{
+    padding-top: .8em;
+}
+#data-input-container .module-title{
+    padding: 1em;
+    background-color: #f6f6f6;
+    color: #999;
+    font-style: normal;
+    margin-bottom: 1em;
+}
+#data-input-container .isactive-toggle{
+    float:right;
+}
+#data-input-container .isactive-toggle input{
+    float:left;
+    margin-right: .5em;
+}
+#data-input-container .isactive-toggle label{ float:left; }
+#data-input-container tr.action-header{
+    background-color:#eee;
+}
+#data-input-container tr.action-header h4{
+    margin-left:1em;
+    float:left;
+}
+#data-input-container td:first-child{
+    font-weight:bold;
+}
+#data-input-container tr:last-child{
+    font-weight:normal;
+    color:#ddd;
+    font-style: italic;
+    cursor:text;
+}
+#data-input-container tr:last-child td:first-child{
+    font-weight:normal;
+}
+#data-input-container tr:last-child:hover td{
+    color:#bbb;
+    transition: .2s ease;
+}
+#data-input-container .action-container input[type=text]{
+    margin:0;padding:0;
+}
+#data-input-container .add-new-action{
+    padding: .5em 1.5em;
+    border:1px solid #ddd;
+    background-color:#eee;
+    border-radius:3px;
+    cursor:pointer;
+    font-style: italic;
+    opacity: .5;
+}
+#data-input-container .add-new-action:hover{
+    transition:.2s all;
+    opacity: 1;
+} 
+#data-input-container .add-new-action h4{font-weight: normal;}
+#data-input-container .add-new-step{ 
+    font-style: italic;
+    cursor: pointer; 
+}
+#data-input-container th.add-property{ 
+    text-align: right;
+    width: 70%;
+    font-style: italic;
+    font-weight: normal;
+    cursor: pointer;
+    margin-right:1em;
+}
+#data-input-container .action-container label{
+    color:#000;
+    font-style: normal;
+}
+#data-input-container .action-container input[type=text]{ padding: .2em .5em; }
+
+/* Bootstrap Doesn't like combining its form elements */
+#data-input-container .action-container .help-block{ color:#aaa; }
+#data-input-container .action-container .input-append .help-block{ font-size: 14px; }
+#data-input-container .input-append .add-on{ 
+    padding:3px 5px;
+    border-radius:0 3px 3px 0;
+    color:#666;
+}
+#data-input-container .form-horizontal .controls.input-append {
+    margin-left: 20px;
+}
+#data-input-container .form-horizontal textarea.comments{
+    display: block;
+    margin-top: .5em;
+    opacity: .5;
+}
+/* Action link under tabs */
+#nav-tabs #protocol-tabs .action-tab {
+    width: 60%;
+    float: right;
+    text-align: right;
+    border: 1px solid transparent;
+    padding: .2em 1em;
+    margin: -3px -1px 2px 0;
+    border-radius: 0 0 0 4px;
+    color:#ddd;
+}
+#nav-tabs #protocol-tabs .action-tab.active{
+    border: 1px solid #ddd;
+    color:#999;
+}
+#protocol-tabs > li{
+    clear:both !important;
+}
+
+
+
+
+
+

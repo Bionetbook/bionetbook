@@ -1,0 +1,5 @@
+import yaml
+
+protocol = {'name':'fred', 'version':1.0, 'steps':[{'actions':[{'verb':"spin",'maxspeed':"1000rpm",'minspeed':"500rpm"},{'verb':"add",'components':['one', 'two']}]},{'actions':[{'verb':"spill"}]}]}
+
+print yaml.dump(protocol)

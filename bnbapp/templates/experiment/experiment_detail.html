@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block page_title %}Experiment Detail{% endblock %}
+
+
+{% block content %}
+<div class="row">
+        <div class="span2" id="graph_switches">
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{% url experiment_update owner_slug=organization.slug experiment_slug=experiment.slug %}"><i class="icon-edit icon-white"></i> Edit</a>
+    </div>
+        <div class="span2" id="graph_switches">
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{% url experiment_add owner_slug=organization.slug experiment_slug=experiment.slug %}"><i class="icon-plus-sign icon-white"></i> Add to Calendar</a>
+    </div>
+    <div class="span12">
+        <ul class="nav nav-tabs nav-stacked">
+            <li class="nav-label"><h3>Exeriment Detail</h3></li>
+                <table class="table table-striped">
+                    {% if workflow %}
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th># of Protocols</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    {% endif %}
+                        <tbody>
+                            <tr>
+                                <td><a href="{% url workflow_detail owner_slug=organization.slug workflow_slug=workflow.slug %}">{{ workflow.name }}</a></td>
+                                <td>{{ workflow.numberOfProtocols }}</td>
+                                <td>{{ workflow.modified }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </div>
+        </div>
+{% endblock %}

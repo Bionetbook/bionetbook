@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Action => {{step.title}}{% endblock %}
+
+{% block page_title %}
+Create Action => {{step.title}}
+{% if protocol_edit_authorization %} 
+    <small><a href="{% url step_update object.slug step.slug  %}"><i class="icon-edit"></i> edit</a></small>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+
+<form action="." method="post">
+<div class="row">
+    <!-- main form div -->
+    
+      <div class="span6">
+        <h2>Action: {{verb_name}}</h2>
+          <div class="well">{% csrf_token %}
+          {{ form|crispy }}
+          <hr>
+          {{ verb_form|crispy }}
+          </div>
+        </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div class="actions">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    </div>
+</div>      
+</form>
+
+    </div>
+
+  </div>
+{% endblock %}
+

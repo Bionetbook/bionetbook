@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load wysiwyg %}
+
+{% block title %}Component Form{% endblock %}
+
+{% block page_title %}
+{% if component %}
+  Editing Component: {{ step.name }} -> {{ action.name }} -> {{ component.name }}
+{% else %}
+  Adding Component to Action: <a href="{{ component.get_absolute_url }}">{{ action.name }}</a>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<form action="." method="post">
+  <div class="row">
+      <!-- main form div -->
+        <div class="span6">
+          <div class="well">{% csrf_token %}
+            <h3>Verb: {{action.name}}</h3>
+            {{ form|crispy }}
+          </div>
+        </div>
+  </div>
+
+  <div class="row">
+      <div class="span6">
+          <div class="actions" style="text-align:right">
+            <a href="{{ action.get_absolute_url }}" class="btn btn-warning">Cancel</a>
+            <input type="submit" class="btn btn-primary" value="Submit">
+          </div>
+      </div>
+  </div>      
+</form>
+{% endblock %}

@@ -1,0 +1,461 @@
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+height: 25px;
+
+}
+
+/* BnB Main Color:  #798b9a  */
+
+
+.navbar {
+	background-color: white;
+	background-image: none;
+	text-shadow: none;
+	padding-top:5px;
+}
+
+.navbar-inner {
+	background-color: white;
+	background-image: none;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: none;
+	text-shadow: none;
+	box-shadow: none;
+}
+
+.navbar .nav > li > a {
+	color: #798b9a;
+	text-shadow: none;
+}
+
+.navbar .nav > li > a:hover {
+	color: black;
+	text-shadow: none;
+}
+
+.navbar .nav .active > a, .navbar .nav .active > a:hover
+{
+	background-color: white;
+	color: black;
+	text-shadow: none;
+}
+
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+
+html,
+body {
+	height: 100%;
+	/* The html and body elements cannot have any padding or margin. */
+}
+
+body {
+	padding-top: 25px;
+	padding-bottom: 100px;
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	/* Negative indent footer by it's height */
+	margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+footer {
+	height: 60px;
+}
+
+footer {
+	color: gray;
+	background-color: #f5f5f5;
+	padding-top: 20px;
+}
+
+footer ul {
+	display: block;
+	list-style-type: none;
+	text-align: right;
+}
+
+footer li {
+	display: inline;
+	line-height: 20px;
+	border-style:solid;
+	border-width:0px;
+	border-right-width:1px;
+	padding-right:5px;
+}
+
+footer .menu-end {
+	border-right-width:0px;
+	padding-right:0px;
+}
+
+footer li a {
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+	footer {
+		margin-left: -20px;
+		margin-right: -20px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+}
+
+#wrap > .container {
+	padding-top: 60px;
+}
+
+.container .credit {
+	margin: 20px 0;
+}
+
+.nav-stacked .nav-label {
+	color: #555555;
+	cursor: default;
+	background-color: rgb(250, 250, 250);
+  	border: 1px solid #ddd;
+	border-bottom-color: transparent;
+	padding:5px;
+	-webkit-border-radius: 4px 4px 0 0;
+	   -moz-border-radius: 4px 4px 0 0;
+       		border-radius: 4px 4px 0 0;
+
+	background-image: -webkit-linear-gradient(top, 
+	rgb(250, 250, 250), 
+	rgb(234, 234, 234));
+	background-repeat: repeat-x;
+
+}
+
+/*  color: #555555;
+  cursor: default;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+*/
+
+
+#external-events {
+	float: left;
+	width: 150px;
+}
+#external-events h4 {
+	font-size: 16px;
+	margin-top: 0;
+	padding-top: 1em;
+}
+
+/* Pasive events */
+.fc-event-vert[data-active=false]{
+    background-color:transparent !important;
+    color:#000 !important;
+    border-left-style: dashed;
+    border-right-style: dashed;
+}
+.fc-event-vert[data-active=false] .fc-event-time,
+.fc-event-vert[data-active=false] .fc-event-title{ margin-top:5px; }
+.passive-padding-start, .passive-padding-end{
+    position:absolute;
+    right:0;
+    left:0;
+    height:5px;
+    z-index:-1;
+}
+.passive-padding-start{ top: 0; }
+.passive-padding-end{ bottom:0; }
+.fc-event-vert .fc-event-bg { z-index:2; }
+.fc-event-inner > div{
+    float:left;
+}
+
+
+.external-event, .custom-event { /* try to mimick the look of a real event */
+	margin: 10px 0;
+	padding: 2px 4px;
+	background: #3366CC;
+	color: #fff;
+	font-size: .85em;
+	cursor: pointer;
+}
+#external-events .custom-event.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+#external-events p {
+	margin: 1.5em 0;
+	font-size: 11px;
+	color: #666;
+}
+	
+#external-events p input {
+	margin: 0;
+	vertical-align: middle
+}
+
+#calendar {
+	float: right;
+	width: 760px;
+}
+/*------------------------
+       Notes Popup
+------------------------*/
+.fc-event:hover{
+    z-index: 100 !important;
+}
+div.fc-event:after{
+    content: attr(data-notes);
+    display:none;
+    width: 15em;
+    min-height:2em;
+    position: absolute;
+    top: -1em;
+    right: -18em;
+    color: #ddd;
+    padding: .5em;
+    border-radius: .5em;
+    background-color: #444;
+}
+div.fc-event:hover:before{
+    display: none;
+    border: solid transparent;
+    border-color: rgba(136, 183, 213, 0);
+    border-width: .6em;
+    border-right-color: #444;
+    position: absolute;
+    top: 0em;
+    right: -2em;
+    width: 0.5em;
+    height: 0;
+    content: " ";
+    pointer-events: none;
+}
+div.fc-event.fri:after, div.fc-event.sat:after{
+    right:auto;
+    left:-18em;
+}
+div.fc-event.fri:hover:before, div.fc-event.sat:hover:before{
+    right:auto;
+    left:-2em;
+    border-right-color:transparent;
+    border-left-color: #444;
+}
+div.fc-event:hover:after, div.fc-event:hover:before{
+    display:block;
+}
+div.fc-event-vert:hover:after{ top:0; }
+div.fc-event-vert:hover:before{ top:1em; }
+.fc-event[data-editing=true]:before, .fc-event[data-editing=true]:after, 
+.fc-event-vert[data-editing=true]:before, .fc-event-vert[data-editing=true]:after{
+    display:none !important;
+}
+div.fc-event[data-notes="There are no notes for this event."]:after{
+    font-style: italic;
+    color:#999;
+}
+/* Edit Notes Popup */
+.edit-notes{
+    display:none;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    position: absolute;
+    bottom: .2em;
+    right: .2em;
+    z-index: 10;
+    /* background-image: url("../img/gear.png"); */
+    background-size:100% auto;
+}
+[data-active=false] .edit-notes{
+    /* background-image: url("../img/gear-black.png"); */
+}
+.fc-event:hover .edit-notes{
+    display:block;
+}
+.edit-notes-form{
+    position:absolute;
+    top:-3px;
+    right:-220px;
+    z-index:100;
+    width:200px;
+    background-color:#444;
+    border-radius: .4em;
+    text-align:left;
+}
+.edit-notes-form:before{
+    border: solid transparent;
+    border-color: rgba(136, 183, 213, 0);
+    border-width: 7px;
+    border-right-color: #444;
+    position: absolute;
+    top: 0.6em;
+    left: -20px;
+    width: 7px;
+    height: 0;
+    content: " ";
+    pointer-events: none;
+}
+.edit-notes-form.fri:before, .edit-notes-form.sat:before{
+    border-right-color: transparent;
+    border-left-color: #444;
+    left: 200px;
+}
+.edit-notes-form h3{
+    color:#fff;
+    margin: .7em 0 0 5%;
+}
+.edit-notes-form textarea{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    margin: .5em 0 .3em 5%;
+    min-height:5em;
+    width:83%;
+    padding: .5em;
+    border-radius: .4em;
+}
+.edit-notes-form input[type=button]{
+    margin: .2em 1em .5em .9em;
+    clear:both;
+}
+.edit-notes-form span.close{
+    cursor: pointer;
+    color: #fff;
+    background-color: #444;
+    display: block;
+    position: absolute;
+    top: -.5em;
+    right: -.5em;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 2em;
+    border: 1px solid #fff;
+    font-size: 1em;
+    opacity: 1;
+    text-align: center;
+    padding: .2em;
+}
+.edit-notes-form.fri span.close, .edit-notes-form.sat span.close{
+    right:auto;
+    left:-0.8em;
+}
+
+/* Lock Icon */
+.locked, .unlocked{
+    display:none;
+    height: 1em;
+    width: 1em;
+    cursor: pointer;
+    position: absolute;
+    bottom: .2em;
+    right: 1.5em;
+    z-index: 10;
+    background-size: 100% auto;
+}
+.fc-event:hover .locked, .fc-event:hover .unlocked{
+    display:block;
+}
+.locked{
+    background-image: url("../img/locked.png");
+}
+.unlocked{
+    background-image: url("../img/unlocked.png");
+}
+[data-active=false] .locked{
+    background-image: url("../img/locked-black.png");
+}
+[data-active=false] .unlocked{
+    background-image: url("../img/unlocked-black.png");
+}
+
+/*------------------------
+     Right Click Menu
+------------------------*/
+#right-click-menu{
+    font-size:.85em;
+    position: absolute;
+    width: 13em;
+    background-color: #eee;
+    border-radius: .3em;
+    border: 1px solid #ddd;
+    z-index: 99999;
+    -moz-box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+    box-shadow: 0 .5em 1em rgba(0,0,0,.1);
+}
+#right-click-menu p{
+    padding:.5em;
+    margin:0;
+    border-bottom:1px solid #ddd;
+    border-top:1px solid #fff;
+    cursor:pointer;
+}
+#right-click-menu p:last-child{
+    border-bottom:none;
+}
+#right-click-menu p:first-child{
+    border-top:none;
+}
+#right-click-menu p:hover{
+    background-color:#f8f8f8;
+}
+
+/* Week View */
+.fc-agenda-slots td div {
+    height: 17px;
+}
+.week-day{
+    float:left;
+    width:14.2%;
+}
+
+/*------------------------
+      Error Message
+------------------------*/
+.top-error{
+    position:fixed;
+    top:56px;
+    left:0;
+    width:100%;
+    padding:1em 0;
+    text-align: center;
+    font-weight: bold;
+    color:#fff;
+    background-color:#d66;
+    border-bottom: 1px solid #fff;
+    -moz-box-shadow: 0 0px 5px #333;
+    -webkit-box-shadow: 0 0px 5px #333;
+    -o-box-shadow: 0 0px 5px #333;
+    box-shadow: 0 0px 5px #333;
+    z-index:200;
+    display:none;
+}
+.top-error .close{
+    float: right;
+    cursor: pointer;
+    position: absolute;
+    right: 1em;
+    top: 0;
+    padding: .6em 1em 0 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Compare Selection{% endblock %}
+
+{% block page_title %}
+Compare Protocols
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="{% url compare_select %}">Compare Protocols</a></li>
+  <li><a href="#">New Protocol</a></li>
+</ul>
+
+<form action="." method="post">{% csrf_token %}
+    <div class="row">
+        <div class="span5">
+            <div class="well">
+                <h3>Protocol A</h3>
+                <select name="protocol_a">
+                    {% for protocol in protocols %}
+                     <option value="{{ protocol.pk }}">{{ protocol.name }}</option>
+                    {% endfor %}                   
+                </select>
+            </div>
+        </div>
+        <div class="span5 offset2">
+            <div class="well">
+                <h3>Protocol B</h3>
+                <select name="protocol_b">
+                    {% for protocol in protocols %}
+                     <option value="{{ protocol.pk }}">{{ protocol.name }}</option>
+                    {% endfor %}                   
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span2 offset5" style="text-align: center;">
+            <input type="submit" class="btn btn-primary" value="Compare">
+        </div>
+    </div>
+</form>
+{% endblock %}

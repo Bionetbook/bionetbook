@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Protocol: {{ object.name }}, Delete{% endblock %}
+
+{% block page_title %}Protocol: {{ object.name }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span6">
+	Confirm Delete?
+	</div>
+</div>
+{% endblock %}
