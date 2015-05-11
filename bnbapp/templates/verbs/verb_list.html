@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Verb List{% endblock %}
+
+{% block page_title %}Verb List{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list1 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list2 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>    
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list3 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>    
+    <div class="span3">
+        <ul>
+            {% for verb in verb_list4 %}
+                <li><a href="{% url verb_detail verb.slug %}">{{ verb.name|title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>            
+  </div>
+{% endblock %}
+

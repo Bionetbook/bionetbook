@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{# PAGE TITLE #}
+{% block page_title %}Protocol Diagram {% endblock %}
+
+{# BREADCRUMBS #}
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Dashboard</a> <span class="divider">/</span></li>
+      <li><a href="{{ protocol_a.owner.organization_protocol_list }}">{{ protocol_a.owner.name }}</a> <span class="divider">/</span></li>
+      <li class="active">{{ protocol_a.name }}</li>
+    </ul>
+{% endblock %}
+
+{# CSS STYLE SHEETS GO HERE #}
+{% block extracss %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/main.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome.css">
+{% endblock %}
+
+{# MAIN PAGE CONTENT #}
+{% block content %}
+<ul class="nav nav-tabs">
+  <li><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol List</a></li>
+  <li class="active"><a href="{{ protocol_a.owner.organization_protocol_list }}">Protocol Diagram</a></li>
+  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
+    {% if request.user.is_authenticated %}
+  <li><a href="{% url protocol_create protocol_a.owner.slug %}">New Protocol</a></li>
+    {% endif %}  
+</ul>
+
+
+<div class="row">
+    <div class="span2" id="graph_switches">
+
+        {% if not protocol_a.published %}
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+        {% else %}
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-edit icon-white"></i> Edit</a>
+        {% endif %}
+
+
+        {% if not protocol_a.published %}
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_publish_url }}"><i class="icon-unlock-alt icon-white"></i> Lock</a>
+        {% else %}
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-lock icon-white"></i> Locked</a>
+        {% endif %}
+
+        {% if protocol_a.published and not protocol_a.public %}
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_public_url }}"><i class="icon-eye-open icon-white"></i> Make Public</a>
+        {% elif protocol_a.public %}
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Public</a>
+        {% else %}
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-globe icon-white"></i> Make Public</a>
+        {% endif %}
+
+        {% if protocol_a.published %}
+        <a class="btn btn-info" style="width:85%;margin-bottom:10px;" href="{{ protocol_a.protocol_clone_url }}"><i class="icon-copy icon-white"></i> Clone</a>
+        {% else %}
+        <a class="btn disabled" style="width:85%;margin-bottom:10px;" href="#"><i class="icon-copy icon-white"></i> Clone</a>
+        {% endif %}
+
+        <!-- <a class="btn btn-info btn-toggle-comments" style="width:85%;margin-bottom:10px;"><i class="icon-comment-alt icon-white"></i> Comments</a> -->
+        
+
+    </div>
+
+    <div class="span10">
+        <div class="well">
+            <h3>{{ protocol_a }}</h3>
+            <table class="table table-striped table-condensed" style="font-size:10pt">
+                <tr>
+                    {% if not protocol_a.published %}
+                    </br>
+                    <b>Description:</b> {{ protocol_a.description }}  <a href="{{ protocol_a.protocol_update_url }}"><i class="icon-edit"></i></a>
+                    {% else %}
+                    <b>Description:</b> {{ protocol_a.description }}
+                    {% endif %}
+                    </br>
+                    </br>
+                </tr>
+                <tr>
+                    <td>Organization: {{protocol_a.owner }}</td>
+                    <td>Author: {{protocol_a.author.get_full_name  }}</td>
+                </tr>
+                <tr>
+                    <td>Created: {{protocol_a.created|date:"M d, Y H:i" }}</td>
+                    <td>Last modified: {{protocol_a.modified|date:"M d, Y H:i" }}</td>
+                </tr>
+                 <tr>
+                    <td></td>
+                    <td>Duration: {{protocol_a.duration|protocol_time_round_up }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+        <div class="flowchart-container">
+
+        </div>
+</div>
+
+
+
+{% endblock %}
+
+{# JAVASCRIPT SHOULD GO IN THESE TAGS #}
+{% block extrajs %}
+    <script src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/flowchart-engine_api.js"></script>
+    <script src="{{ STATIC_URL }}js/main_ajax_single.js"></script>
+    <script>
+    var slugs = new Array();
+    slugs[0] = '{{ protocol_a.slug }}';
+    // slugs[0] = '{{ params.protocol_a_slug }}';
+    // slugs[1]  '{{ params.protocol_a_slug }}';
+
+
+    $(document).ready(function(){
+        getFlowchartData( slugs, callback );
+        });
+
+    var options = {
+        displayDiff: false,
+        displayComments: false,
+        contextMenu : {
+            diff : false
+        }
+    }
+
+    $('body').on('click', '.btn-toggle-differences', function(){
+        options.displayDiff = !options.displayDiff;
+        $('.flowchart-container').flowchart( null, options );
+    });
+    $('body').on('click', '.btn-toggle-comments', function(){
+        options.displayComments = !options.displayComments;
+        $('.flowchart-container').flowchart( null, options );
+    });
+    </script>
+
+	<script type="text/template" id="new-flowchart-table-template">
+            <table class="flowchart-table">
+                <tbody class="flowchart-table-body">
+                    <tr class="flowchart-line-wrapper">
+                    <% _(headers).each(function(header){ %>
+                        <td>
+                            <div class="flowchart-line-container"></div>
+                        </td>
+                    <% }); %>
+                    </tr>
+                    <% _(rows).each(function(row){ %>
+                    <tr class="flowchart-table-row" data-objectid="<%=row[0].objectid || ''%>">
+                        <% _(row).each(function(cell){ %>
+                        <td class="flowchart-table-cell " colspan="<%=cell.span%>">
+                            <% if (cell.display) { %>
+                            <% if (cell.isVerb==true) {%>
+                                <div class="flowchart-card flowchart-card-verb">
+                                <%= cell.index %>. <%=cell.name%>
+                                </div>
+                            <% } else { %>
+                                <% if (cell.isTable==true && cell.data.length>1) {%>
+                                <div class="flowchart-card">
+                                    <table class="flowchart-card-inner-table">
+                                        <tbody>
+                                            <% _(cell.data).each(function(crow, crowIndex){%>
+                                            <tr class="flowchart-card-inner-table-row">
+                                                <%_(crow).each(function(ccell, ccellIndex){%>
+                                                    <td class="flowchart-card-inner-table-cell">
+                                                    <div class="flowchart-card-inner-table-cell-content" style="<% if (ccell.color && ccell.color!='') { %>color:<%=ccell.color%><% } %>">
+                                                        <% if (ccell.isUrl) { %>
+                                                            <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-edit"></i></a>
+                                                        <% } else if (ccell.isLink && ccell.value!=" ") { %>
+                                                            <a href="<%=ccell.value%>" target="_blank"><i class="icon icon-th-list"></i></a>
+                                                        <% } else { %>
+                                                            <%=ccell.value.toString().replace(/_/gi, " ")%>
+                                                        <%}%>
+                                                    </div>
+                                                    </td>
+                                                <%})%>
+                                            </tr>
+                                            <%});%>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } else if (cell.isInline==true) {%>
+                                <div class="flowchart-card">
+                                    <table class="flowchart-card-inline-layout">
+                                        <tbody>
+                                            <tr class="flowchart-card-inline-layout-row">
+                                                <td class="flowchart-card-inline-layout-cell">
+                                                <div class="flowchart-card-inline-layout-content">
+                                                <% _(cell.data).each(function(crow, crowIndex){ %>
+                                                    <div>
+                                                    <%_(crow).each(function(cobject,cobjectIndex){%>
+                                                        <span style="<% if (cobject.color && cobject.color!='') { %>color:<%=cobject.color%><% } %>"><%=cobject.key.toString().replace(/_/gi, " ")%>:
+                                                        <%=_(cobject.value).isArray() ? cobject.value.join(' ') : cobject.value %><%= cobjectIndex==crow.length-1 ? ';' : ',' %></span>
+                                                    <%});%>
+                                                    </div>
+                                                <% }) %>
+                                                </div>
+                                                    <% if (cell.url) { %>
+                                                        <a class="flowchart-card-inline-layout-content-url" href="<%=cell.url%>" target="_blank"><i class="icon icon-edit"></i></a>
+                                                    <%} else {%>
+                                                        <i class="icon icon-edit" style="opacity: 0;"></i>
+                                                    <%}%>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } %>
+                            <% } %>
+                            </div>
+                            <% } %>
+                        </td>
+                        <% });%>
+                    </tr>
+                    <%});%>
+                </tbody>
+            </table>
+            <div class="flowchart-table-text-overlay-container">
+            <% _(texts).each( function( text, index, texts ) { %>
+                <div class="flowchart-table-text-overlay">
+                    <% if (text!='None') {%>
+                    <%= text %>
+                    <% } %>
+                </div>
+            <% }); %>
+            </div>
+
+        </script>
+
+
+{%endblock%}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Component -> {{ component.title }}{% endblock %}
+
+{% block page_title %}
+<p>{{action.protocol.name}} {{action.parent.name}} {{action.name}}</p> Machine: {{ action.machine.name }}
+{% if protocol_edit_authorization %} 
+    <div><small><a href="{{ action.machine.machine_update_url }}"><i class="icon-edit"></i>edit </a></small></div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="row">
+    <div class="span4">
+        <h2>Components</h2>
+        {% for component in action.components %}
+          <h3>{{component.name}}</h3>
+          {% if protocol_edit_authorization %} 
+            <a class="btn btn-primary" href="{{ component.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+            <a class="btn btn-danger" href="{{ component.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+          {% endif %}
+          {% object_data_table component %}
+          <!-- <a class="btn btn-warning" href="{{component.get_update_url}}">Edit Component</a> -->
+          <hr>
+        {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+

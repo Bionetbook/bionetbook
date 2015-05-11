@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}{{ organization.name|possesive }} Protocol List{% endblock %}
+
+{% block page_title %}
+{{ organization.name }}
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="{% url organization_main organization.slug %}">Protocol List</a></li>
+  <!-- <li><a href="{% url workflow_list organization.slug %}">Workflows</a></li> -->
+  <li><a href="{% url compare_select %}">Compare Protocols</a></li>
+    {% if request.user.is_authenticated %}
+  <li><a href="{% url protocol_create organization.slug %}">New Protocol</a></li>
+    {% endif %}
+</ul>
+
+<div class="row">
+    <div class="span12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    {% if request.user.is_authenticated %}
+                        <th>Status</th>
+                    {% endif %}
+                    <th>Author</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
+                    <td>
+                        {% if not object.published %}
+                            <a href="{{ object.get_absolute_url }}"><i class="icon-edit"></i></a>
+                        {% else %}
+                            <a href="#"><i class="icon-lock"></i></a>    
+                        {% endif %}
+                        {% if object.public %}
+                            <a href ="#"><i class="icon-globe"></i></a>
+                        {% else %}
+                            <a href ="#"><i class="icon-eye-open"></i></a>
+                        {% endif %}
+                    </td>
+                    <td>{{ object.author.last_name }}</td>
+                    <td>{{ object.duration|protocol_time_round_up }}</td>
+                    <td>{{ object.get_actions|length }}</td>
+                    <td>{{ object.modified|date:"M d, Y H:i"}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

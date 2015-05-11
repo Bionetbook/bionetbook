@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block page_title %} Documentation {% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li><a href="{% url dashboard %}"><i class="icon-home"></i> Home</a> <span class="divider">/</span></li>
+      <li><i class="icon-question-sign"></i> Help</li><span class="divider">/</span>
+      <li class="active"> Frequently Asked Questions</li>   
+
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span8">
+        <h3>Frequently Asked Questions</h3>
+        <ul>
+            <li> Q: How do I know what part of the protocol I'm editing?  </li>
+            <li> A: Look at the Breadcrumbs at the top of the page. After the protocol name you will see the step number and the action name that you're editing  </li>
+            </br>
+            <li> Q: I want to compare a protocol, where can I find the tool? </li>
+            <li> A: Click on the title of any protocol, you will see the tool above the protocol. </li>
+            </br>
+            <li> Q: how do I share a protocol with my group but no one else? </li>
+            <li> A: Make sure that the protocol is Locked but not Public </li>
+            </br>
+            <li> Q: how do I share a protocol with my group but no one else? </li>
+            <li> A: Make sure that the protocol is Locked but not Public </li>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

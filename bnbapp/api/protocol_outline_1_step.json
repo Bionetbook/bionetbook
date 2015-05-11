@@ -1,0 +1,83 @@
+[
+    {"objectid": ["kttj4d", "kttj4d"],
+    "child_type": "components", 
+    "name": "FLAKE",
+    "node_type": "Action",
+    "child_diff":"True",
+    "URL": [
+        "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/edit/", 
+        "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/edit/"], 
+    "duration": ["None", "None"], 
+    "child": [
+        {
+            "name": ["FAXCVF dt", "Oligo dt"],
+            "vol": [["1.0", "ul"], ["1.0", "ul"]], 
+            "URL": [
+                "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/f5fe2d/edit/", 
+                "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/f5fe2d/edit/"], 
+            "number": "1", 
+            "node_objectid": "f5fe2d", 
+            "node_type": "components", 
+            "conc": [["50.0", "ng/ul"], ["100", "ng/ul"]],
+            "is_sample": ["False", "False"]
+        }, 
+        {
+            "name": ["dNTP", "dNTP"],
+            "vol": [["1.0-10.0", "ul"], ["1.0-10.0", "ul"]], 
+            "URL": [
+                "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/0tisce/edit/", 
+                "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/0tisce/edit/"], 
+            "number": "2", 
+            "node_objectid": "0tisce", 
+            "node_type": "components", 
+            "conc": [["10", "mM"], ["10", "mM"]],
+            "is_sample": ["False", "False"]
+
+        }, 
+        {
+            "name": ["RNA, poly(A)+", "RNA, poly(A)+"],
+            "vol": [["1.0", "ul"], ["1.0", "ul"]], 
+            "number": "3", 
+            "URL": [
+                "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/f5fe2d/edit/", 
+                "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/f5fe2d/edit/"], 
+            "node_type": "components", 
+            "node_objectid": "f5fe2d", 
+            "conc": [["100-1000", "ng/ul"], ["100-1000", "ng/ul"]],
+            "is_sample": ["True", "True"]
+        },
+        {
+            "name": ["DDW", "DDW"],
+            "vol": [["up to 12", "ul"], ["up to 12", "ul"]], 
+            "number": "4", 
+            "URL": [
+                "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/1exatc/edit/", 
+                "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/okeetv/kttj4d/c/1exatc/edit/"], 
+            "node_objectid": "1exatc",
+            "node_type": "components", 
+            "is_sample": ["False", "False"]
+        }
+    ]
+    },
+    {"objectid": ["oy38e9", "None"],
+    "child_type": "machine", 
+    "URL": [
+        "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/iodn2e/oy38e9/edit/", 
+        "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/iodn2e/oy38e9/edit/"], 
+    "name": "heat",
+    "node_type": "Action",
+    "child_diff":"True",
+    "duration": ["300","None"], 
+    "child": [          
+        {
+            "name": ["heat block"],
+            "temp": ["65", "C"],
+            "time": ["5:00", "Min"],
+            "URL": [
+                "/bionetbook/20-bionetbook-bionetbook-first-strand-cdna-synthesis-oligodt/iodn2e/oy38e9/m/bb92m1/edit/", 
+                "/bionetbook/19-bionetbook-first-strand-cdna-synthesis-oligodt/iodn2e/oy38e9/m/bb92m1/edit/"], 
+            "node_objectid": "bb92m1"
+        }
+        ]
+    }
+]

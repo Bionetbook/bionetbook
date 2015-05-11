@@ -1,0 +1,431 @@
+load	where
+load	duration
+load	what
+load	how
+suspend	what - component list
+suspend	how
+suspend	duration
+excise	what
+excise	how - using tool
+excise	remarks
+excise	duration
+excise	protocol - kit name
+excise	protocol - output
+excise	protocol - output components list
+shake	remarks
+shake	conditional
+shake	what
+shake	how
+shake	how - time
+shake	why
+shake	duration
+seal	what
+seal	how
+seal	duration
+seal	where
+seal	step - remark
+seal	step - why
+seal	how - centrifuge speed
+seal	remarks
+seal	how - using machine
+seal	how - temperature
+seal	Action
+resuspend	what
+resuspend	how - with
+resuspend	duration
+resuspend	protocol - name
+resuspend	protocol - output
+resuspend	remarks
+resuspend	Action
+agitate	how
+agitate	how - time
+agitate	duration
+agitate	conditional
+agitate	what
+agitate	why
+agitate	where
+agitate	remarks
+agitate	Action
+agitate	how - with
+let sit/stand	remarks
+let sit/stand	how
+let sit/stand	duration
+equilibrate	what
+equilibrate	how - with
+equilibrate	duration
+equilibrate	step - remark
+equilibrate	how
+equilibrate	how - temperature
+equilibrate	how - time
+equilibrate	what - to
+wash	what
+wash	how - with
+wash	duration
+wash	how - time
+wash	how - centrifuge speed
+connect	what
+connect	where
+connect	duration
+apply	what
+apply	where
+apply	duration
+apply	remarks
+apply	how - using tool
+apply	why
+close	what
+close	how
+close	duration
+incubate	what
+incubate	how - time
+incubate	how - temperature
+incubate	duration
+incubate	how - centrifuge speed
+incubate	why
+incubate	remarks
+incubate	action
+incubate	protocol - name
+incubate	protocol - input
+incubate	protocol - output
+incubate	protocol - output components list
+incubate	Action
+incubate	where - vessel
+incubate	how
+incubate	protocol - kit name
+incubate	what - component list
+incubate	step - remark
+open	what
+open	duration
+open	where
+open	how
+check	what
+check	how - using machine
+check	remarks
+check	duration
+check	Action
+check	protocol - name
+check	protocol - output
+check	protocol - output components list
+check	how - using tool
+thermal cycle	how - temperature
+thermal cycle	how - time
+thermal cycle	number of times
+thermal cycle	duration
+thermal cycle	protocol - kit name
+thermal cycle	protocol - output
+thermal cycle	protocol - output components list
+thermal cycle	remarks
+thermal cycle	Action
+pour off	what
+pour off	duration
+centrifuge	what
+centrifuge	how - time
+centrifuge	how - centrifuge speed
+centrifuge	why
+centrifuge	duration
+centrifuge	how - temperature
+cut	what
+cut	how
+cut	duration
+cut	why
+prepare	what
+prepare	why
+prepare	duration
+prepare	where
+prepare	how
+prepare	step - remark
+prepare	caution/warning
+prepare	remarks
+prepare	how - using tool
+prepare	how - time
+prepare	when
+attach	what
+attach	where
+attach	duration
+transfer	how
+transfer	where
+transfer	how - temperature
+transfer	duration
+transfer	how - time
+transfer	why
+transfer	step - remark
+transfer	protocol - kit name
+transfer	protocol - output
+transfer	protocol - output components list
+transfer	remarks
+transfer	what
+transfer	how - using machine
+transfer	how - centrifuge speed
+transfer	step - why
+decant	what
+decant	duration
+decant	how - time
+decant	how
+decant	what - component list
+decant	Action
+melt	what
+melt	how - using machine
+melt	duration
+mix	how
+mix	duration
+mix	how - time
+mix	how - centrifuge speed
+mix	why
+mix	remarks
+add	what - component list
+add	duration
+add	component list
+add	where
+add	remarks
+add	step - remark
+add	what
+add	how
+combine	what - component list
+combine	how - temperature
+combine	duration
+combine	where
+combine	component list
+combine	remarks
+combine	what
+pour	what
+pour	where
+pour	duration
+pour	step - remark
+pour	conditional
+pour	how - temperature
+pour	why
+swirl	why
+swirl	duration
+swirl	step - remark
+precipitate	what
+precipitate	how - time
+precipitate	how - temperature
+precipitate	duration
+precipitate	how - centrifuge speed
+cool	remarks
+cool	what
+cool	how - using machine
+cool	how - temperature
+cool	when
+cool	why
+cool	duration
+cool	step - remark
+cool	conditional
+pass	what
+pass	how
+pass	duration
+pass	how - with
+pass	step - remark
+pass	how - number of times
+store	how - temperature
+store	how - time
+store	duration
+store	Action
+store	what
+store	what - component list
+store	how - centrifuge speed
+store	how - voltage
+store	remarks
+store	where - vessel
+treat	what
+treat	how
+treat	how - machine settings
+treat	how - time
+treat	duration
+elute	what
+elute	where - into
+elute	how - with
+elute	duration
+elute	remarks
+repeat	what
+repeat	how - with
+repeat	duration
+repeat	step - remark
+repeat	where
+repeat	remarks
+repeat	how - temperature
+repeat	how - time
+repeat	how - using machine
+repeat	step - why
+electrophorese	what - component list
+electrophorese	remarks
+electrophorese	duration
+electrophorese	how - using machine
+electrophorese	how - voltage
+electrophorese	how - time
+aliquot	what
+aliquot	how
+aliquot	where - vessel
+aliquot	duration
+aliquot	step - remark
+aliquot	Action
+aliquot	what - component list
+switch off	remarks
+switch off	what
+switch off	duration
+switch off	step - remark
+switch off	step - why
+switch off	where
+switch off	how - centrifuge speed
+switch off	how - using machine
+switch off	how - temperature
+switch off	Action
+pipette out	what
+pipette out	remarks
+pipette out	duration
+stop	what
+stop	duration
+stop	how - using tool
+stop	protocol - kit name
+stop	protocol - output
+stop	remarks
+stop	Action
+stop	where - vessel
+stop	how - time
+stop	where
+call for protocol	protocol - type
+call for protocol	protocol - name
+call for protocol	protocol - input
+call for protocol	protocol - output
+call for protocol	protocol - output components list
+call for protocol	remarks
+call for protocol	duration
+heat	what
+heat	how - temperature
+heat	how - time
+heat	duration
+heat	remarks
+heat	protocol - name
+heat	protocol - input
+heat	protocol - output
+heat	Action
+heat	how
+weigh	what
+weigh	where - vessel
+weigh	duration
+weigh	where
+weigh	remarks
+weigh	how - time
+weigh	when
+weigh	what - component list
+weigh	step - remark
+weigh	how - centrifuge speed
+weigh	how - using machine
+weigh	step - why
+weigh	how - temperature
+weigh	Action
+Action	Attribute
+Action	what - component list
+Action	duration
+Action	why
+Action	what - to
+Action	how - time
+Action	where - vessel
+Action	how - number of times
+Action	step - remark
+grow	what
+grow	how - time
+grow	duration
+grow	what - to
+grow	where - vessel
+grow	remarks
+grow	how
+grow	where
+grow	when
+grow	why
+chill	how - temperature
+chill	how - time
+chill	duration
+chill	how
+chill	protocol - name
+chill	protocol - output
+chill	remarks
+chill	protocol - output components list
+chill	Action
+chill	where
+dry	how
+dry	how - time
+dry	duration
+dry	what
+dry	how - with
+insert	what
+insert	where
+insert	how - using machine
+insert	duration
+insert	remarks
+insert	how
+insert	step - remark
+insert	step - why
+insert	how - centrifuge speed
+insert	how - temperature
+insert	Action
+insert	where - from
+insert	how - using tool
+photograph	what
+photograph	remarks
+photograph	duration
+photograph	when
+split	what
+split	how
+split	duration
+split	how - time
+split	how - temperature
+split	step - remark
+split	remarks
+split	how - with
+cover	conditional
+cover	what
+cover	how
+cover	why
+cover	duration
+remove	what
+remove	how - using tool
+remove	how
+remove	duration
+remove	when
+grind	how
+grind	what
+grind	duration
+filter	how
+filter	why
+filter	duration
+vortex	what
+vortex	duration
+vortex	how - temperature
+vortex	how
+vortex	how - centrifuge speed
+vortex	why
+vortex	where
+vortex	step - remark
+adjust	what
+adjust	conditional
+adjust	how - using machine
+adjust	how
+adjust	duration
+place	what
+place	where
+place	duration
+place	conditional
+withdraw	what
+withdraw	how
+withdraw	duration
+withdraw	step - remark
+withdraw	where
+discard	what
+discard	duration
+discard	where
+discard	remarks
+discard	how - using machine
+discard	how - centrifuge speed
+discard	how - temperature
+discard	step - why
+discard	step - remark
+discard	Action
+dissolve	what
+dissolve	how
+dissolve	what - component list
+dissolve	duration
+rinse	what
+rinse	how - with
+rinse	step - remark
+rinse	duration
+rinse	where - into

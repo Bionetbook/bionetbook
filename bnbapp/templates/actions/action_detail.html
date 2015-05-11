@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}Action: {{ action.title }}{% endblock %}
+
+{% block page_title %}
+<small>{{object.name}} > {{ step.name }}</small><br>{{ action.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">
+      <h2>Action Attributes</h2>
+      {% if protocol_edit_authorization %} 
+        <a class="btn btn-primary" href="{{ action.action_update_url }}"><i class="icon-edit icon-white"></i> Edit</a>
+        <a class="btn btn-danger" href="{{ action.action_delete_url }}"><i class="icon-trash icon-white"></i> Delete Action</a>
+      {% endif %}
+        {% object_data_table action %}
+        <p></p>
+    </div>
+    <!-- <div class "span3.5">
+      <h2>Verb Attributes</h2>
+      {% object_data_table action.verb }  
+
+
+    </div> -->
+    <div class="span6">
+        {% if action.has_machine %}
+          <h2>Machine: {{ action.machine.name }}</h2>
+          {% if action.machine %}
+            <a class="btn btn-primary" href="{{ action.machine.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> 
+            {% object_data_table action.machine %}
+          {% else %}
+            <a class="btn btn-success" href="{{ action.machine_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Machine</a>
+          {% endif %}
+        {% endif %}
+        {% if action.has_components %}
+        <h2>Components</h2> 
+        {% for component in action.components %}
+          <h3>{{component.name}}</h3>
+          <a class="btn btn-primary" href="{{ component.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ component.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+          {% object_data_table component %}
+        {% endfor %}
+        <a class="btn btn-success" href="{{ action.component_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Component</a>
+        {% endif %}
+        {% if action.has_thermocycler %}
+        <h2>Thermocycler</h2>
+        {% for thermocycle in action.thermocycle %}
+          <h3>{{thermocycle.name}}</h3>
+          <a class="btn btn-primary" href="{{ thermocycle.get_update_url }}"><i class="icon-edit icon-white"></i> Edit</a> <a class="btn btn-danger" href="{{ thermocycle.get_delete_url }}"><i class="icon-trash icon-white"></i> Delete</a>
+          {% object_data_table thermocycle %}
+        {% endfor %}
+        <a class="btn btn-success" href="{{ action.thermocycle_create_url }}"><i class="icon-plus-sign icon-white"></i> Add Thermocycler</a>
+        {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
