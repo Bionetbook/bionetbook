@@ -48,7 +48,7 @@ class OrganizationMainView(ProtocolSetupMixin, LoginRequiredMixin, TemplateView)
 			viewableProtocols = list(set(draftProtocols + publishedProtocols))
 			workflows = [w for w in self.request.user.workflow_set.all() if w.owner==org]
 			experiments = [e for e in self.request.user.experiment_set.all() if e.owner==org]
-			context['titleBlock'] = {'prefix':"", 'title': str(org), 'suffix':"Protocol list"}
+			context['titleBlock'] = {'prefix':"Organization protocol list of", 'title': str(org), 'suffix':""}
 		except:
 			raise Http404
 		if experiments:
