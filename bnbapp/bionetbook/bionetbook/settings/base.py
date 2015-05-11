@@ -14,7 +14,6 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('Grant Viklund', 'gviklund@backcode.com'),
     ('Oren Schaedel', 'oren@bionetbook.com'),
-    ('Andrew Mori', 'andrewmori@backcode.com'),
 )
 
 MANAGERS = ADMINS
